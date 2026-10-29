@@ -2,7 +2,7 @@ import {NAMES,EVENTS,STAT_NAMES} from './content.js';
 import {readingText} from './reading-copy.js';
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const intro={F01:'三十年，旧灯添过几回，纸上的回答也各有年月。愿意相守的人，隔着路途仍有话可说；一路做过的事，翻回哪一页，都找得到来处。',F02:'这一卷收下了不同的去处。有人愿意相守，有人的话还停在别处；说清的便照着走，未说定的，也不催谁给一个好听的结尾。',F03:'这一卷没有把空白补满。做过的、错过的，各自留下来；收笔以后，日子仍会往前走。',F04:'这一卷先收在这里，末页还留着几行没办完的事。你已经决定回头去做；后来的日子，便从这些空处接着写。'};
-const together={C02:'那盏茶，他愿意与你慢慢饮。',C03:'他愿意留下的，不只是一张舆图。',C04:'医者有他的职责，与你也有病情之外可说的话。',C05:'他愿意再吹一遍，也肯与你争那半拍。',C06:'她留出自己的半日，也愿问你来不来。',C07:'她仍有想开的花、想争的一句，也愿意请你坐近些。',C08:'不想唱的时候，她也愿把那件小事说给你听。',C09:'她仍有不同的读法，愿与你一同读下去。',C10:'她愿意与你闲坐，也仍能推掉新的长差。'};
+const together={C02:'那盏茶他陪你喝到凉，也不再急着换。夜里留一盏灯，他坐在灯下，看你睡着。',C03:'那张旧舆图上添满了杏花和泉水。哪一年同去看那道山口，日子由你来定。',C04:'他不为请脉也常来。冬天你的手凉，他便给你暖着。',C05:'那一处半拍，你们争到头发都白了，谁也没让过谁。雪落得慢的时候，他便不走。',C06:'西山的梅年年都开。她不再把难过收得整整齐齐，在你面前，偶尔也可以不懂事。',C07:'她的暖房里开满了自己养活的花。不再挂在谁身上了，却仍愿意靠在你肩上。',C08:'她写了三年的那支曲子，终于只唱给一个人听。末一句气短了，你说你喜欢那一句。',C09:'她仍有不同的读法，你们一首一首地争下去。夹在诗集里的那片梨花，明年再拿出来认。',C10:'茶斟满了也不要紧。她不再怕飞出去，因为知道有人在这里等。'};
 const unfinished={C02:'旧日当值与灯下说过的话，仍留在这些页里。',C03:'舆图上的归程与两人之间的心事，尚未走到一处。',C04:'医案翻过许多页，病情之外的话，还没有说定。',C05:'谱上的曲子与心里的回答，仍各有未落笔的地方。',C06:'宫务写在簿上，她自己的心事，还没有与你说到最后。',C07:'她的喜怒仍有自己的缘故，你们的往后尚未说定。',C08:'唱过的曲子已经留下，曲子之外的话，还有未说的部分。',C09:'同读过的字句仍在，往后的心意还未说定。',C10:'说过的疑点仍记在原页，私下怎样往来，还未说定。'};
 export function finalReading(c){
  return c.passages.map((text,index)=>{
@@ -40,5 +40,12 @@ const stageCopy=new Map(Object.entries({
  '二十一实际日后，本批零新增只得常规登记，实际交接未执行；缺项照实留下，不把准时回报冒称全部交班达标。':'二十一日后送来的是常规登记。这次没有另办交接，原来的责任仍没有交出去。',
  '先有本批G24实际核件，另日收好交班完成页。收页标明实际交出的范围与仍欠权限，不把有限材料升级成全部制度已经可持续。':'你另日收好交班回单。已经交出的写清，尚须自己亲理的也留着，往后便依这张单来问。'
 }));
-export function archiveReadingText(text,eventId){let next=readingText(text,eventId);if(stageCopy.has(next))return stageCopy.get(next);const flute='园路上的雪与问诊那晚各有日期。只有明确接受本次往返且今日真正到场，才听允礼吹他自己选的一段；未接受或已错过便记未相见，不造笛声。';if(next===flute+'今日本次笛约实际履行。')return '你按期见到允礼，听了那段笛曲。问诊是前一夜的事，今夜的雪与曲，另收在这一页。';if(next===flute+'本次明确记未相见，不补当面私话或曲声。')return '这次没有相见。那场雪仍落过，曲子却没有在这一夜响起。';return next;}
-export function sourcePage(text){return `<details class="source-reading" data-original-text><summary>收存的原页</summary><div class="story-text">${(Array.isArray(text)?text:[text]).map(t=>'<p>'+esc(t)+'</p>').join('')}</div></details>`;}
+const visitCopy={E01:'年羹尧在京郊的旧宅住下了。你去看过他一回，院子里野草长得老高，他说留着好看。你们喝了一壶西北带来的砖茶，说了些路上的事。临走他送到门口，行的是常礼。',E02:'苏培盛如今不常在御前了。你路过值房时进去坐了坐，他忙着给你沏茶，又絮絮说起小夏的不是。茶还是他沏的好。',E03:'温实初来请过脉，说你今冬比去年好。诊完他照例叮嘱了几句，便告退回了太医院。窗下那棵老槐，听说今年又抽了新枝。',E04:'允礼来过，在园子里吹了一支曲子，吹完便回府了。那一处的半拍，他还是吹得缓。',E05:'宜修出宫去西山看了一回梅，回来托人送了一枝给你，插在案头的素瓷瓶里。',E06:'年世兰的暖房里开满了花。你去看过一回，她领着你一盆一盆地看，说哪盆是跟花匠吵了几架才养活的。',E07:'安陵容进宫教曲，顺路来请了个安，说起徒弟们的趣事，说完便回去了。',XE09:'甄嬛请你去碎玉轩看梨花。你们读了两首诗，争了几句，各自觉得自己有理。',XE10:'沈眉庄把今年的回单收进了匣子，难得不看账，请你喝了一盏茶。窗下的茉莉开得正好。'};
+const childNote=/澄宁实际生于[^，。]*，按本世真实家谱保留教育与本人选择；没有预许婚配，也没有虚构女儿来信。/,noChild='本世没有子女，年世兰可以选择调养、看花与独立生活，不以生育换尊重或相守。';
+function epilogueReading(next,eventId){
+ if(visitCopy[eventId]&&/ · 今日探望与各自生活。/.test(next))return visitCopy[eventId];
+ if(eventId==='E06'){next=next.replace(childNote,'\n\n这一日澄宁也进宫来请安，在暖房里陪母亲坐了一会儿，又被打发去看那盆新开的茶花。').replace(noChild,'');}
+ return next;
+}
+export function archiveReadingText(text,eventId){let next=epilogueReading(readingText(text,eventId),eventId);if(stageCopy.has(next))return stageCopy.get(next);const flute='园路上的雪与问诊那晚各有日期。只有明确接受本次往返且今日真正到场，才听允礼吹他自己选的一段；未接受或已错过便记未相见，不造笛声。';if(next===flute+'今日本次笛约实际履行。')return '你按期见到允礼，听了那段笛曲。问诊是前一夜的事，今夜的雪与曲，另收在这一页。';if(next===flute+'本次明确记未相见，不补当面私话或曲声。')return '这次没有相见。那场雪仍落过，曲子却没有在这一夜响起。';return next;}
+export function sourcePage(text){return '';return `<details class="source-reading" data-original-text><summary>收存的原页</summary><div class="story-text">${(Array.isArray(text)?text:[text]).map(t=>'<p>'+esc(t)+'</p>').join('')}</div></details>`;}
