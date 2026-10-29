@@ -99,6 +99,7 @@ export function weekAvailable(s){
  return allEvents(s).filter(e=>{
   if(e.id==='R03-02'&&s.weekly.relationships?.requests.some(r=>r.sourceNode==='R03-01'&&r.status==='pending'))return false;
   if((!currentWeek(s)&&e.projectStage!=='discover'&&!(isEighth(s)&&e.id==='G24'))||projectSuspended(s,e.id)||['main','followup'].includes(e.kind)||complete(s,e)||e.parent&&!s.deferred.includes(e.id)||!dependencies(s,e))return false;
+  if(e.kind==='dilemma'){const w=WEEK_EVENT_RULES[e.id]?.window;if(!w||ordinal(s.date)<ordinal(date(w.earliest))||ordinal(s.date)>ordinal(date(w.latest)))return false;}
   if(!weekActorUnlocked(s,weekEvent(s,e).actor))return false;
   if(e.kind==='daily'&&e.season!=='any'&&e.season!==['春','夏','秋','冬'][Math.floor((s.date.month-1)/3)])return false;
   const d=weekEventDate(s,e),r=WEEK_EVENT_RULES[e.id];
