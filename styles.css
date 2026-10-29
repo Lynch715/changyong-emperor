@@ -392,3 +392,20 @@ html body{padding-left:0!important;padding-right:0!important}
 .app-shell.portrait-shell .view-scene .result-stage{margin:0 -16px;border:0;border-radius:0;background:var(--silk-deep);padding:22px 24px 16px;border-bottom:1px solid var(--line)}
 .app-shell.portrait-shell .view-scene .result-stage h2{font:400 30px/1.4 var(--brush);letter-spacing:5px;color:var(--ink)}
 .app-shell.portrait-shell .view-scene .result-stage span,.app-shell.portrait-shell .view-scene .result-stage p,.app-shell.portrait-shell .view-scene .result-stage>small{color:var(--ink-soft)}
+/* API 设置：先连接，再阅读与存档；手机单列，密钥不撑宽纸面。 */
+.api-settings{grid-column:1/-1;min-width:0}
+.api-settings .section-header{flex-wrap:wrap;gap:10px;margin-top:0}
+.api-settings .section-header h2{margin:0}
+.api-settings .tag{white-space:normal;overflow-wrap:anywhere;max-width:100%}
+.api-settings .api-field-hint{font-size:12px;color:var(--ink-soft);line-height:1.65;margin:7px 0 16px}
+.api-field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.api-settings .field,.api-settings input,.api-settings select{min-width:0;max-width:100%}
+.api-settings fieldset{border:0;margin:0;padding:0;min-width:0}
+.api-key-row{display:flex;gap:8px;align-items:stretch;margin-bottom:14px}
+.api-key-row input{flex:1;width:0}
+.api-key-row button{flex-shrink:0}
+.api-remember{gap:16px;line-height:1.6}
+.api-settings .operation-feedback:empty{display:none}
+.api-settings .operation-feedback{overflow-wrap:anywhere;margin:14px 0}
+.api-actions{gap:10px}
+@media(max-width:600px){.api-field-grid{grid-template-columns:minmax(0,1fr);gap:0}.api-actions>button{flex:1 1 130px}.api-settings .section-header{align-items:flex-start}}

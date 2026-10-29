@@ -3,10 +3,41 @@ import {requestScope} from './ai-request.js';
 import {fitAIContext,AI_WIRE_LIMIT,contextSources} from './context-budget.js';
 import {CHAT_SCHEMA,PARSE_SCHEMA,validateNarrative,validateRemoteParse,buildAIContext,buildReactionContext,inputActionCatalog} from './input.js';
 import {RuleError} from './engine.js';
+import {connectionSettings,readConnectionSettings,storeConnectionSettings,AI_SETTINGS_KEY} from './ai-connection-settings.js';
 const config={mode:'fixed',...DEFAULT_AI,key:'',limit:30};
 let activeRequest=null,configRevision=0;
 export const getAIConfig=()=>({...config,key:undefined,hasKey:!!config.key,revision:configRevision});
 export function setAIConfig(next){configRevision++;for(const k of ['mode','url','protocol','model','key','limit'])if(Object.hasOwn(next,k))config[k]=next[k];if(!['fixed','server','byok'].includes(config.mode))config.mode='fixed';config.limit=Math.max(1,Math.min(200,Number(config.limit)||30));}
+export function restoreAIConnection(storage=globalThis.localStorage){const saved=readConnectionSettings(storage);if(saved){setAIConfig(saved);return true;}return false;}
+export function remembersAIConnection(storage=globalThis.localStorage){return !!readConnectionSettings(storage);}
+function rememberOptOut(storage,mode){try{storage?.setItem('changyong-ai-optout',mode==='fixed'?'1':'0');}catch{}}
+export function saveAIConnection(next,{remember=false,storage=globalThis.localStorage}={}){
+ const value=connectionSettings(next,config);storeConnectionSettings(storage,value,remember);setAIConfig(value);rememberOptOut(storage,value.mode);return getAIConfig();
+}
+export function pauseAIConnection(storage=globalThis.localStorage){const saved=readConnectionSettings(storage);if(saved)storeConnectionSettings(storage,{...saved,mode:'fixed'},true);setAIConfig({mode:'fixed'});rememberOptOut(storage,'fixed');}
+export function clearAIConnection(storage=globalThis.localStorage){try{storage?.removeItem(AI_SETTINGS_KEY);}catch{throw Error('浏览器未能清除 API 配置，请检查存储权限后重试。');}setAIConfig({mode:'fixed',...DEFAULT_AI,key:'',limit:30});rememberOptOut(storage,'fixed');}
+export async function testAIConnection(next){
+ const value=connectionSettings(next,config),u=usage();
+ if(u.calls>=value.limit)throw new RuleError('今日调用上限已到，请调整上限或明日再试。');
+ if(activeRequest)throw new RuleError('上一条回复尚未结束，请稍后再测试。');
+ const context={actorId:'C02',facts:[],mandatory:[],conversationMemory:{}},input='连接检查，请只回复“连接正常”，factIds为空数组。';
+ const body=value.mode==='server'?{kind:'chat',context,input}:modelPayload({base:value.url,model:value.model,protocol:value.protocol,guide:'这是独立连接检查，不进行游戏。只输出 JSON，speakerId 为 C02，text 为“连接正常”，factIds 为 []。',payload:{kind:'chat',context,input},schema:CHAT_SCHEMA,name:'role_reply'});
+ const endpoint=value.mode==='server'?'/api/ai':value.url+(value.protocol==='responses'?'/responses':'/chat/completions');
+ const headers=value.mode==='server'?{'Content-Type':'application/json','X-Changyong-Request':'1'}:{'Content-Type':'application/json',Authorization:'Bearer '+value.key};
+ const scope=requestScope({timeoutMs:15000});u.calls++;writeUsage(u);
+ try{
+  const response=await scope.wait(fetch(endpoint,{method:'POST',headers,body:JSON.stringify(body),signal:scope.signal}));
+  if(!response.ok)throw new RuleError(`连接失败（HTTP ${response.status}），请检查地址、模型、密钥及账号额度。`);
+  const raw=await scope.wait(response.json());
+  if(raw.status==='incomplete'||raw.choices?.[0]?.finish_reason==='length')throw new RuleError('接口已响应，但测试回复被截断，请检查模型配置。');
+  const text=raw.choices?.[0]?.message?.content||raw.output?.filter(x=>x.type==='message').flatMap(x=>x.content||[]).filter(x=>x.type==='output_text').map(x=>x.text).join('');
+  let result;try{result=value.mode==='server'?raw.value:JSON.parse(text);}catch{throw new RuleError('接口已响应，但未返回游戏需要的 JSON 格式。');}
+  if(result?.speakerId!=='C02'||typeof result.text!=='string'||!result.text.trim()||!Array.isArray(result.factIds)||result.factIds.length)throw new RuleError('接口已响应，但回复结构与游戏不兼容。');
+  const latest=usage();latest.input+=raw.usage?.input_tokens||raw.usage?.prompt_tokens||0;latest.output+=raw.usage?.output_tokens||raw.usage?.completion_tokens||0;writeUsage(latest);
+  return {ok:true,model:value.model};
+ }catch(error){const latest=usage();latest.failures++;writeUsage(latest);if(error instanceof RuleError)throw error;throw new RuleError('连接未成功，请检查网络及服务商的网页跨域支持；也可能是接口未返回有效 JSON。');}
+ finally{scope.dispose();}
+}
 function usage(){try{const u=JSON.parse(localStorage.getItem('changyong-ai-usage')||'null');return u?.day===new Date().toISOString().slice(0,10)?u:{day:new Date().toISOString().slice(0,10),calls:0,input:0,output:0,failures:0};}catch{return {day:new Date().toISOString().slice(0,10),calls:0,input:0,output:0,failures:0};}}
 export const getUsage=usage;
 function writeUsage(u){try{localStorage.setItem('changyong-ai-usage',JSON.stringify(u));}catch{}}
