@@ -16,17 +16,6 @@ for(const name of ['src','assets','styles.css']){
 }
 let html=await readFile(path.join(root,'index.html'),'utf8');
 html=html.replace('<head>','<head><meta name="changyong-hosting" content="static">');
-// Keep explicit quarterly, migration and continuation links intact. A bare
-// Pages URL enters the current weekly edition without touching local saves.
-html=html.replace('<script type="module" src="src/app.js"></script>',`<script type="module">
-const entry=new URL(location.href);
-if(!entry.searchParams.has('world')){
- entry.searchParams.set('world','weekly');
- location.replace(entry.href);
-}else{
- await import('./src/app.js');
-}
-</script>`);
 await writeFile(path.join(output,'index.html'),html);
 await writeFile(path.join(output,'.nojekyll'),'');
 const {version}=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
