@@ -1,3 +1,4 @@
+import {DILEMMA_RULES} from './dilemma-content.js';
 // S01 scheduling projection; only existing narrative is enabled in S02.
 export const WEEK_EVENT_RULES={
   "M01": {
@@ -1210,3 +1211,5 @@ export const FOCUS_WEEKS=[
     "slots": 6
   }
 ];
+
+Object.assign(WEEK_EVENT_RULES,DILEMMA_RULES);

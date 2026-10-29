@@ -1,3 +1,4 @@
+import {DILEMMA_EVENTS} from './dilemma-content.js';
 import {V8_EVENTS} from './volume8-content.js';
 import {V7_EVENTS} from './volume7-content.js';
 import {V6_EVENTS} from './volume6-content.js';
@@ -34,6 +35,7 @@ const opt=(id,label,detail,effects={},flags={})=>({id,label,detail,effects,flags
 const event=(id,title,turn,body,options,extra={})=>({id,title,turn,kind:'main',actor:'C02',location:'养心殿御案',body,options,...extra});
 export const EVENTS={...EXTENSION_EVENTS};
 function add(e){EVENTS[e.id]=e;return e;}
+Object.assign(EVENTS,DILEMMA_EVENTS);
 [
  event('M01','养心惊梦',1,'冷汗沿着鬓边落下。帘外是苏培盛压低的脚步声，御案上那本旧折的日期，却停在雍正元年。\n\n你记得病榻，记得未竟的边报，也记得几个再没能好好说话的人。如今灯还亮着，眼前的折子也还未落朱批。\n\n“皇上，可要传人？”苏培盛在帘外问。先确认这是什么时候，别急着替所有人定下今生。',[
  opt('steady','先稳住心绪','心绪 +4。重生仍是你一人的秘密。',{mood:4},{opening:'steady'}),opt('verify','核对年号与旧折','政令执行 +2，确认本世日期。',{execution:2},{opening:'verify'}),opt('call','唤苏培盛近前','心绪 +2，先问今夜的值守。',{mood:2},{opening:'call'})]),
@@ -91,7 +93,7 @@ export const NAMES={C01:'雍正',...Object.fromEntries(CHARACTERS.map(c=>[c.id,c
 export const ALL_ROSTER=[['C01','雍正'],...CHARACTERS.map(c=>[c.id,c.name]),['C09','甄嬛'],['C10','沈眉庄'],['C11','敬妃'],['C12','端妃'],['C13','齐妃'],['C14','曹琴默'],['C15','欣贵人'],['C16','富察贵人'],['C17','崔槿汐'],['C18','浣碧'],['C19','颂芝'],['C20','宝鹃'],['C21','太后'],['C22','卫临'],['C24','允禩'],['C25','允禟'],['C26','允祥'],['C27','隆科多'],['C28','张廷玉'],['C29','鄂尔泰'],['C30','田文镜'],['C31','李卫'],['C32','岳钟琪'],['C33','弘时'],['C34','弘历'],['C35','弘昼'],['C36','澄宁']];
 export const FIRST_ROSTER=['C01',...CHARACTERS.map(c=>c.id),'C09','C10','C11','C19','C20','C21','C22','C26','C28','C32'];
 export const ASSET_MANIFEST=[...FIRST_ROSTER.map(id=>({id:`char_${id}_base`,name:`${NAMES[id]}基准立绘`,path:`assets/char_${id}_base.png`})),{id:'char_C01_formal',name:'雍正正式服',path:'assets/char_C01_formal.png'},...[1,2,3,4].map(i=>({id:`art_bg_0${i}`,name:['御案','宫室','御园','朝议'][i-1]+'氛围',path:`assets/art_bg_0${i}.png`})),{id:'cover',name:'封面底图',path:'assets/cover.png'},{id:'cg_CG01',name:'重生御案',path:'assets/cg_CG01.png'},{id:'cg_CG15',name:'宫宴微光',path:'assets/cg_CG15.png'}];
-export const KIND_NAMES={main:'主线',relation:'相知',extension:'相知',government:'政务',followup:'回访',side:'群像',daily:'日常'};
+export const KIND_NAMES={main:'主线',relation:'相知',extension:'相知',government:'政务',followup:'回访',side:'群像',daily:'日常',dilemma:'两难'};
 export const MAIN_COUNT=12;
 
 Object.assign(EVENTS,V3_EVENTS,V4_EVENTS,V5_EVENTS,V6_EVENTS,V7_EVENTS,V8_EVENTS);

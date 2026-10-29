@@ -129,7 +129,7 @@ function nextEventResult(s,e,choice,params={}){
  let effects=clone(choice.effects||{}),notes=[],relationChanges={};
  if(e.kind==='relation'){
   const r=s.relations[e.actor];
-  if(isWeekly(s)&&choice.id==='warm'&&s.weekly.relationships?.issues.some(i=>i.actor===e.actor&&i.status==='open'))throw new RuleError('先把这次未说明白的约定补谈，再往亲近处走。合作照常。');
+  if(isWeekly(s)&&choice.id==='warm'&&s.weekly.relationships?.issues.some(i=>i.actor===e.actor&&i.status==='open'))throw new RuleError('你们之间还有一件事没说开，先找时间补谈，再往亲近处走。合作照常。');
   if(choice.id==='warm'&&['仅合作','终止恋爱','暂缓'].includes(r.playerIntent))throw new RuleError('当前关系意愿不允许推进，请选合作回应；若想恢复，请先在人物页主动协商。');
   if(choice.id==='warm'&&['仅合作','终止恋爱','暂缓'].includes(r.npcIntent))throw new RuleError('对方当前尚未愿意恢复亲近，请尊重其答复，先保留合作。');
   if(choice.id==='warm'){relationChanges={trust:5,safety:2};r.playerIntent='愿发展';r.npcIntent='愿发展';}
@@ -139,6 +139,7 @@ function nextEventResult(s,e,choice,params={}){
   if(!isWeekly(s)&&s.relations[e.actor].trust>=35)r.stage='信任';
   notes.push(`${NAMES[e.actor]}：信任 +${relationChanges.trust}${relationChanges.safety?'，安全感 +2':''}`);
  }
+ if(e.kind==='dilemma'){for(const[cid,ch]of Object.entries(choice.bonds||{}))bumpRelation(s,cid,ch);const near=Object.keys(choice.bonds||{}).map(c=>NAMES[c]).join('、');if(near)notes.push(near+'记着你这一回的选择');if(choice.slight)notes.push(NAMES[choice.slight]+'心里有了一个结，须找时间说开');}
  if(e.id==='G05'&&choice.id==='escort'&&s.flags.militaryRecord?.escort)notes.push('沿用前账已付的押运，本次不再收取押运费。');
  if(e.id==='G04'){
   const p=params;
