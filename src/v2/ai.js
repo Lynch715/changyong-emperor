@@ -1,8 +1,9 @@
 // AI 层：对话、旨意、夜话。AI 负责写和判断，引擎负责限幅。连不上时返回 null，界面改用固定文字。
 import {callModel} from './model.js';
+import {placeOf,titleOf} from './engine.js';
 import {readConnectionSettings,connectionSettings,storeConnectionSettings} from '../ai-connection-settings.js';
 import {DEFAULT_AI} from '../ai-provider.js';
-import {PEOPLE,STATS,MONTHS,stageOf,NAMES} from './data.js';
+import {PEOPLE,STATS,MONTHS,stageOf,NAMES,YEAR_NAME} from './data.js';
 
 let mode='off',byok=null,lastError='';
 export const aiMode=()=>mode;
@@ -46,7 +47,7 @@ async function ask(system,user){
 const WORLD=`你在为清宫文字游戏《重生长雍帝王赋》写作。玩家扮演雍正皇帝：他在病榻上死去，又醒在雍正元年正月，记得前世的一切——年羹尧被赐死、年世兰撞墙、苏培盛守了他一辈子却没被好好看见、后宫里许多人的不得善终。这一世，他想把能挽回的都挽回。
 文风：白话、克制、有画面，像好的小说，不要堆砌辞藻，不要现代网络用语。人物说话符合身份与性格。不写露骨的性内容。`;
 const statLine=s=>STATS.map(x=>`${x.name}${s.stats[x.id]}`).join('，');
-const dateLine=s=>`雍正${s.year===1?'元':'二'}年${MONTHS[s.month-1]}`;
+const dateLine=s=>`雍正${YEAR_NAME(s.year)}年${MONTHS[s.month-1]}`+(s.flags?.nian_prison?'（年羹尧已被削爵下狱）':s.flags?.nian_away?'（年羹尧已被降为杭州将军）':s.flags?.nian_safe?'（年羹尧交出兵权，留京任职）':'');
 function relation(id,st){
  if(id==='C05')return st.lover?'你们是彼此最亲的兄弟与知己，皇兄曾把一个“很长的梦”告诉你。':'';
  if(st.lover)return '你们已经互相表明心意，私下是恋人：亲昵、信任，偶尔撒娇或吃醋，人前仍守着身份。';
@@ -57,7 +58,7 @@ function relation(id,st){
 function personBlock(s,id){
  const p=PEOPLE[id],st=s.people[id];
  const mem=st.memories.slice(-8).map(m=>`· ${m.text}`).join('\n')||'（还没有）';
- return `【${p.name}】${p.title}。${p.voice}
+ return `【${p.name}】${titleOf(s,id)}。${p.voice}
 与皇上的情分：${st.aff}/100（${stageOf(st.aff)}）。${relation(id,st)}${st.knot?`心里有个结：皇上在「${st.knot.text}」这件事上没有站在${p.name}这边，还没说开。`:''}
 ${p.name}记得的事：\n${mem}`;
 }
@@ -68,7 +69,7 @@ const str=(v,n)=>typeof v==='string'?v.trim().slice(0,n):'';
 export async function chatReply(s,id,history,{letter=false}={}){
  const p=PEOPLE[id],st=s.people[id];
  const system=`${WORLD}
-现在你只扮演${p.name}，${letter?'这是一封书信往来：皇上写信给远在'+p.place+'的你，你回信':'皇上召见你，你们在'+p.place+'说话'}。
+现在你只扮演${p.name}，${letter?'这是一封书信往来：皇上写信给远在'+placeOf(s,id)+'的你，你回信':'皇上召见你，你们在'+placeOf(s,id)+'说话'}。
 ${personBlock(s,id)}
 当前：${dateLine(s)}。朝局：${statLine(s)}。
 规则：
@@ -115,7 +116,7 @@ export async function edictResult(s,text,presentIds){
 export async function nightScene(s,id,line=''){
  const p=PEOPLE[id];
  const system=`${WORLD}
-今夜皇上去了${p.place}，陪着${p.name}。
+今夜皇上去了${placeOf(s,id)}，陪着${p.name}。
 ${personBlock(s,id)}
 当前：${dateLine(s)}。
 写今夜的一小段，120到220字，第二人称“你”。要有一个具体的小细节（一样东西、一句话、一个动作），贴合${p.name}的性格和你们眼下的情分，${s.people[id].lover?(id==='C05'?'兄弟知己之间的亲近与默契':'恋人之间的温存与亲昵，可以有拥抱、依偎、牵手这样的细节'):s.people[id].aff>=65?'情意已经很明显，只差一句话没说破':s.people[id].aff<45?'还有些拘谨，彼此在试探':'已经可以说些心里话'}。点到为止，不写露骨内容。${line?'皇上开口说的第一句是：“'+line+'”，要接住这句话。':''}

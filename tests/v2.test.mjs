@@ -55,3 +55,21 @@ test('专心对一个人，两年内能走到相守', ()=>{
  }
  const p=s.people.C02;assert.ok(p.third&&p.lover,'苏培盛三幕走完');assert.equal(E.ending(s).people.find(x=>x.id==='C02').tier,3);
 });
+import {SCENES2,AGENDA2,REPAIR2} from '../src/v2/vol2.js';
+test('第二卷：场景齐全，存档延续，四年走完', ()=>{
+ for(const ids of Object.values(AGENDA2))for(const id of ids){const sc=E.scene(id);assert.ok(sc,id);for(const o of sc.options){for(const k of Object.keys(o.effects||{}))assert.ok(STATS.some(s=>s.id===k),id+k);if(o.slight)assert.ok(REPAIR2[id]?.[o.slight],id+' repair '+o.slight);}}
+ for(const id of CORE)assert.ok(E.scene(E.fourthOf(id)),id);
+ for(const pick of ['keep','hangzhou','punish']){
+  const s=E.newGame(21);let n=0;
+  const play=()=>{while(s.agenda.length){const sc=E.scene(s.agenda[0]);const os=E.optionsFor(s,sc);const o=os.find(o=>o.id===pick)||os.find(o=>['warm','confess','stay','develop'].includes(o.id))||os[0];E.choose(s,sc.id,o.id);}
+   if(s.ap&&E.present(s,'C07')){const c=E.beginChat(s,'C07');E.applyChat(s,c,{affection:4});E.applyChat(s,c,{affection:4});}
+   const sp=E.nightChoices(s).find(x=>x.special);if(sp){const sid=E.queueSpecial(s,sp.id);const sc=E.scene(sid);const os=E.optionsFor(s,sc);E.choose(s,sid,(os.find(o=>['warm','confess','stay'].includes(o.id))||os[0]).id);}else E.spendNight(s,E.nightChoices(s)[0]?.id||null);
+   E.endMonth(s);n++;};
+  while(!s.ended&&n<30)play();
+  assert.equal(n,24);E.startVolume2(s);assert.equal(s.year,3);assert.ok(!s.ended);
+  while(!s.ended&&n<60)play();
+  assert.equal(n,48,pick);assert.equal(s.vol,2);
+  const e=E.ending(s);if(pick==='punish')assert.ok(e.people.find(p=>p.id==='C03')?.gone);
+  if(pick==='keep')assert.ok(s.flags.nian_safe);
+ }
+});

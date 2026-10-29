@@ -46,7 +46,7 @@ export function makeServer({config=serverConfig(),fetcher=fetch}={}){
    if(req.headers['x-changyong-request']!=='1'||req.headers.origin&&req.headers.origin!=='http://'+host)return send(403,{error:'只接受当前本地游戏页面的请求。'});
    if(!config.key||!config.model)return send(503,{error:'服务端尚未配置AI模型。'});
    if(active.size>=3)return send(429,{error:'请求太多，请稍后再试。'});
-   const today=new Date().toISOString().slice(0,10);if(day!==today){day=today;calls=0;}if(calls>=Math.max(config.limit,300))return send(429,{error:'今日调用上限已到。'});
+   const today=new Date().toISOString().slice(0,10);if(day!==today){day=today;calls=0;}if(calls>=Math.max(config.limit,1000))return send(429,{error:'今日调用上限已到。'});
    let raw='';for await(const chunk of req){raw+=chunk;if(raw.length>24000)return send(413,{error:'上下文过长。'});}let p;try{p=JSON.parse(raw);}catch{return send(400,{error:'请求不是有效JSON。'});}
    if(typeof p.system!=='string'||typeof p.user!=='string'||p.system.length>8000||p.user.length>12000)return send(400,{error:'请求字段不完整。'});
    const token=Symbol();active.add(token);calls++;

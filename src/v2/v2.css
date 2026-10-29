@@ -212,3 +212,5 @@ dialog#modal{display:none}
 .api button{margin-top:6px}
 
 em.lover{background:#f2c4cf;color:#7a2440}
+.paper button.plain{display:block;margin:10px auto 0;background:none;border:0;color:var(--ink-soft);text-decoration:underline;font-size:14px}
+.paper .center{text-align:center}

@@ -3,8 +3,13 @@ import {SCENES as RAW,REPAIR} from './content.js';
 import {REWRITE} from './rewrite.js';
 import {ROMANCE} from './romance.js';
 import {MORE_PETITIONS,SMALL_EVENTS} from './events.js';
+import {SCENES2,AGENDA2,CRISES2,REPAIR2} from './vol2.js';
 const POOL=[...PETITIONS,...MORE_PETITIONS,...SMALL_EVENTS];
 export const thirdOf=id=>'L'+id.slice(1);
+export const fourthOf=id=>'Y'+id.slice(1);
+const ALL_AGENDA={...AGENDA,...AGENDA2};
+export const ALL_CRISES=[...CRISES.map(c=>({vol:1,...c})),...CRISES2];
+const ALL_REPAIR={...REPAIR,...REPAIR2};
 import {PEOPLE,CORE,START_STATS,STAT_MAP,STATS,AGENDA,CRISES,GIFTS,OUTINGS,PETITIONS,stageOf} from './data.js';
 
 // 用改写稿覆盖原稿的正文与选项文字
@@ -18,14 +23,17 @@ export const monthKey=s=>s.year+'-'+s.month;
 export function rand(s){s.seed=(s.seed*1103515245+12345)%2147483648;return s.seed/2147483648;}
 
 export function newGame(seed=Date.now()%2147483647){
- const s={version:1,seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
+ const s={version:1,vol:1,flags:{},seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
  for(const id of CORE)s.people[id]={aff:PEOPLE[id].start,met:false,knot:null,first:false,second:false,third:false,lover:false,firstAt:null,secondAt:null,memories:[]};
  startMonth(s);return s;
 }
 
 // ---------- 人物 ----------
 export const present=(s,id)=>!before(s,PEOPLE[id].from);
-export const away=(s,id)=>(PEOPLE[id].away||[]).some(([y,m])=>y===s.year&&m===s.month);
+export const away=(s,id)=>!!s.flags?.['away_'+id]||(PEOPLE[id].away||[]).some(([y,m])=>y===s.year&&m===s.month);
+export function placeOf(s,id){if(id==='C03'&&s.year>=3)return s.flags?.nian_prison?'刑部大牢':s.flags?.nian_away?'杭州':'年府';return PEOPLE[id].place;}
+export function titleOf(s,id){if(id==='C03'&&s.year>=3)return s.flags?.nian_prison?'削爵在狱':s.flags?.nian_away?'杭州将军':s.flags?.nian_safe?'领侍卫内大臣':'抚远大将军';return PEOPLE[id].title;}
+export const gone=(s,id)=>!!s.flags?.['gone_'+id];
 export const stage=(s,id)=>stageOf(s.people[id].aff);
 export function gain(s,id,n,why=''){
  const p=s.people[id];if(!p)return 0;
@@ -37,7 +45,9 @@ export function gain(s,id,n,why=''){
 export function remember(s,id,text){if(!text)return;const p=s.people[id];p.memories.push({y:s.year,m:s.month,text:String(text).slice(0,60)});if(p.memories.length>12)p.memories.shift();}
 export function secondReady(s,id,letter=false){const p=s.people[id];return p.first&&!p.second&&p.aff>=45&&!p.knot&&p.firstAt!==monthKey(s)&&present(s,id)&&(letter||!away(s,id));}
 export function thirdReady(s,id,letter=false){const p=s.people[id];return p.second&&!p.third&&p.aff>=65&&!p.knot&&p.secondAt!==monthKey(s)&&present(s,id)&&(letter||!away(s,id));}
-export const hasStory=(s,id)=>secondReady(s,id)||thirdReady(s,id);
+export function fourthReady(s,id,letter=false){const p=s.people[id];return s.year>=3&&p.third&&!p.fourth&&p.aff>=75&&!p.knot&&p.thirdAt!==monthKey(s)&&present(s,id)&&!gone(s,id)&&(letter||!away(s,id));}
+export const storyOf=(s,id)=>secondReady(s,id)?PEOPLE[id].second:thirdReady(s,id)?thirdOf(id):fourthReady(s,id)?fourthOf(id):null;
+export const hasStory=(s,id)=>!!storyOf(s,id);
 
 // ---------- 数值 ----------
 export function applyStats(s,effects={},scale=1){
@@ -52,21 +62,22 @@ export function log(s,text,kind='事'){s.log.push({y:s.year,m:s.month,kind,text}
 // ---------- 月 ----------
 export function startMonth(s){
  s.ap=AP_PER_MONTH;s.night=false;s.delta={stats:{},people:{}};s.chats=0;
- s.agenda=(AGENDA[monthKey(s)]||[]).filter(id=>!s.done[id]);
+ s.agenda=(ALL_AGENDA[monthKey(s)]||[]).filter(id=>!s.done[id]);
  // 人在外地的，第二、三幕以书信的形式在月初到来
- for(const id of CORE)if(away(s,id)){if(secondReady(s,id,true))s.agenda.push(PEOPLE[id].second);else if(thirdReady(s,id,true))s.agenda.push(thirdOf(id));}
+ for(const id of CORE)if(away(s,id)&&!gone(s,id)){if(secondReady(s,id,true))s.agenda.push(PEOPLE[id].second);else if(thirdReady(s,id,true))s.agenda.push(thirdOf(id));}
  // 要事少的月份，抽一件奏折或宫闱小事
- const last=s.year===2&&s.month===12;
+ const last=s.month===12&&(s.year===2||s.year===4);
  if(!last&&(s.agenda.length===0||(s.agenda.length===1&&rand(s)<0.5))){const left=POOL.filter(p=>!s.used.petitions.includes(p.id)&&(!p.months||p.months.includes(s.month))&&(!p.need||(present(s,p.need)&&s.people[p.need].met&&!away(s,p.need))));if(left.length){const p=left[Math.floor(rand(s)*left.length)];s.used.petitions.push(p.id);s.agenda.push(p.id);}}
  for(const id of CORE)if(present(s,id)&&!s.people[id].met&&!SCENES[PEOPLE[id].first]?.id)s.people[id].met=true;
 }
-export const scene=id=>SCENES[id]||ROMANCE[id]||POOL.find(p=>p.id===id);
+export const scene=id=>SCENES[id]||ROMANCE[id]||SCENES2[id]||POOL.find(p=>p.id===id);
+export const optionsFor=(s,sc)=>sc.options.filter(o=>!o.need||s.flags?.[o.need]);
 export const pendingScene=s=>s.agenda[0]||null;
 
 // 处理要事中的一个选项
 export function choose(s,id,optId){
  if(s.agenda[0]!==id)throw Error('先处理眼前这件事。');
- const sc=scene(id),opt=sc.options.find(o=>o.id===optId);if(!opt)throw Error('没有这个选项。');
+ const sc=scene(id),opt=optionsFor(s,sc).find(o=>o.id===optId);if(!opt)throw Error('没有这个选项。');
  let effects={...opt.effects};
  if(id==='G03')effects=s.done.G02==='strict'?{people:-3,court:1}:{people:2,court:2};
  if(id==='G06')effects=s.done.G04==='full'?{court:-3}:s.done.G04==='pause'?{court:-2,people:-1}:{court:3};
@@ -74,14 +85,16 @@ export function choose(s,id,optId){
  const add=(cid,n)=>{const d=gain(s,cid,n);if(d)people[cid]=(people[cid]||0)+d;};
  if(['relation','extension'].includes(sc.kind)){const n={warm:6,develop:6,work:3,cooperate:3,distance:1,unsure:2}[optId]??3;const cid=sc.actor;s.people[cid].met=true;
   if(PEOPLE[cid].first===id){s.people[cid].first=true;s.people[cid].firstAt=monthKey(s);}if(PEOPLE[cid].second===id){s.people[cid].second=true;s.people[cid].secondAt=monthKey(s);}add(cid,n);}
- else if(sc.kind==='romance'){const cid=sc.actor,p=s.people[cid];p.third=true;if(optId==='confess'){p.lover=true;remember(s,cid,cid==='C05'?'皇兄把那个很长的梦告诉了他':'两人说开了心意');}add(cid,{confess:8,slow:5,restrain:1}[optId]??3);}
- else if(opt.bond){for(const[cid,n]of Object.entries(opt.bond))if(s.people[cid])add(cid,n);}
- else if(sc.kind==='dilemma'){for(const[cid,b]of Object.entries(opt.bonds||{}))add(cid,(b.trust||0)*2);if(opt.slight){add(opt.slight,-5);s.people[opt.slight].knot={source:id,text:sc.title};remember(s,opt.slight,'你在「'+sc.title+'」里没有选她/他');}}
- else if(PEOPLE[sc.actor])add(sc.actor,2);
+ else if(sc.kind==='deep'){const cid=sc.actor,p=s.people[cid];p.fourth=true;add(cid,{stay:6,mid:3,hard:-3}[optId]??2);}
+ else if(sc.kind==='romance'){const cid=sc.actor,p=s.people[cid];p.third=true;p.thirdAt=monthKey(s);if(optId==='confess'){p.lover=true;remember(s,cid,cid==='C05'?'皇兄把那个很长的梦告诉了他':'两人说开了心意');}add(cid,{confess:8,slow:5,restrain:1}[optId]??3);}
+  else if(sc.kind==='dilemma'){for(const[cid,b]of Object.entries(opt.bonds||{}))add(cid,(b.trust||0)*2);if(opt.slight){add(opt.slight,-5);s.people[opt.slight].knot={source:id,text:sc.title};remember(s,opt.slight,'你在「'+sc.title+'」里没有选她/他');}}
+ else if(PEOPLE[sc.actor]&&!opt.bond)add(sc.actor,2);
+ if(opt.bond)for(const[cid,n]of Object.entries(opt.bond))if(s.people[cid])add(cid,n);
+ if(opt.flag){s.flags=s.flags||{};s.flags[opt.flag]=true;if(opt.flag==='nian_away')s.flags.away_C03=true;if(opt.flag==='nian_prison'){s.flags.away_C03=true;s.flags.gone_C03=true;}}
  for(const cid of Object.keys(PEOPLE))if(present(s,cid)&&(sc.actor===cid))s.people[cid].met=true;
  const text=(opt.replyBy&&sc.dep&&opt.replyBy[s.done[sc.dep]])||opt.reply||'';
  s.done[id]=optId;s.agenda.shift();
- log(s,`${sc.title}：${opt.label}`,['relation','extension','romance'].includes(sc.kind)?'情':sc.kind==='dilemma'?'难':'政');
+ log(s,`${sc.title}：${opt.label}`,['relation','extension','romance','deep'].includes(sc.kind)?'情':sc.kind==='dilemma'?'难':'政');
  return {title:sc.title,actor:sc.actor,choice:opt.label,text,stats,people,knot:opt.slight||null};
 }
 
@@ -96,7 +109,7 @@ export function applyChat(s,chat,{affection=0,memory=''}={}){
  const room=Math.max(0,CHAT_CAP-chat.gained);let n=Math.max(-5,Math.min(4,Math.round(affection)));if(n>0)n=Math.min(n,room);
  const d=gain(s,chat.id,n);chat.gained+=Math.max(0,d);chat.turns++;remember(s,chat.id,memory);return d;
 }
-export function repairKnot(s,chat){const p=s.people[chat.id];if(!p.knot)return null;const line=REPAIR[p.knot.source]?.[chat.id]||'你们把那件事说开了。';log(s,`与${PEOPLE[chat.id].name}说开了「${p.knot.text}」`,'情');p.knot=null;gain(s,chat.id,3);chat.gained+=3;return line;}
+export function repairKnot(s,chat){const p=s.people[chat.id];if(!p.knot)return null;const line=ALL_REPAIR[p.knot.source]?.[chat.id]||'你们把那件事说开了。';log(s,`与${PEOPLE[chat.id].name}说开了「${p.knot.text}」`,'情');p.knot=null;gain(s,chat.id,3);chat.gained+=3;return line;}
 
 export function giveGift(s,id,giftId){
  const g=GIFTS[giftId];if(!g)throw Error('没有这件东西。');if(s.stats.treasury<g.cost)throw Error('国库不够了。');
@@ -115,14 +128,14 @@ export function goOuting(s){spend(s);const left=OUTINGS.map((o,i)=>i).filter(i=>
 export function rest(s){spend(s);const stats=applyStats(s,{health:8});log(s,'闭门休养了一日','行');return {title:'休养',text:'你推开折子，让苏培盛把门关上。睡了一个整觉，醒来时窗外的光正好。',stats,people:{}};}
 
 // ---------- 夜 ----------
-export function nightChoices(s){return CORE.filter(id=>present(s,id)&&!away(s,id)&&s.people[id].met).map(id=>({id,special:secondReady(s,id)?PEOPLE[id].second:thirdReady(s,id)?thirdOf(id):null,knot:!!s.people[id].knot}));}
+export function nightChoices(s){return CORE.filter(id=>present(s,id)&&!away(s,id)&&s.people[id].met).map(id=>({id,special:storyOf(s,id),knot:!!s.people[id].knot}));}
 export function spendNight(s,id,{affection=4,memory=''}={}){
  if(s.night)throw Error('今夜已经安排过了。');if(s.agenda.length)throw Error('先把本月要事办完。');s.night=true;
  if(!id){const stats=applyStats(s,{health:3});log(s,'独寝','夜');return {stats,people:{}};}
- const d=gain(s,id,Math.max(0,Math.min(4,Math.round(affection))));remember(s,id,memory);log(s,`夜里在${PEOPLE[id].place}，陪着${PEOPLE[id].name}`,'夜');return {stats:{},people:d?{[id]:d}:{}};
+ const d=gain(s,id,Math.max(0,Math.min(4,Math.round(affection))));remember(s,id,memory);log(s,`夜里在${placeOf(s,id)}，陪着${PEOPLE[id].name}`,'夜');return {stats:{},people:d?{[id]:d}:{}};
 }
 // 夜里遇到第二幕剧情时，作为要事插入
-export function queueSpecial(s,id){if(s.night)throw Error('今夜已经安排过了。');const sid=secondReady(s,id)?PEOPLE[id].second:thirdOf(id);s.night=true;s.agenda.unshift(sid);return sid;}
+export function queueSpecial(s,id){if(s.night)throw Error('今夜已经安排过了。');const sid=storyOf(s,id);if(!sid)throw Error('今夜没有新的剧情。');s.night=true;s.agenda.unshift(sid);return sid;}
 
 // ---------- 月末 ----------
 export function crisisStatus(s,c){
@@ -131,25 +144,27 @@ export function crisisStatus(s,c){
  const allDone=c.scenes.every(id=>s.done[id]);
  return allDone&&(!c.goal||c.goal(s))?'solved':'open';
 }
-function settleCrises(s){s.crises=s.crises||{};for(const c of CRISES){if(s.crises[c.id]||before(s,c.start))continue;const allDone=c.scenes.every(id=>s.done[id]),ok=allDone&&(!c.goal||c.goal(s));const due=s.year===c.deadline[0]&&s.month===c.deadline[1];if(ok&&!c.goal)s.crises[c.id]='solved';else if(due){s.crises[c.id]=ok?'solved':'failed';log(s,`要务「${c.name}」${ok?'已了结':'没能办好'}`,'政');}}}
+function settleCrises(s){s.crises=s.crises||{};for(const c of ALL_CRISES){if(s.crises[c.id]||before(s,c.start))continue;const allDone=c.scenes.every(id=>s.done[id]),ok=allDone&&(!c.goal||c.goal(s));const due=s.year===c.deadline[0]&&s.month===c.deadline[1];if(ok&&!c.goal)s.crises[c.id]='solved';else if(due){s.crises[c.id]=ok?'solved':'failed';log(s,`要务「${c.name}」${ok?'已了结':'没能办好'}`,'政');}}}
 export function endMonth(s){
  if(s.agenda.length)throw Error('本月还有要事没办。');
  const report={y:s.year,m:s.month,stats:{...s.delta.stats},people:{...s.delta.people}};
- const tick=applyStats(s,{treasury:5,health:-1});report.income=tick;
+ const tick=applyStats(s,s.year>=3?{treasury:3,health:-1,court:-1,people:-1}:{treasury:5,health:-1});report.income=tick;
  for(const[k,v]of Object.entries(tick))report.stats[k]=(report.stats[k]||0)+v;
  // 久不相见，情分会慢慢淡
  report.cooled=[];for(const id of CORE){const p=s.people[id];if(p.met&&!s.delta.people[id]&&p.aff>30&&present(s,id)&&!away(s,id)){p.aff=clamp(p.aff-(p.aff>=45?2:1));report.cooled.push(id);}}
  settleCrises(s);
- report.crises=CRISES.map(c=>({id:c.id,name:c.name,status:crisisStatus(s,c)}));
- if(s.year===2&&s.month===12){s.ended=true;return report;}
+ report.crises=ALL_CRISES.filter(c=>c.vol===(s.vol||1)).map(c=>({id:c.id,name:c.name,status:crisisStatus(s,c)}));
+ if(s.month===12&&(s.year===2||s.year===4)){s.ended=true;return report;}
  s.month++;if(s.month>12){s.month=1;s.year++;}
  startMonth(s);return report;
 }
 
+// 第一卷结束后接着玩第二卷：存档、情分、记忆全部延续
+export function startVolume2(s){if(!(s.ended&&s.year===2))throw Error('第一卷还没结束。');s.ended=false;s.vol=2;s.flags=s.flags||{};s.year=3;s.month=1;log(s,'第二卷：雍正三年','卷');startMonth(s);return s;}
 export function ending(s){
- const sum=Object.values(s.stats).reduce((a,b)=>a+b,0),solved=CRISES.filter(c=>crisisStatus(s,c)==='solved').length;
+ const sum=Object.values(s.stats).reduce((a,b)=>a+b,0),solved=ALL_CRISES.filter(c=>c.vol===(s.vol||1)&&crisisStatus(s,c)==='solved').length;
  const score=sum+solved*15;
- const people=CORE.filter(id=>s.people[id].met).map(id=>{const p=s.people[id];return {id,aff:p.aff,lover:!!p.lover,tier:p.lover&&p.aff>=85?3:p.aff>=65?2:p.aff>=45?1:0};});
+ const people=CORE.filter(id=>s.people[id].met).map(id=>{const p=s.people[id];return {id,aff:p.aff,lover:!!p.lover,gone:gone(s,id),tier:p.lover&&p.aff>=85?3:p.aff>=65?2:p.aff>=45?1:0};});
  return {score,solved,people};
 }
 
