@@ -29,7 +29,7 @@ const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 export function renderWeekPlans(s,{open=false}={}){
  const w=currentWeek(s);if(!w)return `<section class="paper-panel settings-section"><h2>宫中岁时</h2><p>日常差事由各处照常经办。到了回报、约期或下一段要紧的日子，案前会再停下来。</p></section>`;
  const used=usedSlots(s,w.id),held=heldSlots(s,w.id);
- return `<details class="paper-panel week-plan" data-week-plan ${open?'open':''}><summary><strong>这一周的安排</strong><span>可用 ${s.remaining} / ${weekCapacity(s,w)} 格${s.weekly.migration?.carryWeekId===w.id?' · 承接原余量':''} · 预占 ${held} · 已用 ${used}</span></summary><p class="plan-budget">已预留预算 ${reservedMoney(s)} 点，履约时才支出；草稿与待商量的事不占格。</p><div class="week-days">${Array.from({length:ordinal(w.end)-ordinal(w.start)+1},(_,i)=>{
+ return `<details class="paper-panel week-plan" data-week-plan ${open?'open':''}><summary><strong>这一周的安排</strong><span>还可安排 ${s.remaining} / ${weekCapacity(s,w)} 格${held?` · 已约 ${held}`:''}</span></summary><p class="plan-budget">已预留预算 ${reservedMoney(s)} 点，履约时才支出；草稿与待商量的事不占格。</p><div class="week-days">${Array.from({length:ordinal(w.end)-ordinal(w.start)+1},(_,i)=>{
   const d=addDays(w.start,i),past=ordinal(d)<ordinal(s.date),plans=sortedPlans(s.weekly.plans.filter(p=>p.weekId===w.id&&ordinal(p.date)===ordinal(d)&&!['cancelled','rescheduled','breached'].includes(p.status)));
   const social=Object.values(s.weekly.consumed).filter(g=>/^REL-(?:C0[2-8]-[1-4]|REPAIR-)/.test(g.source)&&ordinal(unstamp(g.at).date)===ordinal(d));
   const scenes=Object.values(s.transcripts).filter(t=>ordinal(t.date)===ordinal(d)&&!plans.some(p=>p.eventId===t.eventId&&p.status==='completed'));
@@ -43,7 +43,7 @@ export function renderWeeklyDesk(s,{heading,eventCard,button,tag,weekPlanOpen=fa
  const notices=s.weekly.notices.filter(n=>n.status==='pending'&&!n.suspended&&ordinal(n.date)<=ordinal(s.date));
  const otherRequired=required.slice(1);
  return `${heading('THE IMPERIAL DESK','御案',dateText(s.date)+' · '+(s.weekly.clock%2?'晚间':'日间'),tag(s.sealed?(isEighth(s)?'最终史册已收':isSeventh(s)?'第七卷已收':isSixth(s)?'第六卷已收':isFifth(s)?'第五卷已收':isFourth(s)?'第四卷已收':hasContinuation(s)?'第三卷已收':'初卷已收'):w?w.type==='focus'?'重点周':w.type==='transition'?'承接时段':w.type==='repair'?'修复时段':'延展周':'常规时段','gold'))}
- <p class="inline-note">${esc(economyReading(s))}</p><p class="desk-chapter">江山与故人 · ${esc(t.season)} · ${esc(s.sealed?(isEighth(s)?'山河长明，旧页仍留':isSeventh(s)?'新旧之间，旧页仍留':isSixth(s)?'共治风雨，旧页仍留':isFifth(s)?'太平有隙，旧页仍留':isFourth(s)?'改命成局，旧页仍留':hasContinuation(s)?'信任有价，旧页仍留':'两载灯火，初卷暂收'):w?t.title:'灯下待书')}</p>
+ <p class="desk-chapter">江山与故人 · ${esc(t.season)} · ${esc(s.sealed?(isEighth(s)?'山河长明，旧页仍留':isSeventh(s)?'新旧之间，旧页仍留':isSixth(s)?'共治风雨，旧页仍留':isFifth(s)?'太平有隙，旧页仍留':isFourth(s)?'改命成局，旧页仍留':hasContinuation(s)?'信任有价，旧页仍留':'两载灯火，初卷暂收'):w?t.title:'灯下待书')}</p>
  ${renderDeskReading(s,{eventCard,button})}
  ${otherRequired.length||notices.length?`<section><div class="section-header"><h2>案前还有回音</h2></div><div class="paper-panel">${otherRequired.map(e=>eventCard(e)).join('')}${notices.map(n=>`<article class="entry"><h3>${esc(n.label)}</h3><p>${n.type==='delivery'?'信已按实际日期送达，回信还要再等。':'先前惦记的那件事，到了可以再问的时候。'}</p>${n.choices?n.choices.map(c=>`<button class="secondary-btn" data-week-notice="${n.id}" data-week-answer="${esc(c)}">${esc(c)}</button>`).join(''):`<button class="primary-btn" data-week-notice="${n.id}">展开阅核</button>`}</article>`).join('')}</div></section>`:''}
  ${renderWeekInvitation(s,w,{required,available})}

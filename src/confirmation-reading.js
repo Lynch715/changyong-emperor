@@ -23,7 +23,7 @@ export function confirmationReading(before,plan){
  return {date:after.date,period:after.weekly?(after.weekly.clock%2?'evening':'day'):null,hasImmediate:plan.actions.some(a=>a.type==='event'||a.type==='disclose'),records};
 }
 export function renderConfirmationReading(before,plan){
- const x=confirmationReading(before,plan),readers=ids=>ids.includes('public')?'公开':ids.map(id=>NAMES[id]||'指定知情人').join('、');
- if(!x.hasImmediate&&!x.records.length)return '';
- return `<section class="confirmation-reading"><h3>落笔前核对</h3>${x.hasImmediate?`<p>办理时段：${esc(dateText(x.date))}${x.period?' · '+(x.period==='evening'?'晚间':'日间'):''}</p>`:''}${x.records.map(r=>`<p><strong>${esc(r.label)}</strong>${r.detail?`<br>${esc(r.detail)}`:''}${r.date?`<br>安排时间：${esc(dateText(r.date))}${r.period?' · '+(r.period==='evening'?'晚间':'日间'):''}`:''}<br>这些话会让谁知道：${esc(readers(r.readers))}</p>`).join('')}</section>`;
+ const x=confirmationReading(before,plan),when=(d,p)=>esc(dateText(d))+(p?' · '+(p==='evening'?'晚间':'日间'):'');
+ if(!x.records.some(r=>r.date||r.detail||r.readers.includes('public')))return '';
+ return `<section class="confirmation-reading">${x.records.map(r=>`<p><strong>${esc(r.label)}</strong>${r.detail?`<br>${esc(r.detail)}`:''}${r.date?`<br>${when(r.date,r.period)}`:''}${r.readers.includes('public')?'<br>此事会传开。':''}</p>`).join('')}</section>`;
 }

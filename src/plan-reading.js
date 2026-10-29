@@ -2,7 +2,7 @@ import {preview,enterScene,dateText} from './engine.js';
 import {activityPlanDetail} from './activity-reading.js';
 import {stamp} from './calendar.js';
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export const planStates={candidate:'待商量 · 未预占',draft:'草稿 · 未预占',accepted:'已约好 · 已预占',executing:'进行中 · 已核销',completed:'已完成 · 已核销',cancelled:'已取消 · 预占已解除',rescheduled:'已改期 · 原预占已解除',breached:'已失约 · 时段已记','needs-reschedule':'旧约待协商 · 未记失约'};
+export const planStates={candidate:'待商量',draft:'草稿',accepted:'已约好',executing:'进行中',completed:'已完成',cancelled:'已取消',rescheduled:'已改期',breached:'已失约','needs-reschedule':'待重新约'};
 export const planPeriod=p=>p==='day'?'日间':'晚间';
 export const sortedPlans=plans=>plans.slice().sort((a,b)=>stamp(a.date,a.period)-stamp(b.date,b.period));
 // Future plans are appointments, never a shortcut to perform a later scene.
@@ -22,7 +22,7 @@ export function planReading(s,p){
 export function renderPlanCard(s,p){
  const x=planReading(s,p),editable=!s.sealed&&['candidate','draft','accepted','needs-reschedule'].includes(p.status)&&!x.overdue;
  const attr=esc(p.id),date=`${dateText(p.date)} · ${planPeriod(p.period)}${p.slots===2?'至晚间':''}`;
- const cost=['accepted','candidate','draft','needs-reschedule'].includes(p.status)?`${p.status==='accepted'?'预占':'拟用'}${p.slots}格${p.money?'，预算'+p.money+'点（尚未支出）':''}`:`${p.slots}格${p.money?' · '+p.money+'点':''}`;
+ const cost=['accepted','candidate','draft','needs-reschedule'].includes(p.status)?`占${p.slots}格${p.money?'，约需'+p.money+'点':''}`:`${p.slots}格${p.money?' · '+p.money+'点':''}`;
  const original=p.previousId?s.weekly.plans.find(x=>x.id===p.previousId):null;
  const read=p.eventId?`data-read="${esc(Object.entries(s.transcripts).find(([,t])=>t.eventId===p.eventId&&t.transactionId===p.completedTransaction)?.[0]||p.eventId)}"`:`data-week-read="${attr}"`;
  return `<article class="week-entry" data-plan-card="${attr}"><p><strong>${esc(date)} · ${esc(p.label)}</strong><small>${planStates[p.status]} · ${cost}</small></p>${activityPlanDetail(s,p)?`<p class="plan-context">${esc(activityPlanDetail(s,p))}</p>`:''}${original?`<p class="plan-context">原约：${esc(dateText(original.date))} · ${planPeriod(original.period)}；旧记录保留。</p>`:''}${p.status==='accepted'?`<p class="plan-context">${esc(x.reason)}</p>`:''}<div class="button-row">${x.ready?`<button class="primary-btn" data-week-fulfill="${attr}">照约去做</button>`:x.future?'<button class="text-btn" data-action="week-advance">沿日程向前</button>':''}${editable?`${['candidate','draft'].includes(p.status)?`<button class="text-btn" data-week-accept="${attr}">确认安排</button>`:''}<button class="text-btn" data-week-edit="${attr}">${p.status==='accepted'?'改期':'修改安排'}</button><button class="text-btn" data-week-cancel="${attr}">${p.status==='accepted'?'取消约定':p.status==='needs-reschedule'?'取消旧约':'撤去草稿'}</button>`:''}${!s.sealed&&p.status==='accepted'&&stamp(p.date,p.period)<=s.weekly.clock?`<button class="text-btn" data-week-breach="${attr}">记下失约</button>`:''}${!s.sealed&&p.status==='executing'?`<button class="primary-btn" data-week-complete="${attr}">把这场活动做完</button>`:''}${p.status==='completed'&&(p.eventId||p.dialogue)?`<button class="text-btn" ${read}>重读此刻</button>`:''}</div></article>`;

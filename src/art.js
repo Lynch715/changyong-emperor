@@ -51,13 +51,13 @@ export function renderArtwork(asset,{role='display',className='',caption='',open
 export function renderPortrait(actor,context={},options={}){
  const a=portraitAsset(actor,context),name=artAsset(`char_${actor}_base`)?.name.replace('基准立绘','')||'故人';
  if(!a)return `<span class="art-nameplate art-standalone" data-art-actor="${esc(actor)}">${esc(name)}${context.remote?' · 书信':''}</span>`;
- return renderArtwork(a,{...options,caption:context.archive?`档案肖像 · ${a.outfit} · 所绘年龄${a.ageRange}`:options.caption||''});
+ return renderArtwork(a,{...options,caption:options.caption||''});
 }
 export function renderArtStage(actor,title,location,{date,remote=false,age,formal=false}={}){
  const bg=backgroundAsset(location,{date});
  return `<section class="scene-stage art-stage">${bg?renderArtwork(bg,{className:'art-stage-background',decorative:true}):''}<div class="stage-wash"></div><div class="stage-caption"><span class="stage-chapter">江山与故人</span><h2>${esc(title)}</h2><p>${esc(location)}</p></div><div class="art-stage-person">${renderPortrait(actor,{date,remote,age,formal},{className:'art-stage-portrait'})}</div></section>`;
 }
-export function renderArtGallery(){return `<p>画中衣着与年龄是所绘时期，不代表眼前身份或已经发生的经历。下一代仅收成年肖像。</p><div class="art-gallery">${ART_CATALOG.filter(a=>a.category==='portrait').map(a=>renderArtwork(a,{role:'mobile',caption:`${a.name} · ${a.outfit} · 所绘年龄${a.ageRange}`,open:true})).join('')}</div>`;}
+export function renderArtGallery(){return `<div class="art-gallery">${ART_CATALOG.filter(a=>a.category==='portrait').map(a=>renderArtwork(a,{role:'mobile',caption:`${a.name.replace('基准立绘','')} · ${a.outfit}`,open:true})).join('')}</div>`;}
 const installed=new WeakSet();
 export function installArtFallbacks(root){
  for(const img of root.querySelectorAll('[data-art-image]')){

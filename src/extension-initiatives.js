@@ -23,7 +23,7 @@ function material(s,m,window){
  if(m.actor==='C09')text+=m.kind==='note'?'“那一处转折又读了一遍，臣妾把重音往前挪了。意思未必就同皇上一样，却想让皇上知道，自己的答案也还在变。”\n她写的是这次真正相谈之后的新读法，没有附上一份必须回应的约定。':'“上回没有说成同一种意思，臣妾倒还想再听听。若愿意，再来坐一会儿；不愿也不必借赏物作答。”\n她请的是一次可以拒绝的相谈，没有让你承诺私情。';
  else text+=m.kind==='note'?'“今日那盆菊终于开了一朵。茶也试着泡淡些，想起上回坐着说话，便记了这两件小事。”\n她没有附上新差事，也没有替尚欠回执的账写下结论。':'“下回想留一杯不带账目的茶。喝完还想去看自己的花，不是请皇上再分一项差事。”\n她邀请一段友好的小坐，自己也有散后要去的地方。';
  if(m.actor==='C10'&&extensionWork(s))text+='\n\n那页份例仍依原簿复核，正式回执未至；短笺没有将待核改成已经查清。';
- if(m.kind==='invite')text+='\n\n'+(window?`可以先商量${window.date.year}年${window.date.month}月${window.date.day}日${window.period==='day'?'日间':'晚间'}，在${who.place}相谈。这只是可选时辰，仍可改选，正式接受时才预占一格。`:'现有重点周还没有可留的空格。可先读笺，另开合法延展周后再商量，不替你挤掉原约。');
+ if(m.kind==='invite')text+='\n\n'+(window?`可以先商量${window.date.year}年${window.date.month}月${window.date.day}日${window.period==='day'?'日间':'晚间'}，在${who.place}相谈。应下后会占一格。`:'这周已经排满，可以先读信，下周再约。');
  const r=extensionRelation(s,m.actor);if([r.playerIntent,r.npcIntent].includes('仅合作'))text+='\n\n往来照已经说清的合作分寸，不借这张笺另许私情。';
  return text;
 }
