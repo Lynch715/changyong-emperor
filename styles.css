@@ -299,3 +299,96 @@ html body{padding-left:0!important;padding-right:0!important}
 .choices .choice{margin:0!important}
 .result-stage,.result-heading{background:transparent}
 .title-body h1{font-size:clamp(32px,9vw,58px);letter-spacing:.18em;white-space:nowrap;margin-right:-.18em}
+
+/* ==========================================================================
+   v0.28 版式：薄匾页眉、满幅场景、一卷御案、名帖宫阙
+   ========================================================================== */
+
+/* ---------- 页眉：两行细匾 ---------- */
+.portrait-shell .imperial-header{padding:10px 16px 8px;position:sticky;top:0;z-index:20;background:linear-gradient(var(--desk) 85%,#1b2a35e6);border-bottom:1px solid var(--desk-line)}
+.portrait-shell .masthead{min-height:0;gap:10px}
+.portrait-shell .brand-small{gap:10px}
+.portrait-shell .brand-small .seal{width:30px;height:34px;font-size:20px}
+.portrait-shell .brand-small strong{font-size:17px;letter-spacing:3px;line-height:1.3}
+.portrait-shell .brand-small small{font-size:11px;letter-spacing:1px}
+.portrait-shell .header-tools button{min-height:30px;padding:3px 10px;font-size:12px}
+.portrait-shell .imperial-status{display:flex;gap:0;margin-top:8px;padding-top:6px;border-top:1px solid var(--desk-line)}
+.portrait-shell .imperial-status>div{flex:1;display:flex;align-items:baseline;gap:6px;padding:0 0 0 10px;border-left:1px solid var(--desk-line);min-height:0}
+.portrait-shell .imperial-status>div:first-child{padding-left:0;border-left:0}
+.portrait-shell .imperial-status span{font-size:11px;letter-spacing:1px;white-space:nowrap}
+.portrait-shell .imperial-status strong{font-size:16px;line-height:1.4}
+.portrait-shell .imperial-status strong small{font-size:10px}
+
+/* ---------- 场景：画与纸连成一页 ---------- */
+.view-scene .back-link{margin:0 0 8px 0}
+.view-scene .scene-stage.art-stage,.view-conversation .scene-stage.art-stage{margin:0 -16px;border:0;border-radius:0;box-shadow:none;min-height:360px;padding:0 16px 34px;align-items:end;grid-template-columns:minmax(0,1fr) minmax(140px,46%)}
+.view-scene .art-stage-background,.view-conversation .art-stage-background{opacity:.75}
+.view-scene .scene-stage .stage-wash,.view-conversation .scene-stage .stage-wash{background:linear-gradient(180deg,#13202a10 0%,#13202a00 40%,#13202acc 82%,var(--silk) 100%)}
+.view-scene .art-stage-person,.view-conversation .art-stage-person{align-self:end}
+.view-scene .art-stage-portrait img,.view-conversation .art-stage-portrait img{height:340px;width:auto;max-width:100%;margin-left:auto;filter:drop-shadow(0 10px 18px #0006)}
+.view-scene .stage-caption,.view-conversation .stage-caption{align-self:end;padding-bottom:6px}
+.view-scene .stage-caption h2{font-size:clamp(30px,8.5vw,40px);text-shadow:0 2px 12px #000a}
+.view-scene .stage-caption p,.view-scene .stage-chapter{text-shadow:0 1px 6px #000c}
+.view-scene .scene-paper,.view-conversation .scene-paper{margin:0 -16px;border:0;border-radius:0;box-shadow:none;padding:4px 24px 28px;background:var(--silk)}
+.view-scene .scene-top{border-bottom:1px solid var(--line);padding:6px 0 12px;margin:0 0 18px}
+.view-scene .story-text{max-width:34em;margin:0 auto;line-height:2.05}
+@media(max-width:600px){.view-scene .scene-stage.art-stage,.view-conversation .scene-stage.art-stage{min-height:320px;grid-template-columns:minmax(0,1fr) 46%}.view-scene .art-stage-portrait img,.view-conversation .art-stage-portrait img{height:300px}}
+
+/* ---------- 御案：一整卷，不再一摞卡片 ---------- */
+.view-desk .paper-panel,.view-desk .event-card,.view-desk .note-panel,.view-desk .project-desk,.view-desk .advance-panel,.view-desk details.paper-panel{margin:0;border:0;border-radius:0;box-shadow:none;background:var(--silk);border-top:1px solid var(--line)}
+.view-desk .paper-panel+.paper-panel,.view-desk .paper-panel+details{margin-top:0}
+.view-desk>*:not(.page-heading):not(.desk-heading):not(h2):not(.section-header):not(.desk-chapter):not(.inline-note){margin-top:0;margin-bottom:0}
+.view-desk .page-heading+*{border-top:0;border-radius:3px 3px 0 0}
+.view-desk>:last-child{border-radius:0 0 3px 3px}
+.view-desk .section-header,.view-desk>h2{background:var(--silk);margin:0;padding:22px 20px 4px;border-top:1px solid var(--line)}
+.view-desk .section-header h2,.view-desk>h2{color:var(--ink);font-size:15px;letter-spacing:3px;font-family:var(--serif);font-weight:600}
+.view-desk .desk-response{border-top:0;padding:22px 20px 20px;background:var(--silk-deep)}
+.view-desk .desk-response h2,.view-desk .desk-response h3{font-family:var(--brush);font-size:28px;letter-spacing:4px;color:var(--ink);font-weight:400}
+.view-desk .text-btn{color:var(--desk)}
+.view-desk .advance-panel{background:var(--desk);border-top:0;color:#e8dcc0}
+.view-desk .advance-panel strong{color:var(--gold)}
+.view-desk .advance-panel p{color:#b8ad95}
+
+/* ---------- 宫阙：名帖 ---------- */
+.view-palace .palace-person{display:grid;grid-template-columns:84px minmax(0,1fr);column-gap:14px;row-gap:6px;padding:14px 14px 12px;align-items:start}
+.view-palace .palace-person-heading{display:contents}
+.view-palace .palace-person-heading>div{grid-column:2;grid-row:1}
+.view-palace .palace-person-heading .art-mini{grid-column:1;grid-row:1/span 4;width:84px;margin:0;align-self:start}
+.view-palace .palace-person-heading .art-mini img{width:84px;height:118px;object-fit:cover;object-position:50% 8%;border:1px solid var(--line);background:var(--silk-deep)}
+.view-palace .palace-person-heading .art-mini .art-nameplate[hidden]{display:none}
+.view-palace .palace-person-heading .art-mini.art-unavailable .art-nameplate{width:84px;height:118px;display:grid;place-items:center;writing-mode:vertical-rl;font-family:var(--brush);font-size:22px;letter-spacing:6px;padding:0}
+.view-palace .palace-person h2{font-size:24px;margin-top:2px}
+.view-palace .palace-person small{font-size:11px;color:var(--ink-soft)}
+.view-palace .palace-relationship{grid-column:2;font-size:12px;color:var(--ink-soft);margin:0}
+.view-palace .palace-actions{grid-column:2;display:flex;flex-wrap:wrap;gap:6px 14px;margin:4px 0 0}
+.view-palace .palace-actions button{min-height:0;padding:0;border:0;background:none;color:var(--desk);font-size:13px;text-decoration:underline;text-decoration-color:#1b2a3540;text-underline-offset:4px}
+.view-palace .palace-actions button.primary-btn{color:var(--cinnabar);text-decoration-color:#b0392a60}
+.view-palace .palace-actions button:disabled{color:#a99c86;text-decoration:none}
+.view-palace .bond-availability{grid-column:2;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 0;padding:8px 0 0;border-top:1px dashed var(--line)}
+.view-palace .bond-availability h3{font-size:12px;font-family:var(--serif);letter-spacing:1px;color:var(--ink-soft);font-weight:400}
+.view-palace .bond-availability p{display:none}
+.view-palace .bond-availability button{min-height:0;padding:3px 10px;font-size:12px}
+.view-palace .cards-grid{gap:10px}
+@media(min-width:620px){.view-palace .cards-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* 御案：整节都在纸上；纸上标题用墨色毛笔 */
+.portrait-shell .view-desk>section{background:var(--silk);border-top:1px solid var(--line);padding-bottom:6px}
+.portrait-shell .view-desk>section>.text-btn{display:block;margin:4px 20px 14px;color:var(--desk)}
+.portrait-shell .view-desk .section-header{background:transparent;border-top:0;padding:20px 20px 2px}
+.portrait-shell .view-desk .section-header h2{font-family:var(--brush);font-size:24px;letter-spacing:5px;color:var(--ink);font-weight:400}
+.portrait-shell .view-desk>section .paper-panel{border-top:0;background:transparent}
+.portrait-shell .view-desk>section .paper-panel+.paper-panel{border-top:1px dashed var(--line)}
+.portrait-shell .view-desk>.button-row{justify-content:center;margin-top:10px}
+.portrait-shell .view-desk>.button-row .text-btn,.portrait-shell .view-desk>.text-btn{color:var(--gold)}
+.portrait-shell .view-desk .advance-panel{margin-top:14px;border-radius:3px;border:1px solid var(--desk-line)}
+.app-shell.portrait-shell .main-wrap.view-desk>section>.section-header h2{font:400 24px/1.3 var(--brush);letter-spacing:5px;color:var(--ink)}
+.app-shell.portrait-shell .main-wrap.view-desk>.advance-panel{margin-top:16px;display:grid;grid-template-columns:auto 1fr;gap:12px 16px;align-items:center;padding:18px 20px;background:var(--desk);border:1px solid var(--desk-line);border-radius:3px}
+.app-shell.portrait-shell .main-wrap.view-desk>.advance-panel>div{grid-column:1/-1}
+.app-shell.portrait-shell .main-wrap.view-desk>.advance-panel strong{font:400 22px/1.4 var(--brush);letter-spacing:4px;color:var(--gold)}
+.app-shell.portrait-shell .main-wrap.view-desk>.advance-panel p{color:#a99f88;font-size:12px}
+.app-shell.portrait-shell .main-wrap.view-desk>.advance-panel .text-btn{color:var(--gold);justify-self:start}
+/* 结果页：标题直接写在纸上 */
+.app-shell.portrait-shell .view-scene .result-stage{margin:0 -16px;border:0;border-radius:0;background:var(--silk-deep);padding:22px 24px 16px;border-bottom:1px solid var(--line)}
+.app-shell.portrait-shell .view-scene .result-stage h2{font:400 30px/1.4 var(--brush);letter-spacing:5px;color:var(--ink)}
+.app-shell.portrait-shell .view-scene .result-stage span,.app-shell.portrait-shell .view-scene .result-stage p,.app-shell.portrait-shell .view-scene .result-stage>small{color:var(--ink-soft)}
