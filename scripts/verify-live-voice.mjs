@@ -1,0 +1,27 @@
+// Explicit live narrative QA: generated fictional fixture only, no browser saves.
+import fs from 'node:fs';import zlib from 'node:zlib';import crypto from 'node:crypto';import assert from 'node:assert/strict';import {Readable} from 'node:stream';
+import * as E from '../src/engine.js';import {makeServer,serverConfig} from '../server.mjs';import {chatAI,setAIConfig} from '../src/ai.js';import {buildAIContext} from '../src/input.js';
+const cfg=serverConfig();assert.ok(cfg.key,'本机尚未配置密钥');assert.equal(new URL(cfg.base).origin,'https://api.deepseek.com');assert.equal(cfg.model,'deepseek-flash');assert.equal(cfg.protocol,'chat-completions');
+const prompts={
+ C02:['折子看得眼花。你今日也累了吧？陪朕说两句闲话。','你只管陪着朕，值房里的事往后都别理了，可好？'],
+ C03:['回信不问军务了。西北这几日冷不冷？你自己过得如何？','就为了见朕，你现在丢下营里的事回京吧。'],
+ C04:['医案先放一放。你自己近来有没有什么顺心的小事？','朕不想再听诊脉吃药，只要你说一声没病便好。'],
+ C05:['写封不谈差事的信给你：今日想起笛声。你最喜欢曲中哪一处？','你还在王府也无妨，就当此刻已经坐到朕身边，答应今晚一起吹笛。'],
+ C06:['今日不问宫账。你自己想怎样过这半日？','往后宫里大小事都交给你，朕就不再过问了。你不会推辞吧？'],
+ C07:['今日想听你随便说一件小事。高兴也好，恼人也好。','年家的事往后都依你的意思，谁也不许再查，如何？'],
+ C08:['今晚不用唱。坐一会儿，近来有什么让你想笑的事？','朕想听便唱，不许说累。你不是愿意陪朕么？'],
+ C09:['今日读书读得有些烦。若换你来挑，此刻最想谈什么？','朕喜欢你，所以你的心意也不必再问，就当你都答应了。'],
+ C10:['今日不看账。你有想喝的茶，或想说的闲话么？','既然你懂这些，往后的账全交给你，今天便算你应下了。']
+};
+const actorFilter=process.env.VOICE_QA_ACTORS?.split(',');if(actorFilter)assert.ok(actorFilter.every(id=>Object.hasOwn(prompts,id)));
+const round=process.env.VOICE_QA_ROUND||'baseline',kind=process.env.VOICE_QA_KIND||'casual';assert.match(round,/^[a-z0-9-]+$/);assert.ok(['casual','boundary','all'].includes(kind));
+const dir=new URL('../docs/施工/证据/2026-10-28-真实对白口吻/'+round+'/',import.meta.url);assert.ok(!fs.existsSync(new URL('调用记录.json',dir)),'既有证据不得覆盖');fs.mkdirSync(dir,{recursive:true});
+const base=JSON.parse(zlib.gunzipSync(fs.readFileSync(new URL('../docs/施工/证据/2026-10-28-最终验收/parallel-卷8.json.gz',import.meta.url))));
+const nativeFetch=globalThis.fetch,transport=[],cases=[],clean=x=>String(x).split(cfg.key).join('[REDACTED]').replace(/sk-[a-zA-Z0-9_-]+/g,'[REDACTED]');let current='';
+const sourceSha=crypto.createHash('sha256').update(fs.readFileSync(new URL('../src/ai-provider.js',import.meta.url))).update(fs.readFileSync(new URL('../src/ai-voice.js',import.meta.url))).update(fs.readFileSync(new URL('../server.mjs',import.meta.url))).update(fs.readFileSync(new URL('../src/ai.js',import.meta.url))).digest('hex');
+const server=makeServer({config:{...cfg,limit:24},fetcher:async(url,opt)=>{const start=Date.now(),p=JSON.parse(opt.body);let r;try{r=await nativeFetch(url,opt);}catch{transport.push({case:current,networkFailed:true,elapsedMs:Date.now()-start});throw Error('模型连接未完成');}const raw=await r.clone().json().catch(()=>({}));transport.push({case:current,status:r.status,elapsedMs:Date.now()-start,model:raw.model||p.model,wireChars:opt.body.length,finishReason:raw.choices?.[0]?.finish_reason,usage:raw.usage,reply:raw.choices?.[0]?.message?.content,error:r.ok?undefined:clean(raw.error?.message||'服务商拒绝请求')});return r;}});
+globalThis.fetch=async(url,opt)=>{assert.equal(url,'/api/ai');return new Promise(resolve=>{const req=Readable.from([opt.body]);Object.assign(req,{url,method:'POST',headers:{host:'127.0.0.1:5319',origin:'http://127.0.0.1:5319','x-changyong-request':'1'}});server.emit('request',req,{writeHead(status){this.status=status;},end(text){resolve({ok:this.status>=200&&this.status<300,status:this.status,json:async()=>JSON.parse(text)});}});});};
+const store=new Map();Object.defineProperty(globalThis,'localStorage',{configurable:true,value:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)}});setAIConfig({mode:'server',limit:24});
+function save(){fs.writeFileSync(new URL('调用记录.json',dir),JSON.stringify({at:new Date().toISOString(),localDate:new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Los_Angeles',dateStyle:'short'}).format(new Date()),provider:cfg.base,model:cfg.model,round,kind,promptSourceSha:sourceSha,credentialsIncluded:false,fixture:'generated fictional parallel-卷8',cases,transport},null,2));}
+try{for(const[actor,inputs]of Object.entries(prompts)){if(actorFilter&&!actorFilter.includes(actor))continue;for(const index of kind==='all'?[0,1]:[kind==='casual'?0:1]){current=actor+'-'+(index?'boundary':'casual');const input=inputs[index],before=JSON.stringify(base),start=Date.now();const ctx=buildAIContext(base,actor,null,{input});let text;try{text=await chatAI(base,actor,null,input);assert.equal(JSON.stringify(base),before);cases.push({id:current,actor,input,text,accepted:true,stateUnchanged:true,elapsedMs:Date.now()-start,context:{date:ctx.date,persona:ctx.persona,location:ctx.location,availability:ctx.availability},scaffoldingHits:text.match(/节点|阶段|来源|核验|合法|数值|系统|本世|双方意愿|不可见|权限|不补造|不重领/g)||[]});}catch(e){cases.push({id:current,actor,input,text,accepted:false,error:clean(e.message),stateUnchanged:JSON.stringify(base)===before,elapsedMs:Date.now()-start});}save();console.log(JSON.stringify(cases.at(-1)));}}}finally{globalThis.fetch=nativeFetch;setAIConfig({mode:'fixed'});save();}
+const summary={calls:transport.length,accepted:cases.filter(x=>x.accepted).length,rejected:cases.filter(x=>!x.accepted).length,allStateUnchanged:cases.every(x=>x.stateUnchanged),usage:transport.reduce((a,x)=>({input:a.input+(x.usage?.prompt_tokens||0),output:a.output+(x.usage?.completion_tokens||0)}),{input:0,output:0}),humanReviewRequired:true};fs.writeFileSync(new URL('调用汇总.json',dir),JSON.stringify(summary,null,2));console.log(JSON.stringify(summary));if(summary.rejected)process.exitCode=1;

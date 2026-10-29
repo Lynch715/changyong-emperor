@@ -1,0 +1,2 @@
+// One composer request owns its controls. Old completion cannot release a new one.
+export function createInputSession(){let active=null;return{start(){if(active)throw Error('上一条输入仍在处理。');return active={controller:new AbortController()};},current(ticket){return active===ticket&&!ticket.controller.signal.aborted;},finish(ticket){if(active!==ticket)return false;active=null;return true;},cancel(){if(!active)return false;const old=active;active=null;old.controller.abort();return true;}};}

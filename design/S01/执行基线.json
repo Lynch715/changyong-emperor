@@ -1,0 +1,91 @@
+{
+  "version": "S01-V0.1",
+  "date": "2026-10-24",
+  "codeVersion": "0.2.2",
+  "status": "设计施工基线，非游戏已实现清单",
+  "authority": [
+    "用户最新明确要求",
+    "用户修改的周活动方案",
+    "完整施工计划V1.0",
+    "未冲突的规范V1.2",
+    "实际v0.2.2代码"
+  ],
+  "calendar": {
+    "daysPerMonth": 30,
+    "monthsPerYear": 12,
+    "daysPerWeek": 7,
+    "slotsPerWeek": 6,
+    "slotsPerDay": 2,
+    "focusWeeks": 8,
+    "maxExtensionWeeks": 8,
+    "mainPackagesPerWeek": 2,
+    "projectDecisionsPerWeek": 2,
+    "activeProjects": 2,
+    "invitationPromptsPerWeek": 2,
+    "minimumFollowupDays": 7,
+    "finalDate": [
+      2,
+      12,
+      30
+    ]
+  },
+  "economy": {
+    "currency": "财政点",
+    "initial": 60,
+    "monthlyIncome": 12,
+    "monthlyExpense": 9,
+    "settleOnDay": 30,
+    "status": "试调，S13连续路径平衡；不得叠旧季度收益",
+    "giftEffectsPerActorPerWeek": 1,
+    "banquetCost": [
+      2,
+      4
+    ]
+  },
+  "scope": {
+    "first": 55,
+    "full": 181,
+    "uniqueRegistryIncludingF00": 182,
+    "firstCoreRelations": 14,
+    "fullCoreRelations": 42,
+    "firstExtraRelations": 4,
+    "fullExtraRelations": 12,
+    "newGovernmentNodes": 6,
+    "fullPeople": 35,
+    "firstAssets": 26,
+    "fullAssets": 44,
+    "activityVariants": 113
+  },
+  "rules": [
+    "原七核心线与允礼C05不删；旧C23停用，不恢复顾清和或顾清河。",
+    "甄嬛沈眉庄用XR09与XR10扩展编号；属于原35人，不重复加人物和立绘。",
+    "连续七日可跨月跨年，延展周实际占日期；不把每月固定成四周。",
+    "正式邀约只预占已创建的重点周或延展周；其它日期先保留候选。常规时段可阅读0格文书回报，不能偷办约会。",
+    "常规推进按到期日停住。普通文书0格阅核后继续；需要亲办新决策时提议本季尚可用延展周或后续合法窗口，不凭空开无限周。",
+    "已安排活动与嵌入节点共用costGroup和一次奖励，礼物同场不再占格；代送有实际物品和送达记录。",
+    "资金预留不算支出，支出在履行时记一次；G04已付押运时G05沿用为0。",
+    "第一节点的合作结果也满足后续处理前置；恋爱推进另验双方意愿，节点完成不等于相守。",
+    "周末回顾只引用已发生事实，回访不因跨周就提前完成；无新政绩时写委派进展或个人成果。",
+    "F00在二年十二月三十日的常规时段封卷，先逐月结账与清点到期事项；不在十月第八重点周末提前发完全年收益。",
+    "F01仍检查核心七线与七篇原暮年；扩展二线按实际结果附页，不强制九人全部恋爱。涉及九人时不用虚假的全员圆满措辞。",
+    "迁移保护历史日期、原文、账目与拒绝；旧F00日期不重写，周制新档与旧档分别映射。"
+  ],
+  "ids": {
+    "original": "M01..48 R02-01..R08-06 G01..24 P01..12 D01..24 E01..07 F00..04",
+    "newGovernment": "WG-C01..03 朝廷，WG-P01..03 民生",
+    "newRelations": "XR09-01..06 XR10-01..06",
+    "newEpilogues": "XE09 XE10",
+    "activities": "AC-Cxx-T1/T2/W1/W2/G1/G2，IN-Cxx-1/2，CP-Cxx-1/2，BQ01..08，GR01..09，RS01..06",
+    "gifts": "GF01..12",
+    "projects": "PR-COURT PR-FISCAL PR-WATER PR-MILITARY",
+    "scenes": "SC-事件ID，嵌入时引用所属主线场景ID",
+    "transactions": "执行时UUID；rewardKey使用eventID与结果类别，历史已领不再发"
+  },
+  "sources": {
+    "A": "重生长雍帝王赋正文",
+    "B": "四大知己暮年整合合集",
+    "C": "后宫暮年合集",
+    "D": "完整剧情大纲",
+    "availability": "原始四材料未在当前项目目录发现；本轮核对V1.2保留的来源索引与正式事件骨架，不声称重读原小说。S01以现规范和代码为直接底稿；后续引用原文时须另核原稿。"
+  }
+}

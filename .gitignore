@@ -1,0 +1,13 @@
+.DS_Store
+.env
+node_modules/
+tmp/
+coverage/
+*.log
+*.env
+output/
+docs/施工/证据/
+docs/qa/
+docs/qa-v02/
+123.env
+.DS_Store

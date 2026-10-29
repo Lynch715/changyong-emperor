@@ -1,0 +1,6656 @@
+{
+  "schemaVersion": 1,
+  "status": "design-accepted-runtime-pending",
+  "fullRegistryCount": 181,
+  "firstFullIds": [
+    "M01",
+    "M02",
+    "M03",
+    "M04",
+    "M05",
+    "M06",
+    "M07",
+    "M08",
+    "M09",
+    "M10",
+    "M11",
+    "M12",
+    "R02-01",
+    "R02-02",
+    "R03-01",
+    "R03-02",
+    "R04-01",
+    "R04-02",
+    "R05-01",
+    "R05-02",
+    "R06-01",
+    "R06-02",
+    "R07-01",
+    "R07-02",
+    "R08-01",
+    "R08-02",
+    "G01",
+    "G02",
+    "G03",
+    "G04",
+    "G05",
+    "G06",
+    "P01",
+    "P09",
+    "P10",
+    "P11",
+    "D01",
+    "D02",
+    "D03",
+    "D04",
+    "D05",
+    "D06",
+    "D07",
+    "D08",
+    "WG-C01",
+    "WG-C02",
+    "WG-C03",
+    "WG-P01",
+    "WG-P02",
+    "WG-P03",
+    "XR09-01",
+    "XR09-02",
+    "XR10-01",
+    "XR10-02"
+  ],
+  "events": [
+    {
+      "id": "M13",
+      "title": "西北再报",
+      "kind": "main",
+      "actor": "C03",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        3,
+        1,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-3-Q1",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M13",
+      "costGroup": "SC-M13",
+      "effectOwner": "M13",
+      "requires": [
+        "M12"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          3,
+          1,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M13",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M13",
+      "stages": [
+        {
+          "id": "M13#supply-review",
+          "recommended": [
+            3,
+            1,
+            24
+          ],
+          "period": "day",
+          "focusWeek": null,
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M13"
+          ],
+          "minimumDays": 21,
+          "after": "M13",
+          "meaning": "仅核原方案本批补给，不宣称军需已永久解决"
+        }
+      ],
+      "contactMode": "document-no-live-reply"
+    },
+    {
+      "id": "M14",
+      "title": "内廷诬案",
+      "kind": "main",
+      "actor": "C02",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        3,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-3-Q2",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M14",
+      "costGroup": "SC-M14",
+      "effectOwner": "M14",
+      "requires": [
+        "M13"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          3,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M14",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M14"
+    },
+    {
+      "id": "R02-03",
+      "title": "诬案并肩",
+      "kind": "relation",
+      "actor": "C02",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        3,
+        4,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-3-Q2",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M14",
+      "costGroup": "SC-M14",
+      "effectOwner": "M14",
+      "requires": [
+        "R02-02",
+        "M14"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          3,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R02-03"
+      ],
+      "evidenceRefs": [
+        "M14"
+      ],
+      "romanceRequires": [
+        "M14"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "G19",
+      "title": "留存香材",
+      "kind": "government",
+      "actor": "C04",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        3,
+        7,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-3-Q3",
+      "slots": 0,
+      "delivery": "document-decision",
+      "sceneId": "SC-G19",
+      "costGroup": "SC-G19",
+      "effectOwner": "G19",
+      "requires": [
+        "M03"
+      ],
+      "gates": [],
+      "window": {
+        "start": [
+          3,
+          7,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G19"
+      ],
+      "project": "G19-CHAIN",
+      "projectPhase": "discovery",
+      "decisionCount": 1
+    },
+    {
+      "id": "G20",
+      "title": "核脉案采买",
+      "kind": "government",
+      "actor": "C22",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        3,
+        7,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-3-Q3",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-G20",
+      "costGroup": "SC-G20",
+      "effectOwner": "G20",
+      "requires": [
+        "G19"
+      ],
+      "gates": [],
+      "window": {
+        "start": [
+          3,
+          7,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G20"
+      ],
+      "project": "G19-CHAIN",
+      "projectPhase": "execution",
+      "decisionCount": 1
+    },
+    {
+      "id": "P02",
+      "title": "端妃旧伤",
+      "kind": "side",
+      "actor": "C12",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        3,
+        7,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-3-Q3",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-P02",
+      "costGroup": "SC-P02",
+      "effectOwner": "P02",
+      "requires": [
+        "M03"
+      ],
+      "gates": [
+        "own-profession-and-agency",
+        "no-romance-prerequisite"
+      ],
+      "window": {
+        "start": [
+          3,
+          7,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#P02"
+      ]
+    },
+    {
+      "id": "G21",
+      "title": "建立轮值",
+      "kind": "government",
+      "actor": "C02",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        3,
+        7,
+        24
+      ],
+      "period": "day",
+      "focusWeek": null,
+      "slots": 0,
+      "delivery": "due-report",
+      "sceneId": "SC-G21",
+      "costGroup": "SC-G21",
+      "effectOwner": "G21",
+      "requires": [
+        "G20"
+      ],
+      "gates": [
+        "real-execution-and-receipt",
+        "review-not-automatically-read-or-awarded"
+      ],
+      "window": {
+        "start": [
+          3,
+          7,
+          24
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G21"
+      ],
+      "project": "G19-CHAIN",
+      "projectPhase": "review",
+      "minimumDays": 21,
+      "after": "G20",
+      "milestones": []
+    },
+    {
+      "id": "M15",
+      "title": "江山舆图",
+      "kind": "main",
+      "actor": "C03",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        3,
+        10,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-3-Q4",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M15",
+      "costGroup": "SC-M15",
+      "effectOwner": "M15",
+      "requires": [
+        "M14"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          3,
+          10,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M15",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M15"
+    },
+    {
+      "id": "R03-03",
+      "title": "献图",
+      "kind": "relation",
+      "actor": "C03",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        3,
+        10,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-3-Q4",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M15",
+      "costGroup": "SC-M15",
+      "effectOwner": "M15",
+      "requires": [
+        "R03-02",
+        "M15"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          3,
+          10,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R03-03"
+      ],
+      "evidenceRefs": [],
+      "romanceRequires": [],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "M16",
+      "title": "夜诊初誓",
+      "kind": "main",
+      "actor": "C04",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        4,
+        1,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-4-Q1",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M16",
+      "costGroup": "SC-M16",
+      "effectOwner": "M16",
+      "requires": [
+        "M15"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          4,
+          1,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M16",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M16"
+    },
+    {
+      "id": "M17",
+      "title": "景仁旧伤",
+      "kind": "main",
+      "actor": "C06",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        4,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-4-Q2",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M17",
+      "costGroup": "SC-M17",
+      "effectOwner": "M17",
+      "requires": [
+        "M16"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          4,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M17",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M17"
+    },
+    {
+      "id": "R06-03",
+      "title": "哀伤倾诉",
+      "kind": "relation",
+      "actor": "C06",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        4,
+        4,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-4-Q2",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M17",
+      "costGroup": "SC-M17",
+      "effectOwner": "M17",
+      "requires": [
+        "R06-02",
+        "M17"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          4,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R06-03"
+      ],
+      "evidenceRefs": [],
+      "romanceRequires": [],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "XR09-03",
+      "title": "各有答案",
+      "kind": "extra-relation",
+      "actor": "C09",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        4,
+        7,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-4-Q3",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-XR09-03",
+      "costGroup": "SC-XR09-03",
+      "effectOwner": "XR09-03",
+      "requires": [
+        "XR09-02"
+      ],
+      "gates": [
+        "independent-npc-answer",
+        "cooperation-equal-rights",
+        "mutual-consent-for-romance"
+      ],
+      "window": {
+        "start": [
+          4,
+          7,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S12/扩展二线路线卡.json#XR09-03"
+      ]
+    },
+    {
+      "id": "M18",
+      "title": "安氏家书",
+      "kind": "main",
+      "actor": "C08",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        4,
+        10,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-4-Q4",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M18",
+      "costGroup": "SC-M18",
+      "effectOwner": "M18",
+      "requires": [
+        "M17"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          4,
+          10,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M18",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M18"
+    },
+    {
+      "id": "R08-03",
+      "title": "拒绝私授",
+      "kind": "relation",
+      "actor": "C08",
+      "volume": "V03",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        4,
+        10,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-4-Q4",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M18",
+      "costGroup": "SC-M18",
+      "effectOwner": "M18",
+      "requires": [
+        "R08-02",
+        "M18"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          4,
+          10,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R08-03"
+      ],
+      "evidenceRefs": [],
+      "romanceRequires": [],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "M19",
+      "title": "年氏问罪",
+      "kind": "main",
+      "actor": "C03",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        5,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-5-Q2",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M19",
+      "costGroup": "SC-M19",
+      "effectOwner": "M19",
+      "requires": [
+        "M18"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          5,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M19",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M19"
+    },
+    {
+      "id": "R03-04",
+      "title": "依法问责",
+      "kind": "relation",
+      "actor": "C03",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        5,
+        4,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-5-Q2",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M19",
+      "costGroup": "SC-M19",
+      "effectOwner": "M19",
+      "requires": [
+        "R03-03",
+        "M19"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          5,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R03-04"
+      ],
+      "evidenceRefs": [
+        "M19"
+      ],
+      "romanceRequires": [
+        "M19"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "G16",
+      "title": "御史举证",
+      "kind": "government",
+      "actor": "C28",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        5,
+        4,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-5-Q2",
+      "slots": 0,
+      "delivery": "document-decision",
+      "sceneId": "SC-G16",
+      "costGroup": "SC-G16",
+      "effectOwner": "G16",
+      "requires": [
+        "M19"
+      ],
+      "gates": [],
+      "window": {
+        "start": [
+          5,
+          4,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G16"
+      ],
+      "project": "G16-CHAIN",
+      "projectPhase": "discovery",
+      "decisionCount": 1
+    },
+    {
+      "id": "G17",
+      "title": "官员答辩",
+      "kind": "government",
+      "actor": "C30",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        5,
+        4,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-5-Q2",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-G17",
+      "costGroup": "SC-G17",
+      "effectOwner": "G17",
+      "requires": [
+        "G16"
+      ],
+      "gates": [],
+      "window": {
+        "start": [
+          5,
+          4,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G17"
+      ],
+      "project": "G16-CHAIN",
+      "projectPhase": "execution",
+      "decisionCount": 1
+    },
+    {
+      "id": "R02-04",
+      "title": "允许拒绝",
+      "kind": "relation",
+      "actor": "C02",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        5,
+        4,
+        5
+      ],
+      "period": "day",
+      "focusWeek": "WL-5-Q2",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-R02-04",
+      "costGroup": "SC-R02-04",
+      "effectOwner": "R02-04",
+      "requires": [
+        "R02-03"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          5,
+          4,
+          5
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R02-04"
+      ],
+      "costReason": "另日或另场相谈，不能沿用原主线免费场次",
+      "evidenceRefs": [],
+      "romanceRequires": [],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "G18",
+      "title": "异地复核",
+      "kind": "government",
+      "actor": "C31",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        5,
+        4,
+        25
+      ],
+      "period": "day",
+      "focusWeek": null,
+      "slots": 0,
+      "delivery": "due-report",
+      "sceneId": "SC-G18",
+      "costGroup": "SC-G18",
+      "effectOwner": "G18",
+      "requires": [
+        "G17"
+      ],
+      "gates": [
+        "real-execution-and-receipt",
+        "review-not-automatically-read-or-awarded"
+      ],
+      "window": {
+        "start": [
+          5,
+          4,
+          25
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G18"
+      ],
+      "project": "G16-CHAIN",
+      "projectPhase": "review",
+      "minimumDays": 21,
+      "after": "G17",
+      "milestones": []
+    },
+    {
+      "id": "M20",
+      "title": "月下明约",
+      "kind": "main",
+      "actor": "C05",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        5,
+        7,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-5-Q3",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M20",
+      "costGroup": "SC-M20",
+      "effectOwner": "M20",
+      "requires": [
+        "M19"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          5,
+          7,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M20",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M20"
+    },
+    {
+      "id": "R05-03",
+      "title": "月下明约",
+      "kind": "relation",
+      "actor": "C05",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        5,
+        7,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-5-Q3",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M20",
+      "costGroup": "SC-M20",
+      "effectOwner": "M20",
+      "requires": [
+        "R05-02",
+        "M20"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          5,
+          7,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R05-03"
+      ],
+      "evidenceRefs": [],
+      "romanceRequires": [],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "R07-03",
+      "title": "直面年家",
+      "kind": "relation",
+      "actor": "C07",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        5,
+        7,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-5-Q3",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-R07-03",
+      "costGroup": "SC-R07-03",
+      "effectOwner": "R07-03",
+      "requires": [
+        "R07-02"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          5,
+          7,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R07-03"
+      ],
+      "costReason": "另日或另场相谈，不能沿用原主线免费场次",
+      "evidenceRefs": [
+        "M19"
+      ],
+      "romanceRequires": [
+        "M19"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "M21",
+      "title": "翊坤新生",
+      "kind": "main",
+      "actor": "C07",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        5,
+        10,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-5-Q4",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M21",
+      "costGroup": "SC-M21",
+      "effectOwner": "M21",
+      "requires": [
+        "M20"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          5,
+          10,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M21",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M21",
+      "stages": [
+        {
+          "id": "M21#family-decision",
+          "recommended": [
+            4,
+            10,
+            4
+          ],
+          "period": "day",
+          "focusWeek": "WL-4-Q4",
+          "slots": 1,
+          "delivery": "arranged",
+          "requires": [
+            "M17"
+          ],
+          "optional": true,
+          "gates": [
+            "both-consent",
+            "existing-pregnancy-preserved"
+          ],
+          "meaning": "可选择不生育；同意不等于受孕"
+        },
+        {
+          "id": "M21#birth-or-autonomy",
+          "recommended": [
+            5,
+            10,
+            2
+          ],
+          "period": "day",
+          "focusWeek": "WL-5-Q4",
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M21"
+          ],
+          "alternatives": [
+            "actual-birth-with-date",
+            "autonomous-life",
+            "pregnancy-awaits-actual-birth"
+          ],
+          "sharedWith": "R07-04"
+        },
+        {
+          "id": "M21#later-birth",
+          "delivery": "date-triggered",
+          "slots": 0,
+          "requires": [
+            "actual-conception-and-both-consent"
+          ],
+          "dateRule": "actualConceptionDate + configuredGestationDays, never before actual date",
+          "gates": [
+            "preserve-original-M21-and-R07-04-no-reward-repeat"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R07-04",
+      "title": "育女或自主生活",
+      "kind": "relation",
+      "actor": "C07",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        5,
+        10,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-5-Q4",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M21",
+      "costGroup": "SC-M21",
+      "effectOwner": "M21",
+      "requires": [
+        "R07-03",
+        "M21"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          5,
+          10,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R07-04"
+      ],
+      "evidenceRefs": [
+        "M21#birth-or-autonomy"
+      ],
+      "romanceRequires": [
+        "M21#birth-or-autonomy"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "P04",
+      "title": "曹琴默的退路",
+      "kind": "side",
+      "actor": "C14",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        5,
+        10,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-5-Q4",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-P04",
+      "costGroup": "SC-P04",
+      "effectOwner": "P04",
+      "requires": [
+        "M21"
+      ],
+      "gates": [
+        "own-profession-and-agency",
+        "no-romance-prerequisite"
+      ],
+      "window": {
+        "start": [
+          5,
+          10,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#P04"
+      ]
+    },
+    {
+      "id": "M22",
+      "title": "眉庄理账",
+      "kind": "main",
+      "actor": "C10",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        6,
+        1,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-6-Q1",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M22",
+      "costGroup": "SC-M22",
+      "effectOwner": "M22",
+      "requires": [
+        "M21"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          6,
+          1,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M22",
+        "规范V1.2#第五章与附录四",
+        "design/S12/主线分支修订与未完清单.md#M22"
+      ],
+      "mainPackage": "M22",
+      "stages": [
+        {
+          "id": "M22#audit-review",
+          "recommended": [
+            6,
+            1,
+            10
+          ],
+          "period": "day",
+          "focusWeek": null,
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M22"
+          ],
+          "minimumDays": 7,
+          "after": "M22",
+          "meaning": "核真实原簿、承办和工期，未办结仍待核"
+        }
+      ],
+      "branchPolicy": "采用S12-04修订：本世证据、署名、职责与私人答复分开；允许诚实发展、合作、未定或终止；不反向要求后续XR"
+    },
+    {
+      "id": "XR10-03",
+      "title": "原则与私心",
+      "kind": "extra-relation",
+      "actor": "C10",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        6,
+        1,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-6-Q1",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-XR10-03",
+      "costGroup": "SC-XR10-03",
+      "effectOwner": "XR10-03",
+      "requires": [
+        "XR10-02",
+        "M22"
+      ],
+      "gates": [
+        "independent-npc-answer",
+        "cooperation-equal-rights",
+        "mutual-consent-for-romance"
+      ],
+      "window": {
+        "start": [
+          6,
+          1,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S12/扩展二线路线卡.json#XR10-03"
+      ]
+    },
+    {
+      "id": "R06-04",
+      "title": "承认责任",
+      "kind": "relation",
+      "actor": "C06",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        6,
+        1,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-6-Q1",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-R06-04",
+      "costGroup": "SC-R06-04",
+      "effectOwner": "R06-04",
+      "requires": [
+        "R06-03"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          6,
+          1,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R06-04"
+      ],
+      "costReason": "另日或另场相谈，不能沿用原主线免费场次",
+      "evidenceRefs": [],
+      "romanceRequires": [],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "M23",
+      "title": "断念不是夺人",
+      "kind": "main",
+      "actor": "C04",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        6,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-6-Q2",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M23",
+      "costGroup": "SC-M23",
+      "effectOwner": "M23",
+      "requires": [
+        "M22"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          6,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M23",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M23"
+    },
+    {
+      "id": "R04-03",
+      "title": "断念",
+      "kind": "relation",
+      "actor": "C04",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        6,
+        4,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-6-Q2",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M23",
+      "costGroup": "SC-M23",
+      "effectOwner": "M23",
+      "requires": [
+        "R04-02",
+        "M23"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          6,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R04-03"
+      ],
+      "evidenceRefs": [],
+      "romanceRequires": [],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "D10",
+      "title": "夏日避暑",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        6,
+        4,
+        5
+      ],
+      "period": "day",
+      "focusWeek": "WL-6-Q2",
+      "slots": 1,
+      "delivery": "optional-template",
+      "sceneId": "SC-D10",
+      "costGroup": "SC-D10",
+      "effectOwner": "D10",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          6,
+          4,
+          5
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D10"
+      ],
+      "optional": true,
+      "season": "summer",
+      "extensionCandidate": null,
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      }
+    },
+    {
+      "id": "P05",
+      "title": "欣贵人的份例",
+      "kind": "side",
+      "actor": "C15",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        6,
+        7,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-6-Q3",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-P05",
+      "costGroup": "SC-P05",
+      "effectOwner": "P05",
+      "requires": [
+        "M12"
+      ],
+      "gates": [
+        "own-profession-and-agency",
+        "no-romance-prerequisite"
+      ],
+      "window": {
+        "start": [
+          6,
+          7,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#P05"
+      ]
+    },
+    {
+      "id": "P06",
+      "title": "富察贵人的礼遇",
+      "kind": "side",
+      "actor": "C16",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        6,
+        7,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-6-Q3",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-P06",
+      "costGroup": "SC-P06",
+      "effectOwner": "P06",
+      "requires": [
+        "M22"
+      ],
+      "gates": [
+        "own-profession-and-agency",
+        "no-romance-prerequisite"
+      ],
+      "window": {
+        "start": [
+          6,
+          7,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#P06"
+      ]
+    },
+    {
+      "id": "M24",
+      "title": "六宫大封",
+      "kind": "main",
+      "actor": "C06",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        6,
+        10,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-6-Q4",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M24",
+      "costGroup": "SC-M24",
+      "effectOwner": "M24",
+      "requires": [
+        "M23"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          6,
+          10,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M24",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M24"
+    },
+    {
+      "id": "D13",
+      "title": "岁末宫账",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V04",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        6,
+        10,
+        5
+      ],
+      "period": "day",
+      "focusWeek": "WL-6-Q4",
+      "slots": 1,
+      "delivery": "optional-template",
+      "sceneId": "SC-D13",
+      "costGroup": "SC-D13",
+      "effectOwner": "D13",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          6,
+          10,
+          5
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D13"
+      ],
+      "optional": true,
+      "season": "winter",
+      "extensionCandidate": null,
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      }
+    },
+    {
+      "id": "M25",
+      "title": "税改入县",
+      "kind": "main",
+      "actor": "C28",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        7,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-7-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M25",
+      "costGroup": "SC-M25",
+      "effectOwner": "M25",
+      "requires": [
+        "M24"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          7,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M25",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M25"
+    },
+    {
+      "id": "G07",
+      "title": "选试点",
+      "kind": "government",
+      "actor": "C28",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        7,
+        4,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-7-A",
+      "slots": 0,
+      "delivery": "document-decision",
+      "sceneId": "SC-G07",
+      "costGroup": "SC-G07",
+      "effectOwner": "G07",
+      "requires": [
+        "M25"
+      ],
+      "gates": [],
+      "window": {
+        "start": [
+          7,
+          4,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G07"
+      ],
+      "project": "G07-CHAIN",
+      "projectPhase": "discovery",
+      "decisionCount": 1
+    },
+    {
+      "id": "G08",
+      "title": "听取异议",
+      "kind": "government",
+      "actor": "C31",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        7,
+        4,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-7-A",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-G08",
+      "costGroup": "SC-G08",
+      "effectOwner": "G08",
+      "requires": [
+        "G07"
+      ],
+      "gates": [],
+      "window": {
+        "start": [
+          7,
+          4,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G08"
+      ],
+      "project": "G07-CHAIN",
+      "projectPhase": "execution",
+      "decisionCount": 1
+    },
+    {
+      "id": "G09",
+      "title": "逐地推广",
+      "kind": "government",
+      "actor": "C29",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        7,
+        4,
+        25
+      ],
+      "period": "day",
+      "focusWeek": null,
+      "slots": 0,
+      "delivery": "due-report",
+      "sceneId": "SC-G09",
+      "costGroup": "SC-G09",
+      "effectOwner": "G09",
+      "requires": [
+        "G08"
+      ],
+      "gates": [
+        "real-execution-and-receipt",
+        "review-not-automatically-read-or-awarded"
+      ],
+      "window": {
+        "start": [
+          7,
+          4,
+          25
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G09"
+      ],
+      "project": "G07-CHAIN",
+      "projectPhase": "review",
+      "minimumDays": 21,
+      "after": "G08",
+      "milestones": []
+    },
+    {
+      "id": "D11",
+      "title": "秋日赏月",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        7,
+        7,
+        5
+      ],
+      "period": "day",
+      "focusWeek": null,
+      "slots": 1,
+      "delivery": "extension-template",
+      "sceneId": "SC-D11",
+      "costGroup": "SC-D11",
+      "effectOwner": "D11",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          7,
+          7,
+          5
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D11"
+      ],
+      "optional": true,
+      "season": "autumn",
+      "extensionCandidate": "XL-7-Q3",
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      }
+    },
+    {
+      "id": "M26",
+      "title": "库粮与春荒",
+      "kind": "main",
+      "actor": "C10",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        8,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-8-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M26",
+      "costGroup": "SC-M26",
+      "effectOwner": "M26",
+      "requires": [
+        "M25"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          8,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M26",
+        "规范V1.2#第五章与附录四",
+        "design/S12/主线分支修订与未完清单.md#M26"
+      ],
+      "mainPackage": "M26",
+      "stages": [
+        {
+          "id": "M26#relief-review",
+          "recommended": [
+            8,
+            4,
+            24
+          ],
+          "period": "day",
+          "focusWeek": null,
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M26"
+          ],
+          "minimumDays": 21,
+          "after": "M26",
+          "meaning": "仅限本批实际救济与凭据，不由私情生成成果"
+        }
+      ],
+      "branchPolicy": "采用S12-04修订：本世证据、署名、职责与私人答复分开；允许诚实发展、合作、未定或终止；不反向要求后续XR"
+    },
+    {
+      "id": "XR10-04",
+      "title": "并肩赈务",
+      "kind": "extra-relation",
+      "actor": "C10",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        8,
+        10,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-8-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-XR10-04",
+      "costGroup": "SC-XR10-04",
+      "effectOwner": "XR10-04",
+      "requires": [
+        "XR10-03",
+        "M26",
+        "M26#relief-review"
+      ],
+      "gates": [
+        "independent-npc-answer",
+        "cooperation-equal-rights",
+        "mutual-consent-for-romance"
+      ],
+      "window": {
+        "start": [
+          8,
+          10,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S12/扩展二线路线卡.json#XR10-04"
+      ]
+    },
+    {
+      "id": "D15",
+      "title": "万寿节",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        8,
+        10,
+        5
+      ],
+      "period": "day",
+      "focusWeek": "WL-8-B",
+      "slots": 1,
+      "delivery": "optional-template",
+      "sceneId": "SC-D15",
+      "costGroup": "SC-D15",
+      "effectOwner": "D15",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          8,
+          10,
+          5
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D15"
+      ],
+      "optional": true,
+      "season": "any",
+      "extensionCandidate": null,
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      },
+      "dateRule": "actual-player-birthday; sample date does not establish a birthday fact"
+    },
+    {
+      "id": "M27",
+      "title": "春宴旧友",
+      "kind": "main",
+      "actor": "C09",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        9,
+        1,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-9-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M27",
+      "costGroup": "SC-M27",
+      "effectOwner": "M27",
+      "requires": [
+        "M26"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          9,
+          1,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M27",
+        "规范V1.2#第五章与附录四",
+        "design/S12/主线分支修订与未完清单.md#M27"
+      ],
+      "mainPackage": "M27",
+      "branchPolicy": "采用S12-04修订：本世证据、署名、职责与私人答复分开；允许诚实发展、合作、未定或终止；不反向要求后续XR"
+    },
+    {
+      "id": "XR09-04",
+      "title": "风波同听",
+      "kind": "extra-relation",
+      "actor": "C09",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        9,
+        1,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-9-A",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-XR09-04",
+      "costGroup": "SC-XR09-04",
+      "effectOwner": "XR09-04",
+      "requires": [
+        "XR09-03",
+        "M27"
+      ],
+      "gates": [
+        "independent-npc-answer",
+        "cooperation-equal-rights",
+        "mutual-consent-for-romance"
+      ],
+      "window": {
+        "start": [
+          9,
+          1,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S12/扩展二线路线卡.json#XR09-04"
+      ]
+    },
+    {
+      "id": "D09",
+      "title": "春宴小聚",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        9,
+        1,
+        5
+      ],
+      "period": "day",
+      "focusWeek": "WL-9-A",
+      "slots": 1,
+      "delivery": "optional-template",
+      "sceneId": "SC-D09",
+      "costGroup": "SC-D09",
+      "effectOwner": "D09",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          9,
+          1,
+          5
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D09"
+      ],
+      "optional": true,
+      "season": "spring",
+      "extensionCandidate": null,
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      }
+    },
+    {
+      "id": "P08",
+      "title": "浣碧求职",
+      "kind": "side",
+      "actor": "C18",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        9,
+        10,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-9-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-P08",
+      "costGroup": "SC-P08",
+      "effectOwner": "P08",
+      "requires": [
+        "M27"
+      ],
+      "gates": [
+        "own-profession-and-agency",
+        "no-romance-prerequisite"
+      ],
+      "window": {
+        "start": [
+          9,
+          10,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#P08"
+      ]
+    },
+    {
+      "id": "M28",
+      "title": "帘后读书",
+      "kind": "main",
+      "actor": "C21",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        10,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-10-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M28",
+      "costGroup": "SC-M28",
+      "effectOwner": "M28",
+      "requires": [
+        "M27"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          10,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M28",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M28"
+    },
+    {
+      "id": "P03",
+      "title": "齐妃与弘时",
+      "kind": "side",
+      "actor": "C13",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        10,
+        10,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-10-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-P03",
+      "costGroup": "SC-P03",
+      "effectOwner": "P03",
+      "requires": [
+        "M28"
+      ],
+      "gates": [
+        "own-profession-and-agency",
+        "no-romance-prerequisite"
+      ],
+      "window": {
+        "start": [
+          10,
+          10,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#P03"
+      ]
+    },
+    {
+      "id": "D17",
+      "title": "皇嗣生辰",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        10,
+        10,
+        5
+      ],
+      "period": "day",
+      "focusWeek": "WL-10-B",
+      "slots": 1,
+      "delivery": "optional-template",
+      "sceneId": "SC-D17",
+      "costGroup": "SC-D17",
+      "effectOwner": "D17",
+      "requires": [],
+      "gates": [
+        "actual-child-birthday-else-alternative-growth"
+      ],
+      "window": {
+        "start": [
+          10,
+          10,
+          5
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D17"
+      ],
+      "optional": true,
+      "season": "any",
+      "extensionCandidate": null,
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      },
+      "dateRule": "actual-child-birthday; absent child uses separately named alternative, never fabricated birth"
+    },
+    {
+      "id": "G13",
+      "title": "梳理差事",
+      "kind": "government",
+      "actor": "C05",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        11,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-11-A",
+      "slots": 0,
+      "delivery": "document-decision",
+      "sceneId": "SC-G13",
+      "costGroup": "SC-G13",
+      "effectOwner": "G13",
+      "requires": [
+        "M29"
+      ],
+      "gates": [],
+      "window": {
+        "start": [
+          11,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G13"
+      ],
+      "project": "G13-CHAIN",
+      "projectPhase": "discovery",
+      "decisionCount": 1
+    },
+    {
+      "id": "M29",
+      "title": "笛谱流言",
+      "kind": "main",
+      "actor": "C05",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        11,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-11-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M29",
+      "costGroup": "SC-M29",
+      "effectOwner": "M29",
+      "requires": [
+        "M28"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          11,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M29",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M29"
+    },
+    {
+      "id": "R05-04",
+      "title": "宗室流言",
+      "kind": "relation",
+      "actor": "C05",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        11,
+        4,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-11-A",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M29",
+      "costGroup": "SC-M29",
+      "effectOwner": "M29",
+      "requires": [
+        "R05-03",
+        "M29"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          11,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R05-04"
+      ],
+      "evidenceRefs": [
+        "G13"
+      ],
+      "romanceRequires": [
+        "G13"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "G14",
+      "title": "处理请托",
+      "kind": "government",
+      "actor": "C24",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        11,
+        4,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-11-A",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-G14",
+      "costGroup": "SC-G14",
+      "effectOwner": "G14",
+      "requires": [
+        "G13"
+      ],
+      "gates": [],
+      "window": {
+        "start": [
+          11,
+          4,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G14"
+      ],
+      "project": "G13-CHAIN",
+      "projectPhase": "execution",
+      "decisionCount": 1
+    },
+    {
+      "id": "G15",
+      "title": "确定回避",
+      "kind": "government",
+      "actor": "C26",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        11,
+        4,
+        24
+      ],
+      "period": "day",
+      "focusWeek": null,
+      "slots": 0,
+      "delivery": "due-report",
+      "sceneId": "SC-G15",
+      "costGroup": "SC-G15",
+      "effectOwner": "G15",
+      "requires": [
+        "G14"
+      ],
+      "gates": [
+        "real-execution-and-receipt",
+        "review-not-automatically-read-or-awarded"
+      ],
+      "window": {
+        "start": [
+          11,
+          4,
+          24
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G15"
+      ],
+      "project": "G13-CHAIN",
+      "projectPhase": "review",
+      "minimumDays": 21,
+      "after": "G14",
+      "milestones": []
+    },
+    {
+      "id": "M30",
+      "title": "香事成业",
+      "kind": "main",
+      "actor": "C08",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        12,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-12-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M30",
+      "costGroup": "SC-M30",
+      "effectOwner": "M30",
+      "requires": [
+        "M29"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          12,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M30",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M30",
+      "stages": [
+        {
+          "id": "M30#work-review",
+          "recommended": [
+            12,
+            5,
+            2
+          ],
+          "period": "day",
+          "focusWeek": null,
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M30"
+          ],
+          "minimumDays": 30,
+          "after": "M30",
+          "meaning": "本人独立事务实际完成才可作为R08-04证据"
+        }
+      ]
+    },
+    {
+      "id": "R08-04",
+      "title": "独立办事",
+      "kind": "relation",
+      "actor": "C08",
+      "volume": "V05",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        12,
+        10,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-12-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-R08-04",
+      "costGroup": "SC-R08-04",
+      "effectOwner": "R08-04",
+      "requires": [
+        "R08-03"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          12,
+          10,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R08-04"
+      ],
+      "costReason": "另日或另场相谈，不能沿用原主线免费场次",
+      "evidenceRefs": [
+        "M30#work-review"
+      ],
+      "romanceRequires": [
+        "M30#work-review"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "G10",
+      "title": "比对汛情",
+      "kind": "government",
+      "actor": "C26",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        13,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-13-A",
+      "slots": 0,
+      "delivery": "document-decision",
+      "sceneId": "SC-G10",
+      "costGroup": "SC-G10",
+      "effectOwner": "G10",
+      "requires": [
+        "M31"
+      ],
+      "gates": [],
+      "window": {
+        "start": [
+          13,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G10"
+      ],
+      "project": "G10-CHAIN",
+      "projectPhase": "discovery",
+      "decisionCount": 1
+    },
+    {
+      "id": "M31",
+      "title": "河工决口",
+      "kind": "main",
+      "actor": "C26",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        13,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-13-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M31",
+      "costGroup": "SC-M31",
+      "effectOwner": "M31",
+      "requires": [
+        "M30"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          13,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M31",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M31"
+    },
+    {
+      "id": "G11",
+      "title": "救灾与修堤",
+      "kind": "government",
+      "actor": "C30",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        13,
+        4,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-13-A",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-G11",
+      "costGroup": "SC-G11",
+      "effectOwner": "G11",
+      "requires": [
+        "G10"
+      ],
+      "gates": [],
+      "window": {
+        "start": [
+          13,
+          4,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G11"
+      ],
+      "project": "G10-CHAIN",
+      "projectPhase": "execution",
+      "decisionCount": 1
+    },
+    {
+      "id": "G12",
+      "title": "追查工程",
+      "kind": "government",
+      "actor": "C28",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        13,
+        7,
+        3
+      ],
+      "period": "day",
+      "focusWeek": null,
+      "slots": 0,
+      "delivery": "due-report",
+      "sceneId": "SC-G12",
+      "costGroup": "SC-G12",
+      "effectOwner": "G12",
+      "requires": [
+        "G11"
+      ],
+      "gates": [
+        "real-execution-and-receipt",
+        "review-not-automatically-read-or-awarded"
+      ],
+      "window": {
+        "start": [
+          13,
+          7,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G12"
+      ],
+      "project": "G10-CHAIN",
+      "projectPhase": "review",
+      "minimumDays": 90,
+      "after": "G11",
+      "milestones": []
+    },
+    {
+      "id": "M32",
+      "title": "太医署新规",
+      "kind": "main",
+      "actor": "C04",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        14,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-14-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M32",
+      "costGroup": "SC-M32",
+      "effectOwner": "M32",
+      "requires": [
+        "M31"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          14,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M32",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M32",
+      "stages": [
+        {
+          "id": "M32#training-review",
+          "recommended": [
+            14,
+            5,
+            2
+          ],
+          "period": "day",
+          "focusWeek": null,
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M32"
+          ],
+          "minimumDays": 30,
+          "after": "M32"
+        }
+      ]
+    },
+    {
+      "id": "R04-04",
+      "title": "如实进谏",
+      "kind": "relation",
+      "actor": "C04",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        14,
+        4,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-14-A",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M32",
+      "costGroup": "SC-M32",
+      "effectOwner": "M32",
+      "requires": [
+        "R04-03",
+        "M32"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          14,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R04-04"
+      ],
+      "evidenceRefs": [
+        "M32"
+      ],
+      "romanceRequires": [
+        "M32"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "M33",
+      "title": "公主成长与出阁",
+      "kind": "main",
+      "actor": "C07",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        15,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-15-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M33",
+      "costGroup": "SC-M33",
+      "effectOwner": "M33",
+      "requires": [
+        "M32"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          15,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M33",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M33",
+      "stages": [
+        {
+          "id": "M33#education",
+          "recommended": [
+            15,
+            4,
+            2
+          ],
+          "period": "day",
+          "focusWeek": "WL-15-A",
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M32"
+          ],
+          "alternatives": [
+            "actual-child-education",
+            "next-generation-education-and-autonomy"
+          ],
+          "meaning": "本阶段处理后M34可继续"
+        },
+        {
+          "id": "M33#adult-decision",
+          "delivery": "birthday-triggered",
+          "slots": 1,
+          "requires": [
+            "M33#education"
+          ],
+          "dateRule": "actualBirthDate + 18 * 360 days; choose a legal week at or after birthday",
+          "gates": [
+            "actual-child-exists",
+            "child-willing-to-discuss",
+            "not-forced-to-marry"
+          ],
+          "sharedWith": "P12",
+          "costGroup": "FAMILY-ADULT-DECISION-C36",
+          "effectOwner": "M33#adult-decision",
+          "lateRoute": "beyond-year30-is-pending-or-not-applicable-not-a-main-blocker",
+          "mainPackage": "M33"
+        }
+      ]
+    },
+    {
+      "id": "D18",
+      "title": "书房共读",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        15,
+        10,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-15-B",
+      "slots": 1,
+      "delivery": "optional-template",
+      "sceneId": "SC-D18",
+      "costGroup": "SC-D18",
+      "effectOwner": "D18",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          15,
+          10,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D18"
+      ],
+      "optional": true,
+      "season": "any",
+      "extensionCandidate": null,
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      }
+    },
+    {
+      "id": "D16",
+      "title": "元宵宴",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        16,
+        1,
+        15
+      ],
+      "period": "day",
+      "focusWeek": null,
+      "slots": 1,
+      "delivery": "extension-template",
+      "sceneId": "SC-D16",
+      "costGroup": "SC-D16",
+      "effectOwner": "D16",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          16,
+          1,
+          15
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D16"
+      ],
+      "optional": true,
+      "season": "spring",
+      "extensionCandidate": "XL-16-Q1",
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      },
+      "customExtension": {
+        "id": "XL-16-Q1",
+        "start": [
+          16,
+          1,
+          12
+        ],
+        "end": [
+          16,
+          1,
+          18
+        ],
+        "replacesCandidate": true
+      }
+    },
+    {
+      "id": "M34",
+      "title": "将军有倦",
+      "kind": "main",
+      "actor": "C03",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        17,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-17-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M34",
+      "costGroup": "SC-M34",
+      "effectOwner": "M34",
+      "requires": [
+        "M33#education"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          17,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M34",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M34",
+      "stages": [
+        {
+          "id": "M34#handover-review",
+          "recommended": [
+            17,
+            4,
+            24
+          ],
+          "period": "day",
+          "focusWeek": null,
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M34"
+          ],
+          "minimumDays": 21,
+          "after": "M34"
+        }
+      ],
+      "contactMode": "document-no-live-reply"
+    },
+    {
+      "id": "R03-05",
+      "title": "训练副将",
+      "kind": "relation",
+      "actor": "C03",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        17,
+        10,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-17-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-R03-05",
+      "costGroup": "SC-R03-05",
+      "effectOwner": "R03-05",
+      "requires": [
+        "R03-04"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          17,
+          10,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R03-05"
+      ],
+      "costReason": "另日或另场相谈，不能沿用原主线免费场次",
+      "evidenceRefs": [
+        "M34#handover-review"
+      ],
+      "romanceRequires": [
+        "M34#handover-review"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "D21",
+      "title": "科举新榜",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        18,
+        1,
+        3
+      ],
+      "period": "day",
+      "focusWeek": null,
+      "slots": 1,
+      "delivery": "extension-template",
+      "sceneId": "SC-D21",
+      "costGroup": "SC-D21",
+      "effectOwner": "D21",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          18,
+          1,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D21"
+      ],
+      "optional": true,
+      "season": "spring",
+      "extensionCandidate": "XL-18-Q1",
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      }
+    },
+    {
+      "id": "D20",
+      "title": "宫人探亲",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        18,
+        10,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-18-B",
+      "slots": 1,
+      "delivery": "optional-template",
+      "sceneId": "SC-D20",
+      "costGroup": "SC-D20",
+      "effectOwner": "D20",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          18,
+          10,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D20"
+      ],
+      "optional": true,
+      "season": "any",
+      "extensionCandidate": null,
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      }
+    },
+    {
+      "id": "M35",
+      "title": "中宫留白",
+      "kind": "main",
+      "actor": "C06",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        19,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-19-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M35",
+      "costGroup": "SC-M35",
+      "effectOwner": "M35",
+      "requires": [
+        "M34"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          19,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M35",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M35",
+      "stages": [
+        {
+          "id": "M35#handover-review",
+          "recommended": [
+            19,
+            4,
+            10
+          ],
+          "period": "day",
+          "focusWeek": null,
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M35"
+          ],
+          "minimumDays": 7,
+          "after": "M35"
+        }
+      ]
+    },
+    {
+      "id": "R06-05",
+      "title": "授权交班",
+      "kind": "relation",
+      "actor": "C06",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        19,
+        10,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-19-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-R06-05",
+      "costGroup": "SC-R06-05",
+      "effectOwner": "R06-05",
+      "requires": [
+        "R06-04"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          19,
+          10,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R06-05"
+      ],
+      "costReason": "另日或另场相谈，不能沿用原主线免费场次",
+      "evidenceRefs": [
+        "M35#handover-review"
+      ],
+      "romanceRequires": [
+        "M35#handover-review"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "M36",
+      "title": "旧梦坦白",
+      "kind": "main",
+      "actor": "C01",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        20,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-20-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M36",
+      "costGroup": "SC-M36",
+      "effectOwner": "M36",
+      "requires": [
+        "M35"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          20,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M36",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M36"
+    },
+    {
+      "id": "D22",
+      "title": "地方物产",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V06",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        20,
+        10,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-20-B",
+      "slots": 1,
+      "delivery": "optional-template",
+      "sceneId": "SC-D22",
+      "costGroup": "SC-D22",
+      "effectOwner": "D22",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          20,
+          10,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D22"
+      ],
+      "optional": true,
+      "season": "any",
+      "extensionCandidate": null,
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      }
+    },
+    {
+      "id": "M37",
+      "title": "立储问策",
+      "kind": "main",
+      "actor": "C28",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        21,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-21-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M37",
+      "costGroup": "SC-M37",
+      "effectOwner": "M37",
+      "requires": [
+        "M36"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          21,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M37",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M37",
+      "stages": [
+        {
+          "id": "M37#trial-review",
+          "recommended": [
+            21,
+            5,
+            3
+          ],
+          "period": "day",
+          "focusWeek": null,
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M37"
+          ],
+          "minimumDays": 30,
+          "after": "M37",
+          "meaning": "观察施政来源，不等于已经立储"
+        }
+      ]
+    },
+    {
+      "id": "G22",
+      "title": "统一基础教育",
+      "kind": "government",
+      "actor": "C21",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        21,
+        4,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-21-A",
+      "slots": 0,
+      "delivery": "document-decision",
+      "sceneId": "SC-G22",
+      "costGroup": "SC-G22",
+      "effectOwner": "G22",
+      "requires": [
+        "M37"
+      ],
+      "gates": [],
+      "window": {
+        "start": [
+          21,
+          4,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G22"
+      ],
+      "project": "G22-CHAIN",
+      "projectPhase": "discovery",
+      "decisionCount": 1
+    },
+    {
+      "id": "G23",
+      "title": "试办政务",
+      "kind": "government",
+      "actor": "C34",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        21,
+        4,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-21-A",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-G23",
+      "costGroup": "SC-G23",
+      "effectOwner": "G23",
+      "requires": [
+        "G22"
+      ],
+      "gates": [],
+      "window": {
+        "start": [
+          21,
+          4,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G23"
+      ],
+      "project": "G22-CHAIN",
+      "projectPhase": "execution",
+      "decisionCount": 1
+    },
+    {
+      "id": "R04-05",
+      "title": "培养同僚",
+      "kind": "relation",
+      "actor": "C04",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        21,
+        10,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-21-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-R04-05",
+      "costGroup": "SC-R04-05",
+      "effectOwner": "R04-05",
+      "requires": [
+        "R04-04"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          21,
+          10,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R04-05"
+      ],
+      "costReason": "另日或另场相谈，不能沿用原主线免费场次",
+      "evidenceRefs": [
+        "M32#training-review",
+        "G21"
+      ],
+      "romanceRequires": [
+        "M32#training-review",
+        "G21"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "M38",
+      "title": "言官再谏",
+      "kind": "main",
+      "actor": "C28",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        22,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-22-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M38",
+      "costGroup": "SC-M38",
+      "effectOwner": "M38",
+      "requires": [
+        "M37"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          22,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M38",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M38"
+    },
+    {
+      "id": "R05-05",
+      "title": "自主往返",
+      "kind": "relation",
+      "actor": "C05",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        22,
+        10,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-22-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-R05-05",
+      "costGroup": "SC-R05-05",
+      "effectOwner": "R05-05",
+      "requires": [
+        "R05-04"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          22,
+          10,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R05-05"
+      ],
+      "costReason": "另日或另场相谈，不能沿用原主线免费场次",
+      "evidenceRefs": [
+        "G15"
+      ],
+      "romanceRequires": [
+        "G15"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "M39",
+      "title": "甄嬛知止",
+      "kind": "main",
+      "actor": "C09",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        23,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-23-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M39",
+      "costGroup": "SC-M39",
+      "effectOwner": "M39",
+      "requires": [
+        "M38"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          23,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M39",
+        "规范V1.2#第五章与附录四",
+        "design/S12/主线分支修订与未完清单.md#M39"
+      ],
+      "mainPackage": "M39",
+      "branchPolicy": "采用S12-04修订：本世证据、署名、职责与私人答复分开；允许诚实发展、合作、未定或终止；不反向要求后续XR"
+    },
+    {
+      "id": "XR09-05",
+      "title": "心意明说",
+      "kind": "extra-relation",
+      "actor": "C09",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        23,
+        4,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-23-A",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-XR09-05",
+      "costGroup": "SC-XR09-05",
+      "effectOwner": "XR09-05",
+      "requires": [
+        "XR09-04",
+        "M39"
+      ],
+      "gates": [
+        "independent-npc-answer",
+        "cooperation-equal-rights",
+        "mutual-consent-for-romance"
+      ],
+      "window": {
+        "start": [
+          23,
+          4,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S12/扩展二线路线卡.json#XR09-05"
+      ]
+    },
+    {
+      "id": "P12",
+      "title": "澄宁择婿",
+      "kind": "side",
+      "actor": "C36",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        23,
+        10,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-23-B",
+      "slots": 0,
+      "delivery": "conditional-shared-entry",
+      "sceneId": "SC-P12",
+      "costGroup": "FAMILY-ADULT-DECISION-C36",
+      "effectOwner": "M33#adult-decision",
+      "requires": [
+        "M33#education"
+      ],
+      "gates": [
+        "actual-child-exists",
+        "age-at-least-18",
+        "child-willing-to-discuss",
+        "one-marriage-transaction-only"
+      ],
+      "window": {
+        "start": [
+          23,
+          10,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#P12"
+      ],
+      "dateRule": "same actual adult decision as M33, otherwise not applicable/pending",
+      "mainPackage": "M33"
+    },
+    {
+      "id": "R02-05",
+      "title": "安排轮值",
+      "kind": "relation",
+      "actor": "C02",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        23,
+        10,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-23-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-R02-05",
+      "costGroup": "SC-R02-05",
+      "effectOwner": "R02-05",
+      "requires": [
+        "R02-04"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          23,
+          10,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R02-05"
+      ],
+      "costReason": "另日或另场相谈，不能沿用原主线免费场次",
+      "evidenceRefs": [
+        "R02-04",
+        "G21"
+      ],
+      "romanceRequires": [
+        "R02-04",
+        "G21"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "P07",
+      "title": "槿汐归乡",
+      "kind": "side",
+      "actor": "C17",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        23,
+        10,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-23-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-P07",
+      "costGroup": "SC-P07",
+      "effectOwner": "P07",
+      "requires": [
+        "R02-05"
+      ],
+      "gates": [
+        "own-profession-and-agency",
+        "no-romance-prerequisite"
+      ],
+      "window": {
+        "start": [
+          23,
+          10,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#P07"
+      ]
+    },
+    {
+      "id": "D19",
+      "title": "同僚轮值",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        23,
+        10,
+        5
+      ],
+      "period": "day",
+      "focusWeek": "WL-23-B",
+      "slots": 1,
+      "delivery": "optional-template",
+      "sceneId": "SC-D19",
+      "costGroup": "SC-D19",
+      "effectOwner": "D19",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          23,
+          10,
+          5
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D19"
+      ],
+      "optional": true,
+      "season": "any",
+      "extensionCandidate": null,
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      }
+    },
+    {
+      "id": "M40",
+      "title": "眉庄择志",
+      "kind": "main",
+      "actor": "C10",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        24,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-24-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M40",
+      "costGroup": "SC-M40",
+      "effectOwner": "M40",
+      "requires": [
+        "M39"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          24,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M40",
+        "规范V1.2#第五章与附录四",
+        "design/S12/主线分支修订与未完清单.md#M40"
+      ],
+      "mainPackage": "M40",
+      "branchPolicy": "采用S12-04修订：本世证据、署名、职责与私人答复分开；允许诚实发展、合作、未定或终止；不反向要求后续XR"
+    },
+    {
+      "id": "XR10-05",
+      "title": "留得闲时",
+      "kind": "extra-relation",
+      "actor": "C10",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        24,
+        4,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-24-A",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-XR10-05",
+      "costGroup": "SC-XR10-05",
+      "effectOwner": "XR10-05",
+      "requires": [
+        "XR10-04",
+        "M40"
+      ],
+      "gates": [
+        "independent-npc-answer",
+        "cooperation-equal-rights",
+        "mutual-consent-for-romance"
+      ],
+      "window": {
+        "start": [
+          24,
+          4,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S12/扩展二线路线卡.json#XR10-05"
+      ]
+    },
+    {
+      "id": "R07-05",
+      "title": "尊重各自选择",
+      "kind": "relation",
+      "actor": "C07",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        24,
+        10,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-24-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-R07-05",
+      "costGroup": "SC-R07-05",
+      "effectOwner": "R07-05",
+      "requires": [
+        "R07-04"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          24,
+          10,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R07-05"
+      ],
+      "costReason": "另日或另场相谈，不能沿用原主线免费场次",
+      "evidenceRefs": [
+        "M33#education"
+      ],
+      "romanceRequires": [
+        "M33#education"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "R08-05",
+      "title": "教艺",
+      "kind": "relation",
+      "actor": "C08",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        24,
+        10,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-24-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-R08-05",
+      "costGroup": "SC-R08-05",
+      "effectOwner": "R08-05",
+      "requires": [
+        "R08-04"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          24,
+          10,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R08-05"
+      ],
+      "costReason": "另日或另场相谈，不能沿用原主线免费场次",
+      "evidenceRefs": [
+        "R08-04"
+      ],
+      "romanceRequires": [
+        "R08-04"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "M41",
+      "title": "御案交班",
+      "kind": "main",
+      "actor": "C02",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        25,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-25-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M41",
+      "costGroup": "SC-M41",
+      "effectOwner": "M41",
+      "requires": [
+        "M40"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          25,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M41",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M41",
+      "stages": [
+        {
+          "id": "M41#handover-review",
+          "recommended": [
+            25,
+            4,
+            10
+          ],
+          "period": "day",
+          "focusWeek": null,
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M41"
+          ],
+          "minimumDays": 7,
+          "after": "M41"
+        }
+      ]
+    },
+    {
+      "id": "D23",
+      "title": "御前小憩",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        25,
+        10,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-25-B",
+      "slots": 1,
+      "delivery": "optional-template",
+      "sceneId": "SC-D23",
+      "costGroup": "SC-D23",
+      "effectOwner": "D23",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          25,
+          10,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D23"
+      ],
+      "optional": true,
+      "season": "any",
+      "extensionCandidate": null,
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      }
+    },
+    {
+      "id": "M42",
+      "title": "年氏归途",
+      "kind": "main",
+      "actor": "C03",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        26,
+        4,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-26-A",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M42",
+      "costGroup": "SC-M42",
+      "effectOwner": "M42",
+      "requires": [
+        "M41"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          26,
+          4,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M42",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M42",
+      "stages": [
+        {
+          "id": "M42#rotation-review",
+          "recommended": [
+            26,
+            4,
+            24
+          ],
+          "period": "day",
+          "focusWeek": null,
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M42"
+          ],
+          "minimumDays": 21,
+          "after": "M42"
+        }
+      ],
+      "contactMode": "document-no-live-reply"
+    },
+    {
+      "id": "XR09-06",
+      "title": "灯下见我",
+      "kind": "extra-relation",
+      "actor": "C09",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        26,
+        10,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-26-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-XR09-06",
+      "costGroup": "SC-XR09-06",
+      "effectOwner": "XR09-06",
+      "requires": [
+        "XR09-05"
+      ],
+      "gates": [
+        "independent-npc-answer",
+        "cooperation-equal-rights",
+        "mutual-consent-for-romance"
+      ],
+      "window": {
+        "start": [
+          26,
+          10,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S12/扩展二线路线卡.json#XR09-06"
+      ]
+    },
+    {
+      "id": "XR10-06",
+      "title": "同看岁丰",
+      "kind": "extra-relation",
+      "actor": "C10",
+      "volume": "V07",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        26,
+        10,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-26-B",
+      "slots": 1,
+      "delivery": "arranged",
+      "sceneId": "SC-XR10-06",
+      "costGroup": "SC-XR10-06",
+      "effectOwner": "XR10-06",
+      "requires": [
+        "XR10-05"
+      ],
+      "gates": [
+        "independent-npc-answer",
+        "cooperation-equal-rights",
+        "mutual-consent-for-romance"
+      ],
+      "window": {
+        "start": [
+          26,
+          10,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S12/扩展二线路线卡.json#XR10-06"
+      ]
+    },
+    {
+      "id": "M43",
+      "title": "秋来故人",
+      "kind": "main",
+      "actor": "C03",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        9,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-27-arrival",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M43",
+      "costGroup": "SC-M43",
+      "effectOwner": "M43",
+      "requires": [
+        "M42"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          27,
+          9,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M43",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M43"
+    },
+    {
+      "id": "R03-06",
+      "title": "卸甲归来",
+      "kind": "relation",
+      "actor": "C03",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        9,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-27-arrival",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M43",
+      "costGroup": "SC-M43",
+      "effectOwner": "M43",
+      "requires": [
+        "R03-05",
+        "M43"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          27,
+          9,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R03-06"
+      ],
+      "evidenceRefs": [
+        "G06",
+        "M42#rotation-review"
+      ],
+      "romanceRequires": [
+        "G06",
+        "M42#rotation-review"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "E01",
+      "title": "晚岁山河",
+      "kind": "epilogue",
+      "actor": "C03",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        9,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-27-arrival",
+      "slots": 0,
+      "delivery": "conditional-readonly-page",
+      "sceneId": "SC-E01",
+      "costGroup": "SC-E01",
+      "effectOwner": "E01",
+      "requires": [
+        "R03-06",
+        "G06",
+        "M34#handover-review",
+        "M42#rotation-review"
+      ],
+      "gates": [
+        "current-established-together-and-actual-outcomes",
+        "cooperation-visit-is-not-romance-epilogue"
+      ],
+      "window": {
+        "start": [
+          27,
+          9,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "current-date-late-page-no-appointment-or-reward"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#E01"
+      ],
+      "latePolicy": {
+        "needs": "actual-prior-meeting-and-current-gates",
+        "cannot": [
+          "backdate",
+          "award",
+          "perform-appointment",
+          "change-original-visit",
+          "rewrite-sealed-ending"
+        ]
+      }
+    },
+    {
+      "id": "D12",
+      "title": "归京接风",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        9,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-27-arrival",
+      "slots": 1,
+      "delivery": "optional-template",
+      "sceneId": "SC-D12",
+      "costGroup": "SC-D12",
+      "effectOwner": "D12",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          27,
+          9,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D12"
+      ],
+      "optional": true,
+      "season": "autumn",
+      "extensionCandidate": null,
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      }
+    },
+    {
+      "id": "M44",
+      "title": "送别留灯",
+      "kind": "main",
+      "actor": "C02",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        11,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-27-farewell",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M44",
+      "costGroup": "SC-M44",
+      "effectOwner": "M44",
+      "requires": [
+        "M43"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          27,
+          11,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M44",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M44",
+      "stages": [
+        {
+          "id": "M44#farewell",
+          "recommended": [
+            27,
+            11,
+            2
+          ],
+          "period": "day",
+          "focusWeek": "WL-27-farewell",
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M43"
+          ],
+          "mainPackage": "M44",
+          "participants": [
+            "C01",
+            "C03"
+          ],
+          "meaning": "先送年羹尧启程，再进入苏培盛私谈"
+        }
+      ]
+    },
+    {
+      "id": "R02-06",
+      "title": "坦然相守",
+      "kind": "relation",
+      "actor": "C02",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        11,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-27-farewell",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M44#farewell",
+      "costGroup": "SC-M44#farewell",
+      "effectOwner": "M44#farewell",
+      "requires": [
+        "R02-05",
+        "M44#farewell"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          27,
+          11,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R02-06"
+      ],
+      "evidenceRefs": [
+        "M41#handover-review"
+      ],
+      "romanceRequires": [
+        "M41#handover-review"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "E02",
+      "title": "灯烛长伴",
+      "kind": "epilogue",
+      "actor": "C02",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        11,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-27-farewell",
+      "slots": 0,
+      "delivery": "conditional-readonly-page",
+      "sceneId": "SC-E02",
+      "costGroup": "SC-E02",
+      "effectOwner": "E02",
+      "requires": [
+        "R02-06",
+        "M14",
+        "R02-05"
+      ],
+      "gates": [
+        "current-established-together-and-actual-outcomes",
+        "cooperation-visit-is-not-romance-epilogue"
+      ],
+      "window": {
+        "start": [
+          27,
+          11,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "current-date-late-page-no-appointment-or-reward"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#E02"
+      ],
+      "latePolicy": {
+        "needs": "actual-prior-meeting-and-current-gates",
+        "cannot": [
+          "backdate",
+          "award",
+          "perform-appointment",
+          "change-original-visit",
+          "rewrite-sealed-ending"
+        ]
+      }
+    },
+    {
+      "id": "M45",
+      "title": "雪夜问安",
+      "kind": "main",
+      "actor": "C04",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        12,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-27-doctor",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M45",
+      "costGroup": "SC-M45",
+      "effectOwner": "M45",
+      "requires": [
+        "M44#farewell"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          27,
+          12,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M45",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M45",
+      "stages": [
+        {
+          "id": "M45#diagnosis",
+          "recommended": [
+            27,
+            12,
+            2
+          ],
+          "period": "day",
+          "focusWeek": "WL-27-doctor",
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M44#farewell"
+          ],
+          "mainPackage": "M45",
+          "participants": [
+            "C01",
+            "C04"
+          ]
+        },
+        {
+          "id": "M45#flute",
+          "recommended": [
+            27,
+            12,
+            16
+          ],
+          "period": "day",
+          "focusWeek": "WL-27-flute",
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M45#diagnosis"
+          ],
+          "mainPackage": "M45",
+          "participants": [
+            "C01",
+            "C05"
+          ],
+          "gates": [
+            "accepted-palace-visit-and-fulfilled"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R04-06",
+      "title": "医者与伴侣",
+      "kind": "relation",
+      "actor": "C04",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        12,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-27-doctor",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M45#diagnosis",
+      "costGroup": "SC-M45#diagnosis",
+      "effectOwner": "M45#diagnosis",
+      "requires": [
+        "R04-05",
+        "M45#diagnosis"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          27,
+          12,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R04-06"
+      ],
+      "evidenceRefs": [
+        "R04-05"
+      ],
+      "romanceRequires": [
+        "R04-05"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "E03",
+      "title": "药香伴君",
+      "kind": "epilogue",
+      "actor": "C04",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        12,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-27-doctor",
+      "slots": 0,
+      "delivery": "conditional-readonly-page",
+      "sceneId": "SC-E03",
+      "costGroup": "SC-E03",
+      "effectOwner": "E03",
+      "requires": [
+        "R04-06",
+        "G21",
+        "R04-05"
+      ],
+      "gates": [
+        "current-established-together-and-actual-outcomes",
+        "cooperation-visit-is-not-romance-epilogue"
+      ],
+      "window": {
+        "start": [
+          27,
+          12,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "current-date-late-page-no-appointment-or-reward"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#E03"
+      ],
+      "latePolicy": {
+        "needs": "actual-prior-meeting-and-current-gates",
+        "cannot": [
+          "backdate",
+          "award",
+          "perform-appointment",
+          "change-original-visit",
+          "rewrite-sealed-ending"
+        ]
+      }
+    },
+    {
+      "id": "D14",
+      "title": "雪夜来信",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        12,
+        4
+      ],
+      "period": "day",
+      "focusWeek": "WL-27-doctor",
+      "slots": 1,
+      "delivery": "optional-template",
+      "sceneId": "SC-D14",
+      "costGroup": "SC-D14",
+      "effectOwner": "D14",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          27,
+          12,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D14"
+      ],
+      "optional": true,
+      "season": "winter",
+      "extensionCandidate": null,
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      }
+    },
+    {
+      "id": "R05-06",
+      "title": "雪夜旧曲",
+      "kind": "relation",
+      "actor": "C05",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        12,
+        16
+      ],
+      "period": "evening",
+      "focusWeek": "WL-27-flute",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M45#flute",
+      "costGroup": "SC-M45#flute",
+      "effectOwner": "M45#flute",
+      "requires": [
+        "R05-05",
+        "M45#flute"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          27,
+          12,
+          16
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R05-06"
+      ],
+      "evidenceRefs": [
+        "R05-05"
+      ],
+      "romanceRequires": [
+        "R05-05"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "E04",
+      "title": "月下旧约",
+      "kind": "epilogue",
+      "actor": "C05",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        12,
+        17
+      ],
+      "period": "day",
+      "focusWeek": "WL-27-flute",
+      "slots": 0,
+      "delivery": "conditional-readonly-page",
+      "sceneId": "SC-E04",
+      "costGroup": "SC-E04",
+      "effectOwner": "E04",
+      "requires": [
+        "R05-06",
+        "R05-03",
+        "G15"
+      ],
+      "gates": [
+        "current-established-together-and-actual-outcomes",
+        "cooperation-visit-is-not-romance-epilogue"
+      ],
+      "window": {
+        "start": [
+          27,
+          12,
+          17
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "current-date-late-page-no-appointment-or-reward"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#E04"
+      ],
+      "latePolicy": {
+        "needs": "actual-prior-meeting-and-current-gates",
+        "cannot": [
+          "backdate",
+          "award",
+          "perform-appointment",
+          "change-original-visit",
+          "rewrite-sealed-ending"
+        ]
+      }
+    },
+    {
+      "id": "D24",
+      "title": "旧曲重听",
+      "kind": "daily",
+      "actor": "C01",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        27,
+        12,
+        18
+      ],
+      "period": "day",
+      "focusWeek": "WL-27-flute",
+      "slots": 1,
+      "delivery": "optional-template",
+      "sceneId": "SC-D24",
+      "costGroup": "SC-D24",
+      "effectOwner": "D24",
+      "requires": [],
+      "gates": [
+        "actual-location-and-participants"
+      ],
+      "window": {
+        "start": [
+          27,
+          12,
+          18
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#D24"
+      ],
+      "optional": true,
+      "season": "winter",
+      "extensionCandidate": null,
+      "recurrence": {
+        "kind": "template-not-new-logical-event",
+        "cooldownDays": 7,
+        "oncePerWeekPerActor": true
+      }
+    },
+    {
+      "id": "M46",
+      "title": "玉环冬晴",
+      "kind": "main",
+      "actor": "C06",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        28,
+        1,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-28-palace",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M46",
+      "costGroup": "SC-M46",
+      "effectOwner": "M46",
+      "requires": [
+        "M45#flute"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          28,
+          1,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M46",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M46",
+      "stages": [
+        {
+          "id": "M46#yixiu",
+          "recommended": [
+            28,
+            1,
+            2
+          ],
+          "period": "day",
+          "focusWeek": "WL-28-palace",
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M45#flute"
+          ],
+          "mainPackage": "M46",
+          "participants": [
+            "C01",
+            "C06"
+          ]
+        },
+        {
+          "id": "M46#shilan",
+          "recommended": [
+            28,
+            1,
+            4
+          ],
+          "period": "day",
+          "focusWeek": "WL-28-palace",
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M46#yixiu"
+          ],
+          "mainPackage": "M46",
+          "participants": [
+            "C01",
+            "C07"
+          ]
+        },
+        {
+          "id": "M46#lingrong",
+          "recommended": [
+            28,
+            1,
+            6
+          ],
+          "period": "day",
+          "focusWeek": "WL-28-palace",
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M46#shilan"
+          ],
+          "mainPackage": "M46",
+          "participants": [
+            "C01",
+            "C08"
+          ]
+        },
+        {
+          "id": "M46#complete",
+          "recommended": [
+            28,
+            1,
+            7
+          ],
+          "period": "day",
+          "focusWeek": "WL-28-palace",
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M46#lingrong"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R06-06",
+      "title": "冬晴相依",
+      "kind": "relation",
+      "actor": "C06",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        28,
+        1,
+        2
+      ],
+      "period": "evening",
+      "focusWeek": "WL-28-palace",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M46#yixiu",
+      "costGroup": "SC-M46#yixiu",
+      "effectOwner": "M46#yixiu",
+      "requires": [
+        "R06-05",
+        "M46#yixiu"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          28,
+          1,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R06-06"
+      ],
+      "evidenceRefs": [
+        "R06-05"
+      ],
+      "romanceRequires": [
+        "R06-05"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "E05",
+      "title": "玉环岁岁",
+      "kind": "epilogue",
+      "actor": "C06",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        28,
+        1,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-28-palace",
+      "slots": 0,
+      "delivery": "conditional-readonly-page",
+      "sceneId": "SC-E05",
+      "costGroup": "SC-E05",
+      "effectOwner": "E05",
+      "requires": [
+        "R06-06",
+        "R06-05"
+      ],
+      "gates": [
+        "current-established-together-and-actual-outcomes",
+        "cooperation-visit-is-not-romance-epilogue"
+      ],
+      "window": {
+        "start": [
+          28,
+          1,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "current-date-late-page-no-appointment-or-reward"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#E05"
+      ],
+      "latePolicy": {
+        "needs": "actual-prior-meeting-and-current-gates",
+        "cannot": [
+          "backdate",
+          "award",
+          "perform-appointment",
+          "change-original-visit",
+          "rewrite-sealed-ending"
+        ]
+      }
+    },
+    {
+      "id": "R07-06",
+      "title": "余生安稳",
+      "kind": "relation",
+      "actor": "C07",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        28,
+        1,
+        4
+      ],
+      "period": "evening",
+      "focusWeek": "WL-28-palace",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M46#shilan",
+      "costGroup": "SC-M46#shilan",
+      "effectOwner": "M46#shilan",
+      "requires": [
+        "R07-05",
+        "M46#shilan"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          28,
+          1,
+          4
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R07-06"
+      ],
+      "evidenceRefs": [
+        "M19",
+        "R07-05"
+      ],
+      "romanceRequires": [
+        "M19",
+        "R07-05"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "E06",
+      "title": "明艳余生",
+      "kind": "epilogue",
+      "actor": "C07",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        28,
+        1,
+        5
+      ],
+      "period": "day",
+      "focusWeek": "WL-28-palace",
+      "slots": 0,
+      "delivery": "conditional-readonly-page",
+      "sceneId": "SC-E06",
+      "costGroup": "SC-E06",
+      "effectOwner": "E06",
+      "requires": [
+        "R07-06",
+        "M19",
+        "R07-05"
+      ],
+      "gates": [
+        "current-established-together-and-actual-outcomes",
+        "cooperation-visit-is-not-romance-epilogue",
+        "actual-child-growth-or-no-child-autonomy"
+      ],
+      "window": {
+        "start": [
+          28,
+          1,
+          5
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "current-date-late-page-no-appointment-or-reward"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#E06"
+      ],
+      "latePolicy": {
+        "needs": "actual-prior-meeting-and-current-gates",
+        "cannot": [
+          "backdate",
+          "award",
+          "perform-appointment",
+          "change-original-visit",
+          "rewrite-sealed-ending"
+        ]
+      }
+    },
+    {
+      "id": "R08-06",
+      "title": "心安自持",
+      "kind": "relation",
+      "actor": "C08",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        28,
+        1,
+        6
+      ],
+      "period": "evening",
+      "focusWeek": "WL-28-palace",
+      "slots": 0,
+      "delivery": "embedded-private-section",
+      "sceneId": "SC-M46#lingrong",
+      "costGroup": "SC-M46#lingrong",
+      "effectOwner": "M46#lingrong",
+      "requires": [
+        "R08-05",
+        "M46#lingrong"
+      ],
+      "gates": [
+        "cooperation-completes-applicable-outcome",
+        "romance-needs-current-mutual-consent",
+        "preserve-old-high-stage-no-reward-repeat",
+        "same-scene-private-visibility"
+      ],
+      "window": {
+        "start": [
+          28,
+          1,
+          6
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#R08-06"
+      ],
+      "evidenceRefs": [
+        "R08-05"
+      ],
+      "romanceRequires": [
+        "R08-05"
+      ],
+      "requiresMode": "previous-node-handled-not-romance",
+      "missingEvidence": "只记待核与补办，不补造业绩或恋爱；不得阻断其他主线"
+    },
+    {
+      "id": "E07",
+      "title": "微光心安",
+      "kind": "epilogue",
+      "actor": "C08",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        28,
+        1,
+        7
+      ],
+      "period": "day",
+      "focusWeek": "WL-28-palace",
+      "slots": 0,
+      "delivery": "conditional-readonly-page",
+      "sceneId": "SC-E07",
+      "costGroup": "SC-E07",
+      "effectOwner": "E07",
+      "requires": [
+        "R08-06",
+        "R08-04",
+        "R08-05"
+      ],
+      "gates": [
+        "current-established-together-and-actual-outcomes",
+        "cooperation-visit-is-not-romance-epilogue"
+      ],
+      "window": {
+        "start": [
+          28,
+          1,
+          7
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "current-date-late-page-no-appointment-or-reward"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#E07"
+      ],
+      "latePolicy": {
+        "needs": "actual-prior-meeting-and-current-gates",
+        "cannot": [
+          "backdate",
+          "award",
+          "perform-appointment",
+          "change-original-visit",
+          "rewrite-sealed-ending"
+        ]
+      }
+    },
+    {
+      "id": "XE09",
+      "title": "照见本心",
+      "kind": "extra-epilogue",
+      "actor": "C09",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        28,
+        4,
+        3
+      ],
+      "period": "day",
+      "focusWeek": "WL-28-extra",
+      "slots": 0,
+      "delivery": "conditional-readonly-page",
+      "sceneId": "SC-XE09",
+      "costGroup": "SC-XE09",
+      "effectOwner": "XE09",
+      "requires": [
+        "XR09-06"
+      ],
+      "gates": [
+        "current-established-together-and-actual-outcomes",
+        "cooperation-visit-is-not-romance-epilogue"
+      ],
+      "window": {
+        "start": [
+          28,
+          4,
+          3
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "current-date-late-page-no-appointment-or-reward"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#XE09"
+      ],
+      "latePolicy": {
+        "needs": "actual-prior-meeting-and-current-gates",
+        "cannot": [
+          "backdate",
+          "award",
+          "perform-appointment",
+          "change-original-visit",
+          "rewrite-sealed-ending"
+        ]
+      }
+    },
+    {
+      "id": "XE10",
+      "title": "一盏春茶",
+      "kind": "extra-epilogue",
+      "actor": "C10",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        28,
+        4,
+        5
+      ],
+      "period": "day",
+      "focusWeek": "WL-28-extra",
+      "slots": 0,
+      "delivery": "conditional-readonly-page",
+      "sceneId": "SC-XE10",
+      "costGroup": "SC-XE10",
+      "effectOwner": "XE10",
+      "requires": [
+        "XR10-06"
+      ],
+      "gates": [
+        "current-established-together-and-actual-outcomes",
+        "cooperation-visit-is-not-romance-epilogue"
+      ],
+      "window": {
+        "start": [
+          28,
+          4,
+          5
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "current-date-late-page-no-appointment-or-reward"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#XE10"
+      ],
+      "latePolicy": {
+        "needs": "actual-prior-meeting-and-current-gates",
+        "cannot": [
+          "backdate",
+          "award",
+          "perform-appointment",
+          "change-original-visit",
+          "rewrite-sealed-ending"
+        ]
+      }
+    },
+    {
+      "id": "M47",
+      "title": "山河交付",
+      "kind": "main",
+      "actor": "C34",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        29,
+        1,
+        2
+      ],
+      "period": "day",
+      "focusWeek": "WL-29-handover",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M47",
+      "costGroup": "SC-M47",
+      "effectOwner": "M47",
+      "requires": [
+        "M46#complete"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          29,
+          1,
+          2
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M47",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M47",
+      "stages": [
+        {
+          "id": "M47#decision",
+          "recommended": [
+            29,
+            1,
+            2
+          ],
+          "period": "day",
+          "focusWeek": "WL-29-handover",
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M46#complete",
+            "G23"
+          ],
+          "mainPackage": "M47"
+        },
+        {
+          "id": "M47#complete",
+          "recommended": [
+            29,
+            1,
+            24
+          ],
+          "period": "day",
+          "focusWeek": null,
+          "slots": 0,
+          "delivery": "document",
+          "requires": [
+            "M47#decision",
+            "G24"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "G24",
+      "title": "确认交接",
+      "kind": "government",
+      "actor": "C28",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        29,
+        1,
+        23
+      ],
+      "period": "day",
+      "focusWeek": null,
+      "slots": 0,
+      "delivery": "due-report",
+      "sceneId": "SC-G24",
+      "costGroup": "SC-G24",
+      "effectOwner": "G24",
+      "requires": [
+        "G23",
+        "M47#decision"
+      ],
+      "gates": [
+        "real-execution-and-receipt",
+        "review-not-automatically-read-or-awarded"
+      ],
+      "window": {
+        "start": [
+          29,
+          1,
+          23
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#G24"
+      ],
+      "project": "G22-CHAIN",
+      "projectPhase": "review",
+      "minimumDays": 30,
+      "after": "G23",
+      "milestones": [
+        {
+          "date": [
+            22,
+            4,
+            20
+          ],
+          "meaning": "阶段试办回执，只按实记录，不提前确认最终交接"
+        },
+        {
+          "date": [
+            23,
+            4,
+            20
+          ],
+          "meaning": "阶段试办回执，只按实记录，不提前确认最终交接"
+        },
+        {
+          "date": [
+            24,
+            4,
+            20
+          ],
+          "meaning": "阶段试办回执，只按实记录，不提前确认最终交接"
+        },
+        {
+          "date": [
+            25,
+            4,
+            20
+          ],
+          "meaning": "阶段试办回执，只按实记录，不提前确认最终交接"
+        },
+        {
+          "date": [
+            26,
+            4,
+            20
+          ],
+          "meaning": "阶段试办回执，只按实记录，不提前确认最终交接"
+        },
+        {
+          "date": [
+            27,
+            4,
+            20
+          ],
+          "meaning": "阶段试办回执，只按实记录，不提前确认最终交接"
+        },
+        {
+          "date": [
+            28,
+            4,
+            20
+          ],
+          "meaning": "阶段试办回执，只按实记录，不提前确认最终交接"
+        }
+      ]
+    },
+    {
+      "id": "M48",
+      "title": "三十年灯下",
+      "kind": "main",
+      "actor": "C01",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        30,
+        12,
+        24
+      ],
+      "period": "day",
+      "focusWeek": "WL-30-final",
+      "slots": 0,
+      "delivery": "main-package",
+      "sceneId": "SC-M48",
+      "costGroup": "SC-M48",
+      "effectOwner": "M48",
+      "requires": [
+        "M47#complete"
+      ],
+      "gates": [
+        "main-does-not-require-romance"
+      ],
+      "window": {
+        "start": [
+          30,
+          12,
+          24
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "next-legal-week-no-history-rewrite"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#M48",
+        "规范V1.2#第五章与附录四"
+      ],
+      "mainPackage": "M48"
+    },
+    {
+      "id": "F01",
+      "title": "山河相守",
+      "kind": "ending",
+      "actor": "C01",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        30,
+        12,
+        30
+      ],
+      "period": "evening",
+      "focusWeek": "WL-30-final",
+      "slots": 0,
+      "delivery": "mutually-exclusive-ending",
+      "sceneId": "SC-F01",
+      "costGroup": "SC-F01",
+      "effectOwner": "F01",
+      "requires": [
+        "M48",
+        "M47#complete"
+      ],
+      "gates": [
+        "seven-core-together",
+        "seven-core-epilogues",
+        "all-key-governance-settled",
+        "state-indicators-at-least-45"
+      ],
+      "window": {
+        "start": [
+          30,
+          12,
+          30
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "F04-repair-tail-only-with-real-dates-no-duplicate-settlement"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#F01"
+      ],
+      "branchGroup": "FINAL-CHRONICLE",
+      "extensionRule": "甄沈各按本世实际相伴、合作、未定或终止落款；不强制九线相守，不回算旧史册"
+    },
+    {
+      "id": "F02",
+      "title": "共治长宁",
+      "kind": "ending",
+      "actor": "C01",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        30,
+        12,
+        30
+      ],
+      "period": "evening",
+      "focusWeek": "WL-30-final",
+      "slots": 0,
+      "delivery": "mutually-exclusive-ending",
+      "sceneId": "SC-F02",
+      "costGroup": "SC-F02",
+      "effectOwner": "F02",
+      "requires": [
+        "M48",
+        "M47#complete"
+      ],
+      "gates": [
+        "handover-complete",
+        "at-least-three-core-together",
+        "other-routes-cooperative",
+        "state-indicators-at-least-45"
+      ],
+      "window": {
+        "start": [
+          30,
+          12,
+          30
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "F04-repair-tail-only-with-real-dates-no-duplicate-settlement"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#F02"
+      ],
+      "branchGroup": "FINAL-CHRONICLE",
+      "extensionRule": "甄沈各按本世实际相伴、合作、未定或终止落款；不强制九线相守，不回算旧史册"
+    },
+    {
+      "id": "F03",
+      "title": "灯火未尽",
+      "kind": "ending",
+      "actor": "C01",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        30,
+        12,
+        30
+      ],
+      "period": "evening",
+      "focusWeek": "WL-30-final",
+      "slots": 0,
+      "delivery": "mutually-exclusive-ending",
+      "sceneId": "SC-F03",
+      "costGroup": "SC-F03",
+      "effectOwner": "F03",
+      "requires": [
+        "M48",
+        "M47#complete"
+      ],
+      "gates": [
+        "state-functioning",
+        "record-real-unresolved-items"
+      ],
+      "window": {
+        "start": [
+          30,
+          12,
+          30
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "F04-repair-tail-only-with-real-dates-no-duplicate-settlement"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#F03"
+      ],
+      "branchGroup": "FINAL-CHRONICLE",
+      "extensionRule": "甄沈各按本世实际相伴、合作、未定或终止落款；不强制九线相守，不回算旧史册"
+    },
+    {
+      "id": "F04",
+      "title": "重整河山",
+      "kind": "ending",
+      "actor": "C01",
+      "volume": "V08",
+      "status": "design-only-runtime-pending",
+      "recommended": [
+        30,
+        12,
+        30
+      ],
+      "period": "evening",
+      "focusWeek": "WL-30-final",
+      "slots": 0,
+      "delivery": "mutually-exclusive-ending",
+      "sceneId": "SC-F04",
+      "costGroup": "SC-F04",
+      "effectOwner": "F04",
+      "requires": [
+        "M48",
+        "M47#complete"
+      ],
+      "gates": [
+        "actual-unresolved-crisis",
+        "explicit-choice-of-repair-tail"
+      ],
+      "window": {
+        "start": [
+          30,
+          12,
+          30
+        ],
+        "end": [
+          30,
+          12,
+          30
+        ],
+        "lateRoute": "F04-repair-tail-only-with-real-dates-no-duplicate-settlement"
+      },
+      "sourceRefs": [
+        "design/S01/事件总表.json#F04"
+      ],
+      "branchGroup": "FINAL-CHRONICLE",
+      "extensionRule": "甄沈各按本世实际相伴、合作、未定或终止落款；不强制九线相守，不回算旧史册"
+    }
+  ]
+}

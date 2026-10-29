@@ -1,0 +1,863 @@
+{
+  "version": "0.1",
+  "status": "静态容量与依赖证明，非浏览器周制实测",
+  "weeks": [
+    {
+      "id": "W01",
+      "start": [
+        1,
+        1,
+        2
+      ],
+      "end": [
+        1,
+        1,
+        8
+      ],
+      "slots": 6
+    },
+    {
+      "id": "W02",
+      "start": [
+        1,
+        4,
+        2
+      ],
+      "end": [
+        1,
+        4,
+        8
+      ],
+      "slots": 6
+    },
+    {
+      "id": "W03",
+      "start": [
+        1,
+        7,
+        2
+      ],
+      "end": [
+        1,
+        7,
+        8
+      ],
+      "slots": 6
+    },
+    {
+      "id": "W04",
+      "start": [
+        1,
+        10,
+        2
+      ],
+      "end": [
+        1,
+        10,
+        8
+      ],
+      "slots": 6
+    },
+    {
+      "id": "W05",
+      "start": [
+        2,
+        1,
+        2
+      ],
+      "end": [
+        2,
+        1,
+        8
+      ],
+      "slots": 6
+    },
+    {
+      "id": "W06",
+      "start": [
+        2,
+        4,
+        2
+      ],
+      "end": [
+        2,
+        4,
+        8
+      ],
+      "slots": 6
+    },
+    {
+      "id": "W07",
+      "start": [
+        2,
+        7,
+        2
+      ],
+      "end": [
+        2,
+        7,
+        8
+      ],
+      "slots": 6
+    },
+    {
+      "id": "W08",
+      "start": [
+        2,
+        10,
+        2
+      ],
+      "end": [
+        2,
+        10,
+        8
+      ],
+      "slots": 6
+    }
+  ],
+  "coverageSchedule": [
+    {
+      "eventId": "M01",
+      "weekId": "W01",
+      "date": [
+        1,
+        1,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "WG-C01",
+      "weekId": "W01",
+      "date": [
+        1,
+        1,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "M02",
+      "weekId": "W01",
+      "date": [
+        1,
+        1,
+        7
+      ],
+      "slot": "evening",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R02-01",
+      "weekId": "W01",
+      "date": [
+        1,
+        1,
+        7
+      ],
+      "slot": "evening",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "WG-C02",
+      "weekId": "W01",
+      "date": [
+        1,
+        1,
+        8
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R02-02",
+      "weekId": "W01",
+      "date": [
+        1,
+        1,
+        8
+      ],
+      "slot": "evening",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "WG-C03",
+      "weekId": null,
+      "date": [
+        1,
+        1,
+        15
+      ],
+      "slot": "report",
+      "cost": 0,
+      "mode": "document",
+      "coverage": "常规时段回访"
+    },
+    {
+      "eventId": "M03",
+      "weekId": "W02",
+      "date": [
+        1,
+        4,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R07-01",
+      "weekId": "W02",
+      "date": [
+        1,
+        4,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R07-02",
+      "weekId": "W02",
+      "date": [
+        1,
+        4,
+        5
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "M04",
+      "weekId": "W02",
+      "date": [
+        1,
+        4,
+        7
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "G01",
+      "weekId": "W02",
+      "date": [
+        1,
+        4,
+        7
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "G02",
+      "weekId": "W02",
+      "date": [
+        1,
+        4,
+        8
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "G03",
+      "weekId": null,
+      "date": [
+        1,
+        4,
+        15
+      ],
+      "slot": "report",
+      "cost": 0,
+      "mode": "document",
+      "coverage": "常规时段回访"
+    },
+    {
+      "eventId": "M05",
+      "weekId": "W03",
+      "date": [
+        1,
+        7,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R06-01",
+      "weekId": "W03",
+      "date": [
+        1,
+        7,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "P01",
+      "weekId": "W03",
+      "date": [
+        1,
+        7,
+        3
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R06-02",
+      "weekId": "W03",
+      "date": [
+        1,
+        7,
+        5
+      ],
+      "slot": "evening",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "M06",
+      "weekId": "W04",
+      "date": [
+        1,
+        10,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "WG-P01",
+      "weekId": "W04",
+      "date": [
+        1,
+        10,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "WG-P02",
+      "weekId": "W04",
+      "date": [
+        1,
+        10,
+        3
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "P09",
+      "weekId": "W04",
+      "date": [
+        1,
+        10,
+        4
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "XR09-01",
+      "weekId": "W04",
+      "date": [
+        1,
+        10,
+        5
+      ],
+      "slot": "evening",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "XR10-01",
+      "weekId": "W04",
+      "date": [
+        1,
+        10,
+        6
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "WG-P03",
+      "weekId": null,
+      "date": [
+        1,
+        10,
+        10
+      ],
+      "slot": "report",
+      "cost": 0,
+      "mode": "document",
+      "coverage": "常规时段回访"
+    },
+    {
+      "eventId": "M07",
+      "weekId": "W05",
+      "date": [
+        2,
+        1,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R08-01",
+      "weekId": "W05",
+      "date": [
+        2,
+        1,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R08-02",
+      "weekId": "W05",
+      "date": [
+        2,
+        1,
+        3
+      ],
+      "slot": "evening",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "XR10-02",
+      "weekId": "W05",
+      "date": [
+        2,
+        1,
+        4
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "M08",
+      "weekId": "W05",
+      "date": [
+        2,
+        1,
+        7
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R04-01",
+      "weekId": "W05",
+      "date": [
+        2,
+        1,
+        7
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R04-02",
+      "weekId": "W05",
+      "date": [
+        2,
+        1,
+        8
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "M09",
+      "weekId": "W06",
+      "date": [
+        2,
+        4,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R05-01",
+      "weekId": "W06",
+      "date": [
+        2,
+        4,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R05-02",
+      "weekId": "W06",
+      "date": [
+        2,
+        4,
+        4
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "M10",
+      "weekId": "W06",
+      "date": [
+        2,
+        4,
+        7
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R03-01",
+      "weekId": "W06",
+      "date": [
+        2,
+        4,
+        7
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "G04",
+      "weekId": "W06",
+      "date": [
+        2,
+        4,
+        7
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "G05",
+      "weekId": "W06",
+      "date": [
+        2,
+        4,
+        8
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "G06",
+      "weekId": null,
+      "date": [
+        2,
+        4,
+        29
+      ],
+      "slot": "report",
+      "cost": 0,
+      "mode": "document",
+      "coverage": "21日后核回执，C28呈报，C03仅通信"
+    },
+    {
+      "eventId": "M11",
+      "weekId": "W07",
+      "date": [
+        2,
+        7,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "XR09-02",
+      "weekId": "W07",
+      "date": [
+        2,
+        7,
+        3
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "R03-02",
+      "weekId": "W07",
+      "date": [
+        2,
+        7,
+        4
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "letter",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "P10",
+      "weekId": "W07",
+      "date": [
+        2,
+        7,
+        5
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "M12",
+      "weekId": "W08",
+      "date": [
+        2,
+        10,
+        2
+      ],
+      "slot": "day",
+      "cost": 0,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "P11",
+      "weekId": "W08",
+      "date": [
+        2,
+        10,
+        3
+      ],
+      "slot": "day",
+      "cost": 1,
+      "mode": "in-person",
+      "coverage": "全内容样例，不强制所有玩家照排"
+    },
+    {
+      "eventId": "F00",
+      "weekId": null,
+      "date": [
+        2,
+        12,
+        30
+      ],
+      "slot": "closure",
+      "cost": 0,
+      "mode": "archive",
+      "coverage": "常规推进至二年末，先结账再封卷"
+    }
+  ],
+  "optionalTemplates": [
+    "D01",
+    "D02",
+    "D03",
+    "D04",
+    "D05",
+    "D06",
+    "D07",
+    "D08"
+  ],
+  "projects": [
+    {
+      "id": "PR-COURT",
+      "startEvent": "WG-C01",
+      "executionEvent": "WG-C02",
+      "reportEvent": "WG-C03",
+      "minimumDays": 7
+    },
+    {
+      "id": "PR-FISCAL",
+      "startEvent": "G01",
+      "executionEvent": "G02",
+      "reportEvent": "G03",
+      "minimumDays": 7
+    },
+    {
+      "id": "PR-WATER",
+      "startEvent": "WG-P01",
+      "executionEvent": "WG-P02",
+      "reportEvent": "WG-P03",
+      "minimumDays": 7
+    },
+    {
+      "id": "PR-MILITARY",
+      "startEvent": "G04",
+      "executionEvent": "G05",
+      "reportEvent": "G06",
+      "minimumDays": 21
+    }
+  ],
+  "characterRules": {
+    "C03": {
+      "inPersonWindows": [
+        [
+          [
+            2,
+            4,
+            7
+          ],
+          [
+            2,
+            4,
+            9
+          ]
+        ]
+      ],
+      "else": "外任或在途，仅通信；离京与回京必须有旅行时长"
+    },
+    "C05": {
+      "authorizedVisits": [
+        [
+          2,
+          4,
+          2
+        ],
+        [
+          2,
+          4,
+          4
+        ]
+      ],
+      "else": "先约定王府与宫门，不能无日程出现在园中"
+    },
+    "C04": {
+      "unlock": [
+        2,
+        1,
+        7
+      ]
+    },
+    "C08": {
+      "unlock": [
+        1,
+        10,
+        2
+      ]
+    },
+    "C09": {
+      "unlock": [
+        1,
+        10,
+        2
+      ]
+    },
+    "C10": {
+      "unlock": [
+        1,
+        10,
+        2
+      ]
+    }
+  },
+  "scenarios": [
+    {
+      "id": "all-content",
+      "label": "七核心加扩展二线与四类项目全覆盖",
+      "extraPerWeek": 0
+    },
+    {
+      "id": "life-first",
+      "label": "每周再选一场二格小宴",
+      "extraPerWeek": 2
+    },
+    {
+      "id": "politics-first",
+      "label": "有项目且未满两决策时加1格核查，否则改经史；再加1格学习",
+      "extraPerWeek": 2,
+      "projectDecisionExtra": "up-to-1-within-cap"
+    },
+    {
+      "id": "all-cooperation",
+      "label": "核心与扩展均保留合作，费用与日期不变",
+      "extraPerWeek": 0
+    }
+  ],
+  "delayCases": [
+    "晚执行时按执行日期重新计工期，到期在常规时段中断；超过二年末记未完不伪造报告",
+    "未来正式邀约只排现有重点或延展周；日期不在可操作周时保留候选",
+    "延期内嵌相知另占1格；优先占本周剩余或本季唯一延展周，不为齐全破六格"
+  ],
+  "monthlySettlement": "每月30日一次，首版新档正常到二年十二月三十共24次；迁移档只处理迁移后尚未结算月份。",
+  "closure": "F00本身0格，先完成截至当日到期处理与月结；玩家可明确保留未完事项，不把全覆盖样例变成强制功课。"
+}

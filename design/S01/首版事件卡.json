@@ -1,0 +1,5920 @@
+{
+  "version": "0.1",
+  "cards": [
+    {
+      "id": "M01",
+      "title": "养心惊梦",
+      "kind": "main",
+      "production": "扩写",
+      "source": "V1.2第五章；当前主线用src/story.js",
+      "outline": "梦中病榻与今夜灯火重叠，苏培盛仍在帘外。雍正必须先弄清自己身在何年，也第一次有机会叫住尚未离去的人。留下灯、核年款、唤人近前三种回应分别留下情绪、线索与距离。苏培盛移动灯盏或递来旧折，玩家立刻看见一句话改变他的动作。M02按最初选择承接灯、纸签或没有退远的身影。",
+      "actor": "C02",
+      "location": "养心殿御案",
+      "participants": [
+        "C02"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          1,
+          1,
+          2
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          1,
+          2
+        ],
+        "latest": [
+          1,
+          3,
+          30
+        ]
+      },
+      "sceneId": "SC-M01",
+      "costGroup": "SC-M01",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "steady",
+          "label": "把灯留下，先缓一缓",
+          "detail": "心绪 +4",
+          "effects": {
+            "mood": 4
+          },
+          "flags": {
+            "opening": "steady"
+          }
+        },
+        {
+          "id": "verify",
+          "label": "问清年款，再问故人的近况",
+          "detail": "政令执行 +2",
+          "effects": {
+            "execution": 2
+          },
+          "flags": {
+            "opening": "verify"
+          }
+        },
+        {
+          "id": "call",
+          "label": "“苏培盛，过来。”",
+          "detail": "心绪 +2",
+          "effects": {
+            "mood": 2
+          },
+          "flags": {
+            "opening": "call"
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "苏培盛移动灯盏或递来旧折，玩家立刻看见一句话改变他的动作。",
+      "echo": "M02按最初选择承接灯、纸签或没有退远的身影。",
+      "nextExpectation": "M02按最初选择承接灯、纸签或没有退远的身影。",
+      "visibility": [
+        "C01",
+        "C02"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-M01",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 90,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "M01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "M02",
+        "sampleDate": [
+          1,
+          1,
+          7
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-M01",
+        "sourceEvent": "M01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "M02",
+      "title": "留茶夜谈",
+      "kind": "main",
+      "production": "扩写",
+      "source": "V1.2第五章；当前主线用src/story.js",
+      "outline": "折子已薄，收茶的苏培盛却还要守后半夜。另一只白瓷杯让雍正看见，自己一直知道他的用处，却未必知道他的日子。可以留他闲话、看值守名册或先让他按时交班，不把休息关怀自动写成已落实制度。对方说起手炉或值房缺人，R02-01继续接住这段眼前相处。次日R02-02让空椅真正有了用途；轮值项目稍后以交接结果回应。",
+      "actor": "C02",
+      "location": "养心殿御案",
+      "participants": [
+        "C02"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          1,
+          1,
+          7
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          1,
+          7
+        ],
+        "latest": [
+          1,
+          3,
+          30
+        ]
+      },
+      "sceneId": "SC-M02",
+      "costGroup": "SC-M02",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "tea",
+          "label": "把另一只杯子推给他",
+          "detail": "心绪 +2",
+          "effects": {
+            "mood": 2
+          },
+          "flags": {
+            "suTea": true
+          }
+        },
+        {
+          "id": "duty",
+          "label": "翻开交接册，问问他的值守",
+          "detail": "政令执行 +1",
+          "effects": {
+            "execution": 1
+          },
+          "flags": {
+            "suTea": false
+          }
+        },
+        {
+          "id": "rest",
+          "label": "“交班以后，今夜好好睡。”",
+          "detail": "圣躬 +1 · 心绪 +1",
+          "effects": {
+            "health": 1,
+            "mood": 1
+          },
+          "flags": {
+            "suRestConcern": true
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "对方说起手炉或值房缺人，R02-01继续接住这段眼前相处。",
+      "echo": "次日R02-02让空椅真正有了用途；轮值项目稍后以交接结果回应。",
+      "nextExpectation": "次日R02-02让空椅真正有了用途；轮值项目稍后以交接结果回应。",
+      "visibility": [
+        "C01",
+        "C02"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-M02",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 90,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "M02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "M03",
+        "sampleDate": [
+          1,
+          4,
+          2
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-M02",
+        "sourceEvent": "M02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "M03",
+      "title": "停香无声",
+      "kind": "main",
+      "production": "扩写",
+      "source": "V1.2第五章；当前主线用src/story.js",
+      "outline": "翊坤宫里香刚点起，年世兰看见你按住添香的手。前世警觉催着你停用，眼前的她却有权追问自己的身体为何忽然成为秘密。停用留样、当面说明、暂不解释各有费用与情绪后果，三种都能先保护身体。香炉合上、旧盒收走，年世兰的追问因你的坦诚程度不同。R07-01补解释，R07-02回到她是否能自己看用料单，不拿暗停冒充她已知情。",
+      "actor": "C07",
+      "location": "翊坤宫",
+      "participants": [
+        "C07"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          1,
+          4,
+          2
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          4,
+          2
+        ],
+        "latest": [
+          1,
+          6,
+          30
+        ]
+      },
+      "sceneId": "SC-M03",
+      "costGroup": "SC-M03",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "sample",
+          "label": "停供留样，请太医院核验",
+          "detail": "国库 -2 · 圣躬 +2 · 六宫秩序 +2",
+          "effects": {
+            "treasury": -2,
+            "health": 2,
+            "palace": 2
+          },
+          "flags": {
+            "incense": "testing"
+          }
+        },
+        {
+          "id": "explain",
+          "label": "先说明疑虑，再安排停供",
+          "detail": "国库 -2 · 六宫秩序 +3",
+          "effects": {
+            "treasury": -2,
+            "palace": 3
+          },
+          "flags": {
+            "incense": "explained"
+          }
+        },
+        {
+          "id": "quiet",
+          "label": "暗中换去香料，暂不说明",
+          "detail": "国库 -1 · 六宫秩序 -2",
+          "effects": {
+            "treasury": -1,
+            "palace": -2
+          },
+          "flags": {
+            "incense": "hidden",
+            "incenseExplanationDue": true
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "香炉合上、旧盒收走，年世兰的追问因你的坦诚程度不同。",
+      "echo": "R07-01补解释，R07-02回到她是否能自己看用料单，不拿暗停冒充她已知情。",
+      "nextExpectation": "R07-01补解释，R07-02回到她是否能自己看用料单，不拿暗停冒充她已知情。",
+      "visibility": [
+        "C01",
+        "C07"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-M03",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 90,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "M03",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "M04",
+        "sampleDate": [
+          1,
+          4,
+          7
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-M03",
+        "sourceEvent": "M03",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "M04",
+      "title": "新帝第一折",
+      "kind": "main",
+      "production": "扩写",
+      "source": "V1.2第五章；当前主线用src/story.js",
+      "outline": "地方亏空与边关催饷同时入案，张廷玉带来两份看似相反的清单。一笔催缴到了县里可能变成摊派，迟延又会让军需继续等待。先保周转、限期清缴或先审大户，体现速度、国库与基层负担的取舍。朱批明确核查范围，G01有原账、民间说法和经手责任三种调查入口。G02执行，G03到工期后带回周转与米价，不把好看的回款数字当作全部成功。",
+      "actor": "C28",
+      "location": "养心殿御案",
+      "participants": [
+        "C28"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          1,
+          4,
+          7
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          4,
+          7
+        ],
+        "latest": [
+          1,
+          6,
+          30
+        ]
+      },
+      "sceneId": "SC-M04",
+      "costGroup": "SC-M04",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "balance",
+          "label": "先保周转，分期清账",
+          "detail": "国库 -3 · 民生 +3",
+          "effects": {
+            "treasury": -3,
+            "people": 3
+          },
+          "flags": {
+            "fiscalPolicy": "phased"
+          }
+        },
+        {
+          "id": "quick",
+          "label": "限期清缴，先稳国库",
+          "detail": "国库 +3 · 民生 -3",
+          "effects": {
+            "treasury": 3,
+            "people": -3
+          },
+          "flags": {
+            "fiscalPolicy": "quick"
+          }
+        },
+        {
+          "id": "audit",
+          "label": "先查大户与经手人",
+          "detail": "国库 -1 · 政令执行 +3",
+          "effects": {
+            "treasury": -1,
+            "execution": 3
+          },
+          "flags": {
+            "fiscalPolicy": "audit"
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "朱批明确核查范围，G01有原账、民间说法和经手责任三种调查入口。",
+      "echo": "G02执行，G03到工期后带回周转与米价，不把好看的回款数字当作全部成功。",
+      "nextExpectation": "G02执行，G03到工期后带回周转与米价，不把好看的回款数字当作全部成功。",
+      "visibility": [
+        "C01",
+        "C28"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-M04",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 90,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "M04",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "M05",
+        "sampleDate": [
+          1,
+          7,
+          2
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-M04",
+        "sourceEvent": "M04",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "M05",
+      "title": "景仁赠环",
+      "kind": "main",
+      "production": "扩写",
+      "source": "V1.2第五章；当前主线用src/story.js",
+      "outline": "宜修掌中的玉环还没有戴上。她看着这次难得的来访，想知道雍正愿不愿意坐下来听一件不讨喜的宫务，而非只留下赏赐。谈中宫权责、认真提出再见意向、只赠玉而不逼回应均可继续。她决定是否把玉环留在外面，也试着把自己的话说完。R06-02用宫账中的批注承接第一次谈话，正式相见须另排日程兑现。",
+      "actor": "C06",
+      "location": "景仁宫",
+      "participants": [
+        "C06"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          1,
+          7,
+          2
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          7,
+          2
+        ],
+        "latest": [
+          1,
+          9,
+          30
+        ]
+      },
+      "sceneId": "SC-M05",
+      "costGroup": "SC-M05",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "rights",
+          "label": "先谈中宫权责",
+          "detail": "六宫秩序 +3",
+          "effects": {
+            "palace": 3
+          },
+          "flags": {
+            "palacePolicy": "rights"
+          }
+        },
+        {
+          "id": "visit",
+          "label": "提出定期相见，再核对日程",
+          "detail": "心绪 +2",
+          "effects": {
+            "mood": 2
+          },
+          "flags": {
+            "visitDiscussed": true
+          }
+        },
+        {
+          "id": "gift",
+          "label": "先留下玉环，不逼她回应",
+          "detail": "心绪 +1",
+          "effects": {
+            "mood": 1
+          },
+          "flags": {
+            "palacePolicy": "reserved"
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "她决定是否把玉环留在外面，也试着把自己的话说完。",
+      "echo": "R06-02用宫账中的批注承接第一次谈话，正式相见须另排日程兑现。",
+      "nextExpectation": "R06-02用宫账中的批注承接第一次谈话，正式相见须另排日程兑现。",
+      "visibility": [
+        "C01",
+        "C06"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-M05",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 90,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "M05",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "M06",
+        "sampleDate": [
+          1,
+          10,
+          2
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-M05",
+        "sourceEvent": "M05",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "M06",
+      "title": "殿前择人",
+      "kind": "main",
+      "production": "扩写",
+      "source": "V1.2第五章；当前主线用src/story.js",
+      "outline": "三位新入宫的人依次走进殿中，雍正知道旧日结局，却不能拿未发生的事先给今天的人定罪。每个人都试图保住自己的体面。统一份例、询问所长或依礼接见，影响待遇与相互印象而不改人物身份。安陵容得以说出所学，甄嬛和眉庄分别留下可继续的话题。扩展二线在随后独立接见中开始；京畿民生报修作为另一条待核消息进入御案。",
+      "actor": "C08",
+      "location": "宫宴大殿",
+      "participants": [
+        "C08"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          1,
+          10,
+          2
+        ],
+        "firstUnlock": "M06",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          10,
+          2
+        ],
+        "latest": [
+          1,
+          12,
+          30
+        ]
+      },
+      "sceneId": "SC-M06",
+      "costGroup": "SC-M06",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "fair",
+          "label": "按位分给足份例",
+          "detail": "国库 -2 · 六宫秩序 +3",
+          "effects": {
+            "treasury": -2,
+            "palace": 3
+          },
+          "flags": {
+            "selection": "fair"
+          }
+        },
+        {
+          "id": "ability",
+          "label": "逐一询问所长",
+          "detail": "政令执行 +2",
+          "effects": {
+            "execution": 2
+          },
+          "flags": {
+            "selection": "ability"
+          }
+        },
+        {
+          "id": "brief",
+          "label": "依礼接见，暂不私谈",
+          "detail": "六宫秩序 +1",
+          "effects": {
+            "palace": 1
+          },
+          "flags": {
+            "selection": "formal"
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "安陵容得以说出所学，甄嬛和眉庄分别留下可继续的话题。",
+      "echo": "扩展二线在随后独立接见中开始；京畿民生报修作为另一条待核消息进入御案。",
+      "nextExpectation": "扩展二线在随后独立接见中开始；京畿民生报修作为另一条待核消息进入御案。",
+      "visibility": [
+        "C01",
+        "C08"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-M06",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 90,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "M06",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "M07",
+        "sampleDate": [
+          2,
+          1,
+          2
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-M06",
+        "sourceEvent": "M06",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "M07",
+      "title": "宫宴微澜",
+      "kind": "main",
+      "production": "扩写",
+      "source": "V1.2第五章；当前主线用src/story.js",
+      "outline": "讥讽打断一支曲子，安陵容站在宴席中央，等待的不只是一句替她出头的话。宜修也必须决定这场宫宴的规矩由谁维持。让她唱完、由皇后依规主持、当场制止各有不同场面与善后。曲子能否完整响起、旁人怎样收声，都在当场看见。R08-01与私下倾听接住她对自身本领的在意，不把她写成只会谢恩。",
+      "actor": "C08",
+      "location": "宫宴大殿",
+      "participants": [
+        "C08"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          2,
+          1,
+          2
+        ],
+        "firstUnlock": "M06",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          2,
+          1,
+          2
+        ],
+        "latest": [
+          2,
+          3,
+          30
+        ]
+      },
+      "sceneId": "SC-M07",
+      "costGroup": "SC-M07",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "queen",
+          "label": "请皇后依规纠偏",
+          "detail": "六宫秩序 +3",
+          "effects": {
+            "palace": 3
+          },
+          "flags": {
+            "banquet": "queen"
+          }
+        },
+        {
+          "id": "skill",
+          "label": "让她把曲子唱完",
+          "detail": "心绪 +3",
+          "effects": {
+            "mood": 3
+          },
+          "flags": {
+            "banquet": "skill"
+          }
+        },
+        {
+          "id": "stop",
+          "label": "当场制止讥讽",
+          "detail": "六宫秩序 +1 · 朝局稳定 -1",
+          "effects": {
+            "palace": 1,
+            "stability": -1
+          },
+          "flags": {
+            "banquet": "direct"
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "曲子能否完整响起、旁人怎样收声，都在当场看见。",
+      "echo": "R08-01与私下倾听接住她对自身本领的在意，不把她写成只会谢恩。",
+      "nextExpectation": "R08-01与私下倾听接住她对自身本领的在意，不把她写成只会谢恩。",
+      "visibility": [
+        "C01",
+        "C08"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-M07",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 90,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "M07",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "M08",
+        "sampleDate": [
+          2,
+          1,
+          7
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-M07",
+        "sourceEvent": "M07",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "M08",
+      "title": "雨廊赠衣",
+      "kind": "main",
+      "production": "扩写",
+      "source": "V1.2第五章；当前主线用src/story.js",
+      "outline": "雨廊外石阶湿透，温实初先递出脉案才接干帕。雍正想多留他片刻，却看见他真正想做的事仍放在药箱与当值之间。可以倾听志愿、只问医事、先请避雨；诊疗不因相处意愿不同而缩水。他纠正脉案中的一字，开始谈起想留给后来医者的东西。R04-02与新的教学草案回到这页纸，问诊和个人情感分别推进。",
+      "actor": "C04",
+      "location": "宫门长廊",
+      "participants": [
+        "C04"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          2,
+          1,
+          7
+        ],
+        "firstUnlock": "M08",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          2,
+          1,
+          7
+        ],
+        "latest": [
+          2,
+          3,
+          30
+        ]
+      },
+      "sceneId": "SC-M08",
+      "costGroup": "SC-M08",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "listen",
+          "label": "问他真正想做的医事",
+          "detail": "政令执行 +2",
+          "effects": {
+            "execution": 2
+          },
+          "flags": {
+            "wenGoalHeard": true
+          }
+        },
+        {
+          "id": "medical",
+          "label": "只核对脉案，守住医职边界",
+          "detail": "圣躬 +3",
+          "effects": {
+            "health": 3
+          },
+          "flags": {
+            "medicalBoundary": true
+          }
+        },
+        {
+          "id": "rain",
+          "label": "先让他避雨，再安排问诊",
+          "detail": "国库 -1 · 圣躬 +2",
+          "effects": {
+            "treasury": -1,
+            "health": 2
+          },
+          "flags": {
+            "wenCare": true
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "他纠正脉案中的一字，开始谈起想留给后来医者的东西。",
+      "echo": "R04-02与新的教学草案回到这页纸，问诊和个人情感分别推进。",
+      "nextExpectation": "R04-02与新的教学草案回到这页纸，问诊和个人情感分别推进。",
+      "visibility": [
+        "C01",
+        "C04"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-M08",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 90,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "M08",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "M09",
+        "sampleDate": [
+          2,
+          4,
+          2
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-M08",
+        "sourceEvent": "M08",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "M09",
+      "title": "御园笛声",
+      "kind": "main",
+      "production": "扩写",
+      "source": "V1.2第五章；当前主线用src/story.js",
+      "outline": "允礼办完宗室差事经过御园，奏完这一段还得回府。你们打拍时的半拍分歧，让他从谨守礼数转而露出一点忍不住的笑。谈曲、问王府或只听一曲都尊重他的往返，不把人改成宫中乐师。旧谱添了一点墨，他说起宫门外那个下午原有的安排。R05-02另日约见，共校两种奏法；谱不是婚约，也不免除宗室责任。",
+      "actor": "C05",
+      "location": "御花园",
+      "participants": [
+        "C05"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          2,
+          4,
+          2
+        ],
+        "firstUnlock": "M09",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          2,
+          4,
+          2
+        ],
+        "latest": [
+          2,
+          6,
+          30
+        ]
+      },
+      "sceneId": "SC-M09",
+      "costGroup": "SC-M09",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "music",
+          "label": "谈这一段笛谱",
+          "detail": "心绪 +3",
+          "effects": {
+            "mood": 3
+          },
+          "flags": {
+            "yunMusic": true
+          }
+        },
+        {
+          "id": "duty",
+          "label": "先问宗室差事与王府近况",
+          "detail": "朝局稳定 +2",
+          "effects": {
+            "stability": 2
+          },
+          "flags": {
+            "yunDuty": true
+          }
+        },
+        {
+          "id": "listen",
+          "label": "只听一曲，依礼送行",
+          "detail": "心绪 +1",
+          "effects": {
+            "mood": 1
+          },
+          "flags": {
+            "yunReserved": true
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "旧谱添了一点墨，他说起宫门外那个下午原有的安排。",
+      "echo": "R05-02另日约见，共校两种奏法；谱不是婚约，也不免除宗室责任。",
+      "nextExpectation": "R05-02另日约见，共校两种奏法；谱不是婚约，也不免除宗室责任。",
+      "visibility": [
+        "C01",
+        "C05"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-M09",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 90,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "M09",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "M10",
+        "sampleDate": [
+          2,
+          4,
+          7
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-M09",
+        "sourceEvent": "M09",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "M10",
+      "title": "凯旋与军账",
+      "kind": "main",
+      "production": "扩写",
+      "source": "V1.2第五章；当前主线用src/story.js",
+      "outline": "凯旋的尘还在披风上，两笔相同军需支领已经放到御案。年羹尧想被看见归来的人，张廷玉仍要查清钱粮，二者都等不得一句空话。欢迎后审核、先核册或暂缓封赏，分别留下信任与程序的后果。廊下私谈接住将军的疑问，正殿G04则确定真实拨款和承办人。G05发运与G06回执逐步给结果，边书再提起当时如何把私情与军权分开。",
+      "actor": "C03",
+      "location": "养心殿御案",
+      "participants": [
+        "C03"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          2,
+          4,
+          7
+        ],
+        "firstUnlock": "M10",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          2,
+          4,
+          7
+        ],
+        "latest": [
+          2,
+          6,
+          30
+        ]
+      },
+      "sceneId": "SC-M10",
+      "costGroup": "SC-M10",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "welcome",
+          "label": "先欢迎归人，再共同核账",
+          "detail": "朝局稳定 +2",
+          "effects": {
+            "stability": 2
+          },
+          "flags": {
+            "returnPolicy": "joint"
+          }
+        },
+        {
+          "id": "audit",
+          "label": "先核册，再议封赏",
+          "detail": "政令执行 +3 · 心绪 -1",
+          "effects": {
+            "execution": 3,
+            "mood": -1
+          },
+          "flags": {
+            "returnPolicy": "audit"
+          }
+        },
+        {
+          "id": "delay",
+          "label": "暂缓封赏，清楚说明原因",
+          "detail": "政令执行 +2 · 朝局稳定 -1",
+          "effects": {
+            "execution": 2,
+            "stability": -1
+          },
+          "flags": {
+            "returnPolicy": "delay"
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "廊下私谈接住将军的疑问，正殿G04则确定真实拨款和承办人。",
+      "echo": "G05发运与G06回执逐步给结果，边书再提起当时如何把私情与军权分开。",
+      "nextExpectation": "G05发运与G06回执逐步给结果，边书再提起当时如何把私情与军权分开。",
+      "visibility": [
+        "C01",
+        "C03"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-M10",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 90,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "M10",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "M11",
+        "sampleDate": [
+          2,
+          7,
+          2
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-M10",
+        "sourceEvent": "M10",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "M11",
+      "title": "旧影新衣",
+      "kind": "main",
+      "production": "扩写",
+      "source": "V1.2第五章；当前主线用src/story.js",
+      "outline": "甄嬛终于借一件衣裳的颜色问起纯元。雍正必须正面回答她在今生究竟被怎样看见，早先的含混不能靠一次新赏物抹掉。本次规划补诚实可发展、明确无意、暂未确定三种态度；旧档已说过的话保留。她会追问、松一口气或收回期待，而非统一感谢体恤。XR09-02与后续M39按本世真实答复续写，新增真爱不删除拒绝路线。",
+      "actor": "C09",
+      "location": "养心殿暖阁",
+      "participants": [
+        "C09"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          2,
+          7,
+          2
+        ],
+        "firstUnlock": "M06",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          2,
+          7,
+          2
+        ],
+        "latest": [
+          2,
+          9,
+          30
+        ]
+      },
+      "sceneId": "SC-M11",
+      "costGroup": "SC-M11",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "clear",
+          "label": "明确不作旧人比较",
+          "detail": "六宫秩序 +2",
+          "effects": {
+            "palace": 2
+          },
+          "flags": {
+            "zhenBoundary": "clear"
+          }
+        },
+        {
+          "id": "polite",
+          "label": "维持礼遇，清楚说明疏离",
+          "detail": "朝局稳定 +1 · 心绪 +1",
+          "effects": {
+            "stability": 1,
+            "mood": 1
+          },
+          "flags": {
+            "zhenBoundary": "polite"
+          }
+        },
+        {
+          "id": "vague",
+          "label": "含混赏赐，避开回答",
+          "detail": "国库 -2 · 心绪 -2",
+          "effects": {
+            "treasury": -2,
+            "mood": -2
+          },
+          "flags": {
+            "zhenBoundary": "vague"
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "她会追问、松一口气或收回期待，而非统一感谢体恤。",
+      "echo": "XR09-02与后续M39按本世真实答复续写，新增真爱不删除拒绝路线。",
+      "nextExpectation": "XR09-02与后续M39按本世真实答复续写，新增真爱不删除拒绝路线。",
+      "visibility": [
+        "C01",
+        "C09"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-M11",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 90,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "M11",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "M12",
+        "sampleDate": [
+          2,
+          10,
+          2
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-M11",
+        "sourceEvent": "M11",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "M12",
+      "title": "六宫新规",
+      "kind": "main",
+      "production": "扩写",
+      "source": "V1.2第五章；当前主线用src/story.js",
+      "outline": "两年零散决定摊成宫账，宜修希望下一位经手人也能照章办。雍正须在眼前安抚和长期分工之间落下真正可执行的一笔。写明权限、先安抚或按家世分配，影响交接与秩序而不直接等于爱情圆满。案上空出能放茶的位置，或仍夹着待议的纸签。常规时段继续处理到期报告和月账，F00再按真实经历收束两年。",
+      "actor": "C06",
+      "location": "景仁宫",
+      "participants": [
+        "C06"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          2,
+          10,
+          2
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          2,
+          10,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          30
+        ]
+      },
+      "sceneId": "SC-M12",
+      "costGroup": "SC-M12",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "system",
+          "label": "写明份例与协理权限",
+          "detail": "国库 -2 · 六宫秩序 +5 · 政令执行 +2",
+          "effects": {
+            "treasury": -2,
+            "palace": 5,
+            "execution": 2
+          },
+          "flags": {
+            "palaceRules": "written"
+          }
+        },
+        {
+          "id": "comfort",
+          "label": "先安抚，制度暂缓",
+          "detail": "心绪 +2 · 六宫秩序 -2",
+          "effects": {
+            "mood": 2,
+            "palace": -2
+          },
+          "flags": {
+            "palaceRules": "pending"
+          }
+        },
+        {
+          "id": "family",
+          "label": "按家世分配协理",
+          "detail": "朝局稳定 +2 · 六宫秩序 -3",
+          "effects": {
+            "stability": 2,
+            "palace": -3
+          },
+          "flags": {
+            "palaceRules": "family"
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "案上空出能放茶的位置，或仍夹着待议的纸签。",
+      "echo": "常规时段继续处理到期报告和月账，F00再按真实经历收束两年。",
+      "nextExpectation": "常规时段继续处理到期报告和月账，F00再按真实经历收束两年。",
+      "visibility": [
+        "C01",
+        "C06"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-M12",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 90,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "M12",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-M12",
+        "sourceEvent": "M12",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R02-01",
+      "title": "留茶",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "苏培盛这次说起铜手炉与两只杯子的闲话。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，铜手炉与两只杯子的闲话因选择而有不同分寸。后续由轮值真正腾出的一晚接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C02",
+      "location": "养心殿暖阁",
+      "participants": [
+        "C02"
+      ],
+      "requires": [
+        "M02"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          1,
+          7
+        ],
+        "firstUnlock": "M01",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          1,
+          1,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ],
+        "sameDateAs": "M02"
+      },
+      "sceneId": "SC-M02",
+      "costGroup": "SC-M02",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "warm",
+          "label": "“没有差事，陪朕说会儿闲话。”",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "“明日的更次，你我一起看看。”",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "“照旧便好，不必另猜朕的意思。”",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，铜手炉与两只杯子的闲话因选择而有不同分寸。",
+      "echo": "后续由轮值真正腾出的一晚接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由轮值真正腾出的一晚接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C02"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R02-01",
+      "mainLink": "M02",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R02-01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "R02-02",
+        "sampleDate": [
+          1,
+          1,
+          8
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R02-01",
+        "sourceEvent": "R02-01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R02-02",
+      "title": "初次请坐",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "苏培盛这次说起腿疼、空椅与那句他自己留下的笑话。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，腿疼、空椅与那句他自己留下的笑话因选择而有不同分寸。后续由轮值真正腾出的一晚接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C02",
+      "location": "养心殿暖阁",
+      "participants": [
+        "C02"
+      ],
+      "requires": [
+        "R02-01"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          1,
+          8
+        ],
+        "firstUnlock": "M01",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          1,
+          1,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ]
+      },
+      "sceneId": "SC-R02-02",
+      "costGroup": "SC-R02-02",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "warm",
+          "label": "“坐着说，朕想听你说完。”",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "把名册递过去，请他坐着回话",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "不再劝坐，问清腿疼与更次",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，腿疼、空椅与那句他自己留下的笑话因选择而有不同分寸。",
+      "echo": "后续由轮值真正腾出的一晚接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由轮值真正腾出的一晚接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C02"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R02-02",
+      "mainLink": "R02-01",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "minimumDaysAfterPrevious": 1,
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R02-02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R02-02",
+        "sourceEvent": "R02-02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R03-01",
+      "title": "凯旋私谈",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "年羹尧这次说起廊下的归来与那本必须核的军账。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，廊下的归来与那本必须核的军账因选择而有不同分寸。后续由从催粮信多出来的一页私信接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C03",
+      "location": "养心殿暖阁",
+      "participants": [
+        "C03"
+      ],
+      "requires": [
+        "M10"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          4,
+          7
+        ],
+        "firstUnlock": "M10",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          2,
+          4,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ],
+        "sameDateAs": "M10"
+      },
+      "sceneId": "SC-M10",
+      "costGroup": "SC-M10",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "warm",
+          "label": "“先让朕看看，你这一程过得怎样。”",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "把战功与账目分别说清",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "说明君臣分寸，公私分别核查",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，廊下的归来与那本必须核的军账因选择而有不同分寸。",
+      "echo": "后续由从催粮信多出来的一页私信接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由从催粮信多出来的一页私信接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C03"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R03-01",
+      "mainLink": "M10",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R03-01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "R03-02",
+        "sampleDate": [
+          2,
+          7,
+          4
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R03-01",
+        "sourceEvent": "R03-01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R03-02",
+      "title": "边书",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "年羹尧这次说起来自西北的伤势与舆图近况。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，来自西北的伤势与舆图近况因选择而有不同分寸。后续由从催粮信多出来的一页私信接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C03",
+      "location": "西北来信",
+      "participants": [
+        "C03"
+      ],
+      "requires": [
+        "R03-01"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          7,
+          4
+        ],
+        "firstUnlock": "M10",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          2,
+          5,
+          7
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ]
+      },
+      "sceneId": "SC-R03-02",
+      "costGroup": "SC-R03-02",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "warm",
+          "label": "写一封只谈近况的私信，问问他的伤",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "军务另列，也答他舆图仍在",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "依军务回信，留下平实问候",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，来自西北的伤势与舆图近况因选择而有不同分寸。",
+      "echo": "后续由从催粮信多出来的一页私信接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由从催粮信多出来的一页私信接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C03"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R03-02",
+      "mainLink": "R03-01",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "minimumDaysAfterPrevious": 7,
+      "delivery": {
+        "mode": "letter",
+        "minimumDays": 7,
+        "completedMeaning": "回信已写毕发出，七日后才生成送达事实；节点处理不等于对方当场收到。"
+      },
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R03-02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R03-02",
+        "sourceEvent": "R03-02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R04-01",
+      "title": "雨廊",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "温实初这次说起雨廊药箱与不肯含糊的脉案。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，雨廊药箱与不肯含糊的脉案因选择而有不同分寸。后续由不是例行诊问的那次来访接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C04",
+      "location": "养心殿暖阁",
+      "participants": [
+        "C04"
+      ],
+      "requires": [
+        "M08"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          1,
+          7
+        ],
+        "firstUnlock": "M08",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          2,
+          1,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ],
+        "sameDateAs": "M08"
+      },
+      "sceneId": "SC-M08",
+      "costGroup": "SC-M08",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "warm",
+          "label": "问起那两页脉案背后的旧事",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "请他讲清脉案中的变化",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "只问医事，让人备好避雨衣物",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，雨廊药箱与不肯含糊的脉案因选择而有不同分寸。",
+      "echo": "后续由不是例行诊问的那次来访接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由不是例行诊问的那次来访接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C04"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R04-01",
+      "mainLink": "M08",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R04-01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "R04-02",
+        "sampleDate": [
+          2,
+          1,
+          8
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R04-01",
+        "sourceEvent": "R04-01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R04-02",
+      "title": "倾听志愿",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "温实初这次说起教学草案、当值和想留给后来者的批注。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，教学草案、当值和想留给后来者的批注因选择而有不同分寸。后续由不是例行诊问的那次来访接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C04",
+      "location": "养心殿暖阁",
+      "participants": [
+        "C04"
+      ],
+      "requires": [
+        "R04-01"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          1,
+          8
+        ],
+        "firstUnlock": "M08",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          2,
+          1,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ]
+      },
+      "sceneId": "SC-R04-02",
+      "costGroup": "SC-R04-02",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "warm",
+          "label": "“把你想做的，说给朕听。”",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "一起核清问诊和教人的时间",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "按医事议安排，也收下他的叮嘱",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，教学草案、当值和想留给后来者的批注因选择而有不同分寸。",
+      "echo": "后续由不是例行诊问的那次来访接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由不是例行诊问的那次来访接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C04"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R04-02",
+      "mainLink": "R04-01",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "minimumDaysAfterPrevious": 1,
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R04-02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R04-02",
+        "sourceEvent": "R04-02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R05-01",
+      "title": "御园听笛",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "允礼这次说起两人抢过的半拍与府里的旧琴。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，两人抢过的半拍与府里的旧琴因选择而有不同分寸。后续由他自己排妥王府差事的下一次帖子接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C05",
+      "location": "御花园",
+      "participants": [
+        "C05"
+      ],
+      "requires": [
+        "M09"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          4,
+          2
+        ],
+        "firstUnlock": "M09",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          2,
+          4,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ],
+        "sameDateAs": "M09"
+      },
+      "sceneId": "SC-M09",
+      "costGroup": "SC-M09",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "warm",
+          "label": "问问他宫门之外的那个下午",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "先听王府近来的差事",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "听完这一曲，依礼送他出园",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，两人抢过的半拍与府里的旧琴因选择而有不同分寸。",
+      "echo": "后续由他自己排妥王府差事的下一次帖子接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由他自己排妥王府差事的下一次帖子接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C05"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R05-01",
+      "mainLink": "M09",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R05-01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "R05-02",
+        "sampleDate": [
+          2,
+          4,
+          4
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R05-01",
+        "sourceEvent": "R05-01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R05-02",
+      "title": "共校旧谱",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "允礼这次说起两种奏法各自留下而非被迫改成一样。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，两种奏法各自留下而非被迫改成一样因选择而有不同分寸。后续由他自己排妥王府差事的下一次帖子接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C05",
+      "location": "御花园",
+      "participants": [
+        "C05"
+      ],
+      "requires": [
+        "R05-01"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          4,
+          4
+        ],
+        "firstUnlock": "M09",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          2,
+          4,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ]
+      },
+      "sceneId": "SC-R05-02",
+      "costGroup": "SC-R05-02",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "warm",
+          "label": "认真争一回，再把两种奏法都留下",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "各写所长，一起校完这一页",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "只校曲谱，依时送他回府",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，两种奏法各自留下而非被迫改成一样因选择而有不同分寸。",
+      "echo": "后续由他自己排妥王府差事的下一次帖子接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由他自己排妥王府差事的下一次帖子接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C05"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R05-02",
+      "mainLink": "R05-01",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "minimumDaysAfterPrevious": 1,
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R05-02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R05-02",
+        "sourceEvent": "R05-02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R06-01",
+      "title": "玉环",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "宜修这次说起玉环外面藏着的旧年心事。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，玉环外面藏着的旧年心事因选择而有不同分寸。后续由她为你留出宫务之外的一杯茶接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C06",
+      "location": "景仁宫",
+      "participants": [
+        "C06"
+      ],
+      "requires": [
+        "M05"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          7,
+          2
+        ],
+        "firstUnlock": "M01",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          1,
+          7,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ],
+        "sameDateAs": "M05"
+      },
+      "sceneId": "SC-M05",
+      "costGroup": "SC-M05",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "warm",
+          "label": "“你说，朕听着。”",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "请她说说这件宫务准备怎样办",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "先说明宫务之外的来往",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，玉环外面藏着的旧年心事因选择而有不同分寸。",
+      "echo": "后续由她为你留出宫务之外的一杯茶接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由她为你留出宫务之外的一杯茶接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C06"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R06-01",
+      "mainLink": "M05",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R06-01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "R06-02",
+        "sampleDate": [
+          1,
+          7,
+          5
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R06-01",
+        "sourceEvent": "R06-01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R06-02",
+      "title": "共理宫账",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "宜修这次说起两种笔迹和能够亲自核账的权限。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，两种笔迹和能够亲自核账的权限因选择而有不同分寸。后续由她为你留出宫务之外的一杯茶接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C06",
+      "location": "景仁宫",
+      "participants": [
+        "C06"
+      ],
+      "requires": [
+        "R06-01"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          7,
+          5
+        ],
+        "firstUnlock": "M01",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          1,
+          7,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ]
+      },
+      "sceneId": "SC-R06-02",
+      "costGroup": "SC-R06-02",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "warm",
+          "label": "照她的思路，一起把这本账看完",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "核清权限，请她依方案复核",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "只谈账目，把批注留下",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，两种笔迹和能够亲自核账的权限因选择而有不同分寸。",
+      "echo": "后续由她为你留出宫务之外的一杯茶接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由她为你留出宫务之外的一杯茶接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C06"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R06-02",
+      "mainLink": "R06-01",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "minimumDaysAfterPrevious": 1,
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R06-02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R06-02",
+        "sourceEvent": "R06-02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R07-01",
+      "title": "停香解释",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "年世兰这次说起香盒被收走后她终于问出口的话。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，香盒被收走后她终于问出口的话因选择而有不同分寸。后续由能生气也能在解释后和好的相处接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C07",
+      "location": "翊坤宫",
+      "participants": [
+        "C07"
+      ],
+      "requires": [
+        "M03"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          4,
+          2
+        ],
+        "firstUnlock": "M01",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          1,
+          4,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ],
+        "sameDateAs": "M03"
+      },
+      "sceneId": "SC-M03",
+      "costGroup": "SC-M03",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "warm",
+          "label": "把疑虑、留样和未查清的事都告诉她",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "请她亲自留一份起居记录",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "说清照护安排，也说清今后的来往",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，香盒被收走后她终于问出口的话因选择而有不同分寸。",
+      "echo": "后续由能生气也能在解释后和好的相处接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由能生气也能在解释后和好的相处接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C07"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R07-01",
+      "mainLink": "M03",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R07-01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "R07-02",
+        "sampleDate": [
+          1,
+          4,
+          5
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R07-01",
+        "sourceEvent": "R07-01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R07-02",
+      "title": "公开尊重",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "年世兰这次说起由她自己挑选、自己署名的花与用料。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，由她自己挑选、自己署名的花与用料因选择而有不同分寸。后续由能生气也能在解释后和好的相处接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C07",
+      "location": "翊坤宫",
+      "participants": [
+        "C07"
+      ],
+      "requires": [
+        "R07-01"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          4,
+          5
+        ],
+        "firstUnlock": "M01",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          1,
+          4,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ]
+      },
+      "sceneId": "SC-R07-02",
+      "costGroup": "SC-R07-02",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "warm",
+          "label": "当着众人的面，让她自己挑",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "让经手人逐项回她的话",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "依宫务议完，尊重她的决定",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，由她自己挑选、自己署名的花与用料因选择而有不同分寸。",
+      "echo": "后续由能生气也能在解释后和好的相处接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由能生气也能在解释后和好的相处接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C07"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R07-02",
+      "mainLink": "R07-01",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "minimumDaysAfterPrevious": 1,
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R07-02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R07-02",
+        "sourceEvent": "R07-02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R08-01",
+      "title": "宫宴维护",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "安陵容这次说起被打断后仍想唱完的末句。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，被打断后仍想唱完的末句因选择而有不同分寸。后续由署着自己名字的新谱与主动试唱接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C08",
+      "location": "养心殿暖阁",
+      "participants": [
+        "C08"
+      ],
+      "requires": [
+        "M07"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          1,
+          2
+        ],
+        "firstUnlock": "M06",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          2,
+          1,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ],
+        "sameDateAs": "M07"
+      },
+      "sceneId": "SC-M07",
+      "costGroup": "SC-M07",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "warm",
+          "label": "“再唱一遍你改过的，朕想听。”",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "请她署名留下这段改谱",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "依礼鼓励练曲，说明相处分寸",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，被打断后仍想唱完的末句因选择而有不同分寸。",
+      "echo": "后续由署着自己名字的新谱与主动试唱接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由署着自己名字的新谱与主动试唱接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C08"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R08-01",
+      "mainLink": "M07",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R08-01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "R08-02",
+        "sampleDate": [
+          2,
+          1,
+          3
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R08-01",
+        "sourceEvent": "R08-01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "R08-02",
+      "title": "私下倾听",
+      "kind": "relation",
+      "production": "扩写",
+      "source": "V1.2第九章与附录五",
+      "outline": "安陵容这次说起家书原文与她想说完整的愿望。彼此已有历史，重生后的雍正却需要重新听见当下的愿望，不能拿旧日亲疏替他或她答应。真诚靠近、只谈合作、说清距离都各有独立回应，节点可处理而不强迫发展。当场留下一件具体的相处细节，家书原文与她想说完整的愿望因选择而有不同分寸。后续由署着自己名字的新谱与主动试唱接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "actor": "C08",
+      "location": "养心殿暖阁",
+      "participants": [
+        "C08"
+      ],
+      "requires": [
+        "R08-01"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          1,
+          3
+        ],
+        "firstUnlock": "M06",
+        "last": "首版可跨季补谈至二年末；遵守真实出行和六格，不自动处理。",
+        "earliest": [
+          2,
+          1,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          29
+        ]
+      },
+      "sceneId": "SC-R08-02",
+      "costGroup": "SC-R08-02",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "warm",
+          "label": "“先说你自己，朕还想听。”",
+          "detail": "信任 +5 · 安全感 +2",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "work",
+          "label": "问她想学什么、愿做什么",
+          "detail": "信任 +3",
+          "effects": {},
+          "flags": {}
+        },
+        {
+          "id": "distance",
+          "label": "让她自己回信，只商议眼前事务",
+          "detail": "信任 +1 · 保持合作",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场留下一件具体的相处细节，家书原文与她想说完整的愿望因选择而有不同分寸。",
+      "echo": "后续由署着自己名字的新谱与主动试唱接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "nextExpectation": "后续由署着自己名字的新谱与主动试唱接住实际发生的事；只形成待约意向时不提前写成守诺。",
+      "visibility": [
+        "C01",
+        "C08"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-R08-02",
+      "mainLink": "R08-01",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "minimumDaysAfterPrevious": 1,
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "R08-02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-R08-02",
+        "sourceEvent": "R08-02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "G01",
+      "title": "查亏空",
+      "kind": "government",
+      "production": "扩写",
+      "source": "V1.2第八章",
+      "outline": "县库缺口已经见账，催缴太急会从经手人转嫁到百姓；第一笔到账与全部亏空已解决必须分开。先分别问清证据、经手与急需，选择调查入口不等于案件已定。回访同时带县库账、米价与铺户周转，张廷玉能指出你上次批注落到哪一页。本项目最早回访为执行后7个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "actor": "C28",
+      "location": "养心殿御案",
+      "participants": [
+        "C28"
+      ],
+      "requires": [
+        "M04"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          4,
+          7
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          4,
+          2
+        ],
+        "latest": [
+          1,
+          6,
+          30
+        ],
+        "sameDateAs": "M04"
+      },
+      "sceneId": "SC-M04",
+      "costGroup": "SC-M04",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "records",
+          "label": "先核原始账据",
+          "detail": "政令执行 +2。",
+          "effects": {
+            "execution": 2
+          },
+          "flags": {
+            "fiscalEvidence": "records"
+          }
+        },
+        {
+          "id": "local",
+          "label": "听地方与百姓的两份说法",
+          "detail": "民生 +2。",
+          "effects": {
+            "people": 2
+          },
+          "flags": {
+            "fiscalEvidence": "local"
+          }
+        },
+        {
+          "id": "scope",
+          "label": "列清经手责任与待查项",
+          "detail": "朝局稳定 +1。",
+          "effects": {
+            "stability": 1
+          },
+          "flags": {
+            "fiscalEvidence": "scope"
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "回访同时带县库账、米价与铺户周转，张廷玉能指出你上次批注落到哪一页。",
+      "echo": "本项目最早回访为执行后7个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "nextExpectation": "本项目最早回访为执行后7个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "visibility": [
+        "C01",
+        "C28"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-G01",
+      "mainLink": "M04",
+      "projectId": "PR-FISCAL",
+      "projectDecision": false,
+      "conflictPriority": {
+        "rank": 30,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "G01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "G03",
+        "sampleDate": [
+          1,
+          4,
+          15
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-G01",
+        "sourceEvent": "G01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "G02",
+      "title": "分期追缴",
+      "kind": "government",
+      "production": "扩写",
+      "source": "V1.2第八章",
+      "outline": "县库缺口已经见账，催缴太急会从经手人转嫁到百姓；第一笔到账与全部亏空已解决必须分开。落实明确方案与实际付款，委派和亲办有不同信息收益，不拿恋爱免查。回访同时带县库账、米价与铺户周转，张廷玉能指出你上次批注落到哪一页。本项目最早回访为执行后7个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "actor": "C28",
+      "location": "养心殿御案",
+      "participants": [
+        "C28"
+      ],
+      "requires": [
+        "G01"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          4,
+          8
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          4,
+          2
+        ],
+        "latest": [
+          1,
+          6,
+          30
+        ]
+      },
+      "sceneId": "SC-G02",
+      "costGroup": "SC-G02",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "phased",
+          "label": "分期追缴，留足周转",
+          "detail": "本次国库 +4、民生 +2；下一回合回访。",
+          "effects": {
+            "treasury": 4,
+            "people": 2
+          },
+          "flags": {
+            "collection": "phased"
+          }
+        },
+        {
+          "id": "strict",
+          "label": "限期足额追缴",
+          "detail": "国库 +8、民生 −4；回访检查摊派。",
+          "effects": {
+            "treasury": 8,
+            "people": -4
+          },
+          "flags": {
+            "collection": "strict"
+          }
+        },
+        {
+          "id": "review",
+          "label": "先追有凭据部分",
+          "detail": "国库 +2、政令执行 +2。",
+          "effects": {
+            "treasury": 2,
+            "execution": 2
+          },
+          "flags": {
+            "collection": "review"
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "回访同时带县库账、米价与铺户周转，张廷玉能指出你上次批注落到哪一页。",
+      "echo": "本项目最早回访为执行后7个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "nextExpectation": "本项目最早回访为执行后7个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "visibility": [
+        "C01",
+        "C28"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-G02",
+      "mainLink": "G01",
+      "projectId": "PR-FISCAL",
+      "projectDecision": true,
+      "conflictPriority": {
+        "rank": 30,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "G02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "G03",
+        "sampleDate": [
+          1,
+          4,
+          15
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-G02",
+        "sourceEvent": "G02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "G03",
+      "title": "复核县库",
+      "kind": "government",
+      "production": "扩写",
+      "source": "V1.2第八章",
+      "outline": "县库缺口已经见账，催缴太急会从经手人转嫁到百姓；第一笔到账与全部亏空已解决必须分开。按前次方案核对实际结果，保留延误与损失，需要补做时另行安排。回访同时带县库账、米价与铺户周转，张廷玉能指出你上次批注落到哪一页。本项目最早回访为执行后7个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "actor": "C28",
+      "location": "养心殿御案",
+      "participants": [
+        "C28"
+      ],
+      "requires": [
+        "G02"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          4,
+          15
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": null,
+        "latest": [
+          2,
+          12,
+          30
+        ]
+      },
+      "sceneId": "SC-G03",
+      "costGroup": "SC-G03",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "review",
+          "label": "阅核回访，保留实际结果",
+          "detail": "不重复征收、不重复扣原费用。",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "回访同时带县库账、米价与铺户周转，张廷玉能指出你上次批注落到哪一页。",
+      "echo": "本项目最早回访为执行后7个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "nextExpectation": "本项目最早回访为执行后7个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "visibility": [
+        "C01",
+        "C28"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-G03",
+      "mainLink": "G02",
+      "projectId": "PR-FISCAL",
+      "projectDecision": false,
+      "relativeToExecution": {
+        "eventId": "G02",
+        "minimumDays": 7
+      },
+      "conflictPriority": {
+        "rank": 80,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "G03",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-G03",
+        "sourceEvent": "G03",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "G04",
+      "title": "军需册中的重复支领",
+      "kind": "government",
+      "production": "扩写",
+      "source": "V1.2第八章",
+      "outline": "同批粮两笔支领尚待查明，军中申请12点补给。查账和送粮都要有人负责，私下信任不能直接变成免审。先分别问清证据、经手与急需，选择调查入口不等于案件已定。当场有发运清单，七日内有出仓短报，二十一日后核回执；军中少一封催饷信，年羹尧来信才多写一页近况。本项目最早回访为执行后21个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "actor": "C03",
+      "location": "养心殿御案",
+      "participants": [
+        "C03"
+      ],
+      "requires": [
+        "R03-01",
+        "M10"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          4,
+          7
+        ],
+        "firstUnlock": "M10",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          2,
+          4,
+          2
+        ],
+        "latest": [
+          2,
+          6,
+          30
+        ],
+        "sameDateAs": "M10"
+      },
+      "sceneId": "SC-M10",
+      "costGroup": "SC-M10",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "emergency",
+          "label": "先拨8点，联合核账",
+          "detail": "国库 −8、边防 +3、朝局稳定 +1；年羹尧信任 +2。",
+          "effects": {
+            "treasury": -8,
+            "defense": 3,
+            "stability": 1
+          },
+          "flags": {
+            "military": "joint"
+          }
+        },
+        {
+          "id": "pause",
+          "label": "暂停拨款，限期重报",
+          "detail": "边防 −4、政令执行 +2；将军安全感 −3。",
+          "effects": {
+            "defense": -4,
+            "execution": 2
+          },
+          "flags": {
+            "military": "pause"
+          }
+        },
+        {
+          "id": "full",
+          "label": "全额拨12点，豁免审核",
+          "detail": "国库 −12、边防 +4、政令执行 −3，留下未审风险。",
+          "effects": {
+            "treasury": -12,
+            "defense": 4,
+            "execution": -3
+          },
+          "flags": {
+            "military": "unaudited"
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场有发运清单，七日内有出仓短报，二十一日后核回执；军中少一封催饷信，年羹尧来信才多写一页近况。",
+      "echo": "本项目最早回访为执行后21个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "nextExpectation": "本项目最早回访为执行后21个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "visibility": [
+        "C01",
+        "C03",
+        "实际承办人；公开须明确选择"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-G04",
+      "mainLink": "M10",
+      "visibilitySelector": {
+        "source": "militaryRecord.visibility",
+        "private": [
+          "C01",
+          "C03",
+          "$militaryRecord.officer"
+        ],
+        "public": [
+          "public"
+        ]
+      },
+      "projectId": "PR-MILITARY",
+      "projectDecision": true,
+      "conflictPriority": {
+        "rank": 30,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "G04",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "G06",
+        "sampleDate": [
+          2,
+          4,
+          29
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-G04",
+        "sourceEvent": "G04",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "G05",
+      "title": "整顿粮道",
+      "kind": "government",
+      "production": "扩写",
+      "source": "V1.2第八章",
+      "outline": "同批粮两笔支领尚待查明，军中申请12点补给。查账和送粮都要有人负责，私下信任不能直接变成免审。落实明确方案与实际付款，委派和亲办有不同信息收益，不拿恋爱免查。当场有发运清单，七日内有出仓短报，二十一日后核回执；军中少一封催饷信，年羹尧来信才多写一页近况。本项目最早回访为执行后21个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "actor": "C03",
+      "location": "养心殿御案",
+      "participants": [
+        "C03"
+      ],
+      "requires": [
+        "G04"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          4,
+          8
+        ],
+        "firstUnlock": "M10",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          2,
+          4,
+          2
+        ],
+        "latest": [
+          2,
+          6,
+          30
+        ]
+      },
+      "sceneId": "SC-G05",
+      "costGroup": "SC-G05",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "escort",
+          "label": "设押运并核发到人",
+          "detail": "新增执行费2点、边防 +2。",
+          "effects": {
+            "treasury": -2,
+            "defense": 2
+          },
+          "flags": {
+            "supplyExecution": "escort"
+          }
+        },
+        {
+          "id": "ledger",
+          "label": "凭册交接，逐营签领",
+          "detail": "新增执行费1点、政令执行 +2。",
+          "effects": {
+            "treasury": -1,
+            "execution": 2
+          },
+          "flags": {
+            "supplyExecution": "ledger"
+          }
+        },
+        {
+          "id": "local",
+          "label": "由现任军需官执行，保留复核",
+          "detail": "新增执行费0点；有未审标记时仍有风险。",
+          "effects": {},
+          "flags": {
+            "supplyExecution": "local"
+          }
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场有发运清单，七日内有出仓短报，二十一日后核回执；军中少一封催饷信，年羹尧来信才多写一页近况。",
+      "echo": "本项目最早回访为执行后21个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "nextExpectation": "本项目最早回访为执行后21个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "visibility": [
+        "C01",
+        "C03",
+        "实际承办人；公开须明确选择"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-G05",
+      "mainLink": "G04",
+      "costRules": [
+        {
+          "choiceId": "escort",
+          "when": {
+            "militaryRecord.escort": true
+          },
+          "moneyCost": 0
+        },
+        {
+          "choiceId": "escort",
+          "when": {
+            "militaryRecord.escort": false
+          },
+          "moneyCost": 2
+        },
+        {
+          "choiceId": "ledger",
+          "moneyCost": 1
+        },
+        {
+          "choiceId": "local",
+          "moneyCost": 0
+        }
+      ],
+      "visibilitySelector": {
+        "source": "militaryRecord.visibility",
+        "private": [
+          "C01",
+          "C03",
+          "$militaryRecord.officer"
+        ],
+        "public": [
+          "public"
+        ]
+      },
+      "projectId": "PR-MILITARY",
+      "projectDecision": true,
+      "conflictPriority": {
+        "rank": 30,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "G05",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "G06",
+        "sampleDate": [
+          2,
+          4,
+          29
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-G05",
+        "sourceEvent": "G05",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "G06",
+      "title": "验收军纪",
+      "kind": "government",
+      "production": "扩写",
+      "source": "V1.2第八章",
+      "outline": "同批粮两笔支领尚待查明，军中申请12点补给。查账和送粮都要有人负责，私下信任不能直接变成免审。按前次方案核对实际结果，保留延误与损失，需要补做时另行安排。当场有发运清单，七日内有出仓短报，二十一日后核回执；军中少一封催饷信，年羹尧来信才多写一页近况。本项目最早回访为执行后21个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "actor": "C28",
+      "location": "养心殿御案阅远程回执",
+      "participants": [
+        "C28"
+      ],
+      "requires": [
+        "G05"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          4,
+          29
+        ],
+        "firstUnlock": "M10",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": null,
+        "latest": [
+          2,
+          12,
+          30
+        ]
+      },
+      "sceneId": "SC-G06",
+      "costGroup": "SC-G06",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "review",
+          "label": "阅核粮道与领粮回执",
+          "detail": "只结算本次回访，不重复拨款。",
+          "effects": {},
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当场有发运清单，七日内有出仓短报，二十一日后核回执；军中少一封催饷信，年羹尧来信才多写一页近况。",
+      "echo": "本项目最早回访为执行后21个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "nextExpectation": "本项目最早回访为执行后21个实际日，先有阶段回报再形成可追溯的完成事实。",
+      "visibility": [
+        "C01",
+        "C03",
+        "实际承办人；公开须明确选择"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-G06",
+      "mainLink": "G05",
+      "remoteParticipants": [
+        "C03"
+      ],
+      "adaptation": "默认由C28呈回执，改派时跟实际承办人；全程文书阅核，不要求将军或承办人瞬移到御案前。",
+      "visibilitySelector": {
+        "source": "militaryRecord.visibility",
+        "private": [
+          "C01",
+          "C03",
+          "$militaryRecord.officer"
+        ],
+        "public": [
+          "public"
+        ]
+      },
+      "participantSelector": {
+        "source": "militaryRecord.officer",
+        "default": "C28",
+        "delivery": "document",
+        "requiresInPerson": false
+      },
+      "projectId": "PR-MILITARY",
+      "projectDecision": false,
+      "relativeToExecution": {
+        "eventId": "G05",
+        "minimumDays": 21
+      },
+      "conflictPriority": {
+        "rank": 80,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "G06",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-G06",
+        "sourceEvent": "G06",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "P01",
+      "title": "敬妃交班",
+      "kind": "side",
+      "production": "扩写",
+      "source": "V1.2第七章",
+      "outline": "敬妃带来的不只是交班名册，还有三处职责重叠。“若无人能签字，出了事总是下头的人担着。”三个选项保留明确不同的权限、照护或消息处理结果，不能全部依恋爱数值结算。当事人指出自己得到或仍未得到的东西，结果不能统一换一句已经办妥。相关核心人物只通过实际同场或后来传达得知；回顾引用此次选择，未处理时保留待办。",
+      "actor": "C11",
+      "location": "养心殿御案",
+      "participants": [
+        "C11"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          1,
+          7,
+          3
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          7,
+          2
+        ],
+        "latest": [
+          1,
+          9,
+          30
+        ]
+      },
+      "sceneId": "SC-P01",
+      "costGroup": "SC-P01",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "act",
+          "label": "写清交接人与签核权",
+          "detail": "按明示结果执行，不靠恋爱数值结算。",
+          "effects": {
+            "palace": 3,
+            "execution": 1
+          },
+          "flags": {}
+        },
+        {
+          "id": "pilot",
+          "label": "先补名册，权限另议",
+          "detail": "保留部分改善与后续空间。",
+          "effects": {
+            "palace": 1
+          },
+          "flags": {}
+        },
+        {
+          "id": "delay",
+          "label": "暂缓交班，保留问题",
+          "detail": "保留实际缺憾。",
+          "effects": {
+            "palace": -1
+          },
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当事人指出自己得到或仍未得到的东西，结果不能统一换一句已经办妥。",
+      "echo": "相关核心人物只通过实际同场或后来传达得知；回顾引用此次选择，未处理时保留待办。",
+      "nextExpectation": "相关核心人物只通过实际同场或后来传达得知；回顾引用此次选择，未处理时保留待办。",
+      "visibility": [
+        "C01",
+        "C11"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-P01",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 30,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "P01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-P01",
+        "sourceEvent": "P01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "P09",
+      "title": "颂芝报忧",
+      "kind": "side",
+      "production": "扩写",
+      "source": "V1.2第七章",
+      "outline": "颂芝这回没有先报平安。她说年世兰夜里难眠，又怕一句实话惹出更多猜测。坏消息也该有能被认真听见的去处。三个选项保留明确不同的权限、照护或消息处理结果，不能全部依恋爱数值结算。当事人指出自己得到或仍未得到的东西，结果不能统一换一句已经办妥。相关核心人物只通过实际同场或后来传达得知；回顾引用此次选择，未处理时保留待办。",
+      "actor": "C19",
+      "location": "养心殿御案",
+      "participants": [
+        "C19"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          1,
+          10,
+          4
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          10,
+          2
+        ],
+        "latest": [
+          1,
+          12,
+          30
+        ]
+      },
+      "sceneId": "SC-P09",
+      "costGroup": "SC-P09",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "act",
+          "label": "允许如实报告，安排复核",
+          "detail": "按明示结果执行，不靠恋爱数值结算。",
+          "effects": {
+            "health": 2,
+            "palace": 1
+          },
+          "flags": {}
+        },
+        {
+          "id": "pilot",
+          "label": "先照护，再追问原因",
+          "detail": "保留部分改善与后续空间。",
+          "effects": {
+            "health": 1
+          },
+          "flags": {}
+        },
+        {
+          "id": "delay",
+          "label": "只收下记录，暂不处置",
+          "detail": "保留实际缺憾。",
+          "effects": {
+            "palace": -1
+          },
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当事人指出自己得到或仍未得到的东西，结果不能统一换一句已经办妥。",
+      "echo": "相关核心人物只通过实际同场或后来传达得知；回顾引用此次选择，未处理时保留待办。",
+      "nextExpectation": "相关核心人物只通过实际同场或后来传达得知；回顾引用此次选择，未处理时保留待办。",
+      "visibility": [
+        "C01",
+        "C19"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-P09",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 30,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "P09",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-P09",
+        "sourceEvent": "P09",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "P10",
+      "title": "宝鹃传话",
+      "kind": "side",
+      "production": "扩写",
+      "source": "V1.2第七章",
+      "outline": "同一封家书，转述与原文有两处不同。宝鹃说自己只是怕小主忧心。保护若成了代人筛掉消息，也会剥去选择。三个选项保留明确不同的权限、照护或消息处理结果，不能全部依恋爱数值结算。当事人指出自己得到或仍未得到的东西，结果不能统一换一句已经办妥。相关核心人物只通过实际同场或后来传达得知；回顾引用此次选择，未处理时保留待办。",
+      "actor": "C20",
+      "location": "养心殿御案",
+      "participants": [
+        "C20"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          2,
+          7,
+          5
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          2,
+          7,
+          2
+        ],
+        "latest": [
+          2,
+          9,
+          30
+        ]
+      },
+      "sceneId": "SC-P10",
+      "costGroup": "SC-P10",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "act",
+          "label": "让安陵容看原文，核对转述",
+          "detail": "按明示结果执行，不靠恋爱数值结算。",
+          "effects": {
+            "execution": 2,
+            "palace": 1
+          },
+          "flags": {}
+        },
+        {
+          "id": "pilot",
+          "label": "先询问转述缘由",
+          "detail": "保留部分改善与后续空间。",
+          "effects": {
+            "palace": 1
+          },
+          "flags": {}
+        },
+        {
+          "id": "delay",
+          "label": "暂保留旧传话方式",
+          "detail": "保留实际缺憾。",
+          "effects": {
+            "palace": -2
+          },
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当事人指出自己得到或仍未得到的东西，结果不能统一换一句已经办妥。",
+      "echo": "相关核心人物只通过实际同场或后来传达得知；回顾引用此次选择，未处理时保留待办。",
+      "nextExpectation": "相关核心人物只通过实际同场或后来传达得知；回顾引用此次选择，未处理时保留待办。",
+      "visibility": [
+        "C01",
+        "C20"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-P10",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 30,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "P10",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-P10",
+        "sourceEvent": "P10",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "P11",
+      "title": "卫临留案",
+      "kind": "side",
+      "production": "扩写",
+      "source": "V1.2第七章",
+      "outline": "卫临想将核验过的脉案留存，便于轮值医官接手。温实初提醒，留案须有访问范围，不能让病情成为人人可传的谈资。三个选项保留明确不同的权限、照护或消息处理结果，不能全部依恋爱数值结算。当事人指出自己得到或仍未得到的东西，结果不能统一换一句已经办妥。相关核心人物只通过实际同场或后来传达得知；回顾引用此次选择，未处理时保留待办。",
+      "actor": "C22",
+      "location": "养心殿御案",
+      "participants": [
+        "C22"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": [
+          2,
+          10,
+          3
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          2,
+          10,
+          2
+        ],
+        "latest": [
+          2,
+          12,
+          30
+        ]
+      },
+      "sceneId": "SC-P11",
+      "costGroup": "SC-P11",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "act",
+          "label": "留档并分清访问权限",
+          "detail": "按明示结果执行，不靠恋爱数值结算。",
+          "effects": {
+            "health": 2,
+            "execution": 2
+          },
+          "flags": {}
+        },
+        {
+          "id": "pilot",
+          "label": "先试行轮值医官查阅",
+          "detail": "保留部分改善与后续空间。",
+          "effects": {
+            "health": 1,
+            "execution": 1
+          },
+          "flags": {}
+        },
+        {
+          "id": "delay",
+          "label": "仍由一人保管",
+          "detail": "保留实际缺憾。",
+          "effects": {
+            "execution": -1
+          },
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "当事人指出自己得到或仍未得到的东西，结果不能统一换一句已经办妥。",
+      "echo": "相关核心人物只通过实际同场或后来传达得知；回顾引用此次选择，未处理时保留待办。",
+      "nextExpectation": "相关核心人物只通过实际同场或后来传达得知；回顾引用此次选择，未处理时保留待办。",
+      "visibility": [
+        "C01",
+        "C22"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-P11",
+      "mainLink": null,
+      "conflictPriority": {
+        "rank": 30,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "P11",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-P11",
+        "sourceEvent": "P11",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "D01",
+      "title": "春日赏花",
+      "kind": "daily",
+      "production": "复用",
+      "source": "V1.2第十章；保留现D01至D08编号",
+      "outline": "花事正盛，你让随行的人各说一件近来在意的小事。没有人需要为了取悦御前，说一句同样的赞语。这一格可以独自度过，也可邀请当前能在场的人；不得为了凑模板让外任人物突然出现。片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "actor": "C02",
+      "location": "养心殿御案",
+      "participants": [
+        "C02"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": null,
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "season": "春"
+      },
+      "sceneId": "SC-D01",
+      "costGroup": "SC-D01",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "finish",
+          "label": "将这片刻记入旧事",
+          "detail": "占1次安排；同回合不能重复。",
+          "effects": {
+            "mood": 2
+          },
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。",
+      "echo": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "nextExpectation": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "visibility": [
+        "C01",
+        "C02"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-D01",
+      "mainLink": null,
+      "optionalTemplate": true,
+      "conflictPriority": {
+        "rank": 10,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "D01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-D01",
+        "sourceEvent": "D01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "D02",
+      "title": "春耕问答",
+      "kind": "daily",
+      "production": "复用",
+      "source": "V1.2第十章；保留现D01至D08编号",
+      "outline": "地方送来的简报里，春耕的时点各不相同。你读完两份相反的建议，再留下一道待核的问题。这一格可以独自度过，也可邀请当前能在场的人；不得为了凑模板让外任人物突然出现。片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "actor": "C02",
+      "location": "养心殿御案",
+      "participants": [
+        "C02"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": null,
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "season": "春"
+      },
+      "sceneId": "SC-D02",
+      "costGroup": "SC-D02",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "finish",
+          "label": "将这片刻记入旧事",
+          "detail": "占1次安排；同回合不能重复。",
+          "effects": {
+            "people": 1
+          },
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。",
+      "echo": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "nextExpectation": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "visibility": [
+        "C01",
+        "C02"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-D02",
+      "mainLink": null,
+      "optionalTemplate": true,
+      "conflictPriority": {
+        "rank": 10,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "D02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-D02",
+        "sourceEvent": "D02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "D03",
+      "title": "暑中问诊",
+      "kind": "daily",
+      "production": "扩写",
+      "source": "V1.2第十章；保留现D01至D08编号",
+      "outline": "这次问诊先谈睡眠与作息。医者给出的休养建议，不因亲近与否改变。这一格可以独自度过，也可邀请当前能在场的人；不得为了凑模板让外任人物突然出现。片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "actor": "C04",
+      "location": "养心殿御案",
+      "participants": [
+        "C04"
+      ],
+      "requires": [
+        "M08"
+      ],
+      "window": {
+        "recommended": null,
+        "firstUnlock": "M08",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "season": "夏"
+      },
+      "sceneId": "SC-D03",
+      "costGroup": "SC-D03",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "finish",
+          "label": "将这片刻记入旧事",
+          "detail": "占1次安排；同回合不能重复。",
+          "effects": {
+            "health": 2
+          },
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。",
+      "echo": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "nextExpectation": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "visibility": [
+        "C01",
+        "C04"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-D03",
+      "mainLink": null,
+      "adaptation": "日常按真正参与者生成，不能一律套苏培盛；人物未登场时不开放。",
+      "optionalTemplate": true,
+      "conflictPriority": {
+        "rank": 10,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "D03",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-D03",
+        "sourceEvent": "D03",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "D04",
+      "title": "荷塘听曲",
+      "kind": "daily",
+      "production": "扩写",
+      "source": "V1.2第十章；保留现D01至D08编号",
+      "outline": "一曲终了，不必立即留人。让来往有约，也让告退成为自然的事。这一格可以独自度过，也可邀请当前能在场的人；不得为了凑模板让外任人物突然出现。片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "actor": "C05",
+      "location": "养心殿御案",
+      "participants": [
+        "C05"
+      ],
+      "requires": [
+        "M09"
+      ],
+      "window": {
+        "recommended": null,
+        "firstUnlock": "M09",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "season": "夏"
+      },
+      "sceneId": "SC-D04",
+      "costGroup": "SC-D04",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "finish",
+          "label": "将这片刻记入旧事",
+          "detail": "占1次安排；同回合不能重复。",
+          "effects": {
+            "mood": 2
+          },
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。",
+      "echo": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "nextExpectation": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "visibility": [
+        "C01",
+        "C05"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-D04",
+      "mainLink": null,
+      "adaptation": "日常按真正参与者生成，不能一律套苏培盛；人物未登场时不开放。",
+      "optionalTemplate": true,
+      "conflictPriority": {
+        "rank": 10,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "D04",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-D04",
+        "sourceEvent": "D04",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "D05",
+      "title": "秋粮复核",
+      "kind": "daily",
+      "production": "复用",
+      "source": "V1.2第十章；保留现D01至D08编号",
+      "outline": "新到的秋粮摘要有一处口径不同。你把疑问记在册边，等有原始凭据再定论。这一格可以独自度过，也可邀请当前能在场的人；不得为了凑模板让外任人物突然出现。片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "actor": "C02",
+      "location": "养心殿御案",
+      "participants": [
+        "C02"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": null,
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "season": "秋"
+      },
+      "sceneId": "SC-D05",
+      "costGroup": "SC-D05",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "finish",
+          "label": "将这片刻记入旧事",
+          "detail": "占1次安排；同回合不能重复。",
+          "effects": {
+            "execution": 1
+          },
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。",
+      "echo": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "nextExpectation": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "visibility": [
+        "C01",
+        "C02"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-D05",
+      "mainLink": null,
+      "optionalTemplate": true,
+      "conflictPriority": {
+        "rank": 10,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "D05",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-D05",
+        "sourceEvent": "D05",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "D06",
+      "title": "边关家书",
+      "kind": "daily",
+      "production": "扩写",
+      "source": "V1.2第十章；保留现D01至D08编号",
+      "outline": "信里有军务，也有风沙与起居。你逐一回信，不把私下问候写成未经审议的军令。这一格可以独自度过，也可邀请当前能在场的人；不得为了凑模板让外任人物突然出现。片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "actor": "C03",
+      "location": "养心殿御案",
+      "participants": [
+        "C03"
+      ],
+      "requires": [
+        "M10"
+      ],
+      "window": {
+        "recommended": null,
+        "firstUnlock": "M10",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "season": "秋"
+      },
+      "sceneId": "SC-D06",
+      "costGroup": "SC-D06",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "finish",
+          "label": "将这片刻记入旧事",
+          "detail": "占1次安排；同回合不能重复。",
+          "effects": {
+            "mood": 2
+          },
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。",
+      "echo": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "nextExpectation": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "visibility": [
+        "C01",
+        "C03"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-D06",
+      "mainLink": null,
+      "adaptation": "日常按真正参与者生成，不能一律套苏培盛；人物未登场时不开放。",
+      "optionalTemplate": true,
+      "conflictPriority": {
+        "rank": 10,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "D06",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-D06",
+        "sourceEvent": "D06",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "D07",
+      "title": "冬日围炉",
+      "kind": "daily",
+      "production": "复用",
+      "source": "V1.2第十章；保留现D01至D08编号",
+      "outline": "炭火不旺，恰好温着手边的茶。有人谈值守，有人先告退，没有一件小事必须被说成誓言。这一格可以独自度过，也可邀请当前能在场的人；不得为了凑模板让外任人物突然出现。片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "actor": "C02",
+      "location": "养心殿御案",
+      "participants": [
+        "C02"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": null,
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "season": "冬"
+      },
+      "sceneId": "SC-D07",
+      "costGroup": "SC-D07",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "finish",
+          "label": "将这片刻记入旧事",
+          "detail": "占1次安排；同回合不能重复。",
+          "effects": {
+            "mood": 2
+          },
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。",
+      "echo": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "nextExpectation": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "visibility": [
+        "C01",
+        "C02"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-D07",
+      "mainLink": null,
+      "optionalTemplate": true,
+      "conflictPriority": {
+        "rank": 10,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "D07",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-D07",
+        "sourceEvent": "D07",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "D08",
+      "title": "旧物修补",
+      "kind": "daily",
+      "production": "复用",
+      "source": "V1.2第十章；保留现D01至D08编号",
+      "outline": "一处旧物的磨损留了下来。修补不是让过去从未发生，而是让它以后还能好好用。这一格可以独自度过，也可邀请当前能在场的人；不得为了凑模板让外任人物突然出现。片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "actor": "C02",
+      "location": "养心殿御案",
+      "participants": [
+        "C02"
+      ],
+      "requires": [],
+      "window": {
+        "recommended": null,
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "season": "冬"
+      },
+      "sceneId": "SC-D08",
+      "costGroup": "SC-D08",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "finish",
+          "label": "将这片刻记入旧事",
+          "detail": "占1次安排；同回合不能重复。",
+          "effects": {
+            "mood": 1,
+            "health": 1
+          },
+          "flags": {}
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "片刻留下一个作品、想法、恢复或可继续的话题，普通收益按模板一次结算。",
+      "echo": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "nextExpectation": "季节与历史筛选下次内容，重读不收费不刷奖；这是可选库，不要求一周目全部体验。",
+      "visibility": [
+        "C01",
+        "C02"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-D08",
+      "mainLink": null,
+      "optionalTemplate": true,
+      "conflictPriority": {
+        "rank": 10,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "D08",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-D08",
+        "sourceEvent": "D08",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "WG-C01",
+      "title": "更次里的空白",
+      "kind": "light-government",
+      "production": "新增",
+      "source": "施工计划S01 S12新增",
+      "outline": "值宿名册有两处空着，苏培盛仍想替人补上。开局选择过后，这条消息才留到御案，不抢在重生场景之前讲规则。核名册或听当值者说明，只建立待核问题，不立即宣称新制度落实。玩家能看见为何总是同一个人在门外守灯。M02谈过值守后，WG-C02才落实带教与交接。",
+      "actor": "C02",
+      "location": "养心殿御案",
+      "participants": [
+        "C02",
+        "C26"
+      ],
+      "requires": [
+        "M01"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          1,
+          2
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          1,
+          2
+        ],
+        "latest": [
+          1,
+          3,
+          30
+        ],
+        "sameDateAs": "M01"
+      },
+      "sceneId": "SC-M01",
+      "costGroup": "SC-M01",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "records",
+          "label": "先核原始记录",
+          "result": "建立待核证据，不宣布结论"
+        },
+        {
+          "id": "listen",
+          "label": "先听当事人说明",
+          "result": "记录具体疑点，不先定罪"
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "玩家能看见为何总是同一个人在门外守灯。",
+      "echo": "M02谈过值守后，WG-C02才落实带教与交接。",
+      "nextExpectation": "M02谈过值守后，WG-C02才落实带教与交接。",
+      "visibility": [
+        "C01",
+        "C02",
+        "C26"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-WG-C01",
+      "mainLink": "M01",
+      "projectId": "PR-COURT",
+      "moneyOptions": "0；新的亲办修复另开事务，不重复完成奖励",
+      "projectDecision": false,
+      "conflictPriority": {
+        "rank": 30,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "WG-C01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "WG-C03",
+        "sampleDate": [
+          1,
+          1,
+          15
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-WG-C01",
+        "sourceEvent": "WG-C01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "WG-C02",
+      "title": "让交班接得上",
+      "kind": "light-government",
+      "production": "新增",
+      "source": "施工计划S01 S12新增",
+      "outline": "留茶与值守谈过之后，苏培盛把缺人的更次写实。允祥带来借调与现员错峰两种办法，你得选哪一处先缓，而不是只说一句去休息。带教清单支出1、现员错峰0、借调熟手2，都占同一格，完整预览。责任人与交接日留下签名，第一晚有人能接住那壶茶。七日后核交接单是否真有人照做；缺口未解时保留可修复事项。",
+      "actor": "C02",
+      "location": "养心殿御案",
+      "participants": [
+        "C02",
+        "C26"
+      ],
+      "requires": [
+        "WG-C01",
+        "M02"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          1,
+          8
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          1,
+          2
+        ],
+        "latest": [
+          1,
+          3,
+          30
+        ]
+      },
+      "sceneId": "SC-WG-C02",
+      "costGroup": "SC-WG-C02",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "plan-1",
+          "label": "带教并写交接清单",
+          "moneyCost": 1,
+          "result": "七日形成可照做的交接单，熟手少守一段夜，前期需要解释。"
+        },
+        {
+          "id": "plan-2",
+          "label": "现员错峰轮值",
+          "moneyCost": 0,
+          "result": "先免重叠更次，改善有限，仍保留人手缺口。"
+        },
+        {
+          "id": "plan-3",
+          "label": "调入两名现有熟手",
+          "moneyCost": 2,
+          "result": "见效较快，但借调处需补位，不能只换一处过劳。"
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "责任人与交接日留下签名，第一晚有人能接住那壶茶。",
+      "echo": "七日后核交接单是否真有人照做；缺口未解时保留可修复事项。",
+      "nextExpectation": "七日后核交接单是否真有人照做；缺口未解时保留可修复事项。",
+      "visibility": [
+        "C01",
+        "C02",
+        "C26"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-WG-C02",
+      "mainLink": "WG-C01",
+      "projectId": "PR-COURT",
+      "moneyOptions": [
+        [
+          "带教并写交接清单",
+          1,
+          "七日形成可照做的交接单，熟手少守一段夜，前期需要解释。"
+        ],
+        [
+          "现员错峰轮值",
+          0,
+          "先免重叠更次，改善有限，仍保留人手缺口。"
+        ],
+        [
+          "调入两名现有熟手",
+          2,
+          "见效较快，但借调处需补位，不能只换一处过劳。"
+        ]
+      ],
+      "projectDecision": true,
+      "conflictPriority": {
+        "rank": 30,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "WG-C02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "WG-C03",
+        "sampleDate": [
+          1,
+          1,
+          15
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-WG-C02",
+        "sourceEvent": "WG-C02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "WG-C03",
+      "title": "七日后的签名",
+      "kind": "light-government",
+      "production": "新增",
+      "source": "施工计划S01 S12新增",
+      "outline": "新交接单已经照行七日，回报里有一处涂改，也第一次不全是苏培盛的签字。你要核的是人是否真能交班，而非册子是否好看。阅核不同方案的实际效果，若要再调人先建立新的有成本安排。看得见少守的一段夜，也保留尚需带教的地方。苏培盛在后一次私聊提起交班之后做的小事，不自动转成恋爱。",
+      "actor": "C02",
+      "location": "养心殿御案",
+      "participants": [
+        "C02",
+        "C26"
+      ],
+      "requires": [
+        "WG-C02"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          1,
+          15
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": null,
+        "latest": [
+          2,
+          12,
+          30
+        ]
+      },
+      "sceneId": "SC-WG-C03",
+      "costGroup": "SC-WG-C03",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "review",
+          "label": "阅核实际回报",
+          "result": "按已选方案结算结果一次"
+        },
+        {
+          "id": "repair-candidate",
+          "label": "提出补做意向",
+          "result": "只建候选，新费用与格数须再预览"
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "看得见少守的一段夜，也保留尚需带教的地方。",
+      "echo": "苏培盛在后一次私聊提起交班之后做的小事，不自动转成恋爱。",
+      "nextExpectation": "苏培盛在后一次私聊提起交班之后做的小事，不自动转成恋爱。",
+      "visibility": [
+        "C01",
+        "C02",
+        "C26"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-WG-C03",
+      "mainLink": "WG-C02",
+      "projectId": "PR-COURT",
+      "moneyOptions": "0；新的亲办修复另开事务，不重复完成奖励",
+      "projectDecision": false,
+      "relativeToExecution": {
+        "eventId": "WG-C02",
+        "minimumDays": 7
+      },
+      "conflictPriority": {
+        "rank": 80,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "WG-C03",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-WG-C03",
+        "sourceEvent": "WG-C03",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "WG-P01",
+      "title": "签修好的那口井",
+      "kind": "light-government",
+      "production": "新增",
+      "source": "施工计划S01 S12新增",
+      "outline": "新入宫的人带来宫门外的消息，京郊一口井明明已经签修好，两户人家仍要绕远取水。允祥呈来的领料单与住户说法不能直接互相抵销。先看领料、听两户证词或核取水路线；只形成待核事实，不把传闻当罪证。玩家找到井台还是路面真正没接好的那一处。下一次活动确定修井、临时水点或先审材料，结果再回到这两户身上。",
+      "actor": "C26",
+      "location": "养心殿御案",
+      "participants": [
+        "C26"
+      ],
+      "requires": [
+        "M06"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          10,
+          2
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          10,
+          2
+        ],
+        "latest": [
+          1,
+          12,
+          30
+        ],
+        "sameDateAs": "M06"
+      },
+      "sceneId": "SC-M06",
+      "costGroup": "SC-M06",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "records",
+          "label": "先核原始记录",
+          "result": "建立待核证据，不宣布结论"
+        },
+        {
+          "id": "listen",
+          "label": "先听当事人说明",
+          "result": "记录具体疑点，不先定罪"
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "玩家找到井台还是路面真正没接好的那一处。",
+      "echo": "下一次活动确定修井、临时水点或先审材料，结果再回到这两户身上。",
+      "nextExpectation": "下一次活动确定修井、临时水点或先审材料，结果再回到这两户身上。",
+      "visibility": [
+        "C01",
+        "C26"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-WG-P01",
+      "mainLink": "M06",
+      "projectId": "PR-WATER",
+      "moneyOptions": "0；新的亲办修复另开事务，不重复完成奖励",
+      "projectDecision": false,
+      "conflictPriority": {
+        "rank": 30,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "WG-P01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "WG-P03",
+        "sampleDate": [
+          1,
+          10,
+          10
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-WG-P01",
+        "sourceEvent": "WG-P01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "WG-P02",
+      "title": "先把水送到人前",
+      "kind": "light-government",
+      "production": "新增",
+      "source": "施工计划S01 S12新增",
+      "outline": "冬前要先让人喝上水，还是把领料疑处先查清，允祥的两份清单给不出同一个最省钱答案。你选择要把一格重点时间投在哪里。修井加临时点2、只设临时点1、先核领料0，分别留下速度与后续待办。有承办人带走明确单子，沿路收下实际取水距离。七日后按方案带回井绳、路况与住户回话，临时方案不能写成永久修好。",
+      "actor": "C26",
+      "location": "养心殿御案",
+      "participants": [
+        "C26"
+      ],
+      "requires": [
+        "WG-P01"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          10,
+          3
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          10,
+          2
+        ],
+        "latest": [
+          1,
+          12,
+          30
+        ]
+      },
+      "sceneId": "SC-WG-P02",
+      "costGroup": "SC-WG-P02",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "plan-1",
+          "label": "先修井台并留临时水点",
+          "moneyCost": 2,
+          "result": "支出2，七日后核井绳、路面与住户取水距离，常规维护需交接。"
+        },
+        {
+          "id": "plan-2",
+          "label": "先设临时取水点",
+          "moneyCost": 1,
+          "result": "支出1，最快减少绕路，修井仍挂待办。"
+        },
+        {
+          "id": "plan-3",
+          "label": "先核领料再动工",
+          "moneyCost": 0,
+          "result": "暂不支出，凭据更清，住户多等七日；承办须带回实际困难。"
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "有承办人带走明确单子，沿路收下实际取水距离。",
+      "echo": "七日后按方案带回井绳、路况与住户回话，临时方案不能写成永久修好。",
+      "nextExpectation": "七日后按方案带回井绳、路况与住户回话，临时方案不能写成永久修好。",
+      "visibility": [
+        "C01",
+        "C26"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-WG-P02",
+      "mainLink": "WG-P01",
+      "projectId": "PR-WATER",
+      "moneyOptions": [
+        [
+          "先修井台并留临时水点",
+          2,
+          "支出2，七日后核井绳、路面与住户取水距离，常规维护需交接。"
+        ],
+        [
+          "先设临时取水点",
+          1,
+          "支出1，最快减少绕路，修井仍挂待办。"
+        ],
+        [
+          "先核领料再动工",
+          0,
+          "暂不支出，凭据更清，住户多等七日；承办须带回实际困难。"
+        ]
+      ],
+      "projectDecision": true,
+      "conflictPriority": {
+        "rank": 30,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "WG-P02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "WG-P03",
+        "sampleDate": [
+          1,
+          10,
+          10
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-WG-P02",
+        "sourceEvent": "WG-P02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "WG-P03",
+      "title": "井边的回信",
+      "kind": "light-government",
+      "production": "新增",
+      "source": "施工计划S01 S12新增",
+      "outline": "井边的回信没有只写恭颂，附着一截新井绳与两户取水距离。有人少走一段路，也有人问来春的维护交给谁。阅核实际结果，认可已经改善的部分；需要补工时另排一次活动。看到政策落在人的日常，而非只在民生指标上加数。回顾或散步可以提起这封信，只有公开核验部分能进入其他人物话题。",
+      "actor": "C26",
+      "location": "养心殿御案",
+      "participants": [
+        "C26"
+      ],
+      "requires": [
+        "WG-P02"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          10,
+          10
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": null,
+        "latest": [
+          2,
+          12,
+          30
+        ]
+      },
+      "sceneId": "SC-WG-P03",
+      "costGroup": "SC-WG-P03",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "review",
+          "label": "阅核实际回报",
+          "result": "按已选方案结算结果一次"
+        },
+        {
+          "id": "repair-candidate",
+          "label": "提出补做意向",
+          "result": "只建候选，新费用与格数须再预览"
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "看到政策落在人的日常，而非只在民生指标上加数。",
+      "echo": "回顾或散步可以提起这封信，只有公开核验部分能进入其他人物话题。",
+      "nextExpectation": "回顾或散步可以提起这封信，只有公开核验部分能进入其他人物话题。",
+      "visibility": [
+        "C01",
+        "C26"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-WG-P03",
+      "mainLink": "WG-P02",
+      "projectId": "PR-WATER",
+      "moneyOptions": "0；新的亲办修复另开事务，不重复完成奖励",
+      "projectDecision": false,
+      "relativeToExecution": {
+        "eventId": "WG-P02",
+        "minimumDays": 7
+      },
+      "conflictPriority": {
+        "rank": 80,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "WG-P03",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-WG-P03",
+        "sourceEvent": "WG-P03",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "XR09-01",
+      "title": "名字之外",
+      "kind": "extra-relation",
+      "production": "新增",
+      "source": "施工计划S01 S12新增",
+      "outline": "正式接见后，甄嬛留下谈她喜欢的一首诗。她还不知道那些旧影为何会被旁人提起，先试着判断这位帝王是否愿意听她自己的回答。可以认真问她怎样读，也可以清楚保持礼遇；不先承诺唯一真爱。她敢保留与你不一样的那半句，留下本人而非替身的第一印象。以后衣色触动旧影时，能引用本次真实表态，不把含混赏赐洗成诚实。",
+      "actor": "C09",
+      "location": "碎玉轩",
+      "participants": [
+        "C09"
+      ],
+      "requires": [
+        "M06"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          10,
+          5
+        ],
+        "firstUnlock": "M06",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          10,
+          2
+        ],
+        "latest": [
+          1,
+          12,
+          30
+        ]
+      },
+      "sceneId": "SC-XR09-01",
+      "costGroup": "SC-XR09-01",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "develop",
+          "label": "认真接着说",
+          "result": "由具体场景与双方意愿决定"
+        },
+        {
+          "id": "cooperate",
+          "label": "保留合作与体面",
+          "result": "完成节点但不推进恋爱"
+        },
+        {
+          "id": "defer",
+          "label": "暂缓，约定以后再谈",
+          "result": "未接受新邀约不记违约"
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "她敢保留与你不一样的那半句，留下本人而非替身的第一印象。",
+      "echo": "以后衣色触动旧影时，能引用本次真实表态，不把含混赏赐洗成诚实。",
+      "nextExpectation": "以后衣色触动旧影时，能引用本次真实表态，不把含混赏赐洗成诚实。",
+      "visibility": [
+        "C01",
+        "C09"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-XR09-01",
+      "mainLink": "M06",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "XR09-01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "XR09-02",
+        "sampleDate": [
+          2,
+          7,
+          3
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-XR09-01",
+        "sourceEvent": "XR09-01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "XR09-02",
+      "title": "不作旧影",
+      "kind": "extra-relation",
+      "production": "新增",
+      "source": "施工计划S01 S12新增",
+      "outline": "旧影新衣那幕过后，甄嬛又把未问完的话说清。她要确认的是自己能否被看作今天这个人，玩家不能只靠一句不比较就立刻得到全部信任。可诚实愿意了解、暂未确定或明确无意，尊重她当下是否愿再谈。有不同的追问、松动或收回期待，清晰边界也能体面继续合作。之后题字与私人来访按这次态度分支，M39保留真爱和疏离的独立收束。",
+      "actor": "C09",
+      "location": "碎玉轩",
+      "participants": [
+        "C09"
+      ],
+      "requires": [
+        "XR09-01",
+        "M11"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          7,
+          3
+        ],
+        "firstUnlock": "M06",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          2,
+          7,
+          2
+        ],
+        "latest": [
+          2,
+          9,
+          30
+        ]
+      },
+      "sceneId": "SC-XR09-02",
+      "costGroup": "SC-XR09-02",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "develop",
+          "label": "认真接着说",
+          "result": "由具体场景与双方意愿决定"
+        },
+        {
+          "id": "cooperate",
+          "label": "保留合作与体面",
+          "result": "完成节点但不推进恋爱"
+        },
+        {
+          "id": "defer",
+          "label": "暂缓，约定以后再谈",
+          "result": "未接受新邀约不记违约"
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "有不同的追问、松动或收回期待，清晰边界也能体面继续合作。",
+      "echo": "之后题字与私人来访按这次态度分支，M39保留真爱和疏离的独立收束。",
+      "nextExpectation": "之后题字与私人来访按这次态度分支，M39保留真爱和疏离的独立收束。",
+      "visibility": [
+        "C01",
+        "C09"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-XR09-02",
+      "mainLink": "XR09-01",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "XR09-02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-XR09-02",
+        "sourceEvent": "XR09-02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "XR10-01",
+      "title": "一页实账",
+      "kind": "extra-relation",
+      "production": "新增",
+      "source": "施工计划S01 S12新增",
+      "outline": "沈眉庄把一页看不明的份例放在茶旁，既不想借御前偏爱压人，也不愿自己的问题只换来一次赏赐。你可以听账，也可以问她这一路的近况。核事实、公正转复核或先听她个人所想，各自留下下一次可续的话题。她不必在有原则与讨人喜欢之间选一个，茶也终于能慢慢喝完。第二次相处先问意见分歧，才判断她是否想把公事外的话继续说下去。",
+      "actor": "C10",
+      "location": "宫中茶室",
+      "participants": [
+        "C10"
+      ],
+      "requires": [
+        "M06"
+      ],
+      "window": {
+        "recommended": [
+          1,
+          10,
+          6
+        ],
+        "firstUnlock": "M06",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          1,
+          10,
+          2
+        ],
+        "latest": [
+          1,
+          12,
+          30
+        ]
+      },
+      "sceneId": "SC-XR10-01",
+      "costGroup": "SC-XR10-01",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "develop",
+          "label": "认真接着说",
+          "result": "由具体场景与双方意愿决定"
+        },
+        {
+          "id": "cooperate",
+          "label": "保留合作与体面",
+          "result": "完成节点但不推进恋爱"
+        },
+        {
+          "id": "defer",
+          "label": "暂缓，约定以后再谈",
+          "result": "未接受新邀约不记违约"
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "她不必在有原则与讨人喜欢之间选一个，茶也终于能慢慢喝完。",
+      "echo": "第二次相处先问意见分歧，才判断她是否想把公事外的话继续说下去。",
+      "nextExpectation": "第二次相处先问意见分歧，才判断她是否想把公事外的话继续说下去。",
+      "visibility": [
+        "C01",
+        "C10"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-XR10-01",
+      "mainLink": "M06",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "XR10-01",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": "XR10-02",
+        "sampleDate": [
+          2,
+          1,
+          4
+        ],
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-XR10-01",
+        "sourceEvent": "XR10-01",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "XR10-02",
+      "title": "茶凉仍谈",
+      "kind": "extra-relation",
+      "production": "新增",
+      "source": "施工计划S01 S12新增",
+      "outline": "办过的账收好以后，沈眉庄留下了那杯已经凉过一回的茶。她想知道，若自己说一件不顺耳的事，雍正还愿不愿意在宫务之外相见。可以认真发展、暂缓或只作可信合作，恋爱不要求放弃甄嬛与自己的原则。她主动把茶推近，也能直接指出你的偏私；不同意不等于这场相处失败。后续散步与小宴会提起这次真实分歧，来访不再总带着一册待办。",
+      "actor": "C10",
+      "location": "宫中茶室",
+      "participants": [
+        "C10"
+      ],
+      "requires": [
+        "XR10-01"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          1,
+          4
+        ],
+        "firstUnlock": "M06",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          2,
+          1,
+          2
+        ],
+        "latest": [
+          2,
+          3,
+          30
+        ]
+      },
+      "sceneId": "SC-XR10-02",
+      "costGroup": "SC-XR10-02",
+      "slotCost": 1,
+      "options": [
+        {
+          "id": "develop",
+          "label": "认真接着说",
+          "result": "由具体场景与双方意愿决定"
+        },
+        {
+          "id": "cooperate",
+          "label": "保留合作与体面",
+          "result": "完成节点但不推进恋爱"
+        },
+        {
+          "id": "defer",
+          "label": "暂缓，约定以后再谈",
+          "result": "未接受新邀约不记违约"
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "她主动把茶推近，也能直接指出你的偏私；不同意不等于这场相处失败。",
+      "echo": "后续散步与小宴会提起这次真实分歧，来访不再总带着一册待办。",
+      "nextExpectation": "后续散步与小宴会提起这次真实分歧，来访不再总带着一册待办。",
+      "visibility": [
+        "C01",
+        "C10"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-XR10-02",
+      "mainLink": "XR10-01",
+      "relationshipEffects": {
+        "warm": {
+          "trust": 5,
+          "safety": 2,
+          "gate": "双方愿发展或NPC由当前手写节点真实回应；无强制恢复"
+        },
+        "work": {
+          "trust": 3,
+          "stageAdvance": false
+        },
+        "distance": {
+          "trust": 1,
+          "playerIntent": "仅合作"
+        },
+        "note": "试调沿用前两节点，亲密和后期门槛在S05冻结，不拿礼物跳级"
+      },
+      "conflictPriority": {
+        "rank": 50,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 1,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "XR10-02",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-XR10-02",
+        "sourceEvent": "XR10-02",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "人物这一刻",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    },
+    {
+      "id": "F00",
+      "title": "两载灯火",
+      "kind": "transition",
+      "production": "扩写",
+      "source": "现有F00与周方案收束",
+      "outline": "二年冬末，最后一份到期报告与月账都已收好。雍正翻看灯、茶、旧谱和民间回信，发现与前世不同的不是一张完美清单，而是自己真的做过的选择。可以先查看未尽事项，或在明确缺憾后封存两年；不替未完成路线补写相守。国政结果、十四个可能的核心纪念和扩展关系按事实出现，未经历不凭空生成。已封卷原文保留，为三年以后留继续入口；封卷不再追加季度或年度收益。",
+      "actor": "C01",
+      "location": "史册",
+      "participants": [
+        "C01"
+      ],
+      "requires": [
+        "M12"
+      ],
+      "window": {
+        "recommended": [
+          2,
+          12,
+          30
+        ],
+        "firstUnlock": "M01",
+        "last": "所在季度可延后至延展周或明确补谈；硬工期按日期，不静默顺延",
+        "earliest": [
+          2,
+          12,
+          30
+        ],
+        "latest": [
+          2,
+          12,
+          30
+        ]
+      },
+      "sceneId": "SC-F00",
+      "costGroup": "SC-F00",
+      "slotCost": 0,
+      "options": [
+        {
+          "id": "inspect",
+          "label": "查看未尽事项",
+          "result": "只读列出真实未完成内容"
+        },
+        {
+          "id": "seal",
+          "label": "据实封存这两年",
+          "result": "先处理截至当日事项与月账，再封卷一次；不额外发钱"
+        }
+      ],
+      "freeInput": "咨询、追问与表态即时回应；行动只映射已有选项和参数，金额与预约先预览",
+      "immediate": "国政结果、十四个可能的核心纪念和扩展关系按事实出现，未经历不凭空生成。",
+      "echo": "已封卷原文保留，为三年以后留继续入口；封卷不再追加季度或年度收益。",
+      "nextExpectation": "已封卷原文保留，为三年以后留继续入口；封卷不再追加季度或年度收益。",
+      "visibility": [
+        "C01"
+      ],
+      "failure": "费用、日期、前置或人物地点不满足时说明缺项；可延期或保留合作，不无解释锁死主线",
+      "replay": "保存当时原文与结果，重读不再次请求AI或结算",
+      "rewardKey": "EV-F00",
+      "mainLink": "M12",
+      "conflictPriority": {
+        "rank": 30,
+        "meaning": "只决定先提示哪项冲突，不自动取消已接受预约、替玩家选择或突破人物日程"
+      },
+      "reschedule": {
+        "entry": "周计划内修改未执行安排；越过窗口时显示补谈或保留未完入口",
+        "embeddedLaterSlotCost": 0,
+        "limits": "只用现有重点周或本季尚未使用的一个延展周；过去日期不可倒放；已读正文与费用不重算"
+      },
+      "echoPlan": {
+        "sourceEvent": "F00",
+        "requires": "本事件已实际完成且相关事实对当前听者可见；保持合作或拒绝使用对应回响",
+        "targetEvent": null,
+        "sampleDate": null,
+        "relativeWhenNoFixedDate": "在下一次合法相处或周回顾中，按实际完成日之后触发；未发生则不显示",
+        "dateRule": "样例日期不随延期照抄；项目以实际执行日加工期，关系以实际完成前置和可用日期重新安排"
+      },
+      "memorialSource": {
+        "id": "MEM-F00",
+        "sourceEvent": "F00",
+        "sourceTransaction": "实际完成事务ID",
+        "kind": "史册记录或活动记录",
+        "physicalItem": false,
+        "rule": "只记录实际选择与展示原文，未完成不生成；实物信物另核唯一物品ID，不因重读再发"
+      },
+      "productionStage": "S01大纲；正式分支结果和数值在S04至S12施工"
+    }
+  ],
+  "countRule": "55含8个可选日常与F00；不是55场必读独立场景。"
+}
