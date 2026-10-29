@@ -1,0 +1,128 @@
+// AI 层：对话、旨意、夜话。AI 负责写和判断，引擎负责限幅。连不上时返回 null，界面改用固定文字。
+import {callModel} from './model.js';
+import {readConnectionSettings,connectionSettings,storeConnectionSettings} from '../ai-connection-settings.js';
+import {DEFAULT_AI} from '../ai-provider.js';
+import {PEOPLE,STATS,MONTHS,stageOf,NAMES} from './data.js';
+
+let mode='off',byok=null,lastError='';
+export const aiMode=()=>mode;
+export const aiError=()=>lastError;
+export const OFF_KEY='changyong-v2-ai-off';
+
+export async function initAI(storage=globalThis.localStorage){
+ let off=false;try{off=storage.getItem(OFF_KEY)==='1';}catch{}
+ if(off){mode='off';return mode;}
+ try{const r=await fetch('/api/status');if(r.ok&&(await r.json()).configured){mode='server';return mode;}}catch{}
+ const saved=readConnectionSettings(storage);
+ if(sessionByok){byok=sessionByok;mode='byok';return mode;}
+ if(saved?.mode==='byok'&&saved.key){byok={base:saved.url,model:saved.model,protocol:saved.protocol,key:saved.key};mode='byok';return mode;}
+ mode='off';return mode;
+}
+export const savedConnection=(storage=globalThis.localStorage)=>readConnectionSettings(storage)||{url:DEFAULT_AI.url,model:DEFAULT_AI.model,protocol:DEFAULT_AI.protocol,key:''};
+// 设置页：保存自己的 API，并试一次
+export async function saveConnection(form,remember,storage=globalThis.localStorage){
+ const cur=readConnectionSettings(storage)||{};
+ const v=connectionSettings({mode:'byok',url:form.url,model:form.model,protocol:form.protocol||cur.protocol||DEFAULT_AI.protocol,key:form.key,limit:cur.limit||100},cur);
+ byok={base:v.url,model:v.model,protocol:v.protocol,key:v.key};
+ const test=await callModel(byok,fetch.bind(globalThis),'只输出 JSON：{"ok":true}','测试');
+ if(!test)throw Error('没有收到回应。');
+ storeConnectionSettings(storage,v,remember);if(!remember)sessionByok=byok;
+ setAIOff(false,storage);mode='byok';lastError='';return true;
+}
+let sessionByok=null;
+export function setAIOff(off,storage=globalThis.localStorage){try{off?storage.setItem(OFF_KEY,'1'):storage.removeItem(OFF_KEY);}catch{}}
+
+async function ask(system,user){
+ if(mode==='off')return null;
+ try{
+  if(mode==='server'){
+   const r=await fetch('/api/v2',{method:'POST',headers:{'Content-Type':'application/json','X-Changyong-Request':'1'},body:JSON.stringify({system,user})});
+   const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'AI 暂不可用');lastError='';return d.value;
+  }
+  const v=await callModel(byok,fetch.bind(globalThis),system,user);lastError='';return v;
+ }catch(e){lastError=e.message||'AI 暂不可用';return null;}
+}
+
+const WORLD=`你在为清宫文字游戏《重生长雍帝王赋》写作。玩家扮演雍正皇帝：他在病榻上死去，又醒在雍正元年正月，记得前世的一切——年羹尧被赐死、年世兰撞墙、苏培盛守了他一辈子却没被好好看见、后宫里许多人的不得善终。这一世，他想把能挽回的都挽回。
+文风：白话、克制、有画面，像好的小说，不要堆砌辞藻，不要现代网络用语。人物说话符合身份与性格。不写露骨的性内容。`;
+const statLine=s=>STATS.map(x=>`${x.name}${s.stats[x.id]}`).join('，');
+const dateLine=s=>`雍正${s.year===1?'元':'二'}年${MONTHS[s.month-1]}`;
+function personBlock(s,id){
+ const p=PEOPLE[id],st=s.people[id];
+ const mem=st.memories.slice(-8).map(m=>`· ${m.text}`).join('\n')||'（还没有）';
+ return `【${p.name}】${p.title}。${p.voice}
+与皇上的情分：${st.aff}/100（${stageOf(st.aff)}）。${st.knot?`心里有个结：皇上在「${st.knot.text}」这件事上没有站在${p.name}这边，还没说开。`:''}
+${p.name}记得的事：\n${mem}`;
+}
+const clampInt=(v,a,b)=>Math.max(a,Math.min(b,Math.round(Number(v)||0)));
+const str=(v,n)=>typeof v==='string'?v.trim().slice(0,n):'';
+
+// 召见对话。history: [{who:'player'|'npc',text}]
+export async function chatReply(s,id,history,{letter=false}={}){
+ const p=PEOPLE[id],st=s.people[id];
+ const system=`${WORLD}
+现在你只扮演${p.name}，${letter?'这是一封书信往来：皇上写信给远在'+p.place+'的你，你回信':'皇上召见你，你们在'+p.place+'说话'}。
+${personBlock(s,id)}
+当前：${dateLine(s)}。朝局：${statLine(s)}。
+规则：
+1. reply 是${p.name}的回应，40到130字，可以有一两句动作或神情描写（第三人称写${p.name}，称玩家为“你”或用称谓）。要接住皇上刚才那句话，不要答非所问，不要说教。
+2. 你可以自由发挥情绪、回忆、玩笑、拒绝、反问。皇上的话若真诚、懂${p.name}，就让${p.name}有所触动；若敷衍、傲慢、伤人，就如实反应。
+3. affection 是这句话让情分变化多少，整数 -5 到 5：真诚而贴心 +3～+5，平常客气 +1～+2，答非所问或敷衍 0，冒犯伤人 -2～-5。${st.knot?'心结未解时，除非皇上正面承认那件事，否则不超过 +1。':''}
+4. memory：这句对话里如果有值得${p.name}长久记住的事（一个承诺、一句真心话、一次冒犯），用一句不超过30字的话写下来；没有就给空字符串。
+5. mood：两到四个字，${p.name}此刻的心情。
+只输出 JSON：{"reply":"...","affection":0,"mood":"...","memory":""}`;
+ const user=history.slice(-10).map(h=>(h.who==='player'?'皇上：':p.name+'：')+h.text).join('\n');
+ const v=await ask(system,user);if(!v)return null;
+ const reply=str(v.reply,300);if(!reply)return null;
+ return {reply,affection:clampInt(v.affection,-5,5),mood:str(v.mood,8),memory:str(v.memory,40)};
+}
+
+// 赏赐后的回应
+export async function giftReply(s,id,giftName,liked){
+ const p=PEOPLE[id];
+ const system=`${WORLD}\n你只扮演${p.name}。\n${personBlock(s,id)}\n皇上刚赏了${p.name}一件东西：${giftName}。${liked?p.name+'正喜欢这个。':'这不算'+p.name+'最想要的，但也是心意。'}\n写${p.name}收到时的反应，50到110字，有动作有一句话。只输出 JSON：{"reply":"..."}`;
+ const v=await ask(system,'请写。');return str(v?.reply,260)||null;
+}
+
+// 下旨：玩家自由写旨意，AI 推演后果
+export async function edictResult(s,text,presentIds){
+ const roster=presentIds.map(id=>`${id}=${PEOPLE[id].name}（${PEOPLE[id].title}）`).join('，');
+ const system=`${WORLD}
+皇上亲笔写了一道旨意。你是史官兼推演者：判断这道旨意在雍正朝的现实里会产生什么后果，并写出来。
+当前：${dateLine(s)}。局势：${statLine(s)}（每项 0 到 100）。
+可能受影响的人：${roster}。其他朝臣有张廷玉、允祥、户部、各省督抚等。
+规则：
+1. title：这道旨意的简称，不超过8字。
+2. narration：用第二人称“你”，写旨意下达后一两个月里发生了什么，100到200字。要有具体的人和细节，有得有失；好心办坏事、阳奉阴违、意外之喜都可以发生。旨意若荒唐、残暴、或根本做不到，就写出它怎样碰壁或闹出乱子。
+3. effects：对五项局势的影响，整数，每项 -8 到 8，合计的正值一般不超过 10。花钱的事要扣国库(treasury)；惠民的事加民心(people)；整饬吏治、立规矩影响朝局(court)；涉及宫闱的影响后宫(palace)；劳神的事扣圣躬(health)。没影响的项填 0。
+4. affection：这道旨意让哪些人对皇上的情分变化，键是人物编号（只能用上面列出的），值 -5 到 5；无关的人不写。
+只输出 JSON：{"title":"...","narration":"...","effects":{"treasury":0,"people":0,"court":0,"palace":0,"health":0},"affection":{}}`;
+ const v=await ask(system,'旨意原文：'+text);if(!v)return null;
+ const narration=str(v.narration,500);if(!narration)return null;
+ const effects={};for(const x of STATS)effects[x.id]=clampInt(v.effects?.[x.id],-8,8);
+ const affection={};for(const[k,val]of Object.entries(v.affection||{}))if(presentIds.includes(k))affection[k]=clampInt(val,-5,5);
+ return {title:str(v.title,12)||text.slice(0,8),narration,effects,affection};
+}
+
+// 夜里的一段
+export async function nightScene(s,id,line=''){
+ const p=PEOPLE[id];
+ const system=`${WORLD}
+今夜皇上去了${p.place}，陪着${p.name}。
+${personBlock(s,id)}
+当前：${dateLine(s)}。
+写今夜的一小段，120到220字，第二人称“你”。要有一个具体的小细节（一样东西、一句话、一个动作），贴合${p.name}的性格和你们眼下的情分，${s.people[id].aff<45?'还有些拘谨，彼此在试探':'已经可以说些心里话'}。点到为止，不写露骨内容。${line?'皇上开口说的第一句是：“'+line+'”，要接住这句话。':''}
+affection：今夜让情分增加多少，0 到 5。memory：今夜值得${p.name}记住的一件事，不超过30字。
+只输出 JSON：{"text":"...","affection":3,"memory":""}`;
+ const v=await ask(system,'请写今夜。');if(!v)return null;
+ const text=str(v.text,600);if(!text)return null;
+ return {text,affection:clampInt(v.affection,0,5),memory:str(v.memory,40)};
+}
+
+// 剧情选完后，主角说一句（让固定剧情也有 AI 的回声；可选）
+export async function sceneEcho(s,id,sceneTitle,choice,replyText){
+ const p=PEOPLE[id];if(!p)return null;
+ const system=`${WORLD}\n你只扮演${p.name}。\n${personBlock(s,id)}\n刚刚在「${sceneTitle}」里，皇上的选择是：${choice}。结果：${replyText.slice(0,300)}\n写${p.name}事后对皇上说的一句话（可带一个动作），30到80字，不要重复上面的结果。只输出 JSON：{"reply":"..."}`;
+ const v=await ask(system,'请写。');return str(v?.reply,200)||null;
+}
+export {NAMES};
