@@ -2,7 +2,17 @@
 
 清宫重生题材的文字经营叙事游戏。玩家是重生回到雍正元年的雍正，在三十年里处理朝政，也重新面对七段旧日关系：苏培盛、年羹尧、温实初、允礼、宜修、年世兰、安陵容，另有甄嬛、沈眉庄两条扩展线。
 
-当前版本 **0.27.0**。本地运行，未发布。
+当前版本 **0.27.0**。
+
+- 在线游玩：https://lynch715.github.io/changyong-emperor/
+- GitHub 仓库：https://github.com/Lynch715/changyong-emperor
+
+GitHub Pages 默认进入周制版本；固定剧情可完整游玩。Pages 不运行本地 AI 代理，也不包含本机密钥；可在设置中选择自带密钥模式（是否可连接取决于服务商的跨域支持），或继续本地运行。线上与本机的浏览器存档分开保存，搬移进度请使用游戏内导出、导入。
+
+## 发布
+
+推送 `master` 后由 GitHub Actions 自动构建并发布 Pages，也可以手动运行 `Deploy game to GitHub Pages`。
+`npm run build` 仅将网页、样式、`src/` 和 `assets/` 输出到 `_site/`，不发布本机配置、存档证据或开发服务器。
 
 ## 运行
 
