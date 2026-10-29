@@ -1,7 +1,0 @@
-// Isolated UI QA. Explicit controls simulate one local save failure; never used by the normal server.
-import http from 'node:http';
-import fs from 'node:fs';
-import {makeServer} from '../server.mjs';
-const app=makeServer({config:{}}),handle=app.listeners('request')[0];
-const qa=`<script>const originalSet=Storage.prototype.setItem;let failNext=false;Storage.prototype.setItem=function(k,v){if(failNext&&k==='changyong-week-s02-auto'){failNext=false;document.querySelector('#qa-note').textContent='已模拟一次写入失败';throw new DOMException('QA storage full','QuotaExceededError');}return originalSet.call(this,k,v);};document.addEventListener('DOMContentLoaded',()=>{const bar=document.createElement('details');bar.id='qa-controls';bar.style.cssText='position:fixed;top:0;right:0;z-index:200;font:12px sans-serif;background:#fff;color:#222;max-width:180px';bar.innerHTML='<summary>本机验收工具</summary><button id="qa-fail">下一次自动存档失败</button><span id="qa-note"></span>';document.body.append(bar);document.querySelector('#qa-fail').onclick=()=>{failNext=true;document.querySelector('#qa-note').textContent='仅下一次自动存档';};});</script>`;
-http.createServer((req,res)=>{if(new URL(req.url,'http://127.0.0.1').pathname==='/'){res.writeHead(200,{'Content-Type':'text/html','Cache-Control':'no-store'});res.end(fs.readFileSync(new URL('../index.html',import.meta.url),'utf8').replace('</head>',qa+'</head>'));}else handle(req,res);}).listen(5218,'127.0.0.1',()=>console.log('S10-06 isolated QA: http://127.0.0.1:5218'));
