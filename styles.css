@@ -108,3 +108,194 @@ textarea,input,select{scroll-margin:24px 0 100px}
 .art-stage{min-height:300px;grid-template-columns:minmax(0,1fr) minmax(130px,42%)}
 .art-stage-portrait img{height:300px}
 @media(max-width:600px){.art-stage{min-height:260px;grid-template-columns:minmax(0,1fr) 150px}.art-stage-portrait img{height:250px}}
+
+/* ==========================================================================
+   v0.27 御案主题：瓷青为案，缃色为纸，泥金为字，朱砂只用于“你”的落笔
+   ========================================================================== */
+:root{
+ --desk:#1B2A35;          /* 瓷青：案面、页眉、导航 */
+ --desk-deep:#13202A;
+ --desk-line:#2E4150;
+ --gold:#C8A35A;          /* 泥金：瓷青上的字与线 */
+ --gold-soft:#9C8250;
+ --silk:#EFE4CC;          /* 缃色：阅读的纸 */
+ --silk-deep:#E4D6B8;
+ --ink:#2A251F;           /* 墨 */
+ --ink-soft:#6E6253;
+ --cinnabar:#B0392A;      /* 朱砂：选择、你的回答、当前页 */
+ --paper:var(--silk);--paper-light:#F5ECD8;--muted:var(--ink-soft);--line:#D3C29E;--teal:var(--desk);--red:var(--cinnabar);
+ --brush:"Ma Shan Zheng","STKaiti","Kaiti SC","KaiTi",serif;
+ --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","Noto Serif CJK SC",serif;
+ --body-size:17px;
+ font-family:var(--serif);color:var(--ink);background:var(--desk-deep);
+}
+html body{background:var(--desk-deep);background-image:radial-gradient(ellipse 120% 60% at 50% 0%,#24394866,transparent 70%);color:var(--ink)}
+h1,h2,h3,.serif{font-family:var(--serif)}
+button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* ---------- 外框：去掉双线与四角 ---------- */
+.app-shell.portrait-shell{max-width:720px;margin:0 auto;border:0;box-shadow:none;background:transparent;min-height:100vh}
+.frame-corner{display:none!important}
+.workspace{background:transparent}
+.main-wrap{padding:18px 16px 110px;max-width:680px;margin:0 auto}
+
+/* ---------- 页眉：一块瓷青匾 ---------- */
+.imperial-header{background:var(--desk);border:0;border-bottom:1px solid var(--desk-line);padding:12px 16px 10px;position:sticky;top:0;z-index:20;box-shadow:0 6px 18px #0006}
+.imperial-header .masthead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand-small{display:flex;align-items:center;gap:10px}
+.brand-small .seal{width:30px;height:30px;border:0;background:var(--cinnabar);color:#F6E9D2;font:22px/1 var(--brush);display:grid;place-items:center;box-shadow:none;border-radius:3px}
+.brand-small strong{font:22px/1.2 var(--brush);letter-spacing:2px;color:var(--gold);font-weight:400}
+.brand-small small{display:block;color:#A9B3B8;font-size:12px;letter-spacing:1px;margin-top:2px}
+.header-tools{display:flex;gap:6px}
+.header-tools button{min-width:34px;height:30px;padding:0 10px;border:1px solid var(--desk-line);background:transparent;color:var(--gold);font-size:13px;border-radius:2px}
+.header-tools button:hover{border-color:var(--gold-soft)}
+.imperial-status{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:10px;padding-top:8px;border-top:1px solid var(--desk-line);background:transparent}
+.imperial-status>div{border:0;padding:0 0 0 10px;border-left:1px solid var(--desk-line)}
+.imperial-status>div:first-child{border-left:0;padding-left:0}
+.imperial-status span{display:block;color:#8F9AA0;font-size:11px;letter-spacing:1px}
+.imperial-status strong{font:500 20px/1.3 var(--serif);color:#F0E6D0}
+.imperial-status strong small{font-size:11px;color:#8F9AA0;margin-left:2px}
+
+/* ---------- 底部导航：当前页盖一方朱印 ---------- */
+.mobile-nav{background:var(--desk);border:0;border-top:1px solid var(--desk-line);box-shadow:0 -8px 20px #0006;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+.mobile-nav button{background:transparent!important;color:#93A0A7;border:0!important;box-shadow:none!important;font-size:11px;letter-spacing:1px;padding:4px 0}
+.mobile-nav button span{display:grid;place-items:center;width:32px;height:32px;margin:0 auto 2px;font:20px/1 var(--brush);color:#B9C1C5;border-radius:3px;transition:background .2s}
+.mobile-nav button.active{color:var(--gold)}
+.mobile-nav button.active span{background:var(--cinnabar);color:#F6E9D2}
+
+/* ---------- 页题：直接写在案上的泥金大字 ---------- */
+.page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:6px 0 18px;padding:0 2px 12px;border-bottom:1px solid var(--desk-line)}
+.page-heading .eyebrow{display:none}
+.page-heading h1{font:400 40px/1.1 var(--brush);color:var(--gold);letter-spacing:6px;margin:0}
+.page-heading p{color:#A9B3B8;font-size:13px;margin-top:6px;letter-spacing:.5px}
+.page-heading .tag,.page-heading .text-btn{color:var(--gold)}
+.desk-chapter{color:#8F9AA0;font-size:13px;margin:-8px 2px 16px;letter-spacing:1px}
+.eyebrow{color:var(--ink-soft);letter-spacing:1px;font-size:12px;text-transform:none}
+.main-wrap>section:not(.paper-panel):not(.note-panel):not(.settings-section)>.section-header h2,.main-wrap>.section-header h2,.main-wrap>section:not(.paper-panel):not(.note-panel):not(.settings-section)>.section-header h3{color:var(--gold);font:400 24px/1.3 var(--brush);letter-spacing:3px}
+.main-wrap>section:not(.paper-panel):not(.note-panel):not(.settings-section)>.section-header small,.main-wrap>section:not(.paper-panel):not(.note-panel):not(.settings-section)>.section-header .text-btn{color:#A9B3B8}
+
+/* ---------- 纸：缃色宣纸铺在案上，不再描边 ---------- */
+.paper-panel,.note-panel,.scene-paper,.settings-section,.person-card,.dashboard-aside,.event-card-wrap{background:var(--silk);border:0!important;border-radius:2px;box-shadow:0 1px 0 #00000040,0 10px 26px #0000004d;color:var(--ink)}
+.paper-panel,.note-panel,.settings-section{padding:20px 20px;margin:0 0 14px}
+.note-panel{background:var(--silk-deep)}
+.paper-panel h2,.note-panel h2,.settings-section h2{font:600 19px/1.5 var(--serif);color:var(--ink);letter-spacing:1px}
+.paper-panel h3,.note-panel h3,.settings-section h3{font:600 17px/1.5 var(--serif);color:var(--ink)}
+.paper-panel p,.note-panel p,.settings-section p{color:#3D352C;line-height:1.85}
+.small-label,.quiet-note,.inline-note,.desk-reading-meta,.paper-panel small,.entry small{color:var(--ink-soft);font-size:12.5px;letter-spacing:.5px}
+.h-rule{border-color:var(--line)}
+.section-header{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+details.paper-panel>summary,details.settings-section>summary,details>summary{cursor:pointer;font-weight:600;color:var(--ink);list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details.paper-panel>summary::before,details.settings-section>summary::before{content:"";display:inline-block;width:6px;height:6px;border-right:1.5px solid var(--ink-soft);border-bottom:1.5px solid var(--ink-soft);transform:rotate(-45deg);margin:0 10px 2px 2px;transition:transform .2s}
+details[open].paper-panel>summary::before,details[open].settings-section>summary::before{transform:rotate(45deg)}
+.entry{border-top:1px solid var(--line);padding:14px 0}
+.entry:first-child{border-top:0}
+
+/* ---------- 按钮：瓷青为主，文字链为次 ---------- */
+.primary-btn{background:var(--desk);color:#F2E6CC;border:0;border-radius:2px;padding:11px 20px;font-size:15px;letter-spacing:1px;box-shadow:inset 0 0 0 1px #ffffff14}
+.primary-btn:hover:not(:disabled){background:#243848}
+.secondary-btn{background:transparent;color:var(--desk);border:1px solid #8C7E66;border-radius:2px;padding:10px 18px;font-size:14.5px;box-shadow:none}
+.secondary-btn:hover:not(:disabled){background:#E3D4B4}
+.text-btn{color:#2F4A5C;text-decoration:underline;text-decoration-color:#2F4A5C55;text-underline-offset:4px;padding:6px 2px;font-size:14px}
+.text-btn:hover{text-decoration-color:currentColor}
+.button-row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-top:14px}
+.tag{border:1px solid currentColor;border-radius:2px;padding:1px 7px;font-size:12px;color:var(--ink-soft);background:transparent}
+.tag.gold{color:#8A6A2E}
+.main-wrap>.back-link,.back-link{color:var(--gold);font-size:13px;letter-spacing:1px;margin:0 0 12px;text-decoration:none}
+
+/* ---------- 场景：立绘在上，纸在下，选择用朱砂 ---------- */
+.scene-stage.art-stage{border:0;border-radius:2px;background:var(--desk);box-shadow:0 10px 26px #0000005c;margin-bottom:0;min-height:300px}
+.art-stage .stage-wash{background:linear-gradient(90deg,#13202Aee 0%,#13202A99 45%,transparent 75%)}
+.art-stage .stage-caption .stage-chapter{color:var(--gold-soft);font-size:12px;letter-spacing:3px}
+.art-stage .stage-caption h2{font:400 clamp(32px,9vw,44px)/1.2 var(--brush);color:#F3E7CD;letter-spacing:4px;margin:6px 0}
+.art-stage .stage-caption p{color:#B7BFC3;font-size:13px;letter-spacing:2px}
+.scene-paper{padding:22px 22px 26px;margin-top:-2px;border-radius:0 0 2px 2px}
+.scene-top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:18px}
+.scene-speaker{font:600 20px/1.3 var(--serif);color:var(--ink);letter-spacing:2px;margin-right:10px}
+.scene-top small{color:var(--ink-soft)}
+.story-text{font-size:var(--body-size);line-height:2.05;color:var(--ink);letter-spacing:.3px}
+.memory-echo{background:transparent;border:0;border-left:2px solid var(--gold-soft);padding:2px 0 2px 14px;margin:0 0 20px}
+.memory-echo span{color:#8A6A2E;font-size:12px;letter-spacing:2px}
+.memory-echo p{color:#5A4E40;font-size:15.5px;line-height:1.9}
+
+.choices{display:flex;flex-direction:column;gap:0;margin-top:26px;border-top:1px solid var(--line)}
+.choices .choice{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:16px 8px 16px 4px;color:var(--ink);box-shadow:none;transition:background .15s}
+.choices .choice .choice-label{display:flex;align-items:baseline;gap:14px;font-size:16.5px;line-height:1.7;color:var(--ink)}
+.choices .choice .choice-number{flex:none;font:400 24px/1 var(--brush);color:var(--cinnabar);width:28px;text-align:center;background:none;border:0}
+.choices .choice:hover:not(:disabled),.choices .choice:focus-visible{background:#E6D7B6}
+.choices .choice:hover .choice-number{transform:scale(1.08)}
+.choices .choice:disabled{opacity:.45}
+.choices .primary-btn,.choices .secondary-btn{margin-top:16px;align-self:flex-start}
+.choices>.text-btn{align-self:flex-start;margin-top:10px}
+
+/* 你的回答：朱批 */
+.response-choice{font:400 22px/1.5 var(--brush);color:var(--cinnabar);letter-spacing:1px;margin:0 0 18px;padding:0 0 14px;border-bottom:1px solid var(--line)}
+.moment-reward{background:transparent;border:0;border-top:1px solid var(--line);padding-top:16px}
+.moment-reward .moment-mark{background:var(--cinnabar);color:#F6E9D2;font-family:var(--brush);border-radius:3px}
+.scene-recap,.result-details{border-top:1px solid var(--line);padding-top:12px;margin-top:16px}
+.scene-recap summary,.result-details summary{color:var(--ink-soft);font-size:14px}
+
+/* 自由输入 */
+.input-panel{background:transparent;border:0;border-top:1px dashed #BFAE88;margin-top:26px;padding:18px 0 0}
+.input-panel h3{font-size:14px;color:var(--ink-soft);font-weight:400;letter-spacing:1px}
+.input-panel textarea,.field input,.field select,.field textarea,.search,input[type=search],select,textarea{background:#F7F0DF;border:1px solid #CDBB94;border-radius:2px;color:var(--ink)}
+.composer-footer small{color:var(--ink-soft)}
+.chat-log{margin:8px 0}
+
+/* ---------- 御案上的条目 ---------- */
+.event-card{background:transparent;border:0;border-top:1px solid var(--line);padding:16px 0;box-shadow:none}
+.paper-panel>.event-card:first-child{border-top:0;padding-top:4px}
+.event-card h3{font:600 18px/1.5 var(--serif)}
+.desk-response h2{font:400 26px/1.4 var(--brush);letter-spacing:2px;color:var(--ink)}
+.desk-dialogue{font-size:16px;line-height:1.95}
+.desk-capacity strong{font:400 26px/1 var(--brush);color:var(--cinnabar);margin:0 2px}
+.advance-panel{background:transparent;border:0;border-top:1px solid var(--desk-line);margin-top:26px;padding:20px 2px 0;color:#C9CFD2}
+.advance-panel strong{font:400 22px/1.4 var(--brush);color:var(--gold);letter-spacing:2px}
+.advance-panel p{color:#A9B3B8}
+.advance-panel .primary-btn{background:var(--cinnabar);color:#FBEFDB}
+.advance-panel .primary-btn:hover:not(:disabled){background:#C2412F}
+.advance-panel .text-btn{color:var(--gold)}
+.main-wrap>.text-btn,.main-wrap>section>.text-btn{color:var(--gold)}
+
+/* ---------- 宫阙人物卡 ---------- */
+.person-card{padding:18px 18px 16px;margin-bottom:14px}
+.person-card h2,.person-card h3{font:400 26px/1.3 var(--brush);letter-spacing:3px;color:var(--ink)}
+.art-nameplate{background:var(--desk);color:var(--gold);border:0;font-family:var(--brush);font-size:18px}
+
+/* ---------- 弹窗 ---------- */
+dialog#modal{background:var(--silk);color:var(--ink);border:0;border-radius:2px;box-shadow:0 30px 80px #000a;padding:0}
+dialog#modal::backdrop{background:#0B141Bcc}
+#modal h2,#modal-title{font:400 26px/1.3 var(--brush);color:var(--ink);letter-spacing:2px}
+
+/* ---------- 提示条 ---------- */
+#toast{background:var(--desk);color:#F2E6CC;border:1px solid var(--desk-line);border-radius:2px;box-shadow:0 10px 30px #0008}
+
+/* ---------- 标题页 ---------- */
+.title-seal{border:0;background:var(--cinnabar);color:#F6E9D2;font:30px/1 var(--brush);border-radius:3px}
+.title-body h1{font:400 clamp(40px,11vw,58px)/1.2 var(--brush);letter-spacing:8px;color:#F3E7CD}
+.title-actions .primary-btn{background:var(--cinnabar);color:#FBEFDB;font-size:17px;letter-spacing:6px;padding:14px 34px}
+.title-actions .text-btn{color:var(--gold)}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media(min-width:760px){.main-wrap{padding:26px 24px 120px}}
+/* 修正：主区不再铺纸，纸只在条目上 */
+.portrait-shell .main-wrap,.main-wrap{background:transparent!important;background-image:none!important;border:0!important;box-shadow:none!important}
+.portrait-shell::before,.portrait-shell::after{display:none!important}
+.desk-capacity strong{font:600 20px/1 var(--serif);color:var(--cinnabar)}
+.brand-small strong{letter-spacing:1px}
+
+/* 直接放在案上的按钮与页签 */
+.palace-tools .secondary-btn,.palace-tools .primary-btn,.main-wrap>.button-row .secondary-btn{background:transparent;color:var(--gold);border:1px solid var(--gold-soft)}
+.palace-tools .secondary-btn:hover,.main-wrap>.button-row .secondary-btn:hover{background:#ffffff0d}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;border:0;background:transparent}
+.tabs button{background:transparent!important;color:#A9B3B8!important;border:1px solid var(--desk-line)!important;border-radius:2px;padding:6px 12px;font-size:13.5px;box-shadow:none!important}
+.tabs button.active{background:var(--cinnabar)!important;color:#FBEFDB!important;border-color:var(--cinnabar)!important}
+.main-wrap>section:not(.paper-panel)>.section-header{flex-wrap:wrap}
+/* 纸上的小标题：墨色而非泥金 */
+.paper-panel .section-header h2,.paper-panel .section-header h3,.note-panel .section-header h3,.note-panel .section-header h2{font:600 18px/1.5 var(--serif);color:var(--ink);letter-spacing:1px}
+.scene-top{background:transparent!important;border-top:0!important;border-left:0!important;border-right:0!important;box-shadow:none!important;padding-left:0;padding-right:0}
+html body .app-shell.portrait-shell,html body .portrait-shell{border:0!important;outline:0!important;box-shadow:none!important}
+html body{padding-left:0!important;padding-right:0!important}
+.choices .choice{margin:0!important}
+.result-stage,.result-heading{background:transparent}
+.title-body h1{font-size:clamp(32px,9vw,58px);letter-spacing:.18em;white-space:nowrap;margin-right:-.18em}

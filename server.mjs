@@ -5,7 +5,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {CHAT_SCHEMA,PARSE_SCHEMA} from './src/input.js';
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
-const TYPES={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml','.jpg':'image/jpeg','.md':'text/markdown; charset=utf-8'};
+const TYPES={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml','.jpg':'image/jpeg','.md':'text/markdown; charset=utf-8','.woff2':'font/woff2'};
 export function serverConfig(env=process.env){const base=env.AI_BASE_URL||DEFAULT_AI.url;return {key:env.AI_API_KEY||(isDeepSeek(base)?env.DEEPSEEK_API_KEY:env.OPENAI_API_KEY)||'',base,model:env.AI_MODEL||DEFAULT_AI.model,protocol:env.AI_PROTOCOL||DEFAULT_AI.protocol,limit:Number(env.AI_DAILY_LIMIT)||100};}
 export function makeServer({config=serverConfig(),fetcher=fetch}={}){
  let day='',calls=0;const active=new Set();
