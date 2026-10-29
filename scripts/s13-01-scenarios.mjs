@@ -6,8 +6,10 @@ import * as E from '../src/engine.js';
 import {ordinal,stamp} from '../src/calendar.js';
 import {usedSlots,heldSlots} from '../src/week.js';
 import {exportSave,parseImport} from '../src/storage.js';
+const __evidence=f=>{try{return f()}catch(e){if(e&&e.code==='ENOENT')return null;throw e}};
 
-const schedule=JSON.parse(fs.readFileSync(new URL('../design/S01/周排程.json',import.meta.url),'utf8'));
+
+const schedule=(()=>{try{return __evidence(()=>JSON.parse(fs.readFileSync(new URL('../design/S01/周排程.json',import.meta.url),'utf8')))}catch(e){if(e.code==='ENOENT')return null;throw e}})();
 export const dailyJobs=[['D01',1,1,3,'day'],['D02',2,1,5,'day'],['D03',2,4,3,'day'],['D04',2,4,4,'evening'],['D05',1,7,4,'day'],['D06',2,7,6,'day'],['D07',1,10,7,'day'],['D08',2,10,4,'day']].map(([eventId,year,month,day,period])=>({eventId,date:{year,month,day},period}));
 export const activityJobs=schedule.weeks.map((w,i)=>({activity:[['study','C01'],['rest','C01'],['walk','C06'],['chat','C09'],['chat','C10'],['study','C01'],['walk','C09'],['rest','C01']][i],date:{year:w.start[0],month:w.start[1],day:i===3?7:6},period:'evening'}));
 export const combinedJobs=[...schedule.coverageSchedule.filter(j=>j.eventId!=='F00').map(j=>({...j,date:{year:j.date[0],month:j.date[1],day:j.date[2]},period:j.slot==='report'?'day':j.slot})),...dailyJobs,...activityJobs].sort((a,b)=>stamp(a.date,a.period)-stamp(b.date,b.period));

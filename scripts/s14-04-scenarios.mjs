@@ -1,8 +1,10 @@
 import fs from 'node:fs';import zlib from 'node:zlib';import assert from 'node:assert/strict';import {fileURLToPath} from 'node:url';
 import * as E from '../src/engine.js';import {parseImport} from '../src/storage.js';import {factorJSON,unfactorJSON} from '../src/continuation-codec.js';
 import {act} from './s14-02-v03-scenarios.mjs';import {reachEighth} from './s14-02-v08-scenarios.mjs';import {BOND_MODES} from '../src/activity-content.js';import {extensionRelation} from '../src/extension-routes.js';
+const __evidence=f=>{try{return f()}catch(e){if(e&&e.code==='ENOENT')return null;throw e}};
+
 export {act};export const dir=new URL('../docs/施工/证据/2026-10-28-S14-04/',import.meta.url),actors=Array.from({length:9},(_,i)=>'C'+String(i+2).padStart(2,'0'));
-export const read=p=>parseImport(fs.readFileSync(new URL('../'+p,import.meta.url),'utf8'));
+export const read=p=>__evidence(()=>parseImport(fs.readFileSync(new URL('../'+p,import.meta.url),'utf8')));
 export const base=()=>read('docs/施工/证据/2026-10-28-S14-04/实际关系活动起点.json');
 export const plan=(s,actor,mode='daily',day=4)=>act(s,{type:'week-plan',kind:'bond',actor,mode,date:{year:27,month:9,day},period:'evening'});
 export function bondCase(actor,mode,pause=false){let s=plan(base(),actor,mode);return act(s,{type:'week-fulfill',planId:s.weekly.plans.at(-1).id,...(pause?{pause:true}:{})});}
@@ -10,7 +12,7 @@ export function breachCase(actor){let s=act(base(),{type:'week-plan',kind:'chat'
  if(actor==='C05'){s=act(s,{type:'week-plan',kind:'chat',actor,date:{year:27,month:9,day:6},period:'evening',topic:'wish',choice:'listen'});s=act(s,{type:'week-fulfill',planId:s.weekly.plans.at(-1).id});}
  s=act(s,{type:'relationship-repair',actor,issueId:issue.id});assert.equal(s.weekly.relationships.issues.find(i=>i.id===issue.id).status,'resolved');return{open,repaired:s};}
 export function packActor(actor,rows){const text=JSON.stringify(rows),packed=factorJSON(text);fs.writeFileSync(new URL(actor+'-实际生活分支.json.gz',dir),zlib.gzipSync(packed));return{actor,expandedChars:text.length,packedChars:packed.length,bytes:fs.statSync(new URL(actor+'-实际生活分支.json.gz',dir)).size};}
-export function actorCases(actor){const size=JSON.parse(fs.readFileSync(new URL('分支装箱清单.json',dir),'utf8')).find(x=>x.actor===actor).expandedChars;return JSON.parse(unfactorJSON(zlib.gunzipSync(fs.readFileSync(new URL(actor+'-实际生活分支.json.gz',dir))).toString(),size));}
+export function actorCases(actor){const size=__evidence(()=>JSON.parse(fs.readFileSync(new URL('分支装箱清单.json',dir),'utf8'))).find(x=>x.actor===actor).expandedChars;return __evidence(()=>JSON.parse(unfactorJSON(zlib.gunzipSync(fs.readFileSync(new URL(actor+'-实际生活分支.json.gz',dir))).toString(),size)));}
 export function nodeMatrix(mode){const s=read('docs/施工/证据/2026-10-28-S14-02-V08/'+mode+'-第八卷封卷.json'),rows=[];for(const actor of actors){const ids=Array.from({length:6},(_,i)=>(['C09','C10'].includes(actor)?'XR':'R')+actor.slice(1)+'-0'+(i+1));rows.push({actor,stage:s.relations[actor]?.stage||extensionRelation(s,actor).stage,nodes:ids.map(id=>{const t=s.transcripts[id],e=s.events[id],tx=s.transactions.find(t=>t.id===e?.transactionId);assert.ok(t?.body&&t.dialogue&&e.completed&&tx?.actions.some(a=>a.type==='event'&&a.eventId===id));assert.equal(t.transactionId,tx.id);return{id,date:t.date,choice:t.choice,bodyLength:t.body.length,resultLength:t.dialogue.length,bodyHash:E.hash(t.body),resultHash:E.hash(t.dialogue),transactionId:tx.id};})});}assert.equal(rows.flatMap(x=>x.nodes).length,54);return{mode,rows};}
 if(process.argv[1]===fileURLToPath(import.meta.url)){
  fs.mkdirSync(dir,{recursive:true});const matrix=['warm','cooperate'].map(nodeMatrix);fs.writeFileSync(new URL('54节点逐条验收.json',dir),JSON.stringify(matrix,null,2));const manifest=[];

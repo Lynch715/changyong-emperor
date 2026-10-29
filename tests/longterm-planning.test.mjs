@@ -1,7 +1,9 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {auditLongtermPlan,planAdultDecision} from '../scripts/s14-01-audit.mjs';
 import {ordinal,stamp} from '../src/calendar.js';
-const read=p=>JSON.parse(fs.readFileSync(new URL('../'+p,import.meta.url),'utf8'));
+const __evidence=f=>{try{return f()}catch(e){if(e&&e.code==='ENOENT')return null;throw e}};
+
+const read=p=>__evidence(()=>JSON.parse(fs.readFileSync(new URL('../'+p,import.meta.url),'utf8')));
 const base=read('design/S14/长期周排程.json'),mapping=read('design/S14/后期事件映射.json'),registry=read('design/S01/事件总表.json').events;
 const fresh=()=>[structuredClone(base),structuredClone(mapping)];
 const audit=(p=base,m=mapping)=>auditLongtermPlan(p,m,registry);

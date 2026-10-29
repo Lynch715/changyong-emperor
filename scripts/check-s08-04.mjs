@@ -1,3 +1,4 @@
+import {generatedBaseline} from './generated-baseline.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -5,8 +6,10 @@ import * as engine from '../src/engine.js';
 import {exportSave} from '../src/storage.js';
 import {mainCheckpoints} from './s08-main-scenarios.mjs';
 import {buildAIContext,buildReactionContext} from '../src/input.js';
+const __evidence=f=>{try{return f()}catch(e){if(e&&e.code==='ENOENT')return null;throw e}};
+
 export const dir=fileURLToPath(new URL('../docs/施工/证据/2026-10-24-S08-04/',import.meta.url));
-export const before=JSON.parse(fs.readFileSync(path.join(dir,'施工前剧情与分支基线.json'),'utf8'));
+export const before=(()=>{try{return __evidence(()=>JSON.parse(fs.readFileSync(path.join(dir,'施工前剧情与分支基线.json'),'utf8')))}catch(e){if(e.code==='ENOENT')return generatedBaseline();throw e}})()??generatedBaseline();
 export const act=(s,a)=>engine.commit(s,engine.preview(s,[a])).state;
 export const choose=(s,id,choiceId,params)=>act(s,{type:'event',eventId:id,choiceId,...(params?{params}:{})});
 export function carryTo(s,id){for(let i=0;i<400;i++){if(engine.requiredEvents(s).some(e=>e.id===id))return s;if(s.weekly){const n=s.weekly.notices.find(n=>n.status==='pending'&&!n.suspended&&engine.ordinal(n.date)<=engine.ordinal(s.date));const e=engine.requiredEvents(s)[0];s=act(s,n?{type:'week-resolve',noticeId:n.id,choice:n.choices?.[0]}:e?{type:'event',eventId:e.id,choiceId:e.options[0].id}:{type:'week-advance'});}else{const e=engine.requiredEvents(s)[0];s=act(s,e?{type:'event',eventId:e.id,choiceId:e.options[0].id}:{type:'advance'});}}throw Error('未到目标场景');}

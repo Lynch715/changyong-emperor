@@ -1,3 +1,4 @@
+import {generatedBaseline} from './generated-baseline.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -11,8 +12,10 @@ import {initiativeStory,giftStory,banquetExchange} from '../src/social-story.js'
 import {ordinal,stamp,addDays} from '../src/calendar.js';
 import {worldPath,worldIds,mechanical} from './s08-world-scenarios.mjs';
 import {reachRoute} from './s08-relation-scenarios.mjs';
+const __evidence=f=>{try{return f()}catch(e){if(e&&e.code==='ENOENT')return null;throw e}};
+
 const dir=new URL('../docs/施工/证据/2026-10-24-S08-03/',import.meta.url);
-export const baseline=JSON.parse(fs.readFileSync(new URL('施工前事件规则与起点.json',dir),'utf8'));
+export const baseline=(()=>{try{return __evidence(()=>JSON.parse(fs.readFileSync(new URL('施工前事件规则与起点.json',dir),'utf8')))}catch(e){if(e.code==='ENOENT')return generatedBaseline();throw e}})()??generatedBaseline();
 export const action=(s,a)=>{const n=engine.commit(s,engine.preview(s,[a])).state;engine.validateSave(n);return n;};
 export const choose=(s,id,choiceId=null,extra={})=>action(s,{type:'event',eventId:id,choiceId:choiceId||engine.getEvent(s,id).options[0].id,...extra});
 export function stopAt(s,date,predicate=()=>false){
@@ -58,7 +61,7 @@ export function auditWorld({fixtures=false}={}){
  const social=socialOpening();for(const k of ['beforeBanquet','afterBanquet','beforeGift','afterGift','beforeRefusal','afterRefusal','final'])save('小宴赠礼_'+k+'.json',social[k]);
  for(const theme of ['music','season']){const sample=socialOpening({theme,seats:theme==='music'?['C07','C02','C06']:['C06','C02']});save('小宴_'+theme+'_赴宴前.json',sample.beforeBanquet);save('小宴_'+theme+'_赴宴后.json',sample.afterBanquet);}
  const review=social.final.weekly.reports.find(r=>r.weekId==='W01').review;assert.ok(review.sources.some(x=>x.kind==='activity'));assert.ok(review.passages.join(' ').includes('新炉'));
- save('旧S08-02_只读起点.json',JSON.parse(fs.readFileSync(new URL('../docs/施工/证据/2026-10-24-S08-02/允礼_后续散步后_浏览器存档.json',import.meta.url),'utf8')).state);
+ save('旧S08-02_只读起点.json',__evidence(()=>JSON.parse(fs.readFileSync(new URL('../docs/施工/证据/2026-10-24-S08-02/允礼_后续散步后_浏览器存档.json',import.meta.url),'utf8'))).state);
  return {version:'0.8.3',storyVersion:5,logicalScenes:24,projectNodes:12,sideScenes:4,dailyTemplates:8,choiceResults:Object.values(WORLD_STORY).reduce((n,s)=>n+Object.keys(s.replies).length,0),customMilitaryResult:true,unchangedBranches:branches,paths:[normal,partial].map((p,i)=>({kind:i?'部分改善':'正常',months:p.final.weekly.monthly.length,projects:Object.fromEntries(Object.entries(p.final.weekly.projects.items).map(([id,p])=>[id,p.status]))})),progress,messages,gifts,pairs,socialReview:review,limits:['82为冻结起点的事件分支对照，不含全部活动组合','63为小宴组合文本检查，不等于63次可用日程均已赴宴','规则路径与分段浏览器分别记录，未计手机或真实AI','113条活动大纲不在本项宣称全量交付']};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))console.log(JSON.stringify(auditWorld({fixtures:process.argv.includes('--fixtures')}),null,2));

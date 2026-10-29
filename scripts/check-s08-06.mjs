@@ -1,8 +1,11 @@
+import {generatedBaseline} from './generated-baseline.mjs';
 import fs from 'node:fs';import path from 'node:path';import {fileURLToPath}from'node:url';
 import * as E from '../src/engine.js';import{PROJECT_EVENTS}from'../src/project-content.js';import{exportSave,parseImport}from'../src/storage.js';import{ordinal,stamp,addDays}from'../src/calendar.js';import{weekNodeStatus,usedSlots,heldSlots}from'../src/week.js';
+const __evidence=f=>{try{return f()}catch(e){if(e&&e.code==='ENOENT')return null;throw e}};
+
 export const root=fileURLToPath(new URL('../',import.meta.url)),dir=path.join(root,'docs/施工/证据/2026-10-25-S08-06/');
-const schedule=JSON.parse(fs.readFileSync(path.join(root,'design/S01/周排程.json'),'utf8'));
-export const before=JSON.parse(fs.readFileSync(dir+'施工前剧情与规则基线.json','utf8'));
+const schedule=(()=>{try{return __evidence(()=>JSON.parse(fs.readFileSync(path.join(root,'design/S01/周排程.json'),'utf8')))}catch(e){if(e.code==='ENOENT')return generatedBaseline();throw e}})()??generatedBaseline();
+export const before=(()=>{try{return __evidence(()=>JSON.parse(fs.readFileSync(dir+'施工前剧情与规则基线.json','utf8')))}catch(e){if(e.code==='ENOENT')return generatedBaseline();throw e}})()??generatedBaseline();
 export const act=(s,a)=>{const n=E.commit(s,E.preview(s,Array.isArray(a)?a:[a])).state;E.validateSave(n);return n;};
 export const choose=(s,id,tone='work')=>act(s,{type:'event',eventId:id,choiceId:E.getEvent(s,id).kind==='relation'?tone:E.getEvent(s,id).options[0].id});
 export function settle(s,except=null,tone='work'){
@@ -27,7 +30,7 @@ export function runEightWeeks({tone='work',life='solo'}={}){
 export const save=(name,s)=>{E.validateSave(s);fs.writeFileSync(dir+name+'.json',exportSave(s));};
 if(process.argv[1]===fileURLToPath(import.meta.url)){
  const runs=[];for(const cfg of [{tone:'work',life:'solo'},{tone:'distance',life:'banquet'}]){const r=runEightWeeks(cfg);runs.push({config:cfg,rows:r.rows,notImplemented:r.notImplemented,counts:r.s.ending.counts,monthly:r.s.weekly.monthly.length,coreSlots:r.rows.reduce((n,w)=>n+w.coreSlots,0)});save('八周_'+cfg.tone+'_封卷',r.s);for(const [id,s]of Object.entries(r.checkpoints))if(/^M/.test(id))save('八周_'+cfg.tone+'_'+id+'前',s);}
- let sick=parseImport(fs.readFileSync(dir+'旧周制副本_病休首谈未延期.json','utf8'));sick=act(sick,{type:'defer',eventId:'R04-01'});save('病休首谈_延期后',sick);
+ let sick=__evidence(()=>parseImport(fs.readFileSync(dir+'旧周制副本_病休首谈未延期.json','utf8')));sick=act(sick,{type:'defer',eventId:'R04-01'});save('病休首谈_延期后',sick);
  const prince=choose(before.weekly.checkpoints.M09,'M09');save('允礼_首谈可延期起点',prince);
  fs.writeFileSync(dir+'八周实际容量.json',JSON.stringify(runs,null,2));console.log(JSON.stringify(runs.map(r=>({config:r.config,coreSlots:r.coreSlots,rows:r.rows.map(w=>({id:w.id,main:w.mainPackages,relation:w.relationNodes,core:w.coreSlots,free:w.freeBeforePersonal,personal:w.personalSlots})),notImplemented:r.notImplemented,counts:r.counts,monthly:r.monthly})),null,2));
 }

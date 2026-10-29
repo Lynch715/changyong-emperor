@@ -8,14 +8,16 @@ import {act,Store} from './s14-02-v03-scenarios.mjs';
 import {reachSeventh} from './s14-02-v07-scenarios.mjs';
 import {runEighth} from './s14-02-v08-scenarios.mjs';
 import {lifeRecords,volumeLifeView} from '../src/volume-life.js';
+const __evidence=f=>{try{return f()}catch(e){if(e&&e.code==='ENOENT')return null;throw e}};
+
 export {act,Store};
 export const dir=new URL('../docs/施工/证据/2026-10-28-S14-03/',import.meta.url);
-export const read=p=>parseImport(fs.readFileSync(new URL('../'+p,import.meta.url),'utf8'));
+export const read=p=>__evidence(()=>parseImport(fs.readFileSync(new URL('../'+p,import.meta.url),'utf8')));
 export function oldUnsealed(volume){
  if(volume===7)return read('docs/施工/证据/2026-10-27-S14-02-V07/warm-checkpoint-26-B.json');
  if(volume===8)return read('docs/施工/证据/2026-10-28-S14-02-V08/warm-checkpoint-before-seal.json');
  const path=`docs/施工/证据/2026-10-27-S14-02-V0${volume}/`,name=fs.readdirSync(new URL('../'+path,import.meta.url)).find(n=>n.includes('封卷前')&&n.endsWith('.json'));
- const bundle=JSON.parse(fs.readFileSync(new URL('../'+path+name,import.meta.url)));
+ const bundle=__evidence(()=>JSON.parse(fs.readFileSync(new URL('../'+path+name,import.meta.url))));
  return parseImport(bundle.records.find(r=>r.key.endsWith('-auto')).raw);
 }
 export function settleRoot(s){for(let i=0;i<80;i++){

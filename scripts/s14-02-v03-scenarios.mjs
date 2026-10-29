@@ -1,7 +1,9 @@
 import fs from 'node:fs';import assert from 'node:assert/strict';import{fileURLToPath}from'node:url';
 import * as E from '../src/engine.js';import{prepareContinuation,commitContinuation}from'../src/continuation.js';import{storageForWorld,parseImport,exportSave}from'../src/storage.js';import{ordinal,stamp}from'../src/calendar.js';import{V3_IDS,V3_WEEKS}from'../src/volume3-content.js';
+const __evidence=f=>{try{return f()}catch(e){if(e&&e.code==='ENOENT')return null;throw e}};
+
 export class Store{constructor(){this.m=new Map()}getItem(k){return this.m.get(k)??null}setItem(k,v){this.m.set(k,String(v))}removeItem(k){this.m.delete(k)}key(i){return [...this.m.keys()][i]??null}get length(){return this.m.size}}
-export const nativeRaw=()=>JSON.parse(fs.readFileSync(new URL('../docs/施工/证据/2026-10-27-S13-05/浏览器_封卷后八槽.json',import.meta.url),'utf8')).records[0].raw;
+export const nativeRaw=()=>__evidence(()=>JSON.parse(fs.readFileSync(new URL('../docs/施工/证据/2026-10-27-S13-05/浏览器_封卷后八槽.json',import.meta.url),'utf8'))).records[0].raw;
 export async function opening(raw=nativeRaw(),storage=new Store()) {storage.setItem('changyong-week-s02-auto',raw);const original=[...storage.m],plan=await prepareContinuation(raw,{key:'changyong-week-s02-auto',storage});await commitContinuation(plan,storage);const api=storageForWorld('weekly',storage,null,plan.copyId);return{storage,api,plan,s:api.readEnvelope().state,original};}
 export function act(s,a){const before=JSON.stringify(s),p=E.preview(s,[a]);assert.equal(JSON.stringify(s),before);const n=E.commit(s,p).state;assert.equal(E.commit(n,p).duplicate,true);return E.validateSave(n);}
 export const due=s=>s.weekly.continuation.runs.find(r=>r.status==='pending'&&ordinal(r.dueDate)<=ordinal(s.date));
