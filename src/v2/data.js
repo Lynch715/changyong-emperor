@@ -79,7 +79,7 @@ export const SEASON=m=>['春','春','春','夏','夏','夏','秋','秋','秋','�
 // 要务：玩家始终看得到的三条局势线
 export const CRISES=[
  {id:'incense',name:'翊坤宫的香',desc:'欢宜香里有东西。停不停、怎么说，关系到年世兰的身子和她信不信你。',start:[1,3],scenes:['M03','R07-01'],deadline:[1,6]},
- {id:'deficit',name:'各省亏空',desc:'户部的账面上，到处是窟窿。年底前若国库不到 50，明年什么事都办不成。',start:[1,4],scenes:['M04','G01','G02','G03'],deadline:[1,12],goal:s=>s.stats.treasury>=50},
+ {id:'deficit',name:'各省亏空',desc:'户部的账面上，到处是窟窿。年底前国库要回到 45 以上，不然明年什么事都办不成。',start:[1,4],scenes:['M04','G01','G02','G03'],deadline:[1,12],goal:s=>s.stats.treasury>=45},
  {id:'army',name:'西北军饷',desc:'大将军凯旋，军需册里却有重复支领。查，还是不查？',start:[2,5],scenes:['M10','G04','G05','G06'],deadline:[2,8]}
 ];
 

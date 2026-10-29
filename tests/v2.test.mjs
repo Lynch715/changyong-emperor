@@ -37,3 +37,21 @@ test('旨意的数值被限幅', ()=>{
  const s=E.newGame(1);s.agenda=[];const r=E.applyEdict(s,'大赦天下',{effects:{treasury:50,people:50,court:50},affection:{C02:40,X:3}});
  assert.ok(Object.values(r.stats).every(v=>v<=8));assert.ok(Object.values(r.stats).reduce((a,b)=>a+Math.max(0,b),0)<=12);assert.ok((r.people.C02||0)<=5);
 });
+import {ROMANCE,LOVER_ENDING} from '../src/v2/romance.js';
+import {MORE_PETITIONS,SMALL_EVENTS} from '../src/v2/events.js';
+test('每人都有第三幕和相守结局；随机事件格式正确', ()=>{
+ for(const id of CORE){const sc=E.scene(E.thirdOf(id));assert.ok(sc,id);assert.equal(sc.actor,id);assert.deepEqual(sc.options.map(o=>o.id),['confess','slow','restrain']);assert.ok(LOVER_ENDING[id],id);}
+ for(const ev of [...MORE_PETITIONS,...SMALL_EVENTS]){assert.ok(ev.options.length>=2,ev.id);for(const o of ev.options){for(const k of Object.keys(o.effects||{}))assert.ok(STATS.some(s=>s.id===k),ev.id+k);for(const k of Object.keys(o.bond||{}))assert.ok(PEOPLE[k],ev.id+k);}}
+});
+test('专心对一个人，两年内能走到相守', ()=>{
+ const s=E.newGame(11);let n=0;
+ while(!s.ended&&n++<30){
+  while(s.agenda.length){const sc=E.scene(s.agenda[0]);const o=sc.options.find(o=>['warm','confess','develop'].includes(o.id))||sc.options[0];E.choose(s,sc.id,o.id);}
+  for(let i=0;i<2&&s.ap;i++){const c=E.beginChat(s,'C02');E.applyChat(s,c,{affection:4});E.applyChat(s,c,{affection:4});}
+  if(s.ap)E.rest(s);
+  const sp=E.nightChoices(s).find(x=>x.id==='C02');
+  if(sp?.special){const sid=E.queueSpecial(s,'C02');E.choose(s,sid,sid.startsWith('L')?'confess':'warm');}else E.spendNight(s,'C02',{affection:3});
+  E.endMonth(s);
+ }
+ const p=s.people.C02;assert.ok(p.third&&p.lover,'苏培盛三幕走完');assert.equal(E.ending(s).people.find(x=>x.id==='C02').tier,3);
+});

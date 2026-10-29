@@ -2,6 +2,8 @@
 import * as E from './engine.js';
 import {PEOPLE,CORE,STATS,MONTHS,SEASON,CRISES,GIFTS,GIFT_LINES,TOPICS,TOPIC_LINES,NIGHT_LINES,ENDING_KINGDOM,ENDING_PEOPLE,NAMES,portrait,thumb,bgFor,BG,stageOf,STAGES,AGENDA} from './data.js';
 import * as AI from './ai.js';
+import {LOVER_ENDING} from './romance.js';
+const bondName=id=>id==='C05'?'知己':'两情相悦';
 
 const app=document.getElementById('app');
 let s=null;            // 存档
@@ -39,6 +41,7 @@ function apPips(){return `<span class="pips">${Array.from({length:E.AP_PER_MONTH
 
 // 告诉玩家现在该做什么
 function guide(){
+ if(s.stats.treasury<20&&!s.agenda.length&&s.ap>0)return `国库只剩 ${s.stats.treasury}。少赏赐，或下旨开源节流。还有 ${s.ap} 个时辰。`;
  if(s.agenda.length)return `本月有 ${s.agenda.length} 件要事等你处置。`;
  if(s.ap>0)return `还有 ${s.ap} 个时辰。召见、赏赐、下旨、出宫或休养，各用一个。`;
  return '今日的时辰用完了。入夜，选一处去。';
@@ -83,7 +86,7 @@ function personCard(id,act='person'){
  const p=s.people[id],st=stageOf(p.aff),next=STAGES.find(([n])=>n>p.aff);
  const lo=STAGES.filter(([n])=>p.aff>=n).at(-1)[0],hi=next?next[0]:100;
  const dd=s.delta.people[id]||0;
- const badge=p.knot?'<em class="knot">心结</em>':E.secondReady(s,id)?'<em class="ready">有话想说</em>':E.away(s,id)?'<em class="away">在外</em>':'';
+ const badge=p.knot?'<em class="knot">心结</em>':E.hasStory(s,id)?'<em class="ready">有话想说</em>':E.away(s,id)?'<em class="away">在外</em>':p.lover?`<em class="lover">${bondName(id)}</em>`:'';
  return `<button class="pc" data-act="${act}" data-id="${id}"><img src="${face(id)}" alt="">
   <div><b>${PEOPLE[id].name}${badge}</b><span>${st} · ${p.aff}${dd?`<i class="${dd>0?'up':'down'}">${dd>0?'+':''}${dd}</i>`:''}</span><div class="bar"><i style="width:${(p.aff-lo)/(hi-lo)*100}%"></i></div></div></button>`;
 }
@@ -196,7 +199,7 @@ function endingView(){
   <small>雍正二年 · 岁末</small><h2>${k.title}</h2>${paras(k.text)}
   <div class="chips">${STATS.map(x=>`<span class="chip">${x.name} ${s.stats[x.id]}</span>`).join('')}<span class="chip">了结要务 ${e.solved}/3</span></div>
   <h4>他们</h4>
-  ${e.people.map(p=>`<div class="end-p"><img src="${face(p.id)}" alt=""><div><b>${PEOPLE[p.id].name} · ${stageOf(p.aff)}</b><p>${esc(ENDING_PEOPLE[p.id][p.tier])}</p></div></div>`).join('')}
+  ${e.people.map(p=>`<div class="end-p"><img src="${face(p.id)}" alt=""><div><b>${PEOPLE[p.id].name} · ${p.tier===3?(p.id==='C05'?'知己':'相守'):stageOf(p.aff)}</b><p>${esc(p.tier===3?LOVER_ENDING[p.id]:ENDING_PEOPLE[p.id][Math.min(p.tier,2)])}</p></div></div>`).join('')}
   <p class="muted center">第一卷完。</p>
   <button class="primary" data-act="new">再来一次</button>
  </article></div>`;
@@ -209,7 +212,8 @@ function peopleView(){
   <div class="person-hero"><img src="${portrait(id)}" alt=""><div><h2>${p.name}</h2><p>${p.title} · ${p.place}</p><p class="big">${stageOf(st.aff)} <b>${st.aff}</b></p>
    <div class="stages">${STAGES.map(([n,t])=>`<span class="${st.aff>=n?'on':''}">${t}</span>`).join('')}</div>
    ${st.knot?`<p class="knot-line">心结：${esc(st.knot.text)}。召见时说开它。</p>`:''}
-   ${E.secondReady(s,id)?'<p class="ready-line">有话想对你说。今夜去看看。</p>':st.first&&!st.second?`<p class="muted small">${st.aff<45?'情分到「相知」后，会有新的剧情。':''}</p>`:''}
+   ${st.lover?`<p class="ready-line">${bondName(id)}</p>`:''}
+   ${E.hasStory(s,id)?`<p class="ready-line">有话想对你说。${E.away(s,id)?'会有书信来。':'今夜去看看。'}</p>`:st.first&&!st.second&&st.aff<45?'<p class="muted small">情分到「相知」后，会有新的剧情。</p>':st.second&&!st.third&&st.aff<65?'<p class="muted small">情分到「倾心」后，还有一段剧情。</p>':''}
    <p class="muted small">喜欢：${known.length?known.map(g=>GIFTS[g].name).join('、'):'还不知道'}</p></div></div>
   <h3 class="sec">${p.name}记得的事</h3>
   <ul class="mem">${st.memories.slice().reverse().map(m=>`<li><small>${m.y===1?'元':'二'}年${MONTHS[m.m-1]}</small>${esc(m.text)}</li>`).join('')||'<li class="muted">还没有。</li>'}</ul></main>${nav()}`;}
@@ -239,7 +243,7 @@ function titleView(){
   ${has?'<button class="primary" data-act="continue">继续</button>':''}
   <button class="${has?'':'primary'}" data-act="${has?'new-confirm':'new'}">新开一局</button>
   <p class="muted small">第一卷 · 元年至二年 · 约一小时 · AI ${AI.aiMode()==='off'?'未开启':'已开启'} · <a href="#" data-act="go" data-to="settings">设置</a></p>
-  <details class="how"><summary>怎么玩</summary><p>一个月是一回合。月初先处置要事；然后有三个时辰，可以召见、赏赐、下旨、微服或休养；入夜选一处去，或独寝。月末结算。</p><p>情分到「相知」，那个人会在夜里有话想说。若你在两难里没站在谁那边，那人会有心结，要当面说开。</p><p>两年后，看看天下和他们，变成了什么样子。</p></details>
+  <details class="how"><summary>怎么玩</summary><p>一个月是一回合。月初先处置要事；然后有三个时辰，可以召见、赏赐、下旨、微服或休养；入夜选一处去，或独寝。月末结算。</p><p>情分到「相知」，那个人会在夜里有话想说；到「倾心」，还有一次说破心意的机会。若你在两难里没站在谁那边，那人会有心结，要当面说开。</p><p>两年后，看看天下和他们，变成了什么样子。</p></details>
  </div></div>`;
 }
 
@@ -292,7 +296,7 @@ const ACTS={
  done:()=>go({name:'home'}),
  night:()=>{if(s.agenda.length)return toast('先把要事办完。');if(s.ap>0&&!confirm(`还有 ${s.ap} 个时辰没用。确定入夜吗？`))return;go({name:'night'});},
  'night-go':el=>{const id=el.dataset.id||null;const line=(document.getElementById('nightLine')?.value||'').trim();
-  if(id&&E.secondReady(s,id)){const sid=E.queueSpecial(s,id);save();return go({name:'scene',id:sid});}
+  if(id&&E.hasStory(s,id)){const sid=E.queueSpecial(s,id);save();return go({name:'scene',id:sid});}
   withBusy(async()=>{let v=null;if(id&&AI.aiMode()!=='off')v=await AI.nightScene(s,id,line);
    const lines=id?NIGHT_LINES[id]:null;const text=id?(v?.text||lines[(s.month+s.year)%lines.length]):'你让人都退下，一个人睡了。难得一夜无梦。';
    const r=E.spendNight(s,id,{affection:v?v.affection:3,memory:v?.memory||''});view.result={...r,id,text};});

@@ -47,11 +47,18 @@ const WORLD=`你在为清宫文字游戏《重生长雍帝王赋》写作。玩�
 文风：白话、克制、有画面，像好的小说，不要堆砌辞藻，不要现代网络用语。人物说话符合身份与性格。不写露骨的性内容。`;
 const statLine=s=>STATS.map(x=>`${x.name}${s.stats[x.id]}`).join('，');
 const dateLine=s=>`雍正${s.year===1?'元':'二'}年${MONTHS[s.month-1]}`;
+function relation(id,st){
+ if(id==='C05')return st.lover?'你们是彼此最亲的兄弟与知己，皇兄曾把一个“很长的梦”告诉你。':'';
+ if(st.lover)return '你们已经互相表明心意，私下是恋人：亲昵、信任，偶尔撒娇或吃醋，人前仍守着身份。';
+ if(st.aff>=65)return '你已经对皇上动了心，但还没有说破。';
+ if(st.aff>=45)return '你开始信任皇上，愿意说些心里话。';
+ return st.aff<25?'你对皇上还很生分，拘着礼数，有防备。':'你和皇上算是相识，客气里带着试探。';
+}
 function personBlock(s,id){
  const p=PEOPLE[id],st=s.people[id];
  const mem=st.memories.slice(-8).map(m=>`· ${m.text}`).join('\n')||'（还没有）';
  return `【${p.name}】${p.title}。${p.voice}
-与皇上的情分：${st.aff}/100（${stageOf(st.aff)}）。${st.knot?`心里有个结：皇上在「${st.knot.text}」这件事上没有站在${p.name}这边，还没说开。`:''}
+与皇上的情分：${st.aff}/100（${stageOf(st.aff)}）。${relation(id,st)}${st.knot?`心里有个结：皇上在「${st.knot.text}」这件事上没有站在${p.name}这边，还没说开。`:''}
 ${p.name}记得的事：\n${mem}`;
 }
 const clampInt=(v,a,b)=>Math.max(a,Math.min(b,Math.round(Number(v)||0)));
@@ -111,7 +118,7 @@ export async function nightScene(s,id,line=''){
 今夜皇上去了${p.place}，陪着${p.name}。
 ${personBlock(s,id)}
 当前：${dateLine(s)}。
-写今夜的一小段，120到220字，第二人称“你”。要有一个具体的小细节（一样东西、一句话、一个动作），贴合${p.name}的性格和你们眼下的情分，${s.people[id].aff<45?'还有些拘谨，彼此在试探':'已经可以说些心里话'}。点到为止，不写露骨内容。${line?'皇上开口说的第一句是：“'+line+'”，要接住这句话。':''}
+写今夜的一小段，120到220字，第二人称“你”。要有一个具体的小细节（一样东西、一句话、一个动作），贴合${p.name}的性格和你们眼下的情分，${s.people[id].lover?(id==='C05'?'兄弟知己之间的亲近与默契':'恋人之间的温存与亲昵，可以有拥抱、依偎、牵手这样的细节'):s.people[id].aff>=65?'情意已经很明显，只差一句话没说破':s.people[id].aff<45?'还有些拘谨，彼此在试探':'已经可以说些心里话'}。点到为止，不写露骨内容。${line?'皇上开口说的第一句是：“'+line+'”，要接住这句话。':''}
 affection：今夜让情分增加多少，0 到 5。memory：今夜值得${p.name}记住的一件事，不超过30字。
 只输出 JSON：{"text":"...","affection":3,"memory":""}`;
  const v=await ask(system,'请写今夜。');if(!v)return null;
