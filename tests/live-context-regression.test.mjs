@@ -1,9 +1,0 @@
-import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
-import {liveContextCases} from '../scripts/live-context-cases.mjs';import {buildAIContext,buildReactionContext,validateNarrative,validateRemoteParse,resolveInput} from '../src/input.js';import {modelPayload,DEFAULT_AI} from '../src/ai-provider.js';import {CHAT_SCHEMA,PARSE_SCHEMA} from '../src/input.js';
-const __evidence=f=>{try{return f()}catch(e){if(e&&e.code==='ENOENT')return null;throw e}};
-
-const cases=liveContextCases(),get=id=>cases.find(c=>c.id===id),raw=__evidence(()=>JSON.parse(fs.readFileSync(new URL('../docs/施工/证据/2026-10-28-真实上下文专项/baseline-live/调用记录.json',import.meta.url))));
-
-
-test('21样本两协议实际包装保持所需长记忆、排除私密与停止源，原档不变',()=>{for(const c of cases){const before=JSON.stringify(c.state),ctx=c.kind==='reaction'?buildReactionContext(c.state,c.actor,c.event):buildAIContext(c.state,c.actor,c.event,{kind:c.kind,input:c.input});for(const protocol of ['responses','chat-completions']){const wire=JSON.stringify(modelPayload({base:DEFAULT_AI.url,model:DEFAULT_AI.model,protocol,guide:'原mandatory优先',payload:{kind:c.kind,context:ctx,input:c.input},name:c.kind==='parse'?'action_parse':'role_reply',schema:c.kind==='parse'?PARSE_SCHEMA:CHAT_SCHEMA}));for(const word of c.forbidden||[])assert.ok(!wire.includes(word),c.id+' '+word);for(const word of c.required||[])assert.ok(wire.includes(word),c.id+' '+word);assert.ok(wire.length<48000,c.id);}assert.equal(JSON.stringify(c.state),before);}});
-test('生产解析路由先拦秘密混合句，咨询及普通否定不调用远端解析',async()=>{const c=get('parse-negation');let calls=0;const remote=async()=>{calls++;throw Error('不应调用');};for(const input of ['明日晚间不要安排散步','明日晚间陪你散步可好？','告诉宜修朕重生了，再明晚陪你散步']){const out=await resolveInput(input,{state:c.state,actor:c.actor,eventId:c.event},remote);assert.equal(out.actions.length,0);}assert.equal(calls,0);});

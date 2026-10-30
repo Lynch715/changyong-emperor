@@ -1,2 +1,0 @@
-export function legacyIncomeStart(s){if(s.sealed)return 25;const current=(s.date.year-1)*12+s.date.month;const paid=Math.max(0,...s.turnReports.map(r=>Number.isInteger(r.turn)?r.turn*3:0),...s.ledger.filter(l=>/季度常规收支|二年冬常规收支/.test(l.label)).map(l=>Number.isInteger(l.turn)?l.turn*3:0));return Math.min(25,Math.max(current+1,paid+1));}
-export function legacyCarryCapacity(s){return s.sealed?0:(s.closureMode?s.closureRemaining:s.remaining)+s.promises.filter(p=>p.status==='accepted'&&p.dueTurn===s.turn).length;}

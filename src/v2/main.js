@@ -270,7 +270,6 @@ function settingsView(){
    <label class="chk"><input type="checkbox" name="remember" checked> 记住在这台设备上</label><button ${busy?'disabled':''}>${busy?'正在测试……':'测试并启用'}</button></form>`;})():''}
   ${s?`<div class="card freedom"><b>自由度</b><p>决定 AI 推演听不听你的。下旨、召见时亲口说的话、夜里的第一句会用到。没开 AI 时不起作用。</p>${[1,2,3].map(l=>`<button data-act="freedom" data-l="${l}" class="${E.freedomOf(s)===l?'on':''}"><b>${l} 档 · ${FREEDOM[l].name}</b><span>${FREEDOM[l].desc}</span></button>`).join('')}</div>`:''}
   <div class="card"><b>存档</b><p>每个动作后自动保存在这台设备的浏览器里。</p>${s?'<button data-act="new-confirm">重新开始</button> ':''}<button data-act="title">回到标题</button></div>
-  <div class="card"><b>旧版</b><p>以前的版本还在，可以继续玩旧存档。</p><a href="?legacy=1">打开旧版</a></div>
  </main>${s?nav():''}`;
 }
 function titleView(){

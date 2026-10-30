@@ -1,2 +1,0 @@
-import{isSixth}from'./volume6.js';
-export function renderSixth(s){if(!isSixth(s)||s.sealed)return'';const e=s.weekly.continuation.education;return e?`<details class="paper-panel settings-section"><summary>教育与成年决定</summary><p>${e.childBirth?`教育阶段已落款。澄宁的成年日期最早为${e.adultAt.year}年${e.adultAt.month}月${e.adultAt.day}日。眼下还未满十八岁，不急着谈婚事，也不先占时辰。`:'这一世未有子女。教育安排与年世兰自己的生活照常往下走，眼下不另议婚事。'}</p><p>她满十八岁、愿意谈时，再留1格商量。无论从哪处进入，都不会重复占时辰，也不会提前定婚。</p></details>`:'';}

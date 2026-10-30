@@ -18,7 +18,8 @@ export const OFF_KEY='changyong-v2-ai-off';
 export async function initAI(storage=globalThis.localStorage){
  let off=false;try{off=storage.getItem(OFF_KEY)==='1';}catch{}
  if(off){mode='off';return mode;}
- try{const r=await fetch('/api/status');if(r.ok&&(await r.json()).configured){mode='server';return mode;}}catch{}
+ const staticSite=globalThis.document?.querySelector('meta[name="changyong-hosting"]')?.content==='static';
+ if(!staticSite)try{const r=await fetch('/api/status');if(r.ok&&(await r.json()).configured){mode='server';return mode;}}catch{}
  const saved=readConnectionSettings(storage);
  if(sessionByok){byok=sessionByok;mode='byok';return mode;}
  if(saved?.mode==='byok'&&saved.key){byok={base:saved.url,model:saved.model,protocol:saved.protocol,key:saved.key};mode='byok';return mode;}
