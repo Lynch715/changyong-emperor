@@ -9602,33 +9602,33 @@
     },
     {
       "asset_id": "char_N01_base",
-      "source": "assets/char_N01_base.png",
-      "source_sha256": "bb95115271640b654d52ced240868d534abb3d3a1b5796827bacf69216932720",
-      "source_bytes": 2309470,
+      "source": "assets/char_N01_base.webp",
+      "source_sha256": "11a05d7992a859651f42114e2eba32690837ed17b492c3fff7a1f0dabf0ab7f6",
+      "source_bytes": 457696,
       "native_dimensions": [
         1024,
         1536
       ],
       "normalization": {
         "crop_alpha_nonzero": [
+          35,
           0,
-          16,
-          1005,
-          1491
+          1004,
+          1524
         ],
         "subject_alpha128": [
-          181,
-          19,
-          889,
-          1489
+          43,
+          6,
+          981,
+          1518
         ],
         "scaled_crop_size": [
-          708,
-          1040
+          664,
+          1044
         ],
         "paste": [
-          7,
-          56
+          57,
+          54
         ],
         "target_subject_height": 1036,
         "target_baseline": 1094
@@ -9642,9 +9642,10 @@
             1152
           ],
           "mode": "RGBA",
-          "bytes": 852191,
-          "sha256": "41c426c37f970ce34559b542184adf07fe6fbe560db67bbaf674ba5cc11627cf",
-          "role": "display"
+          "bytes": 1098783,
+          "sha256": "c3bcecb0c5941211777a01d85c56f87012a4387a873240a24f90d3ac0a2ee5f7",
+          "role": "display",
+          "encoding": {}
         },
         {
           "path": "assets/exports/s11-v1/char_N01_base-display.webp",
@@ -9654,9 +9655,13 @@
             1152
           ],
           "mode": "RGBA",
-          "bytes": 153290,
-          "sha256": "d508886149cfb5a8a3ae0280caebcb8852f6ebe2d621edb18f93ef6a15db031a",
-          "role": "display"
+          "bytes": 220524,
+          "sha256": "7b20c97b0453c3e561e3dec958242d0f6e94dd250b01f037d355470884c48426",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
         },
         {
           "path": "assets/exports/s11-v1/char_N01_base-mobile.png",
@@ -9666,9 +9671,10 @@
             576
           ],
           "mode": "RGBA",
-          "bytes": 232666,
-          "sha256": "460cae1f36482af21f760d5985db2d60f5139eabace58cc08fae950698dae637",
-          "role": "mobile"
+          "bytes": 312740,
+          "sha256": "4f6dbd40f9a8799021f8ca7b47fde8f646f9bc649ce280115b2ae9c447941928",
+          "role": "mobile",
+          "encoding": {}
         },
         {
           "path": "assets/exports/s11-v1/char_N01_base-mobile.webp",
@@ -9678,9 +9684,13 @@
             576
           ],
           "mode": "RGBA",
-          "bytes": 48634,
-          "sha256": "f37d53b97a25accf401b8cab705d26069fbb712dcec9d7cc106866fe1f688ee5",
-          "role": "mobile"
+          "bytes": 66980,
+          "sha256": "e541dca0e86506a504b7bbeebefffc5ce206a4fbd2f09c079319b4e20d802341",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
         },
         {
           "path": "assets/exports/s11-v1/char_N01_base-thumb.png",
@@ -9690,9 +9700,10 @@
             192
           ],
           "mode": "RGBA",
-          "bytes": 30244,
-          "sha256": "4ccf01012f5ca905c6bd841f9ee1f12444e90d75bc86f73fcdd3f1893bb895c9",
-          "role": "thumb"
+          "bytes": 41840,
+          "sha256": "ae4aa688f12262af9ce7281b1d7b1b5acbdbb33efcc853c3b262bdc036500240",
+          "role": "thumb",
+          "encoding": {}
         },
         {
           "path": "assets/exports/s11-v1/char_N01_base-thumb.webp",
@@ -9702,17 +9713,20 @@
             192
           ],
           "mode": "RGBA",
-          "bytes": 23710,
-          "sha256": "34c6fb7678d9280df5681db3047a627a8d7d8773aa715cf4cca1f6f5aac6e6dc",
-          "role": "thumb"
+          "bytes": 28768,
+          "sha256": "5ccc14811a8dfffbe7fabeb99340e6fae5c122ebbedf8d3c916164dc8d4b5235",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
         }
       ]
     },
     {
       "asset_id": "char_N02_base",
-      "source": "assets/char_N02_base.png",
-      "source_sha256": "a419ab2955f17e2de06c7cbd6cfa7e48b21000e899d86e4264d866b6811a0a89",
-      "source_bytes": 2519976,
+      "source": "assets/char_N02_base.webp",
+      "source_sha256": "fa910334e6d3196e6395e93ee1ac435f227135918edccacc6b37508946531c67",
+      "source_bytes": 500486,
       "native_dimensions": [
         1024,
         1536
@@ -9721,22 +9735,22 @@
         "crop_alpha_nonzero": [
           0,
           0,
-          1004,
+          1011,
           1536
         ],
         "subject_alpha128": [
-          135,
-          6,
-          890,
-          1531
+          18,
+          11,
+          1008,
+          1530
         ],
         "scaled_crop_size": [
-          682,
-          1043
+          690,
+          1048
         ],
         "paste": [
-          36,
-          54
+          34,
+          50
         ],
         "target_subject_height": 1036,
         "target_baseline": 1094
@@ -9750,9 +9764,10 @@
             1152
           ],
           "mode": "RGBA",
-          "bytes": 900091,
-          "sha256": "e64c6874fd433d062a12b826f2910d02c3d2cb929ab8d953168a8edf78791a7a",
-          "role": "display"
+          "bytes": 1146053,
+          "sha256": "1a01a567e408a94a1e011cc94f06b6390fe72c3a161354882a71a1ec5b68742d",
+          "role": "display",
+          "encoding": {}
         },
         {
           "path": "assets/exports/s11-v1/char_N02_base-display.webp",
@@ -9762,9 +9777,13 @@
             1152
           ],
           "mode": "RGBA",
-          "bytes": 181618,
-          "sha256": "bbdad72c9509d446f3a4c2e236df51fb74499793e3a57c1896ac00e2aed7b304",
-          "role": "display"
+          "bytes": 233640,
+          "sha256": "a2360eb68f0abc321b5738c8be6ae7cd5e4073376788af065842133685cd3985",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
         },
         {
           "path": "assets/exports/s11-v1/char_N02_base-mobile.png",
@@ -9774,9 +9793,10 @@
             576
           ],
           "mode": "RGBA",
-          "bytes": 239666,
-          "sha256": "67ae11c22bc620f26272a0978a31e10140594206a9417a08bc6ec9698735c5a7",
-          "role": "mobile"
+          "bytes": 325037,
+          "sha256": "004d65e89180887f7bf1e022488739cb5aeb904f827632f48061ea5b2da04cdf",
+          "role": "mobile",
+          "encoding": {}
         },
         {
           "path": "assets/exports/s11-v1/char_N02_base-mobile.webp",
@@ -9786,9 +9806,13 @@
             576
           ],
           "mode": "RGBA",
-          "bytes": 52844,
-          "sha256": "501c648b1366e1cfa146f9a2baa9f533d9925002f01e53e1d8ff0bb1d1ae498b",
-          "role": "mobile"
+          "bytes": 70722,
+          "sha256": "132b5de8999adaf95da6591873db6ce2cc370f3579f42452dba24224f81e8af1",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
         },
         {
           "path": "assets/exports/s11-v1/char_N02_base-thumb.png",
@@ -9798,9 +9822,10 @@
             192
           ],
           "mode": "RGBA",
-          "bytes": 30920,
-          "sha256": "4e965ae0150a03df987626c3a66398ac941067e72684ceaab890859ede51949c",
-          "role": "thumb"
+          "bytes": 41057,
+          "sha256": "84bfef19ebe1b598afcf73c6e9c3e8acc76afe9326c82006b6b70e98bf505cda",
+          "role": "thumb",
+          "encoding": {}
         },
         {
           "path": "assets/exports/s11-v1/char_N02_base-thumb.webp",
@@ -9810,9 +9835,12 @@
             192
           ],
           "mode": "RGBA",
-          "bytes": 23590,
-          "sha256": "e062d8c2a6031b724116b74847807f21ad568cbe11fabe26f982f274cbd0b6cd",
-          "role": "thumb"
+          "bytes": 29638,
+          "sha256": "a94f9ccc4b9ab61b8e4c6cec6c1e0bdf4b5c314e5e43efc5de4c7861852c66f2",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
         }
       ]
     },
