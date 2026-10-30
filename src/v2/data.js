@@ -52,6 +52,7 @@ export const CORE=Object.keys(PEOPLE);
 Object.assign(PEOPLE,PERFORMERS,SECONDARIES);
 for(const[id,[category,ability,loyalty,faction]]of Object.entries(CORE_DETAILS))Object.assign(PEOPLE[id],{category,ability,loyalty,faction});
 export const CAST=Object.keys(PEOPLE);
+for(const id of CAST)PEOPLE[id].adult=true;
 // 只在主线里出场的人
 export const NAMES={C01:'雍正',C21:'太后',C11:'敬妃',C19:'颂芝',C20:'宝鹃',C22:'卫临',C26:'允祥',C28:'张廷玉',C32:'岳钟琪',...Object.fromEntries(Object.entries(PEOPLE).map(([k,v])=>[k,v.name]))};
 

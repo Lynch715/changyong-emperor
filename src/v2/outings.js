@@ -12,8 +12,8 @@ export const PLACES={
 };
 export const NANFENG_FIRST='外城巷子深处，南风馆的灯罩着一层薄纱。雍正元年，你已下旨除去乐籍。官家的旧乐户散了，私寓却仍藏在巷里。这道门，皇帝本不该来。\n\n管事领来花妍与雨汐，说两人都已过二十五。花妍执棋，雨汐抱着琵琶，先向你行了礼。陪坐的青禾、照水、闻笙，也都是成年伶人。没人追问姓名，随从却始终守着门。';
 export const PERFORMERS={
- N01:{name:'花妍',title:'南风馆棋师',category:'伶人',age:28,birth:4,minor:true,start:12,from:[1,1],place:'南风馆',voice:'成年男子，二十八岁，南风馆男花魁。沉静细心，擅弈棋。未识来客身份时客气周到；猜到是皇帝后自称草民，称皇上，守礼低头，所求先告罪。不轻佻，不挑逗。',likes:['book','music'],dislikes:['wine'],ability:7,loyalty:50,faction:'中立',desc:'以棋待客，想攒够银子离开这条巷子。'},
- N02:{name:'雨汐',title:'南风馆乐师',category:'伶人',age:26,birth:9,minor:true,start:12,from:[1,1],place:'南风馆',voice:'成年女子，二十六岁，南风馆女花魁。温和稳重，擅琵琶，不轻佻。不识身份时称客官，待客恭敬；猜到是皇帝后自称民女，称皇上，有心事也先垂目告罪。只写听曲与身世，点到为止。',likes:['music','flowers'],dislikes:['wine'],ability:8,loyalty:50,faction:'中立',desc:'琵琶声里藏着乡音，许多年没有回过家。'}
+ N01:{name:'花妍',title:'南风馆棋师',category:'伶人',age:28,birth:4,secondary:true,start:12,from:[1,1],place:'南风馆',voice:'成年男子，二十八岁，南风馆男花魁。沉静细心，擅弈棋。未识来客身份时客气周到；猜到是皇帝后自称草民，称皇上，守礼低头，所求先告罪。不轻佻，不挑逗。',likes:['book','music'],dislikes:['wine'],ability:7,loyalty:50,faction:'中立',desc:'以棋待客，想攒够银子离开这条巷子。'},
+ N02:{name:'雨汐',title:'南风馆乐师',category:'伶人',age:26,birth:9,secondary:true,start:12,from:[1,1],place:'南风馆',voice:'成年女子，二十六岁，南风馆女花魁。温和稳重，擅琵琶，不轻佻。不识身份时称客官，待客恭敬；猜到是皇帝后自称民女，称皇上，有心事也先垂目告罪。只写听曲与身世，点到为止。',likes:['music','flowers'],dislikes:['wine'],ability:8,loyalty:50,faction:'中立',desc:'琵琶声里藏着乡音，许多年没有回过家。'}
 };
 export const DESTINATIONS={home:'放其归乡',city:'安置京城宅院',palace:'入宫当差'};
 export const MINOR_STORIES={

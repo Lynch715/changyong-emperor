@@ -1,3 +1,4 @@
+import {audienceOf,confirmAge,setTenderness} from './audience.js';
 import {GROUPS} from './roster.js';
 import {PLACES,DESTINATIONS} from './outings.js';
 import {moneyText,treasuryIndex} from './economy.js';
@@ -125,7 +126,7 @@ function sceneView(){
 
 // ---------- 召见 / 赏赐：先选人 ----------
 function pickPerson(kind){
- const ids=CAST.filter(id=>E.present(s,id)&&(s.people[id].met||(!PEOPLE[id].minor&&kind==='chat')));
+ const ids=CAST.filter(id=>E.present(s,id)&&(s.people[id].met||(!PEOPLE[id].secondary&&kind==='chat')));
  return `${header()}<main class="pick"><div class="bar-title"><button data-act="go" data-to="home">‹ 返回</button><b>${kind==='chat'?'召见谁？':'赏给谁？'}</b></div>
   <section class="people">${ids.map(id=>personCard(id,kind==='chat'?'chat-with':'gift-to')).join('')}</section>
   <p class="muted center">${kind==='chat'?(E.away(s,'C03')&&ids.includes('C03')?'人在外地的，只能写信。':'每次召见最多说六句。说到心坎上，情分涨得多。'):'送对了心头好，情分 +6；寻常的 +2；同样的东西再送，只 +1；送到讨厌的，情分 −3。'}</p></main>`;
@@ -242,7 +243,7 @@ function peopleView(){
  const id=view.id;
  if(id){const p=PEOPLE[id],st=s.people[id],known=likedList(id);return `${header()}<main class="person"><div class="bar-title"><button data-act="go" data-to="people">‹ 人物</button><b>${p.name}</b></div>
   <div class="person-hero">${avatar(id,'person-face')}<div><h2>${p.name}</h2><p>${E.titleOf(s,id)} · ${E.placeOf(s,id)}</p><p class="small">${p.category||'故人'} · 能力 ${st.ability}/10 · 忠诚 ${st.loyalty}/100 · ${esc(st.faction)}</p>${p.desc?`<p class="small">${esc(p.desc)}</p>`:''}<p class="big">${E.affectionStage(s,id)} <b>${st.aff}</b></p>
-   <div class="stages">${STAGES.map(([n,t])=>`<span class="${st.aff>=n?'on':''}">${p.minor?({0:'生疏',25:'相识',45:'信任',65:'亲近',85:'深信'})[n]:t}</span>`).join('')}</div>
+   <div class="stages">${STAGES.map(([n,t])=>`<span class="${st.aff>=n?'on':''}">${p.secondary?({0:'生疏',25:'相识',45:'信任',65:'亲近',85:'深信'})[n]:t}</span>`).join('')}</div>
    ${st.knot?`<p class="knot-line">心结：${esc(st.knot.text)}。召见时说开它。</p>`:''}
    ${st.lover?`<p class="ready-line">${bondName(id)}</p>`:''}
    ${E.hasStory(s,id)?`<p class="ready-line">有话想对你说。${E.away(s,id)?'会有书信来。':'今夜去看看。'}</p>`:st.first&&!st.second&&st.aff<45?'<p class="muted small">情分到「相知」后，会有新的剧情。</p>':st.second&&!st.third&&st.aff<65?'<p class="muted small">情分到「倾心」后，还有一段剧情。</p>':st.third&&!st.fourth&&s.year>=3&&st.aff<75?'<p class="muted small">情分到 75，还会有一段剧情。</p>':st.fourth&&!st.fifth&&s.year>=5&&st.aff<80?'<p class="muted small">情分到 80，还有最后一段剧情。</p>':''}
@@ -262,6 +263,7 @@ function logView(){
 function settingsView(){
  const m=AI.aiMode();
  return `${header()}<main class="settings"><h3 class="sec">设置</h3>
+  <div class="card"><b>亲密氛围</b><label class="audience-toggle"><input type="checkbox" data-pref="tenderness" ${audienceOf().tenderness?'checked':''}> 写得温柔些</label><p>只写成年非亲属之间、自愿而含蓄的亲近。关掉后，AI 回到平日的叙事。人物始终可以婉拒，各档自由度都一样。</p></div>
   <div class="card"><b>AI 对话</b><p>${m==='server'?'已连接本机的 AI 服务。':m==='byok'?'正在使用你填写的 API。':'未开启。召见只能挑话题，旨意只能选拟好的。'}</p>
   ${AI.aiError()?`<p class="muted small">上次出错：${esc(AI.aiError())}</p>`:''}
   <button data-act="ai-toggle">${m==='off'?'尝试开启 AI':'关闭 AI，改用固定文字'}</button></div>
@@ -272,6 +274,7 @@ function settingsView(){
   <div class="card"><b>存档</b><p>每个动作后自动保存在这台设备的浏览器里。</p>${s?'<button data-act="new-confirm">重新开始</button> ':''}<button data-act="title">回到标题</button></div>
  </main>${s?nav():''}`;
 }
+function ageView(){return `<div class="title-screen" style="--bg:url('${abs(BG.desk)}')"><div class="title-box"><h1>入卷之前</h1><p>本游戏含成熟题材，仅供年满 18 周岁者游玩。</p><button class="primary" data-act="age-confirm">我已年满 18 周岁</button><button data-act="age-leave">离开</button>${view.left?'<p class="small">已停在此处。你可以关闭这个页面。</p>':''}</div></div>`;}
 function titleView(){
  const has=!!E.load();
  return `<div class="title-screen" style="--bg:url('${abs('assets/exports/s11-v1/cover-display.webp')}')"><div class="title-box">
@@ -305,10 +308,10 @@ const STAGE_LINE={相识:'开始记得你了。',相知:'愿意跟你说心里�
 function celebration(){
  const c=s?.cele?.[0];if(!c)return '';
  let img='',big='',small='',cls='';
- if(c.k==='stage'){img=PEOPLE[c.id].minor?'':portrait(c.id);big=`${PEOPLE[c.id].name} · ${c.stage}`;small=(PEOPLE[c.id].minor?'愿意把心里话告诉你了。':STAGE_LINE[c.stage]||'')+(E.hasStory(s,c.id)?`<br><span>今夜去找${PEOPLE[c.id].name}，会有新的剧情。</span>`:['相知','倾心'].includes(c.stage)?`<br><span>等名字旁出现「有话想说」，夜里去找${PEOPLE[c.id].name}。</span>`:'');cls='stage-up';}
- else if(c.k==='lover'){img=PEOPLE[c.id].minor?'':portrait(c.id);big=c.id==='C05'?'知己':'两情相悦';small=c.id==='C05'?'这一世，你多了一个知己。':`你和${PEOPLE[c.id].name}，说破了心意。`;cls='lover';}
- else if(c.k==='fifth'){img=PEOPLE[c.id].minor?'':portrait(c.id);big=`${PEOPLE[c.id].name} · 第五幕`;small='这一段，你们一起走完了。';cls='lover';}
- else if(c.k==='knot'){img=PEOPLE[c.id].minor?'':portrait(c.id);big='心结解开了';small=`${PEOPLE[c.id].name}的情分又能涨了。`;}
+ if(c.k==='stage'){img=PEOPLE[c.id].secondary?'':portrait(c.id);big=`${PEOPLE[c.id].name} · ${c.stage}`;small=(PEOPLE[c.id].secondary?'愿意把心里话告诉你了。':STAGE_LINE[c.stage]||'')+(E.hasStory(s,c.id)?`<br><span>今夜去找${PEOPLE[c.id].name}，会有新的剧情。</span>`:['相知','倾心'].includes(c.stage)?`<br><span>等名字旁出现「有话想说」，夜里去找${PEOPLE[c.id].name}。</span>`:'');cls='stage-up';}
+ else if(c.k==='lover'){img=PEOPLE[c.id].secondary?'':portrait(c.id);big=c.id==='C05'?'知己':'两情相悦';small=c.id==='C05'?'这一世，你多了一个知己。':`你和${PEOPLE[c.id].name}，说破了心意。`;cls='lover';}
+ else if(c.k==='fifth'){img=PEOPLE[c.id].secondary?'':portrait(c.id);big=`${PEOPLE[c.id].name} · 第五幕`;small='这一段，你们一起走完了。';cls='lover';}
+ else if(c.k==='knot'){img=PEOPLE[c.id].secondary?'':portrait(c.id);big='心结解开了';small=`${PEOPLE[c.id].name}的情分又能涨了。`;}
  else if(c.k==='crisis'){big='要务了结';small=c.name;cls='gold';}
  else if(c.k==='crisisFail'){big='要务没办好';small=`${c.name}。不要紧，路还长。`;cls='sad';}
  else if(c.k==='ach'){big=`${c.a.icon}`;small=`成就解锁 · ${c.a.title}<br><span>${esc(c.a.desc)}</span>`;cls='ach-pop';}
@@ -316,7 +319,7 @@ function celebration(){
 }
 const VIEWS={outings:outingsView,nanfeng:nanfengView,rebirth:rebirthView,gallery:galleryView,replay:replayView,title:titleView,home,scene:sceneView,pick:()=>pickPerson(view.kind),chat:chatView,gift:giftView,edict:edictView,result:resultView,night:nightView,summary:summaryView,ending:endingView,people:peopleView,log:logView,settings:settingsView};
 let lastVibration=null;
-function render(){const c=s?.cele?.[0];if(c!==lastVibration){lastVibration=c;if(c&&['stage','lover'].includes(c.k)){try{globalThis.navigator?.vibrate?.(30);}catch{}}}app.innerHTML=(VIEWS[view.name]||home)()+(['home','summary','people','gallery','ending'].includes(view.name)&&!busy?celebration():'');const m=document.getElementById('msgs');if(m)m.scrollTop=m.scrollHeight;if(view.name==='chat'&&!busy)app.querySelector('.say input')?.focus();}
+function render(){if(!audienceOf().confirmed){app.innerHTML=ageView();return;}const c=s?.cele?.[0];if(c!==lastVibration){lastVibration=c;if(c&&['stage','lover'].includes(c.k)){try{globalThis.navigator?.vibrate?.(30);}catch{}}}app.innerHTML=(VIEWS[view.name]||home)()+(['home','summary','people','gallery','ending'].includes(view.name)&&!busy?celebration():'');const m=document.getElementById('msgs');if(m)m.scrollTop=m.scrollHeight;if(view.name==='chat'&&!busy)app.querySelector('.say input')?.focus();}
 function go(v){view=v;render();window.scrollTo(0,0);}
 
 // ---------- 动作 ----------
@@ -325,6 +328,8 @@ function learn(id,g,liked){s.known=s.known||{};const k=s.known[id]=s.known[id]&&
 const likedList=id=>Object.entries(s.known?.[id]||{}).filter(([,v])=>v).map(([g])=>g);
 
 const ACTS={
+ 'age-confirm':async()=>{try{confirmAge();await AI.initAI();s=E.load();go({name:'title'});}catch{toast('没有记住年龄确认，请检查浏览器是否允许保存。');}},
+ 'age-leave':()=>{view.left=true;render();},
  vol2:()=>{E.startVolume2(s);save();go({name:'home'});},
  vol3:()=>{E.startVolume3(s);save();go({name:'home'});},
  rebirth:()=>go({name:'rebirth'}),
@@ -404,7 +409,7 @@ function opener(id,letter){
  const p=s.people[id],n=PEOPLE[id].name;
  if(letter)return `（${n}远在${E.placeOf(s,id)}。你铺开信纸。）`;
  if(p.knot)return `${n}行了礼，站得比平日远些。「${p.knot.text}」那件事，还横在你们中间。`;
- if(PEOPLE[id].minor)return `${n}行过礼，恭敬地候着。你让人上了茶，才慢慢开口。`;
+ if(PEOPLE[id].secondary)return `${n}行过礼，恭敬地候着。你让人上了茶，才慢慢开口。`;
  const st=stageOf(p.aff);
  return {生分:`${n}进来行了礼，垂手站着，等你开口。`,相识:`${n}行过礼，抬眼看了看你：“皇上召见，可是有事？”`,相知:`${n}进门时带着笑：“皇上今日得空了？”`,倾心:`${n}一进来，先看你的脸色，才放心地笑了。`,相守:`${n}没等通传就进来了，在你手边坐下。`}[st];
 }
@@ -424,7 +429,8 @@ async function decreeHandler(text){
 }
 
 app.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el||el.tagName==='FORM')return;if(el.disabled)return;const f=ACTS[el.dataset.act];if(f){e.preventDefault();f(el);}});
-app.addEventListener('submit',e=>{e.preventDefault();const f=e.target,t=(f.t?.value||'').trim();if(f.dataset.act==='transfer'){try{const r=E.transferFunds(s,f.direction.value,f.amount.value);save();go({name:'result',result:r});}catch(e){toast(e.message);}}else if(f.dataset.act==='say')sayHandler(t);else if(f.dataset.act==='decree')decreeHandler(t);
+app.addEventListener('change',e=>{if(e.target.dataset.pref==='tenderness'){try{setTenderness(e.target.checked);}catch(err){toast(err.message);render();}}});
+app.addEventListener('submit',e=>{e.preventDefault();if(!audienceOf().confirmed)return;const f=e.target,t=(f.t?.value||'').trim();if(f.dataset.act==='transfer'){try{const r=E.transferFunds(s,f.direction.value,f.amount.value);save();go({name:'result',result:r});}catch(e){toast(e.message);}}else if(f.dataset.act==='say')sayHandler(t);else if(f.dataset.act==='decree')decreeHandler(t);
  else if(f.dataset.act==='api'){const d={url:f.url.value.trim(),model:f.model.value.trim(),key:f.key.value.trim()},rem=f.remember.checked;withBusy(async()=>{await AI.saveConnection(d,rem);toast('AI 已开启');});}});
 
-(async()=>{render();await AI.initAI();s=E.load();render();})();
+(async()=>{render();if(!audienceOf().confirmed)return;await AI.initAI();s=E.load();render();})();

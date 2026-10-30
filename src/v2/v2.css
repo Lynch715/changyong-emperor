@@ -314,3 +314,5 @@ input,textarea{min-width:0}
 .appointment-modal{position:fixed;inset:4vh 12px auto;margin:0 auto;width:calc(100% - 24px);max-width:520px;max-height:86vh;overflow-y:auto;z-index:40;background:var(--silk);color:var(--ink);border:2px solid var(--gold);border-radius:12px;padding:16px;box-shadow:0 0 0 100vmax #07111dcc}
 .appointment-modal>button{padding:8px 16px;border:1px solid var(--line);border-radius:6px;background:transparent}
 .appointment-modal .options button{flex-shrink:0}
+
+.audience-toggle{display:flex;align-items:center;gap:10px;min-height:44px;margin-top:10px}.audience-toggle input{width:22px;height:22px}

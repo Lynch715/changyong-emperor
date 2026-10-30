@@ -1,3 +1,4 @@
+import {tendernessGuide,quietRefusal} from './audience.js';
 import {OFFICES} from './appointments.js';
 import {treasuryIndex} from './economy.js';
 import {weatherOf} from './engine.js';
@@ -51,12 +52,12 @@ async function ask(system,user){
 }
 
 const WORLD=`你在为清宫文字游戏《重生长雍帝王赋》写作。玩家扮演雍正皇帝：他在病榻上死去，又醒在雍正元年正月，记得前世的一切——年羹尧被赐死、年世兰撞墙、苏培盛守了他一辈子却没被好好看见、后宫里许多人的不得善终。这一世，他想把能挽回的都挽回。
-文风：白话、克制、有画面，像好的小说，不要堆砌辞藻，不要现代网络用语。人物说话符合身份与性格。不写露骨的性内容。
+文风：白话、克制、有画面，像好的小说，不要堆砌辞藻，不要现代网络用语。人物说话符合身份与性格。不写露骨的性内容。亲密情节只限明确成年、非亲属、双方自由自愿。拒绝、迟疑或不适都应受到尊重，权势和赏赐不能代替同意。未成年、亲属之间、胁迫、药物影响或无法清醒表达意愿时，不写亲密行为，转为日常照顾。一档自由度也不改变这些边界。
 君臣礼法（必须遵守）：玩家是皇帝。妃嫔、太监、太医、大臣、亲王，在皇帝面前都守着尊卑。心里不情愿、委屈、生气时，用婉拒、推辞、告罪、沉默、低头不语、红了眼眶、找个由头告退来表达；大臣不赞同时跪下进谏，先说“臣斗胆”“请皇上三思”，语气恭顺。绝不当面斥责、讥讽、顶撞、命令或教训皇帝，不用“你”直呼皇帝，不反问逼问皇帝。即便是恋人、兄弟，也只是撒娇、使一点小性子、说句俏皮话，点到为止，礼数不失。只有醉后、重病、生死关头才偶尔失态，事后要惶恐请罪。`;
 export const statLine=s=>`国库${s.stats.treasury}万两（充盈度${treasuryIndex(s)}/100），内帑${s.stats.inner}万两，`+STATS.filter(x=>!['inner','treasury'].includes(x.id)).map(x=>`${x.name}${s.stats[x.id]}/100`).join('，');
 export const dateLine=s=>`雍正${YEAR_NAME(s.year)}年${MONTHS[s.month-1]}。今日${weatherOf(s)}`+(s.appointments?.C03?.office?'（年羹尧现任'+titleOf(s,'C03')+'）':s.flags?.nian_prison?'（年羹尧已被削爵下狱）':s.flags?.nian_away?'（年羹尧已被降为杭州将军）':s.flags?.nian_safe?'（年羹尧交出兵权，留京任职）':'')+((s.month&&birthdays(s).length)?`。本月是${birthdays(s).map(id=>PEOPLE[id].name).join('、')}的生辰`:'');
 function relation(id,st){
- if(PEOPLE[id].minor)return '只写故人之间的信任与君臣之礼，不把情分写成恋爱。';
+ if(PEOPLE[id].secondary)return '只写故人之间的信任与君臣之礼，不把情分写成恋爱。';
  if(id==='C05')return st.lover?'你们是彼此最亲的兄弟与知己，皇兄曾把一个“很长的梦”告诉你。':'';
  if(st.lover)return '你们已经互相表明心意，私下是恋人：亲昵、信任，偶尔撒娇或吃醋，人前仍守着身份。';
  if(st.aff>=65)return '你已经对皇上动了心，但还没有说破。';
@@ -79,7 +80,7 @@ export async function chatReply(s,id,history,{letter=false,fate=null}={}){
  const system=`${WORLD}
 现在你只扮演${p.name}，${letter?'这是一封书信往来：皇上写信给远在'+placeOf(s,id)+'的你，你回信':'皇上召见你，你们在'+placeOf(s,id)+'说话'}。
 ${personBlock(s,id)}
-当前：${dateLine(s)}。朝局：${statLine(s)}。
+当前：${dateLine(s)}。朝局：${statLine(s)}。${s.people[id].lover?tendernessGuide(s,id,'private-chat',{letter,fate}):''}
 规则：
 1. reply 是${p.name}的回应，40到130字，可以有一两句动作或神情描写（第三人称写${p.name}，称玩家为“你”或用称谓）。要接住皇上刚才那句话，不要答非所问，不要说教。
 2. 你可以有情绪、回忆、小心翼翼的玩笑。皇上的话若真诚、懂${p.name}，就让${p.name}有所触动；若敷衍、傲慢、伤人，就如实流露出来：沉默、低头、勉强的笑、找个由头告退，但始终守着君臣之礼，不顶撞、不斥责。
@@ -127,12 +128,12 @@ export async function nightScene(s,id,line='',fate=null){
  const system=`${WORLD}
 今夜皇上去了${placeOf(s,id)}，陪着${p.name}。
 ${personBlock(s,id)}
-当前：${dateLine(s)}。
+当前：${dateLine(s)}。${tendernessGuide(s,id,'night',{fate})}
 写今夜的一小段，120到220字，第二人称“你”。要有一个具体的小细节（一样东西、一句话、一个动作），贴合${p.name}的性格和你们眼下的情分，${s.people[id].lover?(id==='C05'?'兄弟知己之间的亲近与默契':'恋人之间的温存与亲昵，可以有拥抱、依偎、牵手这样的细节'):s.people[id].aff>=65?'情意已经很明显，只差一句话没说破':s.people[id].aff<45?'还有些拘谨，彼此在试探':'已经可以说些心里话'}。点到为止，不写露骨内容。${line?'皇上开口说的第一句是：“'+line+'”，要接住这句话。':''}
-${fate?fateGuide(fate,'person',p.name)+'\n':''}affection：今夜让情分增加多少，0 到 5。memory：今夜值得${p.name}记住的一件事，不超过30字。
+${fate?fateGuide(fate,'person',p.name)+'\n':''}${fate&&!fate.free&&fate.tier<=1?'今夜婉拒，改为喝茶或照顾起居，不发生亲密行为。\n':''}affection：今夜让情分增加多少，0 到 5。memory：今夜值得${p.name}记住的一件事，不超过30字。
 只输出 JSON：{"text":"...","affection":3,"memory":""}`;
- const v=await ask(system,'请写今夜。');if(!v)return null;
- const text=str(v.text,600);if(!text)return null;
+ const v=await ask(system,'请写今夜。');if(!v){lastError='';return null;}
+ const text=str(v?.text,600);if(quietRefusal(text)){lastError='';return null;}
  return {text,affection:clampInt(v.affection,0,5),memory:str(v.memory,40)};
 }
 

@@ -33,7 +33,7 @@ const rows=[
  ['C46','耿氏','妃嫔','裕嫔','宫中',7,70,'中立','敦厚安静，牵挂弘昼，在御前恭敬。'],
  ['C47','宋氏','妃嫔','懋嫔','宫中',6,70,'中立','久居宫中，性情平和，不争眼前风光。']
 ];
-export const SECONDARIES=Object.fromEntries(rows.map(([id,name,category,title,place,ability,loyalty,faction,desc])=>[id,{name,category,title,place,ability,loyalty,faction,desc,minor:true,public:true,from:[1,1],start:20,likes:['book','tea'],dislikes:['wine'],voice:`${name}，${title}。${id==='C21'?'自称哀家，称皇帝':category==='妃嫔'?'自称臣妾，称皇上':category==='宫女'?'自称奴婢，称皇上':category==='太监'?'自称奴才，称皇上':category==='宗室'?'自称臣弟，称皇兄':'自称臣，称皇上'}。${desc} 始终守尊卑，不当面斥责、顶撞或反问皇帝。`} ]));
+export const SECONDARIES=Object.fromEntries(rows.map(([id,name,category,title,place,ability,loyalty,faction,desc])=>[id,{name,category,title,place,ability,loyalty,faction,desc,secondary:true,public:true,from:[1,1],start:20,likes:['book','tea'],dislikes:['wine'],voice:`${name}，${title}。${id==='C21'?'自称哀家，称皇帝':category==='妃嫔'?'自称臣妾，称皇上':category==='宫女'?'自称奴婢，称皇上':category==='太监'?'自称奴才，称皇上':category==='宗室'?'自称臣弟，称皇兄':'自称臣，称皇上'}。${desc} 始终守尊卑，不当面斥责、顶撞或反问皇帝。`} ]));
 export const CORE_DETAILS={C02:['太监',9,95,'中立'],C07:['妃嫔',8,75,'中立'],C06:['妃嫔',9,65,'中立'],C08:['妃嫔',7,60,'中立'],C09:['妃嫔',9,65,'中立'],C10:['妃嫔',9,75,'中立'],C04:['文官',9,90,'中立'],C05:['宗室',8,85,'中立'],C03:['武官',10,65,'新政']};
 export const GROUPS={后宫:['妃嫔'],朝臣:['文官','武官'],宗室:['宗室'],内廷:['太监','宫女'],宫外:['伶人']};
 export const REUSED_IDS='C11敬妃 C12端妃 C13齐妃 C14曹琴默 C15欣贵人 C16富察贵人 C17崔槿汐 C18浣碧 C19颂芝 C20宝鹃 C21太后 C22卫临 C24允禩 C25允禟 C26允祥 C27隆科多 C28张廷玉 C29鄂尔泰 C30田文镜 C31李卫 C32岳钟琪';
