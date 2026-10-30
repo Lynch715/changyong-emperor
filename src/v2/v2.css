@@ -306,3 +306,11 @@ input,textarea{min-width:0}
 .avatar.portrait{width:120px;height:140px;border-radius:12px;margin:24px auto 0}
 .avatar.person-face{width:95px;height:150px;border-radius:8px}
 @media(max-width:520px){.places{grid-template-columns:minmax(0,1fr)}}
+
+.people-group{margin-bottom:16px;border-top:1px solid var(--desk-line);padding-top:8px}
+.people-group summary{min-height:44px;align-content:center;cursor:pointer;color:var(--gold-soft);font-size:21px}
+.person-actions{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.person-actions button{padding:8px 14px;border:1px solid var(--gold);border-radius:8px;background:var(--desk-soft)}
+.appointment-modal{position:fixed;inset:4vh 12px auto;margin:0 auto;width:calc(100% - 24px);max-width:520px;max-height:86vh;overflow-y:auto;z-index:40;background:var(--silk);color:var(--ink);border:2px solid var(--gold);border-radius:12px;padding:16px;box-shadow:0 0 0 100vmax #07111dcc}
+.appointment-modal>button{padding:8px 16px;border:1px solid var(--line);border-radius:6px;background:transparent}
+.appointment-modal .options button{flex-shrink:0}

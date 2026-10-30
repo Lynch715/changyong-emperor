@@ -1,3 +1,4 @@
+import {GROUPS} from './roster.js';
 import {PLACES,DESTINATIONS} from './outings.js';
 import {moneyText,treasuryIndex} from './economy.js';
 // 新版界面：一个状态对象 + 一个 render。点击用 data-act 分发。
@@ -25,7 +26,7 @@ const statValue=(k,n)=>['treasury','inner'].includes(k)?moneyText(n):n;
 const statName=id=>STATS.find(x=>x.id===id)?.name||id;
 const nm=id=>NAMES[id]||PEOPLE[id]?.name||'';
 const dateText=st=>`雍正${YEAR_NAME(st.year)}年 · ${MONTHS[st.month-1]}`;
-const THUMBS=new Set(['C01','C02','C03','C04','C05','C06','C07','C08','C09','C10','C11','C19','C20','C21','C22','C26','C28','C32']);
+const THUMBS=new Set(['C01','C02','C03','C04','C05','C06','C07','C08','C09','C10','C11','C19','C20','C21','C22','C26','C28','C32',...Array.from({length:22},(_,i)=>'C'+(i+11)).filter(id=>id!=='C23')]);
 const face=id=>THUMBS.has(id)?thumb(id):portrait(id);
 const avatar=(id,cls='')=>THUMBS.has(id)?`<img class="${cls}" src="${cls==='portrait'?portrait(id):face(id)}" alt="${esc(nm(id))}">`:`<span class="avatar ${cls}" aria-label="${esc(nm(id))}">${esc((PEOPLE[id]?.name||nm(id)||'人')[0])}</span>`;
 const abs=p=>new URL(p,location.href).href;
@@ -93,7 +94,7 @@ function home(){
 }
 const GOAL_TEXT={deficit:x=>`国库 ${moneyText(x.treasury)}/600 万两`,eight:x=>`朝局 ${x.court}/55`,reform:x=>`民心 ${x.people}/60 · 国库 ${moneyText(x.treasury)}/470 万两`,border:x=>`朝局 ${x.court}/50`,tusi:x=>`民心 ${x.people}/55`,body:x=>`圣躬 ${x.health}/45`};
 function personCard(id,act='person'){
- const p=s.people[id],st=stageOf(p.aff),next=STAGES.find(([n])=>n>p.aff);
+ const p=s.people[id],st=E.affectionStage(s,id),next=STAGES.find(([n])=>n>p.aff);
  const lo=STAGES.filter(([n])=>p.aff>=n).at(-1)[0],hi=next?next[0]:100;
  const dd=s.delta.people[id]||0;
  const badge=p.knot?'<em class="knot">心结</em>':E.hasStory(s,id)?'<em class="ready">有话想说</em>':E.birthdayOf(s,id)&&!E.birthdayDone(s,id)?'<em class="ready">生辰</em>':E.away(s,id)?'<em class="away">在外</em>':p.lover?`<em class="lover">${bondName(id)}</em>`:'';
@@ -135,7 +136,7 @@ function chatView(){
  const ai=AI.aiMode()!=='off',used=c.topics||[];
  const left=Math.max(0,6-c.turns);
  return `<div class="stage chat" style="--bg:url('${abs(bgFor(E.placeOf(s,id)))}')">
-  <div class="stage-top"><button data-act="chat-end">‹ 告退</button><span>${c.letter?'书信 · ':''}${esc(E.placeOf(s,id))}</span><span class="pill">${stageOf(st.aff)} ${st.aff}${c.gained?` <i class="up">+${c.gained}</i>`:''}</span></div>
+  <div class="stage-top"><button data-act="chat-end">‹ 告退</button><span>${c.letter?'书信 · ':''}${esc(E.placeOf(s,id))}</span><span class="pill">${E.affectionStage(s,id)} ${st.aff}${c.gained?` <i class="up">+${c.gained}</i>`:''}</span></div>
   ${avatar(id,'portrait')}
   <article class="paper talk">
    <h2>${p.name}<small>${E.titleOf(s,id)}${st.knot?' · <em class="knot">心结：'+esc(st.knot.text)+'</em>':''}</small></h2>
@@ -240,17 +241,20 @@ function rebirthView(){
 function peopleView(){
  const id=view.id;
  if(id){const p=PEOPLE[id],st=s.people[id],known=likedList(id);return `${header()}<main class="person"><div class="bar-title"><button data-act="go" data-to="people">‹ 人物</button><b>${p.name}</b></div>
-  <div class="person-hero">${avatar(id,'person-face')}<div><h2>${p.name}</h2><p>${E.titleOf(s,id)} · ${E.placeOf(s,id)}</p><p class="big">${stageOf(st.aff)} <b>${st.aff}</b></p>
-   <div class="stages">${STAGES.map(([n,t])=>`<span class="${st.aff>=n?'on':''}">${t}</span>`).join('')}</div>
+  <div class="person-hero">${avatar(id,'person-face')}<div><h2>${p.name}</h2><p>${E.titleOf(s,id)} · ${E.placeOf(s,id)}</p><p class="small">${p.category||'故人'} · 能力 ${st.ability}/10 · 忠诚 ${st.loyalty}/100 · ${esc(st.faction)}</p>${p.desc?`<p class="small">${esc(p.desc)}</p>`:''}<p class="big">${E.affectionStage(s,id)} <b>${st.aff}</b></p>
+   <div class="stages">${STAGES.map(([n,t])=>`<span class="${st.aff>=n?'on':''}">${p.minor?({0:'生疏',25:'相识',45:'信任',65:'亲近',85:'深信'})[n]:t}</span>`).join('')}</div>
    ${st.knot?`<p class="knot-line">心结：${esc(st.knot.text)}。召见时说开它。</p>`:''}
    ${st.lover?`<p class="ready-line">${bondName(id)}</p>`:''}
    ${E.hasStory(s,id)?`<p class="ready-line">有话想对你说。${E.away(s,id)?'会有书信来。':'今夜去看看。'}</p>`:st.first&&!st.second&&st.aff<45?'<p class="muted small">情分到「相知」后，会有新的剧情。</p>':st.second&&!st.third&&st.aff<65?'<p class="muted small">情分到「倾心」后，还有一段剧情。</p>':st.third&&!st.fourth&&s.year>=3&&st.aff<75?'<p class="muted small">情分到 75，还会有一段剧情。</p>':st.fourth&&!st.fifth&&s.year>=5&&st.aff<80?'<p class="muted small">情分到 80，还有最后一段剧情。</p>':''}
    ${(()=>{const rel=[...rivalsOf(id).map(x=>`<span class="rel bad">与${PEOPLE[x].name}不和</span>`),...friendsOf(id).map(x=>`<span class="rel good">与${PEOPLE[x].name}亲近</span>`)];return rel.length?`<p class="rels">${rel.join('')}</p>`:'';})()}
-   ${BIRTH[id]?`<p class="muted small">生辰：${MONTHS[BIRTH[id]-1]}</p>`:''}<p class="muted small">喜欢：${known.length?known.map(g=>GIFTS[g].name).join('、'):'还不知道'}</p></div></div>
+   ${BIRTH[id]||p.birth?`<p class="muted small">生辰：${MONTHS[(BIRTH[id]||p.birth)-1]}</p>`:''}<p class="muted small">喜欢：${known.length?known.map(g=>GIFTS[g].name).join('、'):'还不知道'}</p></div></div>
+  <div class="person-actions"><button data-act="chat-with" data-id="${id}" ${!E.canAct(s)||E.gone(s,id)?'disabled':''}>${E.away(s,id)?'写信':'召见'}</button>${E.appointmentOptions(s,id).length?`<button data-act="appoint-open" ${!E.canAct(s)||E.gone(s,id)?'disabled':''}>任命 / 调整位分</button>`:''}</div>
+  <h3 class="sec">任命旧事</h3><ul class="mem">${(s.appointmentHistory[id]||[]).slice().reverse().map(a=>`<li><small>${YEAR_NAME(a.year)}年${MONTHS[a.month-1]}</small>${esc(a.from?a.from+' → '+a.to:a.to)}<br><small>${esc(a.source)}</small></li>`).join('')}</ul>
   <h3 class="sec">${p.name}记得的事</h3>
-  <ul class="mem">${st.memories.slice().reverse().map(m=>`<li><small>${YEAR_NAME(m.y)}年${MONTHS[m.m-1]}</small>${esc(m.text)}</li>`).join('')||'<li class="muted">还没有。</li>'}</ul></main>${nav()}`;}
- return `${header()}<main><h3 class="sec">人物</h3><section class="people">${CAST.filter(id=>E.present(s,id)&&s.people[id].met).map(id=>personCard(id)).join('')}</section></main>${nav()}`;
+  <ul class="mem">${st.memories.slice().reverse().map(m=>`<li><small>${YEAR_NAME(m.y)}年${MONTHS[m.m-1]}</small>${esc(m.text)}</li>`).join('')||'<li class="muted">还没有。</li>'}</ul>${view.appoint?appointmentDialog(id):''}</main>${nav()}`;}
+ return `${header()}<main><h3 class="sec">人物</h3>${Object.entries(GROUPS).map(([name,categories])=>{const ids=CAST.filter(id=>categories.includes(PEOPLE[id].category)&&E.present(s,id)&&s.people[id].met);return `<details class="people-group" open><summary>${name} · ${ids.length}</summary><section class="people">${ids.map(id=>personCard(id)).join('')||'<p class="muted">还没有相识的人。</p>'}</section></details>`;}).join('')}</main>${nav()}`;
 }
+function appointmentDialog(id){return `<dialog class="appointment-modal" open aria-label="为${esc(nm(id))}安排职司"><button data-act="appoint-close">收起</button><h3>${esc(nm(id))} · 任命</h3><p>每次用一个时辰。满员时，先腾出空位。</p><div class="options">${E.appointmentOptions(s,id).map(o=>`<button data-act="appoint" data-id="${id}" data-office="${o.office}" ${o.reason?'disabled':''}>${o.title}${o.reason?`<small> · ${esc(o.reason)}</small>`:''}</button>`).join('')}</div></dialog>`;}
 function logView(){
  const items=s.log.slice().reverse();
  return `${header()}<main><h3 class="sec">起居注</h3><ul class="log">${items.map(l=>`<li><small>${YEAR_NAME(l.y)}年${MONTHS[l.m-1]}</small><em>${l.kind}</em>${esc(l.text)}</li>`).join('')||'<li class="muted">还没有记录。</li>'}</ul></main>${nav()}`;
@@ -302,7 +306,7 @@ const STAGE_LINE={相识:'开始记得你了。',相知:'愿意跟你说心里�
 function celebration(){
  const c=s?.cele?.[0];if(!c)return '';
  let img='',big='',small='',cls='';
- if(c.k==='stage'){img=PEOPLE[c.id].minor?'':portrait(c.id);big=`${PEOPLE[c.id].name} · ${c.stage}`;small=(STAGE_LINE[c.stage]||'')+(E.hasStory(s,c.id)?`<br><span>今夜去找${PEOPLE[c.id].name}，会有新的剧情。</span>`:['相知','倾心'].includes(c.stage)?`<br><span>等名字旁出现「有话想说」，夜里去找${PEOPLE[c.id].name}。</span>`:'');cls='stage-up';}
+ if(c.k==='stage'){img=PEOPLE[c.id].minor?'':portrait(c.id);big=`${PEOPLE[c.id].name} · ${c.stage}`;small=(PEOPLE[c.id].minor?'愿意把心里话告诉你了。':STAGE_LINE[c.stage]||'')+(E.hasStory(s,c.id)?`<br><span>今夜去找${PEOPLE[c.id].name}，会有新的剧情。</span>`:['相知','倾心'].includes(c.stage)?`<br><span>等名字旁出现「有话想说」，夜里去找${PEOPLE[c.id].name}。</span>`:'');cls='stage-up';}
  else if(c.k==='lover'){img=PEOPLE[c.id].minor?'':portrait(c.id);big=c.id==='C05'?'知己':'两情相悦';small=c.id==='C05'?'这一世，你多了一个知己。':`你和${PEOPLE[c.id].name}，说破了心意。`;cls='lover';}
  else if(c.k==='fifth'){img=PEOPLE[c.id].minor?'':portrait(c.id);big=`${PEOPLE[c.id].name} · 第五幕`;small='这一段，你们一起走完了。';cls='lover';}
  else if(c.k==='knot'){img=PEOPLE[c.id].minor?'':portrait(c.id);big='心结解开了';small=`${PEOPLE[c.id].name}的情分又能涨了。`;}
@@ -344,6 +348,9 @@ const ACTS={
   go({name:'home'});
  },
  person:el=>go({name:'people',id:el.dataset.id}),
+ 'appoint-open':()=>{view.appoint=true;render();},
+ 'appoint-close':()=>{view.appoint=false;render();},
+ appoint:el=>{try{const r=E.appointPerson(s,el.dataset.id,el.dataset.office);save();go({name:'result',result:r});}catch(e){toast(e.message);}},
  chat:()=>go({name:'pick',kind:'chat'}),
  gift:()=>go({name:'pick',kind:'gift'}),
  'chat-with':el=>{const id=el.dataset.id;try{const c=E.beginChat(s,id);c.msgs=[{who:'npc',text:(c.birthday?`（今天是${PEOPLE[id].name}的生辰。）`:'')+opener(id,c.letter)}];c.topics=[];save();go({name:'chat',chat:c});if(c.birthday)toast(`记得${PEOPLE[id].name}的生辰`);}catch(e){toast(e.message);}},
@@ -398,6 +405,7 @@ function opener(id,letter){
  const p=s.people[id],n=PEOPLE[id].name;
  if(letter)return `（${n}远在${E.placeOf(s,id)}。你铺开信纸。）`;
  if(p.knot)return `${n}行了礼，站得比平日远些。「${p.knot.text}」那件事，还横在你们中间。`;
+ if(PEOPLE[id].minor)return `${n}行过礼，恭敬地候着。你让人上了茶，才慢慢开口。`;
  const st=stageOf(p.aff);
  return {生分:`${n}进来行了礼，垂手站着，等你开口。`,相识:`${n}行过礼，抬眼看了看你：“皇上召见，可是有事？”`,相知:`${n}进门时带着笑：“皇上今日得空了？”`,倾心:`${n}一进来，先看你的脸色，才放心地笑了。`,相守:`${n}没等通传就进来了，在你手边坐下。`}[st];
 }
@@ -411,7 +419,7 @@ async function sayHandler(text){
 }
 async function decreeHandler(text){
  if(!text)return toast('旨意还是空的。');
- await withBusy(async()=>{const fate=E.rollFate(s,'edict');const v=await AI.edictResult(s,text,CORE.filter(id=>E.present(s,id)&&s.people[id].met),fate);
+ await withBusy(async()=>{const fate=E.rollFate(s,'edict');const v=await AI.edictResult(s,text,CAST.filter(id=>E.present(s,id)&&s.people[id].met),fate);
   if(!v)throw Error('旨意没能传下去：'+(AI.aiError()||'AI 未回应')+'。时辰没有用掉。');
   const r=E.applyEdict(s,text,{...v,fate});view.result={...r,title:v.title,src:text,text:v.narration,fate};});
 }

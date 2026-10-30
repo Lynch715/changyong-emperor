@@ -1,6 +1,8 @@
+import {SECONDARIES,CORE_DETAILS} from './roster.js';
 import {PERFORMERS} from './outings.js';
 // 新版数据：人物、月历、赏赐、出巡、空月奏折、无 AI 时的回退文字与结局。
-export const ECONOMY={startTreasury:800,startInner:50,point:10,legacyScale:800/60,fullTreasury:6000,income:[55,65,80],innerIncome:4,outingCost:0.08,banquetCost:1.5,deficitGoal:600,reformGoal:470};
+export const ECONOMY={startTreasury:800,startInner:50,point:10,legacyScale:800/60,fullTreasury:6000,income:[52,62,75],innerIncome:4,outingCost:0.08,banquetCost:1.5,privatePoint:.1,deficitGoal:600,reformGoal:470};
+export const PRIVATE_SCENES=new Set(['M03','M06','M08','M11','M12','K10','K14','K17','W09','W10','Q15','Q16','H02','H10','Q06']);
 export const STATS=[
  {id:'treasury',name:'国库',hint:'户部银库，赈灾、河工与军费从这里出'},
  {id:'inner',name:'内帑',hint:'内务府的银子，赏赐与宫里用度从这里出'},
@@ -47,7 +49,8 @@ export const PEOPLE={
   likes:['wine','jewel','silk'],dislikes:['flowers','music'],first:'R03-01',second:'R03-02'}
 };
 export const CORE=Object.keys(PEOPLE);
-Object.assign(PEOPLE,PERFORMERS);
+Object.assign(PEOPLE,PERFORMERS,SECONDARIES);
+for(const[id,[category,ability,loyalty,faction]]of Object.entries(CORE_DETAILS))Object.assign(PEOPLE[id],{category,ability,loyalty,faction});
 export const CAST=Object.keys(PEOPLE);
 // 只在主线里出场的人
 export const NAMES={C01:'雍正',C21:'太后',C11:'敬妃',C19:'颂芝',C20:'宝鹃',C22:'卫临',C26:'允祥',C28:'张廷玉',C32:'岳钟琪',...Object.fromEntries(Object.entries(PEOPLE).map(([k,v])=>[k,v.name]))};
