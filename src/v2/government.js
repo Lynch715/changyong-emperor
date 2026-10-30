@@ -13,7 +13,7 @@ const topics=[
  ['民情',null,['米价骤涨','佃户争租','市井械斗','渡口失修','水源争用','粮商囤积','乡约争讼'],'访查民情，平粜调剂']
 ];
 export const MEMORIAL_POOL=topics.flatMap(([type,months,titles,special],t)=>titles.map((title,i)=>({id:`M${t}-${i}`,type,months,province:PROVINCE_NAMES[(t+i)%10],title,special,body:`臣谨奏：本省${title}一事，已据州县禀报逐项查核。乡民生计与钱粮征解皆有牵连，若一概催办，恐滋扰累；若迁延不理，又恐小患日深。现将原册、经费及经办人员清单随折呈览，恳请皇上裁夺。臣不敢以浮词掩饰实情，奉旨后当逐月报明办理情形，并听候部臣复核。`})));
-export function initGovernment(s){s.memorials??=[];s.memorialUsed??=[];s.followups??=[];s.govSerial??=0;s.govNotes??=[];return s;}
+export function initGovernment(s){s.memorials??=[];s.memorialUsed??=[];s.followups??=[];s.govSerial??=0;s.govNotes??=[];initProvinces(s);return s;}
 export function authorOf(s,province){const offices={直隶:'zhili',江南:'liangjiang',四川:'chuanshan',陕甘:'chuanshan',云贵:'yungui',河南:'henan',浙江:'zhejiang'};return Object.keys(s.appointments||{}).find(id=>s.appointments[id].office===offices[province]&&!s.flags?.['gone_'+id])||null;}
 export function addMemorial(s,p){const author=authorOf(s,p.province);const m={...p,uid:'mem'+(++s.govSerial),author:author?PEOPLE[author].name:(p.province+'巡抚'),at:monthIndex(s)};s.memorials.push(m);return m;}
 export function memorialMonth(s,rng){initGovernment(s);const now=monthIndex(s);if(s.memorialAt===now)return;s.memorialAt=now;s.reviewSession=null;s.govNotes=[];
@@ -27,5 +27,25 @@ export function decideMemorial(s,uid,choice,api){const m=checkReview(s,uid);if(!
  s.reviewSession.left--;if(choice==='hold'){s.reviewSession.held.push(uid);return {title:m.title,text:'朱批留中，原折仍留在折匣。',stats:{},people:{}};}
  s.memorials=s.memorials.filter(x=>x.uid!==uid);if(choice==='department')s.followups.push({at:monthIndex(s)+1,id:'department',data:m});
  const stats=choice==='approve'?{...api.funds(s,{treasury:-18}),...api.applyStats(s,{health:-1})}:choice==='reject'?api.applyStats(s,{court:-1}):choice==='inspect'?api.applyStats(s,{health:-1}):{};
+ scheduleDecision(s,m,choice);
  api.log(s,`${m.province}·${m.title}：${memorialOptions(m).find(x=>x[0]===choice)[1]}`,'政');return {title:m.title,text:choice==='department'?'交有关部臣核议，下月带原折复奏。':'朱批已发，经办衙门须据实回奏。',stats,people:{},memorial:m,choice};}
 export function backlog(s,applyStats){const n=s.memorials.length;if(n>6){s.govNotes.push(`折子堆了：尚有${n}道未批。`);applyStats(s,{court:-1,...(n>10?{health:-1}:{})});}}
+
+export const OFFICE_PROVINCES={zhili:['直隶'],liangjiang:['江南'],chuanshan:['四川','陕甘'],yungui:['云贵'],henan:['河南'],zhejiang:['浙江'],shandong:['山东'],huguang:['湖广'],guangdong:['广东']};
+const clamp=n=>Math.min(100,Math.max(0,n));
+export function initProvinces(s){s.provinces??={};for(const name of PROVINCE_NAMES)s.provinces[name]??={livelihood:55,integrity:50,revenue:55,reports:[]};s.regionCarry??={people:0,court:0};}
+export function regionChange(s,name,changes,api){const p=s.provinces[name];if(!p)return;const old={...p};for(const [k,v]of Object.entries(changes))if(['livelihood','integrity','revenue'].includes(k))p[k]=clamp(p[k]+v);
+ // 十省等权；小数变化累积，避免每月四舍五入吞掉地方变化。
+ for(const [national,key]of [['people','livelihood'],['court','integrity']]){s.regionCarry[national]+=(p[key]-old[key])/10;const d=Math.trunc(Number(s.regionCarry[national].toFixed(6)));if(d){api.applyStats(s,{[national]:d});s.regionCarry[national]-=d;}}}
+export function provinceIncome(s){return Math.round(Object.values(s.provinces).reduce((n,p)=>n+(p.revenue-55)*.09,0)*100)/100;}
+export function scheduleDecision(s,m,choice){if(['department','hold'].includes(choice)||m.result)return;const delay=m.type==='河工'?3:2;s.followups.push({at:monthIndex(s)+delay,id:'decision',data:{province:m.province,title:m.title,type:m.type,choice,authorId:authorOf(s,m.province),funding:choice==='approve'?18:0,source:choice==='approve'?'准':choice==='reject'?'驳':'派员核实'}});}
+function report(s,data,text){const body=`前次朱批“${data.source}”，所办${data.title}一事，今据实回奏：${text}`;s.govNotes.push(body);s.provinces[data.province].reports.unshift(body);s.provinces[data.province].reports=s.provinces[data.province].reports.slice(0,3);addMemorial(s,{title:data.title+'·回报',province:data.province,type:'回报',body,result:true,special:'交地方续办'});}
+export function regionalMonth(s,api){initGovernment(s);const now=monthIndex(s);if(s.regionalAt===now)return;s.regionalAt=now;
+ for(const f of s.followups.filter(f=>f.at<=now&&f.id==='decision')){const d=f.data,p=s.provinces[d.province],officer=d.authorId&&s.appointments[d.authorId]?.office&&OFFICE_PROVINCES[s.appointments[d.authorId].office]?.includes(d.province)?s.people[d.authorId]:null;const competence=officer?officer.ability*officer.loyalty/100:4;
+ if(d.choice==='reject'){regionChange(s,d.province,{livelihood:d.type==='赈灾'?-7:-2,integrity:-1},api);report(s,d,d.type==='赈灾'?'赈项未开，流民入城，地方请求补救。':'原案搁置，积弊仍未消除。');}
+ else{const success=api.rand(s)<Math.min(.9,.25+competence*.05+p.integrity*.003+d.funding*.008);regionChange(s,d.province,success?{livelihood:4,integrity:d.choice==='inspect'?5:1,revenue:2}:{livelihood:-5,integrity:-3,revenue:-2},api);report(s,d,success?(d.type==='河工'?'汛期堤岸稳固，拨银均按册销核。':'已见实效，经办清册与乡民回报相符。'):(d.type==='河工'?'汛期堤岸决口，须追查工程与经办人员。':'经办走样，查核未得实效，须重新料理。'));}}
+ for(const f of s.followups.filter(f=>f.at<=now&&f.id==='disaster')){const m=s.memorials.find(m=>m.uid===f.data.uid);if(!m)continue;s.memorials=s.memorials.filter(x=>x.uid!==m.uid);const id='DIS'+m.uid;s.dyn??={};s.dyn[id]={id,title:m.province+'灾情加重',kind:'government',actor:authorOf(s,m.province)||'C28',body:'前次灾情折未奉朱批，流民已聚集州城。地方请速开仓，不可再缓。',options:[{id:'relief',label:'开仓急赈（国库二十五万两）',effects:{},reply:'赈粮送到，地方仍须核查受灾户口。'},{id:'deny',label:'令地方自行筹措',effects:{},reply:'州县四处借粮，百姓仍在等待。'}],disaster:m.province};s.agenda.push(id);s.govNotes.push(m.province+'灾情未处理，已升级为要务。');regionChange(s,m.province,{livelihood:-6,revenue:-3},api);}
+ s.followups=s.followups.filter(f=>!(f.at<=now&&['decision','disaster'].includes(f.id)));
+ if(api.rand(s)<.38){const seasonal=s.month<=3?['春旱',['直隶','山东','河南']]:s.month<=6?['夏汛',['河南','江南']]:s.month<=9?['秋蝗',['山东','直隶']]:['冬雪',['陕甘']];const [title,names]=api.rand(s)<.15?['疫病',PROVINCE_NAMES]:seasonal;const province=names[Math.floor(api.rand(s)*names.length)],m=addMemorial(s,{title:province+title,province,type:'赈灾',body:`臣谨奏：${province}发生${title}，已据州县查报，乡民口粮与田地均受损。恳请速定赈务，若迁延至下月，恐流民聚集、灾情加重。`,disaster:true,special:'先行平粜，核户给赈'});s.followups.push({at:now+1,id:'disaster',data:{uid:m.uid}});}}
+export function regionalMonthly(s,api){for(const [name,p]of Object.entries(s.provinces)){const id=authorOf(s,name),officer=id?s.people[id]:null;const v=officer?(officer.ability>=8&&officer.loyalty>=70?1:officer.loyalty<50?-2:0):0;regionChange(s,name,{livelihood:v,integrity:v,revenue:v},api);}return provinceIncome(s);}
+export function resolveDisaster(s,sc,choice,api){if(!sc.disaster)return;if(choice==='relief'){api.funds(s,{treasury:-25});regionChange(s,sc.disaster,{livelihood:5},api);}else regionChange(s,sc.disaster,{livelihood:-4,integrity:-2},api);}

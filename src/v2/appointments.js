@@ -3,6 +3,7 @@ export const RANKS=['答应','常在','贵人','嫔','妃','贵妃','皇贵妃',
 const rankCap=[Infinity,Infinity,Infinity,6,4,2,1,1];
 export const OFFICES={
  ...Object.fromEntries(RANKS.map((title,i)=>['rank'+i,{title,kind:'妃嫔',cap:rankCap[i]}])),
+ henan:{title:'河南巡抚',kind:'官员',cap:1,effect:'province'},zhejiang:{title:'浙江巡抚',kind:'官员',cap:1,effect:'province'},shandong:{title:'山东巡抚',kind:'官员',cap:1,effect:'province'},huguang:{title:'湖广总督',kind:'官员',cap:1,effect:'province'},guangdong:{title:'广东巡抚',kind:'官员',cap:1,effect:'province'},
  scholar:{title:'大学士',kind:'官员',cap:2,effect:'court'},hubu:{title:'户部尚书',kind:'官员',cap:1,effect:'treasury'},libu:{title:'吏部尚书',kind:'官员',cap:1,effect:'court'},bingbu:{title:'兵部尚书',kind:'官员',cap:1,effect:'court'},xingbu:{title:'刑部尚书',kind:'官员',cap:1,effect:'court'},
  zhili:{title:'直隶总督',kind:'官员',cap:1,effect:'people'},liangjiang:{title:'两江总督',kind:'官员',cap:1,effect:'people'},chuanshan:{title:'川陕总督',kind:'官员',cap:1,effect:'people'},yungui:{title:'云贵总督',kind:'官员',cap:1,effect:'people'},bujun:{title:'步军统领',kind:'官员',cap:1,effect:'court'},council:{title:'值房行走',kind:'官员',cap:3,effect:'court'},
  chief:{title:'总管太监',kind:'太监',cap:1},deputy:{title:'副总管',kind:'太监',cap:1},yangxin:{title:'御前首领太监',kind:'太监',cap:1},jingren:{title:'景仁宫首领太监',kind:'太监',cap:1,owner:'C06'},yikun:{title:'翊坤宫首领太监',kind:'太监',cap:1,owner:'C07'},suiyu:{title:'碎玉轩首领太监',kind:'太监',cap:1,owner:'C09'},yanxi:{title:'延禧宫首领太监',kind:'太监',cap:1,owner:'C08'},cunjv:{title:'存菊堂首领太监',kind:'太监',cap:1,owner:'C10'}
@@ -25,8 +26,9 @@ export function validateAppointments(s,value){const list=appointmentList(value),
 export function recordAppointment(s,id,office,title,source='任命'){const prev=currentTitle(s,id);s.appointments[id]={office,title,since:(s.year-1)*12+s.month};s.officeMonths[id]=0;s.appointmentHistory[id].push({year:s.year,month:s.month,from:prev,to:title,source});}
 export function appointmentOptions(s,id){const kind=officeKind(id,s);if(!kind)return [];const keys=Object.keys(OFFICES).filter(k=>OFFICES[k].kind===kind);if(kind!=='妃嫔'&&s.appointments[id]?.office)keys.push('dismiss');return keys.map(office=>{let reason='';try{validateAppointments(s,[{id,office}]);}catch(e){reason=e.message;}return {office,title:office==='dismiss'?'免去现职':OFFICES[office].title,reason};});}
 export function officeMonthly(s,risk=false){const changes={},notes=[];for(const [id,a]of Object.entries(s.appointments)){const o=OFFICES[a.office];if(!o||o.kind!=='官员')continue;const p=s.people[id];s.officeMonths[id]=(s.officeMonths[id]||0)+1;const add=(k,v)=>{changes[k]=(changes[k]||0)+v;};
+ if(['zhili','liangjiang','chuanshan','yungui','henan','zhejiang','shandong','huguang','guangdong'].includes(a.office))continue;
  if(o.effect==='treasury')add('treasury',Math.round((p.ability*p.loyalty/100*1.8-4)*100)/100);else add(o.effect,(p.ability>=7?1:0)+(p.loyalty>=70?1:-1));
  if(risk&&p.faction==='八爷党'&&s.officeMonths[id]>=3){add('court',-3);notes.push(PEOPLE[id].name+'的旧交又递来了请托，几道折子在朝堂上争了起来。');}}
  return {changes,notes};}
 // 调到地方的官员以书信往来；调回京职后，不再沿用旧外任地点。
-export const officePlace=(s,id)=>{const o=OFFICES[s.appointments?.[id]?.office];if(!o)return null;if(o.kind==='官员')return {zhili:'直隶',liangjiang:'江南',chuanshan:'西北',yungui:'云贵'}[s.appointments[id].office]||'京城';if(o.kind==='太监')return o.owner?PEOPLE[o.owner].place:'养心殿';return null;};
+export const officePlace=(s,id)=>{const o=OFFICES[s.appointments?.[id]?.office];if(!o)return null;if(o.kind==='官员')return {zhili:'直隶',liangjiang:'江南',chuanshan:'西北',yungui:'云贵',henan:'河南',zhejiang:'浙江',shandong:'山东',huguang:'湖广',guangdong:'广东'}[s.appointments[id].office]||'京城';if(o.kind==='太监')return o.owner?PEOPLE[o.owner].place:'养心殿';return null;};

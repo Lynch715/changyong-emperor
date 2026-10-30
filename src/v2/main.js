@@ -1,3 +1,4 @@
+import {authorOf} from './government.js';
 import {nightIdeas,REST_IDEAS,planAllowed,PLAN_NOTICE} from './plans.js';
 import {PORTRAIT_IDS,placeBackground,NIGHT_BG,portraitFile} from './art.js';
 import {audienceOf,confirmAge,setTenderness} from './audience.js';
@@ -91,7 +92,7 @@ function home(){
    ${later?`<div class="pc ghost"><b>还有 ${later} 人</b><span>会在往后的日子里出现</span></div>`:''}
   </section>
 
-  <h3 class="sec">要务</h3>
+  <h3 class="sec">局势 · <button data-act="go" data-to="provinces">地方 ›</button></h3><h3 class="sec">要务</h3>
   <section class="crises">${E.ALL_CRISES.filter(c=>c.vol===(s.vol||1)).map(c=>{const st=E.crisisStatus(s,c);if(st==='later')return '';const done=c.scenes.filter(id=>s.done[id]).length;return `<div class="crisis ${st}"><b>${c.name}</b><em>${{open:'进行中',solved:'已了结',failed:'没办好'}[st]}</em><p>${esc(c.desc)}</p><div class="bar"><i style="width:${done/c.scenes.length*100}%"></i></div><small>${done}/${c.scenes.length} 步${c.goal&&st==='open'&&GOAL_TEXT[c.id]?` · ${GOAL_TEXT[c.id](s.stats)}`:''} · 期限 ${YEAR_NAME(c.deadline[0])}年${MONTHS[c.deadline[1]-1]}</small></div>`;}).join('')||'<p class="muted">眼下还没有。</p>'}</section>
  </main>
  ${nav()}`;
@@ -166,6 +167,7 @@ const PRESET_EDICTS=[
  {title:'开恩科',text:'今岁加开恩科，广纳寒门之士。',effects:{court:4,treasury:-3,people:1},narration:'恩科的消息传出去，各省的读书人都动了起来。考场里坐满了人，有白发的老秀才，也有十几岁的少年。放榜那天，有一半的新科进士出身寒门。'},
  {title:'赦免轻罪',text:'京畿牢狱中，轻罪者一律释放回家。',effects:{people:4,court:-2},narration:'几百个犯人走出了牢门，有的人在门口就跪下磕头。刑部的几位老臣连上了三道折子，说这样下去法度要乱。百姓却都说，新皇上是个心软的。'}
 ];
+function provincesView(){return `${header()}<main><button data-act="go" data-to="home">‹ 返回御案</button><h2>地方</h2><p>十省等权汇入民心与朝局，财赋影响月度国库进账。数值是游戏抽象，江南、陕甘、云贵按督辖区合列。</p>${Object.entries(s.provinces).map(([name,p])=>`<article class="crisis"><h3>${esc(name)} · ${esc(authorOf(s,name)?nm(authorOf(s,name)):'地方衙门')}</h3><p>民生 ${p.livelihood} · 吏治 ${p.integrity} · 财赋 ${p.revenue}</p>${p.reports.map(t=>`<p class="small">${esc(t)}</p>`).join('')||'<p class="muted">尚无回报。</p>'}</article>`).join('')}</main>`;}
 function memorialView(){const r=s.reviewSession;return `${header()}<main><button data-act="go" data-to="home">‹ 合上折匣</button><h2>折匣 · ${s.memorials.length} 道</h2><p>本时辰还可批 ${r?.left||0} 道；留中也算一道。合上再开用一个时辰。</p>${view.feedback?paras(view.feedback):''}${s.memorials.map(m=>`<article class="crisis"><h3>${esc(m.title)}</h3><small>${esc(m.author)} · ${esc(m.province)} · ${esc(m.type)}</small>${paras(m.body)}<div class="options">${E.memorialOptions(m).map(([id,label])=>`<button data-act="memorial" data-id="${m.uid}" data-choice="${id}" ${!r?.left||r.held.includes(m.uid)?'disabled':''}>${esc(label)}${id==='approve'?' · 国库十八万两':''}</button>`).join('')}</div>${AI.aiMode()!=='off'&&r?.left&&!r.held.includes(m.uid)?`<form data-act="memorial-write" data-id="${m.uid}"><label>亲笔批<textarea name="t" maxlength="200" required></textarea></label><button ${busy?'disabled':''}>${busy?'候回报……':'朱批'}</button></form>`:''}</article>`).join('')}</main>`;}
 function edictView(){
  const r=view.result,ai=AI.aiMode()!=='off';
@@ -323,7 +325,7 @@ function celebration(){
  else if(c.k==='ach'){big=`${c.a.icon}`;small=`成就解锁 · ${c.a.title}<br><span>${esc(c.a.desc)}</span>`;cls='ach-pop';}
  return `<div class="cele ${cls}" data-act="cele">${img?`<img src="${img}" alt="">`:''}<div class="cele-box"><b>${big}</b><p>${small}</p><small>点一下继续</small></div></div>`;
 }
-const VIEWS={memorials:memorialView,rest:restView,outings:outingsView,nanfeng:nanfengView,rebirth:rebirthView,gallery:galleryView,replay:replayView,title:titleView,home,scene:sceneView,pick:()=>pickPerson(view.kind),chat:chatView,gift:giftView,edict:edictView,result:resultView,night:nightView,summary:summaryView,ending:endingView,people:peopleView,log:logView,settings:settingsView};
+const VIEWS={provinces:provincesView,memorials:memorialView,rest:restView,outings:outingsView,nanfeng:nanfengView,rebirth:rebirthView,gallery:galleryView,replay:replayView,title:titleView,home,scene:sceneView,pick:()=>pickPerson(view.kind),chat:chatView,gift:giftView,edict:edictView,result:resultView,night:nightView,summary:summaryView,ending:endingView,people:peopleView,log:logView,settings:settingsView};
 let lastVibration=null;
 function render(){if(!audienceOf().confirmed){app.innerHTML=ageView();return;}const c=s?.cele?.[0];if(c!==lastVibration){lastVibration=c;if(c&&['stage','lover'].includes(c.k)){try{globalThis.navigator?.vibrate?.(30);}catch{}}}app.innerHTML=(VIEWS[view.name]||home)()+(['home','summary','people','gallery','ending'].includes(view.name)&&!busy?celebration():'');const m=document.getElementById('msgs');if(m)m.scrollTop=m.scrollHeight;if(view.name==='chat'&&!busy)app.querySelector('.say input')?.focus();}
 function go(v){view=v;render();window.scrollTo(0,0);}

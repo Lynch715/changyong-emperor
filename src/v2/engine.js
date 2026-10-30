@@ -48,7 +48,7 @@ export function newGame(seed=Date.now()%2147483647){
 
 // ---------- 人物 ----------
 export const present=(s,id)=>!before(s,PEOPLE[id].from);
-export const away=(s,id)=>{if(s.freed?.[id]?.destination==='home')return true;const place=officePlace(s,id);if(place)return ['直隶','江南','西北','云贵'].includes(place);if(PEOPLE[id].public&&['云贵','河南','浙江','四川','北疆','西北'].includes(PEOPLE[id].place))return true;return !!s.flags?.['away_'+id]||(PEOPLE[id].away||[]).some(([y,m])=>y===s.year&&m===s.month);};
+export const away=(s,id)=>{if(s.freed?.[id]?.destination==='home')return true;const place=officePlace(s,id);if(place)return [...G.PROVINCE_NAMES,'西北'].includes(place);if(PEOPLE[id].public&&['云贵','河南','浙江','四川','北疆','西北'].includes(PEOPLE[id].place))return true;return !!s.flags?.['away_'+id]||(PEOPLE[id].away||[]).some(([y,m])=>y===s.year&&m===s.month);};
 export function placeOf(s,id){const office=officePlace(s,id);if(office)return office;if(s.inPalace?.[id]){const r=SUMMON_ROLES[s.inPalace[id].role];return r?.places?.[id]||r?.place||'宫中';}if(s.freed?.[id])return {home:'故乡',city:'京城宅院',palace:'宫中值房'}[s.freed[id].destination];if(id==='C03'&&s.year>=3)return s.flags?.nian_prison?'刑部大牢':s.flags?.nian_away?'杭州':'年府';return PEOPLE[id].place;}
 export const titleOf=(s,id)=>currentTitle(s,id);
 export const gone=(s,id)=>!!s.flags?.['gone_'+id];
@@ -90,6 +90,7 @@ export function startMonth(s){
  s.weather=WEATHER[SEASON(s.month)][Math.floor(rand(s)*3)];
  s.ap=AP_PER_MONTH;s.night=false;s.delta={stats:{},people:{}};s.chats=0;
  s.agenda=(ALL_AGENDA[monthKey(s)]||[]).filter(id=>!s.done[id]);s.bdayDone=[];
+ G.regionalMonth(s,{rand,applyStats,funds});
  // 年节：至少有两个人能陪时才过
  const fe=festivalOf(s.year,s.month);if(fe&&!s.done[festId(s.year,fe)]&&festivalPeople(s,true).length>=2)s.agenda.push(festId(s.year,fe));
  // 两三个月前的旨意，送回报来了
@@ -140,6 +141,8 @@ export const pendingScene=s=>s.agenda[0]||null;
 export function choose(s,id,optId){
  if(s.agenda[0]!==id)throw Error('先处理眼前这件事。');
  const sc=scene(id),opt=optionsFor(s,sc).find(o=>o.id===optId);if(!opt)throw Error('没有这个选项。');
+ if(sc.disaster&&optId==='relief'&&s.stats.treasury<25)throw Error('国库不足二十五万两。');
+ G.resolveDisaster(s,sc,optId,{applyStats,funds});
  const promotions=id==='K15'?rankChoice(optId):[];if(promotions.length)validateAppointments(s,promotions);
  let freedStats={};if(opt.redeem)freedStats=redeemPerformer(s,opt.redeem.id,opt.redeem.dest);
  let effects={...opt.effects};
@@ -326,8 +329,9 @@ export function endMonth(s){
  if(s.agenda.length)throw Error('本月还有要事没办。');
  const report={y:s.year,m:s.month,stats:{...s.delta.stats},people:{...s.delta.people}};
  G.backlog(s,applyStats);
+ const provincialIncome=G.regionalMonthly(s,{applyStats,funds});
  const beforeDuties={...s.delta.stats};const duties=officeMonthly(s,rand(s)<.25);const {treasury:extraSilver=0,...extraStats}=duties.changes;for(const text of duties.notes)log(s,text,'任');
- const tick={...applyStats(s,extraStats),...applyStats(s,s.year>=5?{health:-2,palace:-1}:s.year>=3?{health:-1,court:-1,people:-1}:{health:-1}),...funds(s,{treasury:ECONOMY.income[(s.vol||1)-1]+extraSilver,inner:ECONOMY.innerIncome})};for(const k of Object.keys(tick))tick[k]=silver((s.delta.stats[k]||0)-(beforeDuties[k]||0));report.income=tick;
+ const tick={...applyStats(s,extraStats),...applyStats(s,s.year>=5?{health:-2,palace:-1}:s.year>=3?{health:-1,court:-1,people:-1}:{health:-1}),...funds(s,{treasury:ECONOMY.income[(s.vol||1)-1]+extraSilver+provincialIncome,inner:ECONOMY.innerIncome})};for(const k of Object.keys(tick))tick[k]=silver((s.delta.stats[k]||0)-(beforeDuties[k]||0));report.income=tick;
  for(const[k,v]of Object.entries(tick))report.stats[k]=(report.stats[k]||0)+v;
  // 生辰那个月一次也没去的，情分掉 3
  report.forgot=[];for(const id of birthdays(s)){const p=s.people[id];if(birthdayDone(s,id)||p.aff<25)continue;p.aff=clamp(p.aff-3);report.people[id]=(report.people[id]||0)-3;remember(s,id,'生辰那个月，你没有来');log(s,`${PEOPLE[id].name}的生辰，你没有去`,'情');report.forgot.push(id);}
