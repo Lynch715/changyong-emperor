@@ -2,7 +2,7 @@ import {nightIdeas,REST_IDEAS,planAllowed,PLAN_NOTICE} from './plans.js';
 import {PORTRAIT_IDS,placeBackground,NIGHT_BG,portraitFile} from './art.js';
 import {audienceOf,confirmAge,setTenderness} from './audience.js';
 import {GROUPS} from './roster.js';
-import {PLACES,DESTINATIONS} from './outings.js';
+import {PLACES,DESTINATIONS,SUMMON_ROLES} from './outings.js';
 import {moneyText,treasuryIndex} from './economy.js';
 // 新版界面：一个状态对象 + 一个 render。点击用 data-act 分发。
 import * as E from './engine.js';
@@ -68,7 +68,8 @@ function guide(){
 function home(){
  const pending=E.pendingScene(s),sc=pending&&E.scene(pending);
  const acts=[['chat','召见'],['gift','赏赐'],['edict','下旨'],['review','批折'],['outing','微服'],['rest','休养']];
- const ppl=CORE.filter(id=>E.present(s,id)&&s.people[id].met);
+ // 身边的人开局就都摆出来；没见过的标“未见”，召入宫的人也在内
+ const ppl=[...CORE.filter(id=>E.present(s,id)&&!E.gone?.(s,id)),...Object.keys(s.inPalace||{})];
  const later=CORE.filter(id=>!E.present(s,id)||!s.people[id].met).length;
  return `${header()}
  <main class="home">
@@ -102,7 +103,7 @@ function personCard(id,act='person'){
  const dd=s.delta.people[id]||0;
  const badge=p.knot?'<em class="knot">心结</em>':E.hasStory(s,id)?'<em class="ready">有话想说</em>':E.birthdayOf(s,id)&&!E.birthdayDone(s,id)?'<em class="ready">生辰</em>':E.away(s,id)?'<em class="away">在外</em>':p.lover?`<em class="lover">${bondName(id)}</em>`:'';
  return `<button class="pc" data-act="${act}" data-id="${id}">${avatar(id)}
-  <div><b>${PEOPLE[id].name}${badge}</b><span>${st} · ${p.aff}${dd?`<i class="${dd>0?'up':'down'}">${dd>0?'+':''}${dd}</i>`:''}</span><div class="bar"><i style="width:${(p.aff-lo)/(hi-lo)*100}%"></i></div></div></button>`;
+  <div><b>${PEOPLE[id].name}${p.met?badge:'<em class="no">未见</em>'}</b><span>${st} · ${p.aff}${dd?`<i class="${dd>0?'up':'down'}">${dd>0?'+':''}${dd}</i>`:''}</span><div class="bar"><i style="width:${(p.aff-lo)/(hi-lo)*100}%"></i></div></div></button>`;
 }
 function nav(){return `<nav class="bottom"><button data-act="go" data-to="home" class="${view.name==='home'?'on':''}">本月</button><button data-act="go" data-to="people" class="${view.name==='people'?'on':''}">人物</button><button data-act="go" data-to="gallery" class="${['gallery','replay'].includes(view.name)?'on':''}">珍藏</button><button data-act="go" data-to="log" class="${view.name==='log'?'on':''}">起居注</button><button data-act="go" data-to="settings" class="${view.name==='settings'?'on':''}">设置</button></nav>`;}
 
@@ -179,7 +180,7 @@ function edictView(){
 }
 
 function outingsView(){return `${header()}<main><div class="bar-title"><button data-act="go" data-to="home">‹ 返回</button><b>微服去哪里？</b></div><p class="muted">选好去处才用时辰。这里的花费都走内帑。</p><section class="places">${Object.entries(PLACES).map(([id,p])=>`<button data-act="travel" data-id="${id}" ${!E.canAct(s)||s.stats.inner<p.cost?'disabled':''}><img class="place-thumb" src="${placeBackground(id,s.month,'thumb')}" loading="lazy" decoding="async" alt="${p.name}"><b>${p.name}</b><span>${p.desc}</span><small>内帑 ${moneyText(p.cost)}${s.stats.inner<p.cost?' · 内帑不足':''}</small><small>${p.hint}</small></button>`).join('')}</section></main>`;}
-function nanfengView(){return `${header()}<main class="nanfeng-hall" style="--place-bg:url('${abs(placeBackground('nanfeng-interior',s.month))}')"><h3 class="sec">南风馆 · 灯下</h3><p>今夜不问姓名，只听一曲，或下一局棋。</p><section class="places">${[['N02','听雨汐弹琵琶、唱曲'],['N01','和花妍下棋、说话'],['tea','只喝茶听曲']].filter(([id])=>!s.freed[id]).map(([id,label])=>`<button data-act="company" data-id="${id}">${label}</button>`).join('')}</section><p class="muted small">入馆的银子已付过。坐定后，这一回便结束。</p></main>`;}
+function nanfengView(){return `${header()}<main class="nanfeng-hall" style="--place-bg:url('${abs(placeBackground('nanfeng-interior',s.month))}')"><h3 class="sec">南风馆 · 灯下</h3><p>今夜不问姓名，只听一曲，或下一局棋。</p><section class="places">${[['N02','听雨汐弹琵琶、唱曲'],['N01','和花妍下棋、说话'],['tea','只喝茶听曲']].filter(([id])=>!s.freed[id]).map(([id,label])=>`<button data-act="company" data-id="${id}">${label}</button>`).join('')}${['N02','N01'].filter(id=>!s.freed[id]&&s.people[id].aff>=36&&!s.night).map(id=>`<button data-act="nanfeng-stay" data-id="${id}">留宿，今夜陪${nm(id)}（内帑 1 万两）</button>`).join('')}</section><p class="muted small">入馆的银子已付过。坐定后，这一回便结束。</p></main>`;}
 
 // ---------- 白天的小结果（微服、休养） ----------
 function resultView(){const r=view.result;return `<div class="stage" style="--bg:url('${abs(r.bg||BG.garden)}')">${r.id?`<img class="portrait" src="${portrait(r.id)}" alt="">`:''}<article class="paper"><h2>${esc(r.title)}</h2>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="done">好</button></article></div>`;}
@@ -189,10 +190,11 @@ const ideasHtml=(ideas,target)=>`<div class="plan-ideas">${ideas.map((t,i)=>`<bu
 function restView(){const ai=AI.aiMode()!=='off';return `${header()}<main class="plan-page"><div class="bar-title"><button data-act="go" data-to="home">‹ 返回</button><b>今天想怎么歇？</b></div>
  ${busy?'<p class="wait">窗外的风慢了下来……</p>':`${ai?`${ideasHtml(REST_IDEAS,'restPlan')}<label for="restPlan">今天想怎么歇？</label><textarea id="restPlan" maxlength="200" rows="5" placeholder="写下安排，最多200字">${esc(view.draft||'')}</textarea><label for="restCompanion">请谁作陪？</label><select id="restCompanion"><option value="">独自歇着</option>${E.restCompanions(s).map(id=>`<option value="${id}" ${view.companion===id?'selected':''}>${esc(nm(id))}</option>`).join('')}</select><p class="muted small">安排会先掷骰，一档不掷。最多花内帑3万两；若没有收到回话，就照常歇着。</p><button class="primary" data-act="rest-plan">就这样歇一日</button>`:'<p>把门关上，留一日给自己。</p>'}<button data-act="rest-default">照常歇着</button>`}</main>`;}
 function nightView(){
- if(view.result){const r=view.result;return `<div class="stage night" style="--bg:url('${abs(NIGHT_BG)}')">${r.id?avatar(r.id,'portrait'):''}<article class="paper"><h2>${r.id?E.placeOf(s,r.id)+' · 夜':'独寝'}</h2>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}${notesHtml(r)}<button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;}
- if(s.night&&!busy&&!s.agenda.length)return `<div class="stage night" style="--bg:url('${abs(NIGHT_BG)}')"><article class="paper"><h2>今夜已经过了</h2><p>天快亮了。</p><button class="primary" data-act="month-end">结束这个月 ›</button></article></div>`;
- const list=E.nightChoices(s),ai=AI.aiMode()!=='off',id=view.id;
- return `<div class="stage night" style="--bg:url('${abs(NIGHT_BG)}')"><div class="stage-top">${busy?'<span></span>':'<button data-act="go" data-to="home">‹ 再等等</button>'}<span>${dateText(s)} · 夜</span></div><article class="paper plan-page">
+ const NB=E.stayOf(s)?placeBackground('nanfeng-interior',s.month):NIGHT_BG;
+ if(view.result){const r=view.result;return `<div class="stage night" style="--bg:url('${abs(NB)}')">${r.id?avatar(r.id,'portrait'):''}<article class="paper"><h2>${r.id?E.placeOf(s,r.id)+' · 夜':'独寝'}</h2>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}${notesHtml(r)}<button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;}
+ if(s.night&&!busy&&!s.agenda.length)return `<div class="stage night" style="--bg:url('${abs(NB)}')"><article class="paper"><h2>今夜已经过了</h2><p>天快亮了。</p><button class="primary" data-act="month-end">结束这个月 ›</button></article></div>`;
+ const list=E.nightChoices(s),ai=AI.aiMode()!=='off',id=view.id||E.stayOf(s);
+ return `<div class="stage night" style="--bg:url('${abs(NB)}')"><div class="stage-top">${busy?'<span></span>':'<button data-act="go" data-to="home">‹ 再等等</button>'}<span>${dateText(s)} · 夜</span></div><article class="paper plan-page">
  <h2>${id?'今夜陪着'+nm(id):'今夜去哪里？'}</h2>
  ${busy?'<p class="muted center wait">灯一盏一盏亮起来……</p>':id?`${ai?`${ideasHtml(nightIdeas(id),'nightPlan')}<label for="nightPlan">今夜想和${esc(nm(id))}做些什么？</label><textarea id="nightPlan" maxlength="300" rows="5" placeholder="可以不写，最多300字">${esc(view.draft||'')}</textarea><p class="muted small">写下安排会先掷骰，一档不掷。留空就照往常过。</p>`:'<p>灯已经点上了，过去坐坐吧。</p>'}<button class="primary" data-act="night-go" data-id="${id}">过去看看</button><button data-act="night-select" data-id="">再选一处</button>`:`<section class="people">${list.map(x=>`<button class="pc" data-act="night-select" data-id="${x.id}">${avatar(x.id)}<div><b>${PEOPLE[x.id].name}${x.special?'<em class="ready">有话想说</em>':x.knot?'<em class="knot">心结</em>':''}</b><span>${E.placeOf(s,x.id)} · ${stageOf(s.people[x.id].aff)}</span></div></button>`).join('')}<button class="pc" data-act="night-go" data-id=""><div><b>独寝</b><span>一个人睡，圣躬 +3</span></div></button></section><p class="muted small">“有话想说”的人，今夜会有一段新剧情。</p>`}
  </article></div>`;
@@ -251,12 +253,13 @@ function peopleView(){
    ${E.hasStory(s,id)?`<p class="ready-line">有话想对你说。${E.away(s,id)?'会有书信来。':'今夜去看看。'}</p>`:st.first&&!st.second&&st.aff<45?'<p class="muted small">情分到「相知」后，会有新的剧情。</p>':st.second&&!st.third&&st.aff<65?'<p class="muted small">情分到「倾心」后，还有一段剧情。</p>':st.third&&!st.fourth&&s.year>=3&&st.aff<75?'<p class="muted small">情分到 75，还会有一段剧情。</p>':st.fourth&&!st.fifth&&s.year>=5&&st.aff<80?'<p class="muted small">情分到 80，还有最后一段剧情。</p>':''}
    ${(()=>{const rel=[...rivalsOf(id).map(x=>`<span class="rel bad">与${PEOPLE[x].name}不和</span>`),...friendsOf(id).map(x=>`<span class="rel good">与${PEOPLE[x].name}亲近</span>`)];return rel.length?`<p class="rels">${rel.join('')}</p>`:'';})()}
    ${BIRTH[id]||p.birth?`<p class="muted small">生辰：${MONTHS[(BIRTH[id]||p.birth)-1]}</p>`:''}<p class="muted small">喜欢：${known.length?known.map(g=>GIFTS[g].name).join('、'):'还不知道'}</p></div></div>
-  <div class="person-actions"><button data-act="chat-with" data-id="${id}" ${!E.canAct(s)||E.gone(s,id)?'disabled':''}>${E.away(s,id)?'写信':'召见'}</button>${E.appointmentOptions(s,id).length?`<button data-act="appoint-open" ${!E.canAct(s)||E.gone(s,id)?'disabled':''}>任命 / 调整位分</button>`:''}</div>
+  <div class="person-actions"><button data-act="chat-with" data-id="${id}" ${!E.canAct(s)||E.gone(s,id)?'disabled':''}>${E.away(s,id)?'写信':'召见'}</button>${E.summonRoles(s,id).length&&!s.inPalace?.[id]&&s.freed?.[id]?.destination!=='home'?`<button data-act="summon-open" ${!E.canAct(s)||E.summonReason(s,id)?'disabled':''} title="${esc(E.summonReason(s,id))}">召入宫</button>`:''}${E.appointmentOptions(s,id).length?`<button data-act="appoint-open" ${!E.canAct(s)||E.gone(s,id)?'disabled':''}>任命 / 调整位分</button>`:''}</div>
   <h3 class="sec">任命旧事</h3><ul class="mem">${(s.appointmentHistory[id]||[]).slice().reverse().map(a=>`<li><small>${YEAR_NAME(a.year)}年${MONTHS[a.month-1]}</small>${esc(a.from?a.from+' → '+a.to:a.to)}<br><small>${esc(a.source)}</small></li>`).join('')}</ul>
   <h3 class="sec">${p.name}记得的事</h3>
-  <ul class="mem">${st.memories.slice().reverse().map(m=>`<li><small>${YEAR_NAME(m.y)}年${MONTHS[m.m-1]}</small>${esc(m.text)}</li>`).join('')||'<li class="muted">还没有。</li>'}</ul>${view.appoint?appointmentDialog(id):''}</main>${nav()}`;}
+  <ul class="mem">${st.memories.slice().reverse().map(m=>`<li><small>${YEAR_NAME(m.y)}年${MONTHS[m.m-1]}</small>${esc(m.text)}</li>`).join('')||'<li class="muted">还没有。</li>'}</ul>${view.appoint?appointmentDialog(id):''}${view.summon?summonDialog(id):''}${E.summonRoles(s,id).length&&E.summonReason(s,id)&&!s.inPalace?.[id]?`<p class="muted small">召入宫：${esc(E.summonReason(s,id))}</p>`:''}</main>${nav()}`;}
  return `${header()}<main><h3 class="sec">人物</h3>${Object.entries(GROUPS).map(([name,categories])=>{const ids=CAST.filter(id=>categories.includes(PEOPLE[id].category)&&E.present(s,id)&&s.people[id].met);return `<details class="people-group" open><summary>${name} · ${ids.length}</summary><section class="people">${ids.map(id=>personCard(id)).join('')||'<p class="muted">还没有相识的人。</p>'}</section></details>`;}).join('')}</main>${nav()}`;
 }
+function summonDialog(id){return `<dialog class="appointment-modal" open aria-label="召${esc(nm(id))}入宫"><button data-act="summon-close">收起</button><h3>召${esc(nm(id))}入宫</h3><p class="muted small">${s.freed?.[id]?'已赎身，不再花赎金。':'先替其赎身，内帑 15 万两。'}用掉一个时辰。</p>${E.summonRoles(s,id).map(r=>`<button data-act="summon" data-id="${id}" data-role="${r.key}"><b>${esc(r.name)}</b><br><span class="small">${esc(r.desc)}</span></button>`).join('')}</dialog>`;}
 function appointmentDialog(id){return `<dialog class="appointment-modal" open aria-label="为${esc(nm(id))}安排职司"><button data-act="appoint-close">收起</button><h3>${esc(nm(id))} · 任命</h3><p>每次用一个时辰。满员时，先腾出空位。</p><div class="options">${E.appointmentOptions(s,id).map(o=>`<button data-act="appoint" data-id="${id}" data-office="${o.office}" ${o.reason?'disabled':''}>${o.title}${o.reason?`<small> · ${esc(o.reason)}</small>`:''}</button>`).join('')}</div></dialog>`;}
 function logView(){
  const items=s.log.slice().reverse();
@@ -355,6 +358,10 @@ const ACTS={
  },
  person:el=>go({name:'people',id:el.dataset.id}),
  'appoint-open':()=>{view.appoint=true;render();},
+ 'summon-open':()=>{view.summon=true;render();},
+ 'summon-close':()=>{view.summon=false;render();},
+ summon:el=>{try{const r=E.summonToPalace(s,el.dataset.id,el.dataset.role);save();go({name:'result',result:{...r,id:el.dataset.id,bg:BG.palace}});}catch(e){toast(e.message);}},
+ 'nanfeng-stay':el=>{try{const id=el.dataset.id,r=E.nanfengStay(s,id);save();go({name:'night',id});if(r.notes.length)toast(r.notes[0]);else if(r.risk&&!r.risk.free)toast(fateText(r.risk));}catch(e){toast(e.message);}},
  'appoint-close':()=>{view.appoint=false;render();},
  appoint:el=>{try{const r=E.appointPerson(s,el.dataset.id,el.dataset.office);save();go({name:'result',result:r});}catch(e){toast(e.message);}},
  chat:()=>go({name:'pick',kind:'chat'}),
@@ -388,7 +395,7 @@ const ACTS={
   withBusy(async()=>{const fate=E.rollFate(s,'rest',companion),v=await AI.restScene(s,plan,{companion,fate});const r=v?E.plannedRest(s,plan,{...v,companion,fate}):E.rest(s);view={name:'result',result:{...r,bg:BG.garden}};});},
  review:()=>{const r=E.review(s);save();go({name:'result',result:{...r,bg:BG.desk}});},
  done:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});afterAction();},
- night:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});if(s.agenda.length)return toast('先把要事办完。');if(s.night)return monthEnd();if(s.ap>0&&!confirm(`还有 ${s.ap} 个时辰没用。确定入夜吗？`))return;go({name:'night'});},
+ night:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});if(s.agenda.length)return toast('先把要事办完。');if(s.night)return monthEnd();if(E.stayOf(s))return go({name:'night',id:E.stayOf(s)});if(s.ap>0&&!confirm(`还有 ${s.ap} 个时辰没用。确定入夜吗？`))return;go({name:'night'});},
  'night-select':el=>go({name:'night',id:el.dataset.id||null}),
  'night-go':el=>{if(s.night&&!s.agenda.length)return monthEnd();const id=el.dataset.id||null,line=AI.aiMode()==='off'?'':(document.getElementById('nightPlan')?.value||'').trim();
   if(!planAllowed(line,id,s))return toast(PLAN_NOTICE);view.draft=line;

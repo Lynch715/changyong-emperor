@@ -1,7 +1,7 @@
 import {planAllowed,PLAN_NOTICE,restCost} from './plans.js';
 import {OFFICES,currentTitle,initAppointments,validateAppointments,recordAppointment,officeMonthly,appointmentOptions,officePlace} from './appointments.js';
 export {appointmentOptions} from './appointments.js';
-import {PLACES,NANFENG_FIRST,MINOR_STORIES,DESTINATIONS} from './outings.js';
+import {PLACES,NANFENG_FIRST,MINOR_STORIES,DESTINATIONS,SUMMON_ROLES} from './outings.js';
 import {silver,treasuryIndex,initEconomy,emptyLedger,funds} from './economy.js';
 export {treasuryIndex} from './economy.js';
 // 新版引擎：一月一回合。月初处理要事，白天三个行动，夜里留一人，月末结算。
@@ -48,7 +48,7 @@ export function newGame(seed=Date.now()%2147483647){
 // ---------- 人物 ----------
 export const present=(s,id)=>!before(s,PEOPLE[id].from);
 export const away=(s,id)=>{if(s.freed?.[id]?.destination==='home')return true;const place=officePlace(s,id);if(place)return ['直隶','江南','西北','云贵'].includes(place);if(PEOPLE[id].public&&['云贵','河南','浙江','四川','北疆','西北'].includes(PEOPLE[id].place))return true;return !!s.flags?.['away_'+id]||(PEOPLE[id].away||[]).some(([y,m])=>y===s.year&&m===s.month);};
-export function placeOf(s,id){const office=officePlace(s,id);if(office)return office;if(s.freed?.[id])return {home:'故乡',city:'京城宅院',palace:'宫中值房'}[s.freed[id].destination];if(id==='C03'&&s.year>=3)return s.flags?.nian_prison?'刑部大牢':s.flags?.nian_away?'杭州':'年府';return PEOPLE[id].place;}
+export function placeOf(s,id){const office=officePlace(s,id);if(office)return office;if(s.inPalace?.[id])return SUMMON_ROLES[s.inPalace[id].role]?.place||'宫中';if(s.freed?.[id])return {home:'故乡',city:'京城宅院',palace:'宫中值房'}[s.freed[id].destination];if(id==='C03'&&s.year>=3)return s.flags?.nian_prison?'刑部大牢':s.flags?.nian_away?'杭州':'年府';return PEOPLE[id].place;}
 export const titleOf=(s,id)=>currentTitle(s,id);
 export const gone=(s,id)=>!!s.flags?.['gone_'+id];
 export const affectionStage=(s,id)=>{const n=s.people[id].aff;return PEOPLE[id].secondary?(n>=85?'深信':n>=65?'亲近':n>=45?'信任':n>=25?'相识':'生疏'):stageOf(n);};
@@ -237,6 +237,21 @@ export function nanfengCompany(s,choice){const v=s.nanfeng.visit;if(!v||v.done)t
 function queuePerformerStory(s,id){const done=s.secondaryDone[id]||0;if(done>=3||s.agenda.includes('NF'+id+'-'+done)||s.people[id].aff<[24,36,48][done]||s.freed[id])return;const [title,body]=MINOR_STORIES[id][done],sid='NF'+id+'-'+done;
  const options=done<2?[{id:'listen',label:'让对方慢慢说',effects:{},reply:'你没有催。那盏茶凉了，又换了一盏。',bond:{[id]:3}}]:[...Object.entries(DESTINATIONS).map(([dest,label])=>({id:dest,label:label+'（内帑 15 万两）',redeem:{id,dest},effects:{},reply:dest==='palace'?'内务府递了几道折子，说宫门有宫门的规矩。你只准其在外值房做差，出入登记，不能留宿内廷。':dest==='home'?'你备了盘缠和路引。临走那日，车前的人跪下谢恩，许久才肯起身。':'京城的小院收拾好了。窗下摆了一张桌，从此教棋教曲，也能安稳度日。'})),{id:'wait',label:'先留些银子，往后再想办法',effects:{},reply:'你让人先照应着。那人俯身谢恩，没有再催。'}];setDyn(s,sid,{title,body,actor:id,kind:'secondary',options});s.agenda.push(sid);
 }
+// ---------- 召宫外人入宫 ----------
+export const summonRoles=(s,id)=>Object.entries(SUMMON_ROLES).filter(([,r])=>r.who.includes(id)).map(([k,r])=>({key:k,...r}));
+export function summonReason(s,id){if(!['N01','N02'].includes(id))return '这个人不能召入宫。';const p=s.people[id];if(!p?.met)return '还没见过。';if(s.inPalace?.[id])return '已经在宫里了。';if(s.freed?.[id]?.destination==='home')return '已经回了故乡。';if(p.aff<48)return '情分还不够（要 48）。';if(!s.freed?.[id]&&s.stats.inner<15)return '要先赎身，内帑不足 15 万两。';return '';}
+export function summonToPalace(s,id,role){const r=SUMMON_ROLES[role];if(!r||!r.who.includes(id))throw Error('这个身份不合适。');const why=summonReason(s,id);if(why)throw Error(why);spend(s);
+ let stats={};if(!s.freed?.[id])stats=funds(s,{inner:-15});s.freed=s.freed||{};s.freed[id]={destination:'palace',at:monthKey(s)};s.inPalace=s.inPalace||{};s.inPalace[id]={role,at:monthKey(s)};
+ Object.assign(stats,applyStats(s,r.effects));const d=gain(s,id,role==='consort'?10:6);recordAppointment(s,id,role==='consort'?'rank0':null,r.name,'召入宫');remember(s,id,'被皇上召入宫中，做了'+r.name);
+ const people={[id]:d};if(role==='consort')for(const cid of ['C06','C07','C08','C09','C10']){const p=s.people[cid];if(p?.met&&p.aff>=40&&present(s,cid)){const x=gain(s,cid,-2);if(x)people[cid]=x;}}
+ log(s,`召${PEOPLE[id].name}入宫，做了${r.name}`,'情');count(s,'summons');
+ const text={study:`${PEOPLE[id].name}换了宫里的衣裳，第一回跟在你身后进养心殿，脚步放得很轻。张廷玉看了一眼，什么也没说；第二天，言官的折子就递上来了。`,qi:'懋勤殿收拾出一间小屋，摆了一副新棋。花妍在棋盘前跪下谢恩，抬头时，眼里有光。',music:'雨汐抱着那把旧琵琶进了南府。教习们起初不肯认她，听完一曲，都不说话了。',consort:'景阳宫打扫出来，雨汐被册为答应。宗人府递了几道折子，后宫里有人整整三天没出门。她来谢恩时跪得很低，说这辈子没想过还能有个家。'}[role];
+ return {title:'召入宫中',text,stats,people};}
+export function nanfengStay(s,id){const v=s.nanfeng?.visit;if(!v||v.done)throw Error('今天没在馆里。');if(!['N01','N02'].includes(id)||s.freed?.[id])throw Error('今夜留不了。');if(s.agenda.length)throw Error('先把本月要事办完。');if(s.night)throw Error('今夜已经安排过了。');if(s.people[id].aff<36)throw Error('还没熟到能留宿的地步（情分要 36）。');if(s.stats.inner<1)throw Error('内帑不足。');
+ v.done=true;s.ap=0;const stats=funds(s,{inner:-1});s.nanfeng.stay={id,at:monthKey(s)};const risk=rollFate(s,'outing'),people={},notes=[];
+ if(!risk.free&&risk.tier===0){Object.assign(stats,applyStats(s,{court:-3,palace:-3}));for(const cid of ['C06','C07','C08','C09','C10']){const p=s.people[cid];if(p?.met&&p.aff>=40){const x=gain(s,cid,-2);if(x)people[cid]=x;}}notes.push('天没亮，宫里就传开了：皇上昨夜没有回宫。御史已经在拟折子。');}
+ else if(!risk.free&&risk.tier===1){Object.assign(stats,applyStats(s,{court:-2}));notes.push('回宫时，神武门的侍卫多看了你一眼。');}
+ log(s,'在南风馆留宿，陪着'+PEOPLE[id].name,'夜');return {stats,people,notes,risk};}
 export function redeemPerformer(s,id,dest){if(!['N01','N02'].includes(id)||!DESTINATIONS[dest]||s.freed[id]||!s.people[id]?.met||s.people[id].aff<48||(s.secondaryDone[id]||0)<2)throw Error('不能这样安置。');if(s.stats.inner<15)throw Error('内帑不足。');const stats=funds(s,{inner:-15});s.freed[id]={destination:dest,at:monthKey(s)};remember(s,id,'皇上为其赎身，'+DESTINATIONS[dest]);gain(s,id,10);if(dest==='palace')Object.assign(stats,applyStats(s,{court:-2,palace:-2}));log(s,'为'+PEOPLE[id].name+'赎身，'+DESTINATIONS[dest],'情');return stats;}
 // 拨银与下旨一样占一个时辰，两边的银子不会凭空增减。
 export function transferFunds(s,direction,amount){
@@ -267,7 +282,9 @@ export function plannedRest(s,plan,{text='',health=8,inner,memory='',companion=n
 }
 
 // ---------- 夜 ----------
-export function nightChoices(s){return CORE.filter(id=>present(s,id)&&!away(s,id)&&s.people[id].met).map(id=>({id,special:storyOf(s,id),knot:!!s.people[id].knot}));}
+export const stayOf=s=>s.nanfeng?.stay?.at===monthKey(s)?s.nanfeng.stay.id:null;
+// 召入宫的人也能夜里去看；在南风馆留宿的那一夜只陪那一位
+export function nightChoices(s){const stay=stayOf(s);if(stay)return [{id:stay,special:null,knot:!!s.people[stay].knot}];return [...CORE,...Object.keys(s.inPalace||{})].filter(id=>present(s,id)&&!away(s,id)&&s.people[id].met).map(id=>({id,special:storyOf(s,id),knot:!!s.people[id].knot}));}
 export function spendNight(s,id,{affection=4,health=0,memory='',fate=null}={}){
  if(id&&!nightChoices(s).some(p=>p.id===id))throw Error('今夜去不了这里。');
  if(s.nanfeng?.visit&&!s.nanfeng.visit.done)throw Error('先把馆里的茶喝完。');if(s.night)throw Error('今夜已经安排过了。');if(s.agenda.length)throw Error('先把本月要事办完。');s.night=true;

@@ -15,6 +15,14 @@ export const PERFORMERS={
  N01:{name:'花妍',title:'南风馆棋师',category:'伶人',age:28,birth:4,secondary:true,start:12,from:[1,1],place:'南风馆',voice:'成年男子，二十八岁，南风馆男花魁。沉静细心，擅弈棋。未识来客身份时客气周到；猜到是皇帝后自称草民，称皇上，守礼低头，所求先告罪。不轻佻，不挑逗。',likes:['book','music'],dislikes:['wine'],ability:7,loyalty:50,faction:'中立',desc:'以棋待客，想攒够银子离开这条巷子。'},
  N02:{name:'雨汐',title:'南风馆乐师',category:'伶人',age:26,birth:9,secondary:true,start:12,from:[1,1],place:'南风馆',voice:'成年女子，二十六岁，南风馆女花魁。温和稳重，擅琵琶，不轻佻。不识身份时称客官，待客恭敬；猜到是皇帝后自称民女，称皇上，有心事也先垂目告罪。只写听曲与身世，点到为止。',likes:['music','flowers'],dislikes:['wine'],ability:8,loyalty:50,faction:'中立',desc:'琵琶声里藏着乡音，许多年没有回过家。'}
 };
+// 召入宫中的身份。妃嫔只给女子，合乎清制；男子做伴读或棋待诏。
+export const SUMMON_ROLES={
+ study:{name:'养心殿伴读',place:'养心殿',who:['N01','N02'],effects:{court:-2,palace:-1},desc:'随侍读书、对弈，出入御前。言官会议论。'},
+ qi:{name:'懋勤殿棋待诏',place:'懋勤殿',who:['N01'],effects:{court:-1},desc:'以棋艺供奉内廷，不领实职。'},
+ music:{name:'南府供奉',place:'南府',who:['N02'],effects:{court:-1},desc:'入南府教习曲艺，逢年节入内承应。'},
+ consort:{name:'答应',place:'景阳宫',who:['N02'],effects:{court:-3,palace:-3},desc:'册为答应，入住景阳宫。出身风月，宗室与后宫都会侧目。'}
+};
+export const STAY_IDEAS={N01:['再下一局，输的人要讲一件旧事','听他说说这条巷子外的事'],N02:['请她再弹那支故乡的曲','灯下听她说说家里的事']};
 export const DESTINATIONS={home:'放其归乡',city:'安置京城宅院',palace:'入宫当差'};
 export const MINOR_STORIES={
  N01:[['棋盘背面','花妍翻过棋盘，背面刻着一个小小的家字。他低声说，幼时父亲教他下棋，第一课却是落子之后不能悔。说到这里，他收住话，恭敬地给你添了茶。'],['门外的轿子','门外停了一顶贵客的轿子。花妍的手在袖中握紧，仍俯身请安。那人走后，他只说，往后若不能来陪棋，请客官多保重。'],['回家的盘缠','花妍跪了下来：“草民斗胆，想求一条离开这里的路。”棋子在他身旁摊着，他却一颗也没有看。']],

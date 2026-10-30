@@ -15,15 +15,15 @@ export function initAppointments(s){s.appointments=s.appointments||{};s.appointm
   s.appointmentHistory[id]=s.appointmentHistory[id]||[{year:s.year,month:s.month,from:'',to:s.appointments[id].title,source:'原有职司'}];
  }return s;}
 export const currentTitle=(s,id)=>s.appointments?.[id]?.title||originalTitle(s,id);
-export const officeKind=id=>PEOPLE[id]?.category==='妃嫔'?'妃嫔':PEOPLE[id]?.category==='太监'?'太监':['文官','武官','宗室'].includes(PEOPLE[id]?.category)&&id!=='C21'?'官员':null;
+export const officeKind=(id,s)=>s?.inPalace?.[id]?.role==='consort'||PEOPLE[id]?.category==='妃嫔'?'妃嫔':PEOPLE[id]?.category==='太监'?'太监':['文官','武官','宗室'].includes(PEOPLE[id]?.category)&&id!=='C21'?'官员':null;
 export function appointmentList(value){if(value==null)return [];const list=Array.isArray(value)?value:[value];if(list.length>3||!list.every(v=>v&&typeof v==='object'&&typeof v.id==='string'&&typeof v.office==='string'))throw Error('任命没有写清楚。');return list;}
 export function validateAppointments(s,value){const list=appointmentList(value),next=structuredClone(s.appointments),seen=new Set();for(const {id,office}of list){if(!PEOPLE[id]||seen.has(id))throw Error('同一个人不能重复任命。');seen.add(id);const p=PEOPLE[id];if(!s.people[id]||s.flags?.['gone_'+id]||p.from[0]>s.year||(p.from[0]===s.year&&p.from[1]>s.month)||s.freed?.[id]?.destination==='home')throw Error('眼下不能任用这个人。');
- if(office==='dismiss'){if(officeKind(id)==='妃嫔'||!next[id]?.office)throw Error('不能这样免职。');next[id]={office:null,title:'候旨'};continue;}
- const o=OFFICES[office];if(!o||o.kind!==officeKind(id))throw Error('此人不能担任这个职位。');if(office==='council'&&s.done.W08!=='council')throw Error('值房还没有设。');if(next[id]?.office===office)throw Error('已经在这个职位上。');next[id]={office,title:o.title};
+ if(office==='dismiss'){if(officeKind(id,s)==='妃嫔'||!next[id]?.office)throw Error('不能这样免职。');next[id]={office:null,title:'候旨'};continue;}
+ const o=OFFICES[office];if(!o||o.kind!==officeKind(id,s))throw Error('此人不能担任这个职位。');if(office==='council'&&s.done.W08!=='council')throw Error('值房还没有设。');if(next[id]?.office===office)throw Error('已经在这个职位上。');next[id]={office,title:o.title};
  }
  for(const [key,o]of Object.entries(OFFICES))if(Object.values(next).filter(v=>v.office===key).length>o.cap)throw Error(o.title+'已满，先腾出空位。');return list;}
 export function recordAppointment(s,id,office,title,source='任命'){const prev=currentTitle(s,id);s.appointments[id]={office,title,since:(s.year-1)*12+s.month};s.officeMonths[id]=0;s.appointmentHistory[id].push({year:s.year,month:s.month,from:prev,to:title,source});}
-export function appointmentOptions(s,id){const kind=officeKind(id);if(!kind)return [];const keys=Object.keys(OFFICES).filter(k=>OFFICES[k].kind===kind);if(kind!=='妃嫔'&&s.appointments[id]?.office)keys.push('dismiss');return keys.map(office=>{let reason='';try{validateAppointments(s,[{id,office}]);}catch(e){reason=e.message;}return {office,title:office==='dismiss'?'免去现职':OFFICES[office].title,reason};});}
+export function appointmentOptions(s,id){const kind=officeKind(id,s);if(!kind)return [];const keys=Object.keys(OFFICES).filter(k=>OFFICES[k].kind===kind);if(kind!=='妃嫔'&&s.appointments[id]?.office)keys.push('dismiss');return keys.map(office=>{let reason='';try{validateAppointments(s,[{id,office}]);}catch(e){reason=e.message;}return {office,title:office==='dismiss'?'免去现职':OFFICES[office].title,reason};});}
 export function officeMonthly(s,risk=false){const changes={},notes=[];for(const [id,a]of Object.entries(s.appointments)){const o=OFFICES[a.office];if(!o||o.kind!=='官员')continue;const p=s.people[id];s.officeMonths[id]=(s.officeMonths[id]||0)+1;const add=(k,v)=>{changes[k]=(changes[k]||0)+v;};
  if(o.effect==='treasury')add('treasury',Math.round((p.ability*p.loyalty/100*1.8-4)*100)/100);else add(o.effect,(p.ability>=7?1:0)+(p.loyalty>=70?1:-1));
  if(risk&&p.faction==='八爷党'&&s.officeMonths[id]>=3){add('court',-3);notes.push(PEOPLE[id].name+'的旧交又递来了请托，几道折子在朝堂上争了起来。');}}
