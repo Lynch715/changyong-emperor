@@ -255,7 +255,7 @@ export const restCompanions=s=>Object.keys(s.people).filter(id=>present(s,id)&&!
 const finite=(n,fallback)=>Number.isFinite(Number(n))?Number(n):fallback;
 export function plannedRest(s,plan,{text='',health=8,inner,memory='',companion=null,fate=null}={}){
  plan=String(plan||'').trim().slice(0,200);if(!plan)return rest(s);
- if(!planAllowed(plan,companion))throw Error(PLAN_NOTICE);
+ if(!planAllowed(plan,companion,s))throw Error(PLAN_NOTICE);
  if(companion&&!restCompanions(s).includes(companion))throw Error('这会儿请不到这个人。');
  const cost=Math.round(Math.max(0,Math.min(3,finite(inner,restCost(plan))))*100)/100;
  if(s.stats.inner<cost)throw Error('内帑不够，换个省些银子的安排吧。');

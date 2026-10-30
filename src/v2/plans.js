@@ -1,8 +1,11 @@
-import {KIN} from './audience.js';
-// 安排只用于日常照顾与含蓄相处；先检查，再调用模型或花费资源。
-export function planAllowed(text,id){
- if(/(?:性爱|性交|交媾|做爱|裸露|脱光|强迫|胁迫|下药|迷药|性暴力|趁醉|未成年|幼女|幼男|色情|露骨|生殖器)/i.test(text))return false;
- return !(KIN.has(id)&&/(?:亲吻|接吻|拥吻|恋爱|情欲|侍寝)/.test(text));
+import {KIN,explicitAllowed} from './audience.js';
+// 先检查，再调用模型或花费资源。强迫、药物、未成年任何时候都不行；亲密的安排只在成人描写打开、对方在名单内时可以。
+const NEVER=/(?:强迫|胁迫|逼迫|强要|下药|迷药|迷奸|性暴力|趁醉|灌醉|未成年|幼女|幼男|幼童|孩童|女童|男童|萝莉|正太)/i;
+const SEXUAL=/(?:性爱|性交|交媾|做爱|裸露|裸身|脱光|宽衣|色情|露骨|生殖器|云雨|欢好|行房|侍寝|情欲)/i;
+export function planAllowed(text,id,s=null,storage){
+ if(NEVER.test(text))return false;
+ if(KIN.has(id)&&(SEXUAL.test(text)||/(?:亲吻|接吻|拥吻|恋爱)/.test(text)))return false;
+ return !SEXUAL.test(text)||explicitAllowed(s,id,storage);
 }
 export const PLAN_NOTICE='这个安排不能照做，可以换成喝茶、读书或休息。';
 export const REST_IDEAS=['泡一回温泉，早些歇下','去御花园钓鱼','睡到日上三竿','听一出喜欢的戏','临几页帖，喝一盏茶'];

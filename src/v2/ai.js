@@ -53,7 +53,7 @@ async function ask(system,user,maxTokens=900){
 }
 
 const WORLD=`你在为清宫文字游戏《重生长雍帝王赋》写作。玩家扮演雍正皇帝：他在病榻上死去，又醒在雍正元年正月，记得前世的一切——年羹尧被赐死、年世兰撞墙、苏培盛守了他一辈子却没被好好看见、后宫里许多人的不得善终。这一世，他想把能挽回的都挽回。
-文风：白话、克制、有画面，像好的小说，不要堆砌辞藻，不要现代网络用语。人物说话符合身份与性格。不写露骨的性内容。亲密情节只限明确成年、非亲属、双方自由自愿。拒绝、迟疑或不适都应受到尊重，权势和赏赐不能代替同意。未成年、亲属之间、胁迫、药物影响或无法清醒表达意愿时，不写亲密行为，转为日常照顾。一档自由度也不改变这些边界。
+文风：白话、克制、有画面，像好的小说，不要堆砌辞藻，不要现代网络用语。人物说话符合身份与性格。只有后文另有说明放开时，才直白描写亲密；否则不写露骨的性内容。亲密情节只限明确成年、非亲属、双方自由自愿。拒绝、迟疑或不适都应受到尊重，权势和赏赐不能代替同意。未成年、亲属之间、胁迫、药物影响或无法清醒表达意愿时，不写亲密行为，转为日常照顾。一档自由度也不改变这些边界。
 君臣礼法（必须遵守）：玩家是皇帝。妃嫔、太监、太医、大臣、亲王，在皇帝面前都守着尊卑。心里不情愿、委屈、生气时，用婉拒、推辞、告罪、沉默、低头不语、红了眼眶、找个由头告退来表达；大臣不赞同时跪下进谏，先说“臣斗胆”“请皇上三思”，语气恭顺。绝不当面斥责、讥讽、顶撞、命令或教训皇帝，不用“你”直呼皇帝，不反问逼问皇帝。即便是恋人、兄弟，也只是撒娇、使一点小性子、说句俏皮话，点到为止，礼数不失。只有醉后、重病、生死关头才偶尔失态，事后要惶恐请罪。`;
 export const statLine=s=>`国库${s.stats.treasury}万两（充盈度${treasuryIndex(s)}/100），内帑${s.stats.inner}万两，`+STATS.filter(x=>!['inner','treasury'].includes(x.id)).map(x=>`${x.name}${s.stats[x.id]}/100`).join('，');
 export const dateLine=s=>`雍正${YEAR_NAME(s.year)}年${MONTHS[s.month-1]}。今日${weatherOf(s)}`+(s.appointments?.C03?.office?'（年羹尧现任'+titleOf(s,'C03')+'）':s.flags?.nian_prison?'（年羹尧已被削爵下狱）':s.flags?.nian_away?'（年羹尧已被降为杭州将军）':s.flags?.nian_safe?'（年羹尧交出兵权，留京任职）':'')+((s.month&&birthdays(s).length)?`。本月是${birthdays(s).map(id=>PEOPLE[id].name).join('、')}的生辰`:'');
@@ -126,7 +126,7 @@ ${fate?'5. '+fateGuide(fate,'edict')+'\n':''}只输出 JSON：{"title":"...","na
 
 // 夜里的一段
 export async function nightScene(s,id,line='',fate=null){
- if(!planAllowed(line,id))return null;
+ if(!planAllowed(line,id,s))return null;
  const p=PEOPLE[id];
  const system=`${WORLD}
 今夜皇上去了${placeOf(s,id)}，陪着${p.name}。
@@ -142,7 +142,7 @@ health：圣躬变化，-2到3，通宵劳累会伤身，早睡或泡汤可以�
 
 // 休养安排。生成失败时只返回 null，由界面沿用普通休养。
 export async function restScene(s,plan,{companion=null,fate=null}={}){
- plan=String(plan||'').trim().slice(0,200);if(!plan||!planAllowed(plan,companion))return null;
+ plan=String(plan||'').trim().slice(0,200);if(!plan||!planAllowed(plan,companion,s))return null;
  const tier=fate?.free?4:fate?.tier;
  const outcome=tier===0?'大凶：没有歇成，因雨或急报打断。圣躬只恢复4点。':tier===1?'凶：歇得不踏实，圣躬恢复6点。':tier===4?'大吉：歇得舒坦，圣躬恢复10点。':'照常理推演，圣躬恢复4到10点。';
  const system=`${WORLD}

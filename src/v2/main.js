@@ -264,7 +264,7 @@ function logView(){
 function settingsView(){
  const m=AI.aiMode();
  return `${header()}<main class="settings"><h3 class="sec">设置</h3>
-  <div class="card"><b>亲密氛围</b><label class="audience-toggle"><input type="checkbox" data-pref="tenderness" ${audienceOf().tenderness?'checked':''}> 写得温柔些</label><p>只写成年非亲属之间、自愿而含蓄的亲近。关掉后，AI 回到平日的叙事。人物始终可以婉拒，各档自由度都一样。</p></div>
+  <div class="card"><b>成人描写</b><label class="audience-toggle"><input type="checkbox" data-pref="tenderness" ${audienceOf().tenderness?'checked':''}> 直白描写亲密场景</label><p>夜里、休养作陪、与恋人私下召见时，AI 可以直白描写两人的亲密。仅限后宫、恋人与南风馆两位，宗室、太后、大臣不在内；人物始终可以婉拒。需要你用的 AI 服务允许这类内容，否则会自动退回固定文字。关掉后回到含蓄写法。</p></div>
   <div class="card"><b>AI 对话</b><p>不同服务的写法会有差别；若没有收到可用的回话，就用固定文字继续。</p><p>${m==='server'?'已连接本机的 AI 服务。':m==='byok'?'正在使用你填写的 API。':'未开启。召见只能挑话题，旨意只能选拟好的。'}</p>
   ${AI.aiError()?`<p class="muted small">上次出错：${esc(AI.aiError())}</p>`:''}
   <button data-act="ai-toggle">${m==='off'?'尝试开启 AI':'关闭 AI，改用固定文字'}</button></div>
@@ -390,7 +390,7 @@ const ACTS={
  night:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});if(s.agenda.length)return toast('先把要事办完。');if(s.ap>0&&!confirm(`还有 ${s.ap} 个时辰没用。确定入夜吗？`))return;go({name:'night'});},
  'night-select':el=>go({name:'night',id:el.dataset.id||null}),
  'night-go':el=>{const id=el.dataset.id||null,line=AI.aiMode()==='off'?'':(document.getElementById('nightPlan')?.value||'').trim();
-  if(!planAllowed(line,id))return toast(PLAN_NOTICE);view.draft=line;
+  if(!planAllowed(line,id,s))return toast(PLAN_NOTICE);view.draft=line;
   if(id&&!line&&E.hasStory(s,id)){const sid=E.queueSpecial(s,id);save();return go({name:'scene',id:sid});}
   withBusy(async()=>{let v=null,fate=null;if(id&&AI.aiMode()!=='off'){if(line)fate=E.rollFate(s,'night',id);v=await AI.nightScene(s,id,line,fate);}
    const lines=id?NIGHT_LINES[id]:null,bad=fate&&!fate.free&&fate.tier<=1;const text=id?(v?.text||(bad?'对方告了罪，你让人添了热茶。灯下坐了一会儿，便各自歇下。':lines[(s.month+s.year)%lines.length])):'你让人都退下，一个人睡了。难得一夜无梦。';

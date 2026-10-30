@@ -27,7 +27,7 @@ const GUIDE_PERSON=[
  n=>`这次掷骰为凶：${n}心里不太情愿，面上恭顺，话却说得含糊，委婉地推开，流露出一点理由。affection 不超过 1。`,
  n=>`这次掷骰为平：${n}如常反应。`,
  n=>`这次掷骰为吉：${n}愿意接住皇上的话，只带一点自己的小脾气或小条件。`,
- n=>`这次掷骰大吉：尽量接住皇上的合理安排，${n}仍按自己的意愿回应，保持身份、亲属边界与含蓄尺度。affection 不低于 2。`
+ n=>`这次掷骰大吉：尽量接住皇上的合理安排，${n}仍按自己的意愿回应，保持身份与亲属边界。affection 不低于 2。`
 ];
 export const fateGuide=(fate,kind,name='')=>!fate?'':kind==='edict'?GUIDE_EDICT[fate.tier]:GUIDE_PERSON[fate.tier](name);
 // 引擎兜底：按骰面收紧正面收益
