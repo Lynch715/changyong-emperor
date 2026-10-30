@@ -1,6 +1,7 @@
 // AI 层：对话、旨意、夜话。AI 负责写和判断，引擎负责限幅。连不上时返回 null，界面改用固定文字。
 import {callModel} from './model.js';
 import {placeOf,titleOf} from './engine.js';
+import {rivalsOf} from './social.js';
 import {readConnectionSettings,connectionSettings,storeConnectionSettings} from '../ai-connection-settings.js';
 import {DEFAULT_AI} from '../ai-provider.js';
 import {PEOPLE,STATS,MONTHS,stageOf,NAMES,YEAR_NAME} from './data.js';
@@ -59,7 +60,7 @@ function personBlock(s,id){
  const p=PEOPLE[id],st=s.people[id];
  const mem=st.memories.slice(-8).map(m=>`· ${m.text}`).join('\n')||'（还没有）';
  return `【${p.name}】${titleOf(s,id)}。${p.voice}
-与皇上的情分：${st.aff}/100（${stageOf(st.aff)}）。${relation(id,st)}${st.knot?`心里有个结：皇上在「${st.knot.text}」这件事上没有站在${p.name}这边，还没说开。`:''}
+与皇上的情分：${st.aff}/100（${stageOf(st.aff)}）。${relation(id,st)}${s.lastNight&&rivalsOf(id).includes(s.lastNight)?`皇上最近夜里去了${PEOPLE[s.lastNight].name}那里，你心里有点不是滋味（可以若有若无地带出来，别太刻薄）。`:''}${st.knot?`心里有个结：皇上在「${st.knot.text}」这件事上没有站在${p.name}这边，还没说开。`:''}
 ${p.name}记得的事：\n${mem}`;
 }
 const clampInt=(v,a,b)=>Math.max(a,Math.min(b,Math.round(Number(v)||0)));
@@ -134,3 +135,23 @@ export async function sceneEcho(s,id,sceneTitle,choice,replyText){
  const v=await ask(system,'请写。');return str(v?.reply,200)||null;
 }
 export {NAMES};
+
+// 旨意的回报：几个月后，这道旨意落地的情形，并给出接下来的选择
+export async function edictFollow(s,e){
+ const ago=Math.max(1,(s.year-1)*12+s.month-e.at);
+ const system=`${WORLD}
+${ago}个月前，皇上下了一道旨意。现在要写这道旨意的“回报”：它落地以后，发生了什么新情况，需要皇上再拿主意。
+旨意原文：${e.text}
+当时的结果：${e.narration}
+当前：${dateLine(s)}。局势：${statLine(s)}（每项 0 到 100）。
+要求：
+1. title：不超过10字，有画面感（例如“粥厂前的石碑”“米仓里的老鼠”）。
+2. body：150到250字，第二人称“你”。写一件具体的新事：可能是好结果带来的意外（百姓立碑、有人效仿），也可能是执行走样（官员借机贪墨、地方阳奉阴违），也可能是新的麻烦。要有具体的人物、对话和细节，读起来像小说，不要写成公文。
+3. options：2到3个选择，每个有 label（不超过16字，口语化）、effects（五项局势的影响，整数，每项 -6 到 6，不涉及的填 0）、reply（选了之后发生什么，60到120字）。选择之间要有真实的取舍，不要有一个明显最好的。
+只输出 JSON：{"title":"...","body":"...","options":[{"label":"...","effects":{"treasury":0,"people":0,"court":0,"palace":0,"health":0},"reply":"..."}]}`;
+ const v=await ask(system,'请写这道旨意的回报。');if(!v)return null;
+ const title=str(v.title,14),body=str(v.body,600);if(!title||!body||!Array.isArray(v.options))return null;
+ const options=v.options.slice(0,3).map((o,i)=>{const effects={};for(const x of STATS)effects[x.id]=clampInt(o?.effects?.[x.id],-6,6);return {id:'abc'[i],label:str(o?.label,24),effects,reply:str(o?.reply,300)};}).filter(o=>o.label&&o.reply);
+ if(options.length<2)return null;
+ return {title,body,options,actor:'C28',location:'养心殿'};
+}

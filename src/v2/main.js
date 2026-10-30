@@ -5,6 +5,7 @@ import * as AI from './ai.js';
 import {LOVER_ENDING} from './romance.js';
 import {ENDING_KINGDOM2,ENDING2} from './vol2.js';
 import {ACHIEVEMENTS,loadGallery,updateGallery} from './gallery.js';
+import {rivalsOf,friendsOf} from './social.js';
 const bondName=id=>id==='C05'?'知己':'两情相悦';
 
 const app=document.getElementById('app');
@@ -28,6 +29,7 @@ function chips(stats={},people={},extra=''){
  for(const[k,v]of Object.entries(people||{}))if(v)a.push(`<span class="chip heart ${v>0?'up':'down'}">${nm(k)} 情分 ${v>0?'+':''}${v}</span>`);
  return a.length||extra?`<div class="chips">${a.join('')}${extra}</div>`:'';
 }
+const notesHtml=r=>r?.notes?.length?`<div class="notes"><small>宫里传来的话</small>${r.notes.map(n=>`<p>${esc(n)}</p>`).join('')}</div>`:'';
 function toast(text){const t=document.getElementById('toast');t.textContent=text;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2200);}
 
 // ---------- 顶栏 ----------
@@ -97,6 +99,7 @@ function nav(){return `<nav class="bottom"><button data-act="go" data-to="home" 
 
 // ---------- 场景 ----------
 function sceneView(){
+ if(view.loading)return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><article class="paper"><h2>回报送到了</h2><p class="muted wait">张廷玉正把各地的折子一份份摞在案上……</p></article></div>`;
  const sc=E.scene(view.id);if(!sc)return home();
  const place=sc.location||sc.place||'';
  const r=view.result;
@@ -141,7 +144,7 @@ function chatView(){
 
 function giftView(){
  const id=view.id,p=PEOPLE[id],known=s.known?.[id]&&!Array.isArray(s.known[id])?s.known[id]:{};
- if(view.result){const r=view.result;return `<div class="stage" style="--bg:url('${abs(bgFor(E.placeOf(s,id)))}')"><img class="portrait" src="${portrait(id)}" alt=""><article class="paper"><h2>赏${p.name}</h2><div class="choice">${esc(GIFTS[r.gift].name)}${r.liked&&!r.repeat?' · 正合心意':r.repeat?' · 送过了':''}</div>${paras(r.text)}${chips(r.stats,r.people,r.knot?'<span class="chip knot">心结未解，情分没有涨</span>':'')}<button class="primary" data-act="done">好</button></article></div>`;}
+ if(view.result){const r=view.result;return `<div class="stage" style="--bg:url('${abs(bgFor(E.placeOf(s,id)))}')"><img class="portrait" src="${portrait(id)}" alt=""><article class="paper"><h2>赏${p.name}</h2><div class="choice">${esc(GIFTS[r.gift].name)}${r.liked&&!r.repeat?' · 正合心意':r.repeat?' · 送过了':''}</div>${paras(r.text)}${chips(r.stats,r.people,r.knot?'<span class="chip knot">心结未解，情分没有涨</span>':'')}${notesHtml(r)}<button class="primary" data-act="done">好</button></article></div>`;}
  return `${header()}<main class="pick"><div class="bar-title"><button data-act="gift">‹ 换人</button><b>赏${p.name}什么？</b></div>
  <section class="gifts">${Object.entries(GIFTS).map(([g,x])=>`<button data-act="give" data-g="${g}" ${s.stats.treasury<x.cost?'disabled':''}><b>${x.name}${known[g]===true?' <em>♥</em>':known[g]===false?' <em class="no">送过</em>':''}</b><span>${x.cost?'国库 −'+x.cost:'不花钱'}</span></button>`).join('')}</section>
  <p class="muted center">送过一次，就知道${p.name}喜不喜欢了（♥）。</p></main>`;
@@ -170,7 +173,7 @@ function resultView(){const r=view.result;return `<div class="stage" style="--bg
 
 // ---------- 夜 ----------
 function nightView(){
- if(view.result){const r=view.result;return `<div class="stage night" style="--bg:url('${abs(BG.palace)}')">${r.id?`<img class="portrait" src="${portrait(r.id)}" alt="">`:''}<article class="paper"><h2>${r.id?E.placeOf(s,r.id)+' · 夜':'独寝'}</h2>${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;}
+ if(view.result){const r=view.result;return `<div class="stage night" style="--bg:url('${abs(BG.palace)}')">${r.id?`<img class="portrait" src="${portrait(r.id)}" alt="">`:''}<article class="paper"><h2>${r.id?E.placeOf(s,r.id)+' · 夜':'独寝'}</h2>${paras(r.text)}${chips(r.stats,r.people)}${notesHtml(r)}<button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;}
  const list=E.nightChoices(s),ai=AI.aiMode()!=='off';
  return `<div class="stage night" style="--bg:url('${abs(BG.palace)}')"><div class="stage-top"><button data-act="go" data-to="home">‹ 再等等</button><span>${dateText(s)} · 夜</span></div><article class="paper">
   <h2>今夜去哪里？</h2>
@@ -220,6 +223,7 @@ function peopleView(){
    ${st.knot?`<p class="knot-line">心结：${esc(st.knot.text)}。召见时说开它。</p>`:''}
    ${st.lover?`<p class="ready-line">${bondName(id)}</p>`:''}
    ${E.hasStory(s,id)?`<p class="ready-line">有话想对你说。${E.away(s,id)?'会有书信来。':'今夜去看看。'}</p>`:st.first&&!st.second&&st.aff<45?'<p class="muted small">情分到「相知」后，会有新的剧情。</p>':st.second&&!st.third&&st.aff<65?'<p class="muted small">情分到「倾心」后，还有一段剧情。</p>':st.third&&!st.fourth&&s.year>=3&&st.aff<75?'<p class="muted small">情分到 75，还会有一段剧情。</p>':''}
+   ${(()=>{const rel=[...rivalsOf(id).map(x=>`<span class="rel bad">与${PEOPLE[x].name}不和</span>`),...friendsOf(id).map(x=>`<span class="rel good">与${PEOPLE[x].name}亲近</span>`)];return rel.length?`<p class="rels">${rel.join('')}</p>`:'';})()}
    <p class="muted small">喜欢：${known.length?known.map(g=>GIFTS[g].name).join('、'):'还不知道'}</p></div></div>
   <h3 class="sec">${p.name}记得的事</h3>
   <ul class="mem">${st.memories.slice().reverse().map(m=>`<li><small>${YEAR_NAME(m.y)}年${MONTHS[m.m-1]}</small>${esc(m.text)}</li>`).join('')||'<li class="muted">还没有。</li>'}</ul></main>${nav()}`;}
@@ -299,14 +303,14 @@ const ACTS={
  new:()=>{s=E.newGame();save();go({name:'home'});},
  'new-confirm':()=>{if(confirm('重新开始会覆盖现在的存档。确定吗？')){s=E.newGame();save();go({name:'home'});}},
  continue:()=>{s=E.load();go({name:s?.ended?'ending':'home'});},
- scene:()=>go({name:'scene',id:E.pendingScene(s)}),
+ scene:()=>openScene(E.pendingScene(s)),
  pick:async el=>{
   const id=view.id,r=E.choose(s,id,el.dataset.opt);save();view.result=r;
   if(r.actor&&PEOPLE[r.actor]&&AI.aiMode()!=='off'){r.echoWait=true;render();const echo=await AI.sceneEcho(s,r.actor,r.title,r.choice,r.text);r.echoWait=false;if(echo){r.echo=echo;}}
   render();
  },
  'scene-next':()=>{
-  if(s.agenda.length)return go({name:'scene',id:E.pendingScene(s)});
+  if(s.agenda.length)return openScene(E.pendingScene(s));
   if(s.night)return monthEnd();
   go({name:'home'});
  },
@@ -321,7 +325,7 @@ const ACTS={
   if(t.stat&&!c.statDone){E.applyStats(s,t.stat);c.statDone=true;}
   c.msgs.push({who:'npc',text,d,mood:reply?.mood});}),
  repair:()=>withBusy(async()=>{const c=view.chat,knot=s.people[c.id].knot;c.msgs.push({who:'player',text:`说起「${knot.text}」那件事`});const line=E.repairKnot(s,c);c.msgs.push({who:'npc',text:line,d:3});toast('心结解开了');}),
- 'chat-end':()=>{const c=view.chat;if(c&&c.gained)E.log(s,`召见${PEOPLE[c.id].name}，说了${c.turns}句话`,'见');else if(c)E.log(s,`召见${PEOPLE[c.id].name}`,'见');save();go({name:'home'});},
+ 'chat-end':()=>{const c=view.chat;if(c&&c.gained)E.log(s,`召见${PEOPLE[c.id].name}，说了${c.turns}句话`,'见');else if(c)E.log(s,`召见${PEOPLE[c.id].name}`,'见');save();afterAction();},
  'gift-to':el=>go({name:'gift',id:el.dataset.id}),
  give:el=>withBusy(async()=>{const id=view.id,g=el.dataset.g,r=E.giveGift(s,id,g);learn(id,g,r.liked);
   let text=null;if(AI.aiMode()!=='off')text=await AI.giftReply(s,id,GIFTS[g].name,r.liked);
@@ -334,7 +338,7 @@ const ACTS={
  cele:()=>{s.cele.shift();E.save(s);render();},
  replay:el=>go({name:'replay',id:el.dataset.id}),
  rest:()=>{const r=E.rest(s);save();go({name:'result',result:{...r,bg:BG.desk}});},
- done:()=>go({name:'home'}),
+ done:()=>afterAction(),
  night:()=>{if(s.agenda.length)return toast('先把要事办完。');if(s.ap>0&&!confirm(`还有 ${s.ap} 个时辰没用。确定入夜吗？`))return;go({name:'night'});},
  'night-go':el=>{const id=el.dataset.id||null;const line=(document.getElementById('nightLine')?.value||'').trim();
   if(id&&E.hasStory(s,id)){const sid=E.queueSpecial(s,id);save();return go({name:'scene',id:sid});}
@@ -346,6 +350,17 @@ const ACTS={
  ending:()=>go({name:'ending'}),
  'ai-toggle':async()=>{if(AI.aiMode()==='off'){AI.setAIOff(false);const m=await AI.initAI();toast(m==='off'?'没有找到可用的 AI 服务。':'AI 已开启');}else{AI.setAIOff(true);await AI.initAI();toast('已改用固定文字');}render();}
 };
+// 打开一件要事；旨意的回报先请 AI 写出来
+async function openScene(id){
+ if(id?.startsWith('FU')&&!s.dyn?.[id]&&AI.aiMode()!=='off'){
+  view={name:'scene',id,loading:true};render();
+  const e=(s.edicts||[]).find(x=>'FU'+x.n===id);const v=e?await AI.edictFollow(s,e):null;
+  if(v){E.setDyn(s,id,v);save();}
+ }
+ go({name:'scene',id});
+}
+// 做完一件事回首页前，有时会撞见点小事
+function afterAction(){const sid=E.rollSurprise(s);if(sid){save();toast('路上遇见了点事……');return go({name:'scene',id:sid});}go({name:'home'});}
 function monthEnd(){const report=E.endMonth(s);save();go({name:'summary',report});}
 function opener(id,letter){
  const p=s.people[id],n=PEOPLE[id].name;

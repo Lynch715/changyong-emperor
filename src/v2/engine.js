@@ -5,6 +5,7 @@ import {ROMANCE} from './romance.js';
 import {MORE_PETITIONS,SMALL_EVENTS} from './events.js';
 import {SCENES2,AGENDA2,CRISES2,REPAIR2} from './vol2.js';
 import {VISITS} from './visits.js';
+import {SURPRISES,rivalsOf,friendsOf,JEALOUS,FRIEND_LINES} from './social.js';
 const POOL=[...PETITIONS,...MORE_PETITIONS,...SMALL_EVENTS];
 export const thirdOf=id=>'L'+id.slice(1);
 export const fourthOf=id=>'Y'+id.slice(1);
@@ -26,7 +27,7 @@ export function rand(s){s.seed=(s.seed*1103515245+12345)%2147483648;return s.see
 export function newGame(seed=Date.now()%2147483647){
  const s={version:1,vol:1,flags:{},seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
  for(const id of CORE)s.people[id]={aff:PEOPLE[id].start,met:false,knot:null,first:false,second:false,third:false,lover:false,firstAt:null,secondAt:null,memories:[]};
- startMonth(s);return s;
+ bind(s);startMonth(s);return s;
 }
 
 // ---------- 人物 ----------
@@ -68,6 +69,8 @@ export function log(s,text,kind='事'){s.log.push({y:s.year,m:s.month,kind,text}
 export function startMonth(s){
  s.ap=AP_PER_MONTH;s.night=false;s.delta={stats:{},people:{}};s.chats=0;
  s.agenda=(ALL_AGENDA[monthKey(s)]||[]).filter(id=>!s.done[id]);
+ // 两三个月前的旨意，送回报来了
+ for(const e of s.edicts||[])if(e.due===idx(s.year,s.month)&&!s.done['FU'+e.n])s.agenda.push('FU'+e.n);
  // 人在外地的，第二、三幕以书信的形式在月初到来
  for(const id of CORE)if(away(s,id)&&!gone(s,id)){if(secondReady(s,id,true))s.agenda.push(PEOPLE[id].second);else if(thirdReady(s,id,true))s.agenda.push(thirdOf(id));}
  // 要事少的月份，抽一件奏折或宫闱小事
@@ -82,7 +85,23 @@ export function startMonth(s){
 export function visitOf(s){if(!s.visit)return null;const v=VISITS[s.visit.id][s.visit.tier][s.visit.i];return {id:s.visit.id,...v};}
 // 来访：不占时辰，迎进来就有好处
 export function acceptVisit(s){const v=visitOf(s);if(!v)throw Error('没有人来。');s.visit=null;s.visitedAt=s.visitedAt||{};s.visitedAt[v.id]=idx(s.year,s.month);const stats=applyStats(s,v.effects||{}),d=gain(s,v.id,3);remember(s,v.id,v.memory||'');log(s,`${PEOPLE[v.id].name}来了：${v.title}`,'情');count(s,'visits');return {title:v.title,text:v.text,stats,people:d?{[v.id]:d}:{},id:v.id};}
-export const scene=id=>SCENES[id]||ROMANCE[id]||SCENES2[id]||POOL.find(p=>p.id===id);
+// 动态场景（旨意的回报）挂在存档上；bind 让 scene() 能找到当前存档
+let CUR=null;export function bind(s){CUR=s;return s;}
+function followFallback(s,id){const e=(s?.edicts||[]).find(x=>'FU'+x.n===id);if(!e)return null;const ago=Math.max(1,idx(s.year,s.month)-e.at);const neg=Object.values(e.effects||{}).some(v=>v<0);
+ return {id,title:`「${e.title}」的回音`,kind:'edictfollow',actor:'C28',location:'养心殿',body:`${ago}个月前，你下了一道旨意：${e.text}\n\n如今，各地的回报陆续送到了。张廷玉把它们摞在案上，${neg?'说好的有，说难的也有。':'大多是好消息。'}\n\n“皇上，”他问，“这件事，往后怎么办？”`,
+  options:[{id:'a',label:'嘉奖经办的官员，接着办',effects:{court:2,treasury:-2},reply:'经办的官员得了赏，干劲更足了。这道旨意，算是真正落了地。'},{id:'b',label:'派人下去看看实情',effects:{people:2,health:-1},reply:'派去的人跑了一个月，回来说：旨意确实落了地，只是有几处被下面的人打了折扣。你让他们一一改了。'},{id:'c',label:'不必再过问',effects:{},reply:'你没有再过问。这件事，就这样过去了。'}]};}
+export const scene=id=>SCENES[id]||ROMANCE[id]||SCENES2[id]||POOL.find(p=>p.id===id)||SURPRISES.find(p=>p.id===id)||(id?.startsWith('FU')?(CUR?.dyn?.[id]||followFallback(CUR,id)):null);
+export function setDyn(s,id,sc){s.dyn=s.dyn||{};s.dyn[id]={...sc,id,kind:'edictfollow'};}
+// 白天做完事，有时会撞见一件小事
+export function rollSurprise(s){if(s.agenda.length||s.ended||rand(s)>=0.28)return null;s.used.surprises=s.used.surprises||[];
+ const ok=x=>!s.used.surprises.includes(x.id)&&[].concat(x.need||[]).every(n=>s.people[n]?.met&&present(s,n)&&!away(s,n));
+ const left=SURPRISES.filter(ok);if(!left.length)return null;const x=left[Math.floor(rand(s)*left.length)];s.used.surprises.push(x.id);s.agenda.unshift(x.id);return x.id;}
+// 偏心的后果：不和的人吃醋，亲近的人跟着高兴
+function social(s,id,heavy){const out={},notes=[];if(!id)return {people:out,notes};
+ for(const r of rivalsOf(id)){const p=s.people[r];if(!p?.met||!present(s,r)||p.aff<25)continue;const n=heavy?-3:-1;const d=gain(s,r,n);if(d){out[r]=d;if(JEALOUS[r]?.[id])notes.push(JEALOUS[r][id]);}}
+ for(const f of friendsOf(id)){const p=s.people[f];if(!p?.met||!present(s,f)||p.knot)continue;const d=gain(s,f,1);if(d){out[f]=d;if(FRIEND_LINES[f]?.[id])notes.push(FRIEND_LINES[f][id]);}}
+ return {people:out,notes:notes.length?[notes[Math.floor(rand(s)*notes.length)]]:[]};}
+
 export const optionsFor=(s,sc)=>sc.options.filter(o=>!o.need||s.flags?.[o.need]);
 export const pendingScene=s=>s.agenda[0]||null;
 
@@ -127,7 +146,8 @@ export function repairKnot(s,chat){const p=s.people[chat.id];if(!p.knot)return n
 export function giveGift(s,id,giftId){
  const g=GIFTS[giftId];if(!g)throw Error('没有这件东西。');if(s.stats.treasury<g.cost)throw Error('国库不够了。');
  spend(s);const stats=applyStats(s,{treasury:-g.cost});const liked=PEOPLE[id].likes.includes(giftId);s.gifted=s.gifted||{};const k=id+':'+giftId,times=s.gifted[k]||0;s.gifted[k]=times+1;const d=gain(s,id,times?1:liked?6:2);s.people[id].met=true;
- log(s,`赏${PEOPLE[id].name}${g.name}`,'赏');return {liked,repeat:times>0,stats,people:d?{[id]:d}:{},knot:!!s.people[id].knot};
+ const so=g.cost>=5?social(s,id,false):{people:{},notes:[]};
+ log(s,`赏${PEOPLE[id].name}${g.name}`,'赏');return {liked,repeat:times>0,stats,people:{...(d?{[id]:d}:{}),...so.people},notes:so.notes,knot:!!s.people[id].knot};
 }
 // 旨意的后果由 AI 判断，这里只限幅
 export function applyEdict(s,text,{effects={},affection={},narration='',title=''}={}){
@@ -135,7 +155,8 @@ export function applyEdict(s,text,{effects={},affection={},narration='',title=''
  const total=Object.values(bounded).reduce((a,b)=>a+Math.max(0,b),0);if(total>12)for(const k in bounded)if(bounded[k]>0)bounded[k]=Math.round(bounded[k]*12/total);
  const stats=applyStats(s,bounded),people={};
  for(const[cid,v]of Object.entries(affection||{}))if(PEOPLE[cid]&&present(s,cid)){const d=gain(s,cid,Math.max(-5,Math.min(5,Math.round(Number(v)||0))));if(d)people[cid]=d;}
- log(s,`下旨：${title||text.slice(0,24)}`,'旨');count(s,'edicts');return {stats,people,text:narration};
+ log(s,`下旨：${title||text.slice(0,24)}`,'旨');count(s,'edicts');
+ s.edicts=s.edicts||[];const n=s.edicts.length+1;s.edicts.push({n,text:text.slice(0,120),title:title||text.slice(0,8),narration:String(narration).slice(0,400),effects:bounded,at:idx(s.year,s.month),due:idx(s.year,s.month)+2+Math.floor(rand(s)*2)});return {stats,people,text:narration};
 }
 export function goOuting(s){spend(s);const left=OUTINGS.map((o,i)=>i).filter(i=>!s.used.outings.includes(i));const pool=left.length?left:OUTINGS.map((o,i)=>i);const i=pool[Math.floor(rand(s)*pool.length)];s.used.outings.push(i);const o=OUTINGS[i];const stats=applyStats(s,o.effects);log(s,`微服：${o.title}`,'行');return {title:o.title,text:o.text+(o.note?'\n\n'+o.note:''),stats,people:{}};}
 export function rest(s){spend(s);const stats=applyStats(s,{health:8});log(s,'闭门休养了一日','行');return {title:'休养',text:'你推开折子，让苏培盛把门关上。睡了一个整觉，醒来时窗外的光正好。',stats,people:{}};}
@@ -145,7 +166,8 @@ export function nightChoices(s){return CORE.filter(id=>present(s,id)&&!away(s,id
 export function spendNight(s,id,{affection=4,memory=''}={}){
  if(s.night)throw Error('今夜已经安排过了。');if(s.agenda.length)throw Error('先把本月要事办完。');s.night=true;
  if(!id){const stats=applyStats(s,{health:3});log(s,'独寝','夜');return {stats,people:{}};}
- const d=gain(s,id,Math.max(0,Math.min(4,Math.round(affection))));remember(s,id,memory);log(s,`夜里在${placeOf(s,id)}，陪着${PEOPLE[id].name}`,'夜');return {stats:{},people:d?{[id]:d}:{}};
+ const d=gain(s,id,Math.max(0,Math.min(4,Math.round(affection))));remember(s,id,memory);
+ const heavy=s.lastNight===id;s.lastNight=id;const so=social(s,id,heavy);log(s,`夜里在${placeOf(s,id)}，陪着${PEOPLE[id].name}`,'夜');return {stats:{},people:{...(d?{[id]:d}:{}),...so.people},notes:so.notes};
 }
 // 夜里遇到第二幕剧情时，作为要事插入
 export function queueSpecial(s,id){if(s.night)throw Error('今夜已经安排过了。');const sid=storyOf(s,id);if(!sid)throw Error('今夜没有新的剧情。');s.night=true;s.agenda.unshift(sid);return sid;}
@@ -182,4 +204,4 @@ export function ending(s){
 }
 
 export function save(s,storage=globalThis.localStorage){try{storage.setItem(SAVE_KEY,JSON.stringify(s));return true;}catch{return false;}}
-export function load(storage=globalThis.localStorage){try{const s=JSON.parse(storage.getItem(SAVE_KEY)||'null');return s?.version===1?s:null;}catch{return null;}}
+export function load(storage=globalThis.localStorage){try{const s=JSON.parse(storage.getItem(SAVE_KEY)||'null');return s?.version===1?bind(s):null;}catch{return null;}}

@@ -83,3 +83,16 @@ test('来访与成就', ()=>{
  const fresh=updateGallery(s,mem);assert.ok(fresh.some(a=>a.id==='visit'));assert.equal(updateGallery(s,mem).length,0);
  for(const a of ACHIEVEMENTS)assert.doesNotThrow(()=>a.check(E.newGame(1)));
 });
+import {SURPRISES} from '../src/v2/social.js';
+test('吃醋、小惊喜、旨意回报', ()=>{
+ const s=E.newGame(4);s.agenda=[];s.year=1;s.month=11;
+ for(const id of ['C06','C07','C09','C10'])Object.assign(s.people[id],{met:true,aff:40});
+ const r=E.spendNight(s,'C07');assert.ok(r.people.C06<0,'皇后吃醋');assert.ok(r.people.C09<0);
+ for(const x of SURPRISES)for(const o of x.options)for(const k of Object.keys(o.effects||{}))assert.ok(STATS.some(t=>t.id===k),x.id+k);
+ const s2=E.newGame(8);s2.agenda=[];s2.people.C02.met=true;let got=null;for(let i=0;i<40&&!got;i++){got=E.rollSurprise(s2);}assert.ok(got);assert.equal(s2.agenda[0],got);const sc=E.scene(got);E.choose(s2,got,sc.options[0].id);
+ const s3=E.newGame(2);s3.agenda=[];E.applyEdict(s3,'在京城设粥厂',{effects:{people:4,treasury:-3},title:'设粥厂',narration:'粥厂开了'});
+ for(let i=0;i<4;i++){s3.agenda=[];s3.night=false;E.spendNight(s3,null);E.endMonth(s3);if(s3.agenda.includes('FU1'))break;}
+ assert.ok(s3.agenda.includes('FU1'),'旨意回报到了');const f=E.scene('FU1');assert.ok(f&&f.options.length>=2);
+ while(s3.agenda.length){const x=E.scene(s3.agenda[0]);E.choose(s3,x.id,x.options[0].id);}
+ E.setDyn(s3,'FU9',{title:'t',body:'b',options:[{id:'a',label:'l',effects:{people:1},reply:'r'}]});assert.equal(E.scene('FU9').title,'t');
+});

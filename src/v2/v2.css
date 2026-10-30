@@ -252,3 +252,9 @@ em.lover{background:#f2c4cf;color:#7a2440}
 .replays em{font-style:normal;font-size:11px;padding:0 6px;border-radius:6px;background:#40566a}
 .replays b{font-size:15px}.replays span{font-size:12px;color:#9fb0b8}
 .bottom button{font-size:14px}
+.notes{margin:12px 0 4px;padding:10px 14px;border-radius:6px;background:rgba(42,37,31,.06);border-left:3px solid #9a8a70}
+.notes small{display:block;font-size:12px;color:var(--ink-soft);margin-bottom:2px}
+.notes p{font-size:15px!important;line-height:1.8!important;margin:0!important;color:var(--ink-soft);font-style:italic}
+.rels{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0!important}
+.rel{font-size:12px;padding:1px 8px;border-radius:8px}
+.rel.bad{background:rgba(176,57,42,.25);color:#f0a597}.rel.good{background:rgba(63,125,107,.3);color:#9fe0c8}
