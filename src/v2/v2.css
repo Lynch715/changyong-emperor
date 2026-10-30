@@ -258,3 +258,18 @@ em.lover{background:#f2c4cf;color:#7a2440}
 .rels{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0!important}
 .rel{font-size:12px;padding:1px 8px;border-radius:8px}
 .rel.bad{background:rgba(176,57,42,.25);color:#f0a597}.rel.good{background:rgba(63,125,107,.3);color:#9fe0c8}
+
+/* 手机上的长句要能换行，手指点按也留足地方。 */
+button{min-height:44px;white-space:normal;overflow-wrap:anywhere}
+input,textarea{min-width:0}
+.agenda div,.visit div,.pc div,.person-hero>div{min-width:0}
+.paper,.card,.msg,.bar-title,.person-hero,.cele-box{overflow-wrap:anywhere}
+.stages,.date,.stage-top{flex-wrap:wrap}
+.settings a,.how summary{min-height:44px;align-content:center}
+@media(max-width:520px){
+ .gifts,.replays,.achs{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .person-hero{align-items:flex-start}
+ .person-hero img{width:95px;height:150px}
+ .stages{flex-wrap:wrap}
+ .cele-box{min-width:0;width:100%}
+}

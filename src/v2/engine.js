@@ -12,7 +12,7 @@ export const fourthOf=id=>'Y'+id.slice(1);
 const ALL_AGENDA={...AGENDA,...AGENDA2};
 export const ALL_CRISES=[...CRISES.map(c=>({vol:1,...c})),...CRISES2];
 const ALL_REPAIR={...REPAIR,...REPAIR2};
-import {PEOPLE,CORE,START_STATS,STAT_MAP,STATS,AGENDA,CRISES,GIFTS,OUTINGS,PETITIONS,stageOf} from './data.js';
+import {PEOPLE,CORE,START_STATS,STAT_MAP,STATS,AGENDA,CRISES,GIFTS,OUTINGS,PETITIONS,stageOf,SEASON} from './data.js';
 
 // 用改写稿覆盖原稿的正文与选项文字
 const SCENES=Object.fromEntries(Object.entries(RAW).map(([id,sc])=>{const w=REWRITE[id];if(!w)return [id,sc];return [id,{...sc,title:w.title||sc.title,body:w.body||sc.body,dep:w.dep,options:sc.options.map(o=>({...o,...(w.options?.[o.id]||{})}))}];}));
@@ -23,6 +23,9 @@ const idx=(y,m)=>(y-1)*12+m;
 const before=(s,[y,m])=>idx(s.year,s.month)<idx(y,m);
 export const monthKey=s=>s.year+'-'+s.month;
 export function rand(s){s.seed=(s.seed*1103515245+12345)%2147483648;return s.seed/2147483648;}
+
+export const WEATHER={春:['晴','雨','风'],夏:['晴','雨','闷热'],秋:['晴','雨','风'],冬:['晴','雪','风']};
+export const weatherOf=s=>WEATHER[SEASON(s.month)].includes(s.weather)?s.weather:WEATHER[SEASON(s.month)][0];
 
 export function newGame(seed=Date.now()%2147483647){
  const s={version:1,vol:1,flags:{},seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
@@ -67,6 +70,7 @@ export function log(s,text,kind='事'){s.log.push({y:s.year,m:s.month,kind,text}
 
 // ---------- 月 ----------
 export function startMonth(s){
+ s.weather=WEATHER[SEASON(s.month)][Math.floor(rand(s)*3)];
  s.ap=AP_PER_MONTH;s.night=false;s.delta={stats:{},people:{}};s.chats=0;
  s.agenda=(ALL_AGENDA[monthKey(s)]||[]).filter(id=>!s.done[id]);
  // 两三个月前的旨意，送回报来了
@@ -133,21 +137,26 @@ export function choose(s,id,optId){
 function spend(s){if(s.agenda.length)throw Error('先把本月要事办完。');if(s.ap<=0)throw Error('今日的时辰已经用完了。');s.ap--;}
 export function canAct(s){return !s.agenda.length&&s.ap>0&&!s.ended;}
 
-export function beginChat(s,id){if(!present(s,id))throw Error('还见不到这个人。');spend(s);s.people[id].met=true;s.chats++;return {id,letter:away(s,id),gained:0,turns:0};}
+export function beginChat(s,id){if(!present(s,id))throw Error('还见不到这个人。');spend(s);s.people[id].met=true;s.chats++;if(id==='C04'&&!away(s,id)&&weatherOf(s)==='雨')gain(s,id,1);return {id,letter:away(s,id),gained:0,turns:0};}
 // 一次召见最多加 8 点，单句 -5～+4
 export const CHAT_CAP=8;
 export function applyChat(s,chat,{affection=0,memory=''}={}){
  const room=Math.max(0,CHAT_CAP-chat.gained);let n=Math.max(-5,Math.min(4,Math.round(affection)));if(n>0)n=Math.min(n,room);
  const d=gain(s,chat.id,n);chat.gained+=Math.max(0,d);chat.turns++;count(s,'lines');remember(s,chat.id,memory);return d;
 }
-export function hintLike(s,id){s.known=s.known&&!Array.isArray(s.known)?s.known:{};const k=s.known[id]=s.known[id]&&!Array.isArray(s.known[id])?s.known[id]:{};const g=PEOPLE[id].likes.find(x=>k[x]!==true);if(g)k[g]=true;return g||null;}
+export function hintLike(s,id){
+ s.known=s.known&&!Array.isArray(s.known)?s.known:{};
+ const k=s.known[id]=s.known[id]&&!Array.isArray(s.known[id])?s.known[id]:{};
+ const liked=rand(s)>=0.5,list=liked?PEOPLE[id].likes:PEOPLE[id].dislikes;
+ const g=list.find(x=>k[x]!==liked)||list[0];k[g]=liked;return g;
+}
 export function repairKnot(s,chat){const p=s.people[chat.id];if(!p.knot)return null;const line=ALL_REPAIR[p.knot.source]?.[chat.id]||'你们把那件事说开了。';log(s,`与${PEOPLE[chat.id].name}说开了「${p.knot.text}」`,'情');p.knot=null;cele(s,{k:'knot',id:chat.id});count(s,'knots');gain(s,chat.id,3);chat.gained+=3;return line;}
 
 export function giveGift(s,id,giftId){
  const g=GIFTS[giftId];if(!g)throw Error('没有这件东西。');if(s.stats.treasury<g.cost)throw Error('国库不够了。');
- spend(s);const stats=applyStats(s,{treasury:-g.cost});const liked=PEOPLE[id].likes.includes(giftId);s.gifted=s.gifted||{};const k=id+':'+giftId,times=s.gifted[k]||0;s.gifted[k]=times+1;const d=gain(s,id,times?1:liked?6:2);s.people[id].met=true;
+ spend(s);const stats=applyStats(s,{treasury:-g.cost});const liked=PEOPLE[id].likes.includes(giftId),disliked=PEOPLE[id].dislikes.includes(giftId);s.gifted=s.gifted||{};const k=id+':'+giftId,times=s.gifted[k]||0;s.gifted[k]=times+1;const d=gain(s,id,disliked?-3:times?1:liked?6:2);s.people[id].met=true;
  const so=g.cost>=5?social(s,id,false):{people:{},notes:[]};
- log(s,`赏${PEOPLE[id].name}${g.name}`,'赏');return {liked,repeat:times>0,stats,people:{...(d?{[id]:d}:{}),...so.people},notes:so.notes,knot:!!s.people[id].knot};
+ log(s,`赏${PEOPLE[id].name}${g.name}`,'赏');return {liked,disliked,repeat:times>0,stats,people:{...(d?{[id]:d}:{}),...so.people},notes:so.notes,knot:!!s.people[id].knot};
 }
 // 旨意的后果由 AI 判断，这里只限幅
 export function applyEdict(s,text,{effects={},affection={},narration='',title=''}={}){
@@ -158,8 +167,8 @@ export function applyEdict(s,text,{effects={},affection={},narration='',title=''
  log(s,`下旨：${title||text.slice(0,24)}`,'旨');count(s,'edicts');
  s.edicts=s.edicts||[];const n=s.edicts.length+1;s.edicts.push({n,text:text.slice(0,120),title:title||text.slice(0,8),narration:String(narration).slice(0,400),effects:bounded,at:idx(s.year,s.month),due:idx(s.year,s.month)+2+Math.floor(rand(s)*2)});return {stats,people,text:narration};
 }
-export function goOuting(s){spend(s);const left=OUTINGS.map((o,i)=>i).filter(i=>!s.used.outings.includes(i));const pool=left.length?left:OUTINGS.map((o,i)=>i);const i=pool[Math.floor(rand(s)*pool.length)];s.used.outings.push(i);const o=OUTINGS[i];const stats=applyStats(s,o.effects);log(s,`微服：${o.title}`,'行');return {title:o.title,text:o.text+(o.note?'\n\n'+o.note:''),stats,people:{}};}
-export function rest(s){spend(s);const stats=applyStats(s,{health:8});log(s,'闭门休养了一日','行');return {title:'休养',text:'你推开折子，让苏培盛把门关上。睡了一个整觉，醒来时窗外的光正好。',stats,people:{}};}
+export function goOuting(s){spend(s);const left=OUTINGS.map((o,i)=>i).filter(i=>!s.used.outings.includes(i));const pool=left.length?left:OUTINGS.map((o,i)=>i);const i=pool[Math.floor(rand(s)*pool.length)];s.used.outings.push(i);const o=OUTINGS[i];const stats=applyStats(s,{...o.effects,health:(o.effects.health||0)+(weatherOf(s)==='雪'?-2:0)});log(s,`微服：${o.title}`,'行');return {title:o.title,text:o.text+(o.note?'\n\n'+o.note:''),stats,people:{}};}
+export function rest(s){spend(s);const stats=applyStats(s,{health:8+(weatherOf(s)==='闷热'?2:0)});log(s,'闭门休养了一日','行');return {title:'休养',text:'你推开折子，让苏培盛把门关上。睡了一个整觉，醒来时窗外的光正好。',stats,people:{}};}
 
 // ---------- 夜 ----------
 export function nightChoices(s){return CORE.filter(id=>present(s,id)&&!away(s,id)&&s.people[id].met).map(id=>({id,special:storyOf(s,id),knot:!!s.people[id].knot}));}

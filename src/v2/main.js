@@ -37,7 +37,7 @@ function header(){
  if(!s)return '';
  const d=s.delta.stats;
  return `<header class="top">
-  <div class="date"><b>${dateText(s)}</b><span>${SEASON(s.month)}</span></div>
+  <div class="date"><b>${dateText(s)}</b><span>${SEASON(s.month)} · ${E.weatherOf(s)}</span></div>
   <div class="stats">${STATS.map(x=>{const v=s.stats[x.id],dd=d[x.id]||0;return `<div class="stat ${v<30?'low':''}" title="${esc(x.hint)}"><span class="sn">${x.name}</span><span class="sv">${v}</span>${dd?`<span class="sd ${dd>0?'up':'down'}">${dd>0?'▲':'▼'}${Math.abs(dd)}</span>`:''}<i style="width:${v}%"></i></div>`;}).join('')}</div>
  </header>`;
 }
@@ -122,7 +122,7 @@ function pickPerson(kind){
  const ids=CORE.filter(id=>E.present(s,id)&&(s.people[id].met||kind==='chat'));
  return `${header()}<main class="pick"><div class="bar-title"><button data-act="go" data-to="home">‹ 返回</button><b>${kind==='chat'?'召见谁？':'赏给谁？'}</b></div>
   <section class="people">${ids.map(id=>personCard(id,kind==='chat'?'chat-with':'gift-to')).join('')}</section>
-  <p class="muted center">${kind==='chat'?(E.away(s,'C03')&&ids.includes('C03')?'人在外地的，只能写信。':'每次召见最多说六句。说到心坎上，情分涨得多。'):'送对了心头好，情分 +6；寻常的 +2；同样的东西再送，只 +1。'}</p></main>`;
+  <p class="muted center">${kind==='chat'?(E.away(s,'C03')&&ids.includes('C03')?'人在外地的，只能写信。':'每次召见最多说六句。说到心坎上，情分涨得多。'):'送对了心头好，情分 +6；寻常的 +2；同样的东西再送，只 +1；送到讨厌的，情分 −3。'}</p></main>`;
 }
 
 function chatView(){
@@ -144,9 +144,9 @@ function chatView(){
 
 function giftView(){
  const id=view.id,p=PEOPLE[id],known=s.known?.[id]&&!Array.isArray(s.known[id])?s.known[id]:{};
- if(view.result){const r=view.result;return `<div class="stage" style="--bg:url('${abs(bgFor(E.placeOf(s,id)))}')"><img class="portrait" src="${portrait(id)}" alt=""><article class="paper"><h2>赏${p.name}</h2><div class="choice">${esc(GIFTS[r.gift].name)}${r.liked&&!r.repeat?' · 正合心意':r.repeat?' · 送过了':''}</div>${paras(r.text)}${chips(r.stats,r.people,r.knot?'<span class="chip knot">心结未解，情分没有涨</span>':'')}${notesHtml(r)}<button class="primary" data-act="done">好</button></article></div>`;}
+ if(view.result){const r=view.result;return `<div class="stage" style="--bg:url('${abs(bgFor(E.placeOf(s,id)))}')"><img class="portrait" src="${portrait(id)}" alt=""><article class="paper"><h2>赏${p.name}</h2><div class="choice">${esc(GIFTS[r.gift].name)}${r.disliked?' · 不合心意':r.liked&&!r.repeat?' · 正合心意':r.repeat?' · 送过了':''}</div>${paras(r.text)}${chips(r.stats,r.people,r.knot?'<span class="chip knot">心结未解，情分没有涨</span>':'')}${notesHtml(r)}<button class="primary" data-act="done">好</button></article></div>`;}
  return `${header()}<main class="pick"><div class="bar-title"><button data-act="gift">‹ 换人</button><b>赏${p.name}什么？</b></div>
- <section class="gifts">${Object.entries(GIFTS).map(([g,x])=>`<button data-act="give" data-g="${g}" ${s.stats.treasury<x.cost?'disabled':''}><b>${x.name}${known[g]===true?' <em>♥</em>':known[g]===false?' <em class="no">送过</em>':''}</b><span>${x.cost?'国库 −'+x.cost:'不花钱'}</span></button>`).join('')}</section>
+ <section class="gifts">${Object.entries(GIFTS).map(([g,x])=>`<button data-act="give" data-g="${g}" ${s.stats.treasury<x.cost?'disabled':''}><b>${x.name}${known[g]===true?' <em>♥</em>':known[g]===false&&p.dislikes.includes(g)?' <em class="no">不喜欢</em>':''}</b><span>${x.cost?'国库 −'+x.cost:'不花钱'}</span></button>`).join('')}</section>
  <p class="muted center">送过一次，就知道${p.name}喜不喜欢了（♥）。</p></main>`;
 }
 
@@ -288,7 +288,8 @@ function celebration(){
  return `<div class="cele ${cls}" data-act="cele">${img?`<img src="${img}" alt="">`:''}<div class="cele-box"><b>${big}</b><p>${small}</p><small>点一下继续</small></div></div>`;
 }
 const VIEWS={gallery:galleryView,replay:replayView,title:titleView,home,scene:sceneView,pick:()=>pickPerson(view.kind),chat:chatView,gift:giftView,edict:edictView,result:resultView,night:nightView,summary:summaryView,ending:endingView,people:peopleView,log:logView,settings:settingsView};
-function render(){app.innerHTML=(VIEWS[view.name]||home)()+(['home','summary','people','gallery','ending'].includes(view.name)&&!busy?celebration():'');const m=document.getElementById('msgs');if(m)m.scrollTop=m.scrollHeight;if(view.name==='chat'&&!busy)app.querySelector('.say input')?.focus();}
+let lastVibration=null;
+function render(){const c=s?.cele?.[0];if(c!==lastVibration){lastVibration=c;if(c&&['stage','lover'].includes(c.k)){try{globalThis.navigator?.vibrate?.(30);}catch{}}}app.innerHTML=(VIEWS[view.name]||home)()+(['home','summary','people','gallery','ending'].includes(view.name)&&!busy?celebration():'');const m=document.getElementById('msgs');if(m)m.scrollTop=m.scrollHeight;if(view.name==='chat'&&!busy)app.querySelector('.say input')?.focus();}
 function go(v){view=v;render();window.scrollTo(0,0);}
 
 // ---------- 动作 ----------
@@ -320,16 +321,16 @@ const ACTS={
  'chat-with':el=>{const id=el.dataset.id;try{const c=E.beginChat(s,id);c.msgs=[{who:'npc',text:opener(id,c.letter)}];c.topics=[];save();go({name:'chat',chat:c});}catch(e){toast(e.message);}},
  topic:el=>withBusy(async()=>{const c=view.chat,t=TOPICS.find(x=>x.id===el.dataset.t);c.topics.push(t.id);c.msgs.push({who:'player',text:t.label});
   let reply=null;if(AI.aiMode()!=='off'&&t.id!=='likes')reply=await AI.chatReply(s,c.id,c.msgs,{letter:c.letter});
-  let liked=null;if(t.id==='likes'){liked=E.hintLike(s,c.id);if(liked)toast(`记下了：${PEOPLE[c.id].name}喜欢${GIFTS[liked].name}`);}
-  const text=reply?.reply||(t.id==='likes'?(liked?`${PEOPLE[c.id].name}想了想，说起近来喜欢${GIFTS[liked].name}，说着眼睛都亮了。`:`${PEOPLE[c.id].name}笑了：“皇上送的，都喜欢。”`):TOPIC_LINES[c.id][t.id]);let d=E.applyChat(s,c,{affection:reply?Math.max(reply.affection,1):t.gain,memory:reply?.memory||''});
+  let liked=null;if(t.id==='likes'){liked=E.hintLike(s,c.id);if(liked)toast(`记下了：${PEOPLE[c.id].name}${s.known[c.id][liked]?'喜欢':'不喜欢'}${GIFTS[liked].name}`);}
+  const text=reply?.reply||(t.id==='likes'?(liked?`${PEOPLE[c.id].name}想了想，说：“${GIFTS[liked].name}，我${s.known[c.id][liked]?'很喜欢':'不喜欢'}。”`:`${PEOPLE[c.id].name}笑了：“皇上送的，都喜欢。”`):TOPIC_LINES[c.id][t.id]);let d=E.applyChat(s,c,{affection:reply?Math.max(reply.affection,1):t.gain,memory:reply?.memory||''});
   if(t.stat&&!c.statDone){E.applyStats(s,t.stat);c.statDone=true;}
   c.msgs.push({who:'npc',text,d,mood:reply?.mood});}),
  repair:()=>withBusy(async()=>{const c=view.chat,knot=s.people[c.id].knot;c.msgs.push({who:'player',text:`说起「${knot.text}」那件事`});const line=E.repairKnot(s,c);c.msgs.push({who:'npc',text:line,d:3});toast('心结解开了');}),
  'chat-end':()=>{const c=view.chat;if(c&&c.gained)E.log(s,`召见${PEOPLE[c.id].name}，说了${c.turns}句话`,'见');else if(c)E.log(s,`召见${PEOPLE[c.id].name}`,'见');save();afterAction();},
  'gift-to':el=>go({name:'gift',id:el.dataset.id}),
- give:el=>withBusy(async()=>{const id=view.id,g=el.dataset.g,r=E.giveGift(s,id,g);learn(id,g,r.liked);
-  let text=null;if(AI.aiMode()!=='off')text=await AI.giftReply(s,id,GIFTS[g].name,r.liked);
-  view.result={...r,gift:g,text:text||GIFT_LINES[id][r.liked?'liked':'plain']};}),
+ give:el=>withBusy(async()=>{const id=view.id,g=el.dataset.g,r=E.giveGift(s,id,g);if(r.liked||r.disliked)learn(id,g,r.liked);
+  let text=null;if(AI.aiMode()!=='off')text=await AI.giftReply(s,id,GIFTS[g].name,r.liked,r.disliked);
+  view.result={...r,gift:g,text:text||GIFT_LINES[id][r.disliked?'disliked':r.liked?'liked':'plain']};}),
  edict:()=>go({name:'edict'}),
  fill:el=>{const ta=app.querySelector('textarea');if(ta){ta.value=PRESET_EDICTS[el.dataset.i].text;ta.focus();}},
  preset:el=>{const e=PRESET_EDICTS[el.dataset.i];const r=E.applyEdict(s,e.text,{effects:e.effects,title:e.title,narration:e.narration});save();go({name:'edict',result:{...r,title:e.title,src:e.text}});},

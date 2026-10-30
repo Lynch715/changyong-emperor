@@ -96,3 +96,29 @@ test('吃醋、小惊喜、旨意回报', ()=>{
  while(s3.agenda.length){const x=E.scene(s3.agenda[0]);E.choose(s3,x.id,x.options[0].id);}
  E.setDyn(s3,'FU9',{title:'t',body:'b',options:[{id:'a',label:'l',effects:{people:1},reply:'r'}]});assert.equal(E.scene('FU9').title,'t');
 });
+
+import {GIFTS,GIFT_LINES} from '../src/v2/data.js';
+test('每人有合适的忌口，送错和重复送错都扣三点',()=>{
+ for(const id of CORE){const p=PEOPLE[id];assert.ok(p.dislikes.length>=1&&p.dislikes.length<=2);assert.ok(GIFT_LINES[id].disliked);
+ for(const g of p.dislikes){assert.ok(GIFTS[g]);assert.ok(!p.likes.includes(g));const s=E.newGame(1);s.agenda=[];s.people[id].aff=40;
+ for(let i=0;i<2;i++){const r=E.giveGift(s,id,g);assert.equal(r.disliked,true);assert.equal(r.people[id],-3);}}}
+});
+test('问喜好有一半机会说出讨厌的东西，并记住真假',()=>{
+ const results=new Set();for(let seed=1;seed<=100;seed++){const s=E.newGame(seed);s.seed=seed;const g=E.hintLike(s,'C07');const liked=s.known.C07[g];results.add(liked);assert.ok((liked?PEOPLE.C07.likes:PEOPLE.C07.dislikes).includes(g));}
+ assert.deepEqual(results,new Set([false,true]));
+});
+
+import {dateLine} from '../src/v2/ai.js';
+import {SEASON} from '../src/v2/data.js';
+test('每月天气随季节变化，旧存档也能显示天气',()=>{
+ const s=E.newGame(7);for(let m=1;m<=12;m++){s.month=m;E.startMonth(s);assert.ok(E.WEATHER[SEASON(m)].includes(s.weather));assert.ok(dateLine(s).includes(s.weather));}
+ delete s.weather;const oldSeed=s.seed;assert.equal(E.weatherOf(s),'晴');assert.ok(dateLine(s).includes('今日晴'));assert.equal(s.seed,oldSeed);
+ const mem={getItem:()=>JSON.stringify(s)};assert.ok(E.load(mem));assert.doesNotThrow(()=>E.rest({...s,agenda:[]}));
+});
+test('雪天微服、雨天见太医、闷热休养只有指定的小变化',()=>{
+ const make=w=>{const s=E.newGame(1);s.agenda=[];s.weather=w;s.month=12;s.stats.health=50;s.seed=10;return s;};
+ const snow=make('雪'),sun=make('晴');E.goOuting(snow);E.goOuting(sun);assert.equal(snow.stats.health,sun.stats.health-2);
+ const hot=make('闷热');hot.month=5;E.rest(hot);assert.equal(hot.stats.health,60);
+ const rain=make('雨');rain.year=2;rain.month=2;const before=rain.people.C04.aff;const c=E.beginChat(rain,'C04');assert.equal(rain.people.C04.aff,before+1);assert.equal(c.gained,0);
+ const dry=make('晴');dry.year=2;dry.month=2;E.beginChat(dry,'C04');assert.equal(dry.people.C04.aff,before);
+});

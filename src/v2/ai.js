@@ -1,3 +1,4 @@
+import {weatherOf} from './engine.js';
 // AI 层：对话、旨意、夜话。AI 负责写和判断，引擎负责限幅。连不上时返回 null，界面改用固定文字。
 import {callModel} from './model.js';
 import {placeOf,titleOf} from './engine.js';
@@ -48,7 +49,7 @@ async function ask(system,user){
 const WORLD=`你在为清宫文字游戏《重生长雍帝王赋》写作。玩家扮演雍正皇帝：他在病榻上死去，又醒在雍正元年正月，记得前世的一切——年羹尧被赐死、年世兰撞墙、苏培盛守了他一辈子却没被好好看见、后宫里许多人的不得善终。这一世，他想把能挽回的都挽回。
 文风：白话、克制、有画面，像好的小说，不要堆砌辞藻，不要现代网络用语。人物说话符合身份与性格。不写露骨的性内容。`;
 const statLine=s=>STATS.map(x=>`${x.name}${s.stats[x.id]}`).join('，');
-const dateLine=s=>`雍正${YEAR_NAME(s.year)}年${MONTHS[s.month-1]}`+(s.flags?.nian_prison?'（年羹尧已被削爵下狱）':s.flags?.nian_away?'（年羹尧已被降为杭州将军）':s.flags?.nian_safe?'（年羹尧交出兵权，留京任职）':'');
+export const dateLine=s=>`雍正${YEAR_NAME(s.year)}年${MONTHS[s.month-1]}。今日${weatherOf(s)}`+(s.flags?.nian_prison?'（年羹尧已被削爵下狱）':s.flags?.nian_away?'（年羹尧已被降为杭州将军）':s.flags?.nian_safe?'（年羹尧交出兵权，留京任职）':'');
 function relation(id,st){
  if(id==='C05')return st.lover?'你们是彼此最亲的兄弟与知己，皇兄曾把一个“很长的梦”告诉你。':'';
  if(st.lover)return '你们已经互相表明心意，私下是恋人：亲昵、信任，偶尔撒娇或吃醋，人前仍守着身份。';
@@ -87,9 +88,9 @@ ${personBlock(s,id)}
 }
 
 // 赏赐后的回应
-export async function giftReply(s,id,giftName,liked){
+export async function giftReply(s,id,giftName,liked,disliked=false){
  const p=PEOPLE[id];
- const system=`${WORLD}\n你只扮演${p.name}。\n${personBlock(s,id)}\n皇上刚赏了${p.name}一件东西：${giftName}。${liked?p.name+'正喜欢这个。':'这不算'+p.name+'最想要的，但也是心意。'}\n写${p.name}收到时的反应，50到110字，有动作有一句话。只输出 JSON：{"reply":"..."}`;
+ const system=`${WORLD}\n你只扮演${p.name}。\n${personBlock(s,id)}\n皇上刚赏了${p.name}一件东西：${giftName}。${disliked?p.name+'讨厌这个，收下时不高兴。':liked?p.name+'正喜欢这个。':'这不算'+p.name+'最想要的，但也是心意。'}\n写${p.name}收到时的反应，50到110字，有动作有一句话。只输出 JSON：{"reply":"..."}`;
  const v=await ask(system,'请写。');return str(v?.reply,260)||null;
 }
 
