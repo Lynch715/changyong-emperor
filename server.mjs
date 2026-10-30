@@ -24,8 +24,9 @@ export function makeServer({config=serverConfig(),fetcher=fetch}={}){
    const today=new Date().toISOString().slice(0,10);if(day!==today){day=today;calls=0;}if(calls>=Math.max(config.limit,1000))return send(429,{error:'今日调用上限已到。'});
    let raw='';for await(const chunk of req){raw+=chunk;if(raw.length>24000)return send(413,{error:'上下文过长。'});}let p;try{p=JSON.parse(raw);}catch{return send(400,{error:'请求不是有效JSON。'});}
    if(typeof p.system!=='string'||typeof p.user!=='string'||p.system.length>8000||p.user.length>12000)return send(400,{error:'请求字段不完整。'});
+   if(p.maxTokens!==undefined&&(!Number.isInteger(p.maxTokens)||p.maxTokens<300||p.maxTokens>2400))return send(400,{error:'篇幅设置不合适。'});
    const token=Symbol();active.add(token);calls++;
-   try{const value=await callModel(config,fetcher,p.system,p.user);return send(200,{value});}
+   try{const value=await callModel(config,fetcher,p.system,p.user,{maxTokens:p.maxTokens});return send(200,{value});}
    catch(e){return send(502,{error:e.message||'模型连接失败。'});}finally{active.delete(token);}
   }
   if(req.method!=='GET'&&req.method!=='HEAD')return send(405,{error:'此路径只接受读取。'});

@@ -1,3 +1,4 @@
+import {nightIdeas,REST_IDEAS,planAllowed,PLAN_NOTICE} from './plans.js';
 import {PORTRAIT_IDS,placeBackground,NIGHT_BG,portraitFile} from './art.js';
 import {audienceOf,confirmAge,setTenderness} from './audience.js';
 import {GROUPS} from './roster.js';
@@ -166,7 +167,7 @@ const PRESET_EDICTS=[
 ];
 function edictView(){
  const r=view.result,ai=AI.aiMode()!=='off';
- if(r)return `<div class="stage" style="--bg:url('${abs(BG.court)}')"><article class="paper"><h2>${esc(r.title||'旨意')}</h2><div class="choice">朱批：${esc(r.src)}</div>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="done">好</button></article></div>`;
+ if(r)return `<div class="stage" style="--bg:url('${abs(BG.court)}')"><article class="paper"><h2>${esc(r.title||'旨意')}</h2><div class="choice">朱批：${esc(r.src)}</div>${fateLine(r.fate)}${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="done">好</button></article></div>`;
  return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><div class="stage-top"><button data-act="go" data-to="home">‹ 收起</button><span>养心殿御案</span></div><article class="paper">
   <h2>亲笔下旨</h2>
   <form class="transfer" data-act="transfer"><h4>拨银</h4><p>国库 ${moneyText(s.stats.treasury)} · 内帑 ${moneyText(s.stats.inner)}</p><p class="small">与下旨一样，用一个时辰。拨进内帑，朝局 −2；充入国库，民心 +2。</p><label>从哪里拨<select name="direction"><option value="toInner">国库 → 内帑</option><option value="toTreasury">内帑 → 国库</option></select></label><label>万两<input name="amount" type="number" min="0.01" step="0.01" value="10" required></label><button class="primary">拨银</button></form>
@@ -181,19 +182,18 @@ function outingsView(){return `${header()}<main><div class="bar-title"><button d
 function nanfengView(){return `${header()}<main class="nanfeng-hall" style="--place-bg:url('${abs(placeBackground('nanfeng-interior',s.month))}')"><h3 class="sec">南风馆 · 灯下</h3><p>今夜不问姓名，只听一曲，或下一局棋。</p><section class="places">${[['N02','听雨汐弹琵琶、唱曲'],['N01','和花妍下棋、说话'],['tea','只喝茶听曲']].filter(([id])=>!s.freed[id]).map(([id,label])=>`<button data-act="company" data-id="${id}">${label}</button>`).join('')}</section><p class="muted small">入馆的银子已付过。坐定后，这一回便结束。</p></main>`;}
 
 // ---------- 白天的小结果（微服、休养） ----------
-function resultView(){const r=view.result;return `<div class="stage" style="--bg:url('${abs(r.bg||BG.garden)}')">${r.id?`<img class="portrait" src="${portrait(r.id)}" alt="">`:''}<article class="paper"><h2>${esc(r.title)}</h2>${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="done">好</button></article></div>`;}
+function resultView(){const r=view.result;return `<div class="stage" style="--bg:url('${abs(r.bg||BG.garden)}')">${r.id?`<img class="portrait" src="${portrait(r.id)}" alt="">`:''}<article class="paper"><h2>${esc(r.title)}</h2>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="done">好</button></article></div>`;}
 
 // ---------- 夜 ----------
+const ideasHtml=(ideas,target)=>`<div class="plan-ideas">${ideas.map((t,i)=>`<button data-act="plan-idea" data-target="${target}" data-i="${i}">${esc(t)}</button>`).join('')}</div>`;
+function restView(){const ai=AI.aiMode()!=='off';return `${header()}<main class="plan-page"><div class="bar-title"><button data-act="go" data-to="home">‹ 返回</button><b>今天想怎么歇？</b></div>
+ ${busy?'<p class="wait">窗外的风慢了下来……</p>':`${ai?`${ideasHtml(REST_IDEAS,'restPlan')}<label for="restPlan">今天想怎么歇？</label><textarea id="restPlan" maxlength="200" rows="5" placeholder="写下安排，最多200字">${esc(view.draft||'')}</textarea><label for="restCompanion">请谁作陪？</label><select id="restCompanion"><option value="">独自歇着</option>${E.restCompanions(s).map(id=>`<option value="${id}" ${view.companion===id?'selected':''}>${esc(nm(id))}</option>`).join('')}</select><p class="muted small">安排会先掷骰，一档不掷。最多花内帑3万两；若没有收到回话，就照常歇着。</p><button class="primary" data-act="rest-plan">就这样歇一日</button>`:'<p>把门关上，留一日给自己。</p>'}<button data-act="rest-default">照常歇着</button>`}</main>`;}
 function nightView(){
- if(view.result){const r=view.result;return `<div class="stage night" style="--bg:url('${abs(NIGHT_BG)}')">${r.id?`<img class="portrait" src="${portrait(r.id)}" alt="">`:''}<article class="paper"><h2>${r.id?E.placeOf(s,r.id)+' · 夜':'独寝'}</h2>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}${notesHtml(r)}<button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;}
- const list=E.nightChoices(s),ai=AI.aiMode()!=='off';
- return `<div class="stage night" style="--bg:url('${abs(NIGHT_BG)}')"><div class="stage-top"><button data-act="go" data-to="home">‹ 再等等</button><span>${dateText(s)} · 夜</span></div><article class="paper">
-  <h2>今夜去哪里？</h2>
-  ${busy?'<p class="muted center wait">灯一盏一盏亮起来……</p>':`
-  <section class="people">${list.map(x=>`<button class="pc" data-act="night-go" data-id="${x.id}"><img src="${face(x.id)}" alt=""><div><b>${PEOPLE[x.id].name}${x.special?'<em class="ready">有话想说</em>':x.knot?'<em class="knot">心结</em>':''}</b><span>${E.placeOf(s,x.id)} · ${stageOf(s.people[x.id].aff)}</span></div></button>`).join('')}
-   <button class="pc" data-act="night-go" data-id=""><div><b>独寝</b><span>一个人睡，圣躬 +3</span></div></button></section>
-  ${ai?`<input class="night-line" id="nightLine" maxlength="60" placeholder="（可选）进门时想说的第一句话${E.freedomOf(s)>1?'，说了会先掷骰':''}">`:''}
-  <p class="muted small">“有话想说”的人，今夜会有一段新剧情。</p>`}
+ if(view.result){const r=view.result;return `<div class="stage night" style="--bg:url('${abs(NIGHT_BG)}')">${r.id?avatar(r.id,'portrait'):''}<article class="paper"><h2>${r.id?E.placeOf(s,r.id)+' · 夜':'独寝'}</h2>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}${notesHtml(r)}<button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;}
+ const list=E.nightChoices(s),ai=AI.aiMode()!=='off',id=view.id;
+ return `<div class="stage night" style="--bg:url('${abs(NIGHT_BG)}')"><div class="stage-top"><button data-act="go" data-to="home">‹ 再等等</button><span>${dateText(s)} · 夜</span></div><article class="paper plan-page">
+ <h2>${id?'今夜陪着'+nm(id):'今夜去哪里？'}</h2>
+ ${busy?'<p class="muted center wait">灯一盏一盏亮起来……</p>':id?`${ai?`${ideasHtml(nightIdeas(id),'nightPlan')}<label for="nightPlan">今夜想和${esc(nm(id))}做些什么？</label><textarea id="nightPlan" maxlength="300" rows="5" placeholder="可以不写，最多300字">${esc(view.draft||'')}</textarea><p class="muted small">写下安排会先掷骰，一档不掷。留空就照往常过。</p>`:'<p>灯已经点上了，过去坐坐吧。</p>'}<button class="primary" data-act="night-go" data-id="${id}">过去看看</button><button data-act="night-select" data-id="">再选一处</button>`:`<section class="people">${list.map(x=>`<button class="pc" data-act="night-select" data-id="${x.id}">${avatar(x.id)}<div><b>${PEOPLE[x.id].name}${x.special?'<em class="ready">有话想说</em>':x.knot?'<em class="knot">心结</em>':''}</b><span>${E.placeOf(s,x.id)} · ${stageOf(s.people[x.id].aff)}</span></div></button>`).join('')}<button class="pc" data-act="night-go" data-id=""><div><b>独寝</b><span>一个人睡，圣躬 +3</span></div></button></section><p class="muted small">“有话想说”的人，今夜会有一段新剧情。</p>`}
  </article></div>`;
 }
 
@@ -265,7 +265,7 @@ function settingsView(){
  const m=AI.aiMode();
  return `${header()}<main class="settings"><h3 class="sec">设置</h3>
   <div class="card"><b>亲密氛围</b><label class="audience-toggle"><input type="checkbox" data-pref="tenderness" ${audienceOf().tenderness?'checked':''}> 写得温柔些</label><p>只写成年非亲属之间、自愿而含蓄的亲近。关掉后，AI 回到平日的叙事。人物始终可以婉拒，各档自由度都一样。</p></div>
-  <div class="card"><b>AI 对话</b><p>${m==='server'?'已连接本机的 AI 服务。':m==='byok'?'正在使用你填写的 API。':'未开启。召见只能挑话题，旨意只能选拟好的。'}</p>
+  <div class="card"><b>AI 对话</b><p>不同服务的写法会有差别；若没有收到可用的回话，就用固定文字继续。</p><p>${m==='server'?'已连接本机的 AI 服务。':m==='byok'?'正在使用你填写的 API。':'未开启。召见只能挑话题，旨意只能选拟好的。'}</p>
   ${AI.aiError()?`<p class="muted small">上次出错：${esc(AI.aiError())}</p>`:''}
   <button data-act="ai-toggle">${m==='off'?'尝试开启 AI':'关闭 AI，改用固定文字'}</button></div>
   ${m!=='server'?(()=>{const c=AI.savedConnection();return `<form class="card api" data-act="api"><b>使用自己的 API</b><p class="small">默认 DeepSeek。密钥只存在这台设备的浏览器里，不进存档。</p>
@@ -318,7 +318,7 @@ function celebration(){
  else if(c.k==='ach'){big=`${c.a.icon}`;small=`成就解锁 · ${c.a.title}<br><span>${esc(c.a.desc)}</span>`;cls='ach-pop';}
  return `<div class="cele ${cls}" data-act="cele">${img?`<img src="${img}" alt="">`:''}<div class="cele-box"><b>${big}</b><p>${small}</p><small>点一下继续</small></div></div>`;
 }
-const VIEWS={outings:outingsView,nanfeng:nanfengView,rebirth:rebirthView,gallery:galleryView,replay:replayView,title:titleView,home,scene:sceneView,pick:()=>pickPerson(view.kind),chat:chatView,gift:giftView,edict:edictView,result:resultView,night:nightView,summary:summaryView,ending:endingView,people:peopleView,log:logView,settings:settingsView};
+const VIEWS={rest:restView,outings:outingsView,nanfeng:nanfengView,rebirth:rebirthView,gallery:galleryView,replay:replayView,title:titleView,home,scene:sceneView,pick:()=>pickPerson(view.kind),chat:chatView,gift:giftView,edict:edictView,result:resultView,night:nightView,summary:summaryView,ending:endingView,people:peopleView,log:logView,settings:settingsView};
 let lastVibration=null;
 function render(){if(!audienceOf().confirmed){app.innerHTML=ageView();return;}const c=s?.cele?.[0];if(c!==lastVibration){lastVibration=c;if(c&&['stage','lover'].includes(c.k)){try{globalThis.navigator?.vibrate?.(30);}catch{}}}app.innerHTML=(VIEWS[view.name]||home)()+(['home','summary','people','gallery','ending'].includes(view.name)&&!busy?celebration():'');const m=document.getElementById('msgs');if(m)m.scrollTop=m.scrollHeight;if(view.name==='chat'&&!busy)app.querySelector('.say input')?.focus();}
 function go(v){view=v;render();window.scrollTo(0,0);}
@@ -380,15 +380,21 @@ const ACTS={
  visit:()=>{const r=E.acceptVisit(s);save();go({name:'result',result:{...r,bg:bgFor(E.placeOf(s,r.id))}});},
  cele:()=>{s.cele.shift();E.save(s);render();},
  replay:el=>go({name:'replay',id:el.dataset.id}),
- rest:()=>{const r=E.rest(s);save();go({name:'result',result:{...r,bg:BG.desk}});},
+ rest:()=>go({name:'rest'}),
+ 'rest-default':()=>{const r=E.rest(s);save();go({name:'result',result:{...r,bg:BG.desk}});},
+ 'plan-idea':el=>{const ta=document.getElementById(el.dataset.target);if(ta){ta.value=(el.dataset.target==='restPlan'?REST_IDEAS:nightIdeas(view.id))[+el.dataset.i];ta.focus();}},
+ 'rest-plan':()=>{const plan=(document.getElementById('restPlan')?.value||'').trim(),companion=document.getElementById('restCompanion')?.value||null;if(!plan)return toast('写个安排，或选“照常歇着”。');if(!planAllowed(plan,companion))return toast(PLAN_NOTICE);view.draft=plan;view.companion=companion;
+  withBusy(async()=>{const fate=E.rollFate(s,'rest',companion),v=await AI.restScene(s,plan,{companion,fate});const r=v?E.plannedRest(s,plan,{...v,companion,fate}):E.rest(s);view={name:'result',result:{...r,bg:BG.garden}};});},
  review:()=>{const r=E.review(s);save();go({name:'result',result:{...r,bg:BG.desk}});},
  done:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});afterAction();},
  night:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});if(s.agenda.length)return toast('先把要事办完。');if(s.ap>0&&!confirm(`还有 ${s.ap} 个时辰没用。确定入夜吗？`))return;go({name:'night'});},
- 'night-go':el=>{const id=el.dataset.id||null;const line=(document.getElementById('nightLine')?.value||'').trim();
-  if(id&&E.hasStory(s,id)){const sid=E.queueSpecial(s,id);save();return go({name:'scene',id:sid});}
+ 'night-select':el=>go({name:'night',id:el.dataset.id||null}),
+ 'night-go':el=>{const id=el.dataset.id||null,line=AI.aiMode()==='off'?'':(document.getElementById('nightPlan')?.value||'').trim();
+  if(!planAllowed(line,id))return toast(PLAN_NOTICE);view.draft=line;
+  if(id&&!line&&E.hasStory(s,id)){const sid=E.queueSpecial(s,id);save();return go({name:'scene',id:sid});}
   withBusy(async()=>{let v=null,fate=null;if(id&&AI.aiMode()!=='off'){if(line)fate=E.rollFate(s,'night',id);v=await AI.nightScene(s,id,line,fate);}
-   const lines=id?NIGHT_LINES[id]:null;const text=id?(v?.text||lines[(s.month+s.year)%lines.length]):'你让人都退下，一个人睡了。难得一夜无梦。';
-   const r=E.spendNight(s,id,{affection:v?v.affection:3,memory:v?.memory||'',fate:v?fate:null});view.result={...r,id,fate:v?fate:null,text:!v&&r.birthday?BIRTH_LINES[id].night:text};});
+   const lines=id?NIGHT_LINES[id]:null,bad=fate&&!fate.free&&fate.tier<=1;const text=id?(v?.text||(bad?'对方告了罪，你让人添了热茶。灯下坐了一会儿，便各自歇下。':lines[(s.month+s.year)%lines.length])):'你让人都退下，一个人睡了。难得一夜无梦。';
+   const r=E.spendNight(s,id,{affection:v?v.affection:3,health:v?.health||0,memory:v?.memory||'',fate});view.result={...r,id,fate,text:!v&&!bad&&r.birthday?BIRTH_LINES[id].night:text};});
  },
  'month-end':()=>monthEnd(),
  ending:()=>go({name:'ending'}),

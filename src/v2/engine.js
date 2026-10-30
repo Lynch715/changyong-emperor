@@ -1,3 +1,4 @@
+import {planAllowed,PLAN_NOTICE,restCost} from './plans.js';
 import {OFFICES,currentTitle,initAppointments,validateAppointments,recordAppointment,officeMonthly,appointmentOptions,officePlace} from './appointments.js';
 export {appointmentOptions} from './appointments.js';
 import {PLACES,NANFENG_FIRST,MINOR_STORIES,DESTINATIONS} from './outings.js';
@@ -249,13 +250,30 @@ const REVIEWS=['你把积压的折子一本本看完。有一本说某县修桥�
 export function review(s){spend(s);s.reviews=(s.reviews||0)+1;const stats=applyStats(s,{court:3,health:s.done?.W08==='council'?-1:-2});log(s,'批了一批折子','政');count(s,'reviews');return {title:'批折',text:REVIEWS[(s.reviews-1)%REVIEWS.length]+(s.done?.W08==='council'?'\n\n值房的人先替你分好了，看得快了许多。':''),stats,people:{}};}
 export function rest(s){spend(s);const stats=applyStats(s,{health:8+(weatherOf(s)==='闷热'?2:0)});log(s,'闭门休养了一日','行');return {title:'休养',text:'你推开折子，让苏培盛把门关上。睡了一个整觉，醒来时窗外的光正好。',stats,people:{}};}
 
+// 自拟休养：先检查人选和银子，成功后才用时辰。普通休养仍走上面的原流程。
+export const restCompanions=s=>Object.keys(s.people).filter(id=>present(s,id)&&!away(s,id)&&s.people[id].met&&PEOPLE[id]?.adult===true);
+const finite=(n,fallback)=>Number.isFinite(Number(n))?Number(n):fallback;
+export function plannedRest(s,plan,{text='',health=8,inner,memory='',companion=null,fate=null}={}){
+ plan=String(plan||'').trim().slice(0,200);if(!plan)return rest(s);
+ if(!planAllowed(plan,companion))throw Error(PLAN_NOTICE);
+ if(companion&&!restCompanions(s).includes(companion))throw Error('这会儿请不到这个人。');
+ const cost=Math.round(Math.max(0,Math.min(3,finite(inner,restCost(plan))))*100)/100;
+ if(s.stats.inner<cost)throw Error('内帑不够，换个省些银子的安排吧。');
+ const tier=fate?.free?4:fate?.tier;
+ let h=tier===0?4:tier===1?6:tier===4?10:Math.max(4,Math.min(10,Math.round(finite(health,8))+(weatherOf(s)==='闷热'?2:0)));
+ spend(s);const stats=applyStats(s,{health:h,inner:-cost}),people={};
+ if(companion){people[companion]=gain(s,companion,tier===0?0:tier===1?1:2);remember(s,companion,memory||'陪皇上歇了一日：'+plan);}
+ log(s,'歇了一日：'+plan,'行');return {title:'休养',text:String(text||'你暂且放下折子，留了一日给自己。').slice(0,800),stats,people,fate};
+}
+
 // ---------- 夜 ----------
 export function nightChoices(s){return CORE.filter(id=>present(s,id)&&!away(s,id)&&s.people[id].met).map(id=>({id,special:storyOf(s,id),knot:!!s.people[id].knot}));}
-export function spendNight(s,id,{affection=4,memory='',fate=null}={}){
+export function spendNight(s,id,{affection=4,health=0,memory='',fate=null}={}){
+ if(id&&!nightChoices(s).some(p=>p.id===id))throw Error('今夜去不了这里。');
  if(s.nanfeng?.visit&&!s.nanfeng.visit.done)throw Error('先把馆里的茶喝完。');if(s.night)throw Error('今夜已经安排过了。');if(s.agenda.length)throw Error('先把本月要事办完。');s.night=true;
  if(!id){const stats=applyStats(s,{health:3});log(s,'独寝','夜');return {stats,people:{}};}
- let d=gain(s,id,Math.max(0,Math.min(4,fateClamp(Math.round(affection),fate&&{...fate,kind:'night'}))));remember(s,id,memory);const bd=celebrate(s,id,2);if(bd)d+=bd;
- const heavy=s.lastNight===id;s.lastNight=id;const so=social(s,id,heavy);log(s,`夜里在${placeOf(s,id)}，陪着${PEOPLE[id].name}`,'夜');return {stats:{},people:{...so.people,...(d?{[id]:d}:{})},notes:so.notes,birthday:bd!==null};
+ let d=gain(s,id,Math.max(0,Math.min(4,fateClamp(Math.round(finite(affection,3)),fate&&{...fate,kind:'night'}))));remember(s,id,memory);const bd=celebrate(s,id,2);if(bd)d+=bd;
+ const heavy=s.lastNight===id;s.lastNight=id;const so=social(s,id,heavy);log(s,`夜里在${placeOf(s,id)}，陪着${PEOPLE[id].name}`,'夜');const stats=applyStats(s,{health:fate&&!fate.free&&fate.tier<=1?0:Math.max(-2,Math.min(3,Math.round(finite(health,0))))});return {stats,people:{...so.people,...(d?{[id]:d}:{})},notes:so.notes,birthday:bd!==null};
 }
 // 夜里遇到第二幕剧情时，作为要事插入
 export function queueSpecial(s,id){if(s.night)throw Error('今夜已经安排过了。');const sid=storyOf(s,id);if(!sid)throw Error('今夜没有新的剧情。');s.night=true;celebrate(s,id,2);s.agenda.unshift(sid);return sid;}

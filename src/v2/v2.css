@@ -318,3 +318,8 @@ input,textarea{min-width:0}
 .audience-toggle{display:flex;align-items:center;gap:10px;min-height:44px;margin-top:10px}.audience-toggle input{width:22px;height:22px}
 
 .portrait-media{display:contents}.place-thumb{width:100%;height:120px;object-fit:cover;border-radius:7px;margin-bottom:6px}.nanfeng-hall{min-height:75vh;background:linear-gradient(#13202ae8,#13202ac9),var(--place-bg) center/cover no-repeat}
+
+/* 自拟安排：窄屏也留足输入与点击的位置。 */
+.plan-page textarea,.plan-page select{display:block;box-sizing:border-box;width:100%;max-width:100%;min-width:0;min-height:44px;margin:8px 0 16px;padding:12px;border:1px solid var(--line);border-radius:8px;background:#fffaf0;color:var(--ink);font:inherit;font-size:16px;line-height:1.7}
+.plan-page textarea{resize:vertical;min-height:130px}.plan-page label{display:block;line-height:1.6}.plan-page>button{display:block;width:100%;margin:10px 0;min-height:44px}.plan-ideas{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.plan-ideas button{min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere;padding:9px 12px;text-align:left}.plan-page{overflow-wrap:anywhere}
+.plan-ideas button,.plan-page>button:not(.primary){background:var(--silk);color:var(--ink);border:1px solid var(--line);border-radius:8px}

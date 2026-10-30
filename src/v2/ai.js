@@ -1,4 +1,5 @@
-import {tendernessGuide,quietRefusal} from './audience.js';
+import {planAllowed,restCost} from './plans.js';
+import {tendernessGuide,quietRefusal,KIN} from './audience.js';
 import {OFFICES} from './appointments.js';
 import {treasuryIndex} from './economy.js';
 import {weatherOf} from './engine.js';
@@ -40,14 +41,14 @@ export async function saveConnection(form,remember,storage=globalThis.localStora
 let sessionByok=null;
 export function setAIOff(off,storage=globalThis.localStorage){try{off?storage.setItem(OFF_KEY,'1'):storage.removeItem(OFF_KEY);}catch{}}
 
-async function ask(system,user){
+async function ask(system,user,maxTokens=900){
  if(mode==='off')return null;
  try{
   if(mode==='server'){
-   const r=await fetch('/api/v2',{method:'POST',headers:{'Content-Type':'application/json','X-Changyong-Request':'1'},body:JSON.stringify({system,user})});
+   const r=await fetch('/api/v2',{method:'POST',headers:{'Content-Type':'application/json','X-Changyong-Request':'1'},body:JSON.stringify({system,user,maxTokens})});
    const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'AI 暂不可用');lastError='';return d.value;
   }
-  const v=await callModel(byok,fetch.bind(globalThis),system,user);lastError='';return v;
+  const v=await callModel(byok,fetch.bind(globalThis),system,user,{maxTokens});lastError='';return v;
  }catch(e){lastError=e.message||'AI 暂不可用';return null;}
 }
 
@@ -57,6 +58,7 @@ const WORLD=`你在为清宫文字游戏《重生长雍帝王赋》写作。玩�
 export const statLine=s=>`国库${s.stats.treasury}万两（充盈度${treasuryIndex(s)}/100），内帑${s.stats.inner}万两，`+STATS.filter(x=>!['inner','treasury'].includes(x.id)).map(x=>`${x.name}${s.stats[x.id]}/100`).join('，');
 export const dateLine=s=>`雍正${YEAR_NAME(s.year)}年${MONTHS[s.month-1]}。今日${weatherOf(s)}`+(s.appointments?.C03?.office?'（年羹尧现任'+titleOf(s,'C03')+'）':s.flags?.nian_prison?'（年羹尧已被削爵下狱）':s.flags?.nian_away?'（年羹尧已被降为杭州将军）':s.flags?.nian_safe?'（年羹尧交出兵权，留京任职）':'')+((s.month&&birthdays(s).length)?`。本月是${birthdays(s).map(id=>PEOPLE[id].name).join('、')}的生辰`:'');
 function relation(id,st){
+ if(KIN.has(id))return '皇上与对方是亲属，只写家人之间的信任与日常照顾，不写恋爱情意。';
  if(PEOPLE[id].secondary)return '只写故人之间的信任与君臣之礼，不把情分写成恋爱。';
  if(id==='C05')return st.lover?'你们是彼此最亲的兄弟与知己，皇兄曾把一个“很长的梦”告诉你。':'';
  if(st.lover)return '你们已经互相表明心意，私下是恋人：亲昵、信任，偶尔撒娇或吃醋，人前仍守着身份。';
@@ -124,17 +126,32 @@ ${fate?'5. '+fateGuide(fate,'edict')+'\n':''}只输出 JSON：{"title":"...","na
 
 // 夜里的一段
 export async function nightScene(s,id,line='',fate=null){
+ if(!planAllowed(line,id))return null;
  const p=PEOPLE[id];
  const system=`${WORLD}
 今夜皇上去了${placeOf(s,id)}，陪着${p.name}。
 ${personBlock(s,id)}
 当前：${dateLine(s)}。${tendernessGuide(s,id,'night',{fate})}
-写今夜的一小段，120到220字，第二人称“你”。要有一个具体的小细节（一样东西、一句话、一个动作），贴合${p.name}的性格和你们眼下的情分，${s.people[id].lover?(id==='C05'?'兄弟知己之间的亲近与默契':'恋人之间的温存与亲昵，可以有拥抱、依偎、牵手这样的细节'):s.people[id].aff>=65?'情意已经很明显，只差一句话没说破':s.people[id].aff<45?'还有些拘谨，彼此在试探':'已经可以说些心里话'}。点到为止，不写露骨内容。${line?'皇上开口说的第一句是：“'+line+'”，要接住这句话。':''}
+写今夜的一小段，${line?'200到600':'120到220'}字，第二人称“你”。要有一个具体的小细节（一样东西、一句话、一个动作），贴合${p.name}的性格和你们眼下的情分，${s.people[id].lover?(id==='C05'?'兄弟知己之间的亲近与默契':'恋人之间的温存与亲昵，可以有拥抱、依偎、牵手这样的细节'):s.people[id].aff>=65?'情意已经很明显，只差一句话没说破':s.people[id].aff<45?'还有些拘谨，彼此在试探':'已经可以说些心里话'}。点到为止，不写露骨内容。${line?'皇上今夜的安排是：“'+line.slice(0,300)+'”。尽量照安排推演，人物仍有自己的意愿，不合边界的部分改为日常照顾。':''}
 ${fate?fateGuide(fate,'person',p.name)+'\n':''}${fate&&!fate.free&&fate.tier<=1?'今夜婉拒，改为喝茶或照顾起居，不发生亲密行为。\n':''}affection：今夜让情分增加多少，0 到 5。memory：今夜值得${p.name}记住的一件事，不超过30字。
-只输出 JSON：{"text":"...","affection":3,"memory":""}`;
- const v=await ask(system,'请写今夜。');if(!v){lastError='';return null;}
+health：圣躬变化，-2到3，通宵劳累会伤身，早睡或泡汤可以略有恢复。只输出 JSON：{"text":"...","affection":3,"health":0,"memory":""}`;
+ const v=await ask(system,'请写今夜。',line?1800:900);if(!v){lastError='';return null;}
  const text=str(v?.text,600);if(quietRefusal(text)){lastError='';return null;}
- return {text,affection:clampInt(v.affection,0,5),memory:str(v.memory,40)};
+ return {text,affection:clampInt(v.affection,0,5),health:line?clampInt(v.health,-2,3):0,memory:str(v.memory,40)};
+}
+
+// 休养安排。生成失败时只返回 null，由界面沿用普通休养。
+export async function restScene(s,plan,{companion=null,fate=null}={}){
+ plan=String(plan||'').trim().slice(0,200);if(!plan||!planAllowed(plan,companion))return null;
+ const tier=fate?.free?4:fate?.tier;
+ const outcome=tier===0?'大凶：没有歇成，因雨或急报打断。圣躬只恢复4点。':tier===1?'凶：歇得不踏实，圣躬恢复6点。':tier===4?'大吉：歇得舒坦，圣躬恢复10点。':'照常理推演，圣躬恢复4到10点。';
+ const system=`${WORLD}
+当前：${dateLine(s)}。${statLine(s)}。
+皇上想这样歇一日：“${plan}”。${companion?`作陪的是${PEOPLE[companion].name}。${personBlock(s,companion)}${tendernessGuide(s,companion,'rest',{fate})}`:'独自休息。'}
+尽量照安排写，第二人称，200到400字。${outcome}不增加额外人物，不擅自任命或改变朝政。inner是内帑花费，0到3万两；这次粗估${restCost(plan)}万两，不可写入国库支出。memory是作陪的人记得的一件事，30字以内。
+只输出JSON：{"text":"...","health":8,"inner":0,"memory":""}`;
+ const v=await ask(system,'请写这一天。',1400),text=str(v?.text,800);if(!v||quietRefusal(text)){lastError='';return null;}
+ return {text,health:clampInt(v.health,4,10),inner:Number.isFinite(Number(v.inner))?Math.max(0,Math.min(3,Number(v.inner))):restCost(plan),memory:str(v.memory,40)};
 }
 
 // 剧情选完后，主角说一句（让固定剧情也有 AI 的回声；可选）
