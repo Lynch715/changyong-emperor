@@ -82,7 +82,7 @@ function home(){
   <section class="acts ${sc?'locked':''}">
    ${acts.map(([id,t])=>`<button data-act="${id}" ${!E.canAct(s)||(id==='gift'&&s.stats.inner<.01)||(id==='outing'&&s.stats.inner<ECONOMY.outingCost)?'disabled':''}><b>${t}${((id==='gift'&&s.stats.inner<.01)||(id==='outing'&&s.stats.inner<ECONOMY.outingCost))?' · 内帑不足':''}</b></button>`).join('')}
   </section>
-  <button class="night-btn ${!sc&&s.ap===0?'glow':''}" data-act="night" ${sc?'disabled':''}>入夜 ›<span>${s.ap>0&&!sc?`还剩 ${s.ap} 个时辰`:'选一处去，或独寝'}</span></button>
+  <button class="night-btn ${!sc&&(s.ap===0||s.night)?'glow':''}" data-act="night" ${sc?'disabled':''}>${s.night?'结束这个月 ›<span>今夜已经过了</span>':`入夜 ›<span>${s.ap>0&&!sc?`还剩 ${s.ap} 个时辰`:'选一处去，或独寝'}</span>`}</button>
 
   <h3 class="sec">身边的人</h3>
   <section class="people">
@@ -190,8 +190,9 @@ function restView(){const ai=AI.aiMode()!=='off';return `${header()}<main class=
  ${busy?'<p class="wait">窗外的风慢了下来……</p>':`${ai?`${ideasHtml(REST_IDEAS,'restPlan')}<label for="restPlan">今天想怎么歇？</label><textarea id="restPlan" maxlength="200" rows="5" placeholder="写下安排，最多200字">${esc(view.draft||'')}</textarea><label for="restCompanion">请谁作陪？</label><select id="restCompanion"><option value="">独自歇着</option>${E.restCompanions(s).map(id=>`<option value="${id}" ${view.companion===id?'selected':''}>${esc(nm(id))}</option>`).join('')}</select><p class="muted small">安排会先掷骰，一档不掷。最多花内帑3万两；若没有收到回话，就照常歇着。</p><button class="primary" data-act="rest-plan">就这样歇一日</button>`:'<p>把门关上，留一日给自己。</p>'}<button data-act="rest-default">照常歇着</button>`}</main>`;}
 function nightView(){
  if(view.result){const r=view.result;return `<div class="stage night" style="--bg:url('${abs(NIGHT_BG)}')">${r.id?avatar(r.id,'portrait'):''}<article class="paper"><h2>${r.id?E.placeOf(s,r.id)+' · 夜':'独寝'}</h2>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}${notesHtml(r)}<button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;}
+ if(s.night&&!busy&&!s.agenda.length)return `<div class="stage night" style="--bg:url('${abs(NIGHT_BG)}')"><article class="paper"><h2>今夜已经过了</h2><p>天快亮了。</p><button class="primary" data-act="month-end">结束这个月 ›</button></article></div>`;
  const list=E.nightChoices(s),ai=AI.aiMode()!=='off',id=view.id;
- return `<div class="stage night" style="--bg:url('${abs(NIGHT_BG)}')"><div class="stage-top"><button data-act="go" data-to="home">‹ 再等等</button><span>${dateText(s)} · 夜</span></div><article class="paper plan-page">
+ return `<div class="stage night" style="--bg:url('${abs(NIGHT_BG)}')"><div class="stage-top">${busy?'<span></span>':'<button data-act="go" data-to="home">‹ 再等等</button>'}<span>${dateText(s)} · 夜</span></div><article class="paper plan-page">
  <h2>${id?'今夜陪着'+nm(id):'今夜去哪里？'}</h2>
  ${busy?'<p class="muted center wait">灯一盏一盏亮起来……</p>':id?`${ai?`${ideasHtml(nightIdeas(id),'nightPlan')}<label for="nightPlan">今夜想和${esc(nm(id))}做些什么？</label><textarea id="nightPlan" maxlength="300" rows="5" placeholder="可以不写，最多300字">${esc(view.draft||'')}</textarea><p class="muted small">写下安排会先掷骰，一档不掷。留空就照往常过。</p>`:'<p>灯已经点上了，过去坐坐吧。</p>'}<button class="primary" data-act="night-go" data-id="${id}">过去看看</button><button data-act="night-select" data-id="">再选一处</button>`:`<section class="people">${list.map(x=>`<button class="pc" data-act="night-select" data-id="${x.id}">${avatar(x.id)}<div><b>${PEOPLE[x.id].name}${x.special?'<em class="ready">有话想说</em>':x.knot?'<em class="knot">心结</em>':''}</b><span>${E.placeOf(s,x.id)} · ${stageOf(s.people[x.id].aff)}</span></div></button>`).join('')}<button class="pc" data-act="night-go" data-id=""><div><b>独寝</b><span>一个人睡，圣躬 +3</span></div></button></section><p class="muted small">“有话想说”的人，今夜会有一段新剧情。</p>`}
  </article></div>`;
@@ -387,9 +388,9 @@ const ACTS={
   withBusy(async()=>{const fate=E.rollFate(s,'rest',companion),v=await AI.restScene(s,plan,{companion,fate});const r=v?E.plannedRest(s,plan,{...v,companion,fate}):E.rest(s);view={name:'result',result:{...r,bg:BG.garden}};});},
  review:()=>{const r=E.review(s);save();go({name:'result',result:{...r,bg:BG.desk}});},
  done:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});afterAction();},
- night:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});if(s.agenda.length)return toast('先把要事办完。');if(s.ap>0&&!confirm(`还有 ${s.ap} 个时辰没用。确定入夜吗？`))return;go({name:'night'});},
+ night:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});if(s.agenda.length)return toast('先把要事办完。');if(s.night)return monthEnd();if(s.ap>0&&!confirm(`还有 ${s.ap} 个时辰没用。确定入夜吗？`))return;go({name:'night'});},
  'night-select':el=>go({name:'night',id:el.dataset.id||null}),
- 'night-go':el=>{const id=el.dataset.id||null,line=AI.aiMode()==='off'?'':(document.getElementById('nightPlan')?.value||'').trim();
+ 'night-go':el=>{if(s.night&&!s.agenda.length)return monthEnd();const id=el.dataset.id||null,line=AI.aiMode()==='off'?'':(document.getElementById('nightPlan')?.value||'').trim();
   if(!planAllowed(line,id,s))return toast(PLAN_NOTICE);view.draft=line;
   if(id&&!line&&E.hasStory(s,id)){const sid=E.queueSpecial(s,id);save();return go({name:'scene',id:sid});}
   withBusy(async()=>{let v=null,fate=null;if(id&&AI.aiMode()!=='off'){if(line)fate=E.rollFate(s,'night',id);v=await AI.nightScene(s,id,line,fate);}
