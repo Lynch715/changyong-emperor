@@ -3,6 +3,7 @@ import {weatherOf} from './engine.js';
 import {callModel} from './model.js';
 import {placeOf,titleOf,birthdays} from './engine.js';
 import {rivalsOf} from './social.js';
+import {fateGuide} from './fate.js';
 import {readConnectionSettings,connectionSettings,storeConnectionSettings} from '../ai-connection-settings.js';
 import {DEFAULT_AI} from '../ai-provider.js';
 import {PEOPLE,STATS,MONTHS,stageOf,NAMES,YEAR_NAME} from './data.js';
@@ -68,7 +69,7 @@ const clampInt=(v,a,b)=>Math.max(a,Math.min(b,Math.round(Number(v)||0)));
 const str=(v,n)=>typeof v==='string'?v.trim().slice(0,n):'';
 
 // 召见对话。history: [{who:'player'|'npc',text}]
-export async function chatReply(s,id,history,{letter=false}={}){
+export async function chatReply(s,id,history,{letter=false,fate=null}={}){
  const p=PEOPLE[id],st=s.people[id];
  const system=`${WORLD}
 现在你只扮演${p.name}，${letter?'这是一封书信往来：皇上写信给远在'+placeOf(s,id)+'的你，你回信':'皇上召见你，你们在'+placeOf(s,id)+'说话'}。
@@ -80,8 +81,8 @@ ${personBlock(s,id)}
 3. affection 是这句话让情分变化多少，整数 -5 到 5：真诚而贴心 +3～+5，平常客气 +1～+2，答非所问或敷衍 0，冒犯伤人 -2～-5。${st.knot?'心结未解时，除非皇上正面承认那件事，否则不超过 +1。':''}
 4. memory：这句对话里如果有值得${p.name}长久记住的事（一个承诺、一句真心话、一次冒犯），用一句不超过30字的话写下来；没有就给空字符串。
 5. mood：两到四个字，${p.name}此刻的心情。
-只输出 JSON：{"reply":"...","affection":0,"mood":"...","memory":""}`;
- const user=history.slice(-10).map(h=>(h.who==='player'?'皇上：':p.name+'：')+h.text).join('\n');
+${fate?'6. '+fateGuide(fate,'person',p.name)+'\n':''}只输出 JSON：{"reply":"...","affection":0,"mood":"...","memory":""}`;
+ const user=history.filter(h=>h.who!=='sys').slice(-10).map(h=>(h.who==='player'?'皇上：':p.name+'：')+h.text).join('\n');
  const v=await ask(system,user);if(!v)return null;
  const reply=str(v.reply,300);if(!reply)return null;
  return {reply,affection:clampInt(v.affection,-5,5),mood:str(v.mood,8),memory:str(v.memory,40)};
@@ -95,7 +96,7 @@ export async function giftReply(s,id,giftName,liked,disliked=false){
 }
 
 // 下旨：玩家自由写旨意，AI 推演后果
-export async function edictResult(s,text,presentIds){
+export async function edictResult(s,text,presentIds,fate=null){
  const roster=presentIds.map(id=>`${id}=${PEOPLE[id].name}（${PEOPLE[id].title}）`).join('，');
  const system=`${WORLD}
 皇上亲笔写了一道旨意。你是史官兼推演者：判断这道旨意在雍正朝的现实里会产生什么后果，并写出来。
@@ -106,7 +107,7 @@ export async function edictResult(s,text,presentIds){
 2. narration：用第二人称“你”，写旨意下达后一两个月里发生了什么，100到200字。要有具体的人和细节，有得有失；好心办坏事、阳奉阴违、意外之喜都可以发生。旨意若荒唐、残暴、或根本做不到，就写出它怎样碰壁或闹出乱子。
 3. effects：对五项局势的影响，整数，每项 -8 到 8，合计的正值一般不超过 10。花钱的事要扣国库(treasury)；惠民的事加民心(people)；整饬吏治、立规矩影响朝局(court)；涉及宫闱的影响后宫(palace)；劳神的事扣圣躬(health)。没影响的项填 0。
 4. affection：这道旨意让哪些人对皇上的情分变化，键是人物编号（只能用上面列出的），值 -5 到 5；无关的人不写。
-只输出 JSON：{"title":"...","narration":"...","effects":{"treasury":0,"people":0,"court":0,"palace":0,"health":0},"affection":{}}`;
+${fate?'5. '+fateGuide(fate,'edict')+'\n':''}只输出 JSON：{"title":"...","narration":"...","effects":{"treasury":0,"people":0,"court":0,"palace":0,"health":0},"affection":{}}`;
  const v=await ask(system,'旨意原文：'+text);if(!v)return null;
  const narration=str(v.narration,500);if(!narration)return null;
  const effects={};for(const x of STATS)effects[x.id]=clampInt(v.effects?.[x.id],-8,8);
@@ -115,14 +116,14 @@ export async function edictResult(s,text,presentIds){
 }
 
 // 夜里的一段
-export async function nightScene(s,id,line=''){
+export async function nightScene(s,id,line='',fate=null){
  const p=PEOPLE[id];
  const system=`${WORLD}
 今夜皇上去了${placeOf(s,id)}，陪着${p.name}。
 ${personBlock(s,id)}
 当前：${dateLine(s)}。
 写今夜的一小段，120到220字，第二人称“你”。要有一个具体的小细节（一样东西、一句话、一个动作），贴合${p.name}的性格和你们眼下的情分，${s.people[id].lover?(id==='C05'?'兄弟知己之间的亲近与默契':'恋人之间的温存与亲昵，可以有拥抱、依偎、牵手这样的细节'):s.people[id].aff>=65?'情意已经很明显，只差一句话没说破':s.people[id].aff<45?'还有些拘谨，彼此在试探':'已经可以说些心里话'}。点到为止，不写露骨内容。${line?'皇上开口说的第一句是：“'+line+'”，要接住这句话。':''}
-affection：今夜让情分增加多少，0 到 5。memory：今夜值得${p.name}记住的一件事，不超过30字。
+${fate?fateGuide(fate,'person',p.name)+'\n':''}affection：今夜让情分增加多少，0 到 5。memory：今夜值得${p.name}记住的一件事，不超过30字。
 只输出 JSON：{"text":"...","affection":3,"memory":""}`;
  const v=await ask(system,'请写今夜。');if(!v)return null;
  const text=str(v.text,600);if(!text)return null;

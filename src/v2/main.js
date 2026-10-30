@@ -8,6 +8,9 @@ import {ENDING_KINGDOM3,ENDING3} from './vol3.js';
 import {ACHIEVEMENTS,loadGallery,updateGallery} from './gallery.js';
 import {rivalsOf,friendsOf} from './social.js';
 import {BIRTH,BIRTH_LINES} from './festivals.js';
+import {FREEDOM,fateText} from './fate.js';
+const FATE_SHORT=['今天怎么说都不顺','对方不太买账','如常','对方愿意接你的话','说什么，对方都愿意听'];
+const fateLine=f=>f&&!f.free?`<div class="fate t${f.tier}">${esc(fateText(f))}</div>`:'';
 const bondName=id=>id==='C05'?'知己':'两情相悦';
 
 const app=document.getElementById('app');
@@ -132,7 +135,7 @@ function chatView(){
   <img class="portrait" src="${portrait(id)}" alt="">
   <article class="paper talk">
    <h2>${p.name}<small>${E.titleOf(s,id)}${st.knot?' · <em class="knot">心结：'+esc(st.knot.text)+'</em>':''}</small></h2>
-   <div class="msgs" id="msgs">${c.msgs.map(m=>`<div class="msg ${m.who}">${m.who==='npc'?`<b>${p.name}</b>`:''}${esc(m.text)}${m.d!=null&&m.who==='npc'?`<span class="md ${m.d>0?'up':m.d<0?'down':''}">${m.mood?esc(m.mood)+' · ':''}${m.d>0?'情分 +'+m.d:m.d<0?'情分 '+m.d:'情分不变'}</span>`:''}</div>`).join('')}${busy?`<div class="msg npc typing"><b>${p.name}</b>……</div>`:''}</div>
+   <div class="msgs" id="msgs">${c.msgs.map(m=>`<div class="msg ${m.who}${m.tier!=null?' fate t'+m.tier:''}">${m.who==='npc'?`<b>${p.name}</b>`:''}${esc(m.text)}${m.d!=null&&m.who==='npc'?`<span class="md ${m.d>0?'up':m.d<0?'down':''}">${m.mood?esc(m.mood)+' · ':''}${m.d>0?'情分 +'+m.d:m.d<0?'情分 '+m.d:'情分不变'}</span>`:''}</div>`).join('')}${busy?`<div class="msg npc typing"><b>${p.name}</b>……</div>`:''}</div>
    ${left>0?`<div class="topics">${st.knot?`<button data-act="repair" class="repair" ${busy?'disabled':''}>说开「${esc(st.knot.text)}」那件事</button>`:''}${TOPICS.map(t=>`<button data-act="topic" data-t="${t.id}" ${used.includes(t.id)||busy?'disabled':''}>${t.label}</button>`).join('')}</div>
    ${ai?`<form class="say" data-act="say"><input name="t" maxlength="120" placeholder="${c.letter?'写几句给远方的人……':'想对'+p.name+'说什么？'}" autocomplete="off" ${busy?'disabled':''}><button ${busy?'disabled':''}>说</button></form><p class="muted small">还能说 ${left} 句。真诚的话打动人，敷衍和冒犯也会被记住。</p>`:'<p class="muted small">接入 AI 后可以随意说话。现在只能从上面挑话题。</p>'}`
    :`<p class="muted center">该说的都说了。</p>`}
@@ -156,12 +159,12 @@ const PRESET_EDICTS=[
 ];
 function edictView(){
  const r=view.result,ai=AI.aiMode()!=='off';
- if(r)return `<div class="stage" style="--bg:url('${abs(BG.court)}')"><article class="paper"><h2>${esc(r.title||'旨意')}</h2><div class="choice">朱批：${esc(r.src)}</div>${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="done">好</button></article></div>`;
+ if(r)return `<div class="stage" style="--bg:url('${abs(BG.court)}')"><article class="paper"><h2>${esc(r.title||'旨意')}</h2><div class="choice">朱批：${esc(r.src)}</div>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="done">好</button></article></div>`;
  return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><div class="stage-top"><button data-act="go" data-to="home">‹ 收起</button><span>养心殿御案</span></div><article class="paper">
   <h2>亲笔下旨</h2>
   ${ai?`<p class="muted">写下你想办的事，任何事都可以。它会怎样落地，有什么代价，由天下来回答。</p>
   <form class="edict" data-act="decree"><textarea name="t" maxlength="200" rows="4" placeholder="例如：在京城设十处粥厂，入冬前施粥三月。" ${busy?'disabled':''}></textarea><button class="primary" ${busy?'disabled':''}>${busy?'旨意正在传下去……':'用印'}</button></form>
-  <p class="muted small">举几个例子：</p>`:`<p class="muted">没有接入 AI，只能从拟好的旨意里选一道。</p>`}
+  <p class="muted small">自由度：${FREEDOM[E.freedomOf(s)].name}${E.freedomOf(s)>1?'。用印前先掷骰，朝局越稳，骰运越好。':'。'}</p><p class="muted small">举几个例子：</p>`:`<p class="muted">没有接入 AI，只能从拟好的旨意里选一道。</p>`}
   <div class="options">${PRESET_EDICTS.map((e,i)=>`<button data-act="${ai?'fill':'preset'}" data-i="${i}" ${busy?'disabled':''}>${esc(e.text)}</button>`).join('')}</div>
  </article></div>`;
 }
@@ -171,14 +174,14 @@ function resultView(){const r=view.result;return `<div class="stage" style="--bg
 
 // ---------- 夜 ----------
 function nightView(){
- if(view.result){const r=view.result;return `<div class="stage night" style="--bg:url('${abs(BG.palace)}')">${r.id?`<img class="portrait" src="${portrait(r.id)}" alt="">`:''}<article class="paper"><h2>${r.id?E.placeOf(s,r.id)+' · 夜':'独寝'}</h2>${paras(r.text)}${chips(r.stats,r.people)}${notesHtml(r)}<button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;}
+ if(view.result){const r=view.result;return `<div class="stage night" style="--bg:url('${abs(BG.palace)}')">${r.id?`<img class="portrait" src="${portrait(r.id)}" alt="">`:''}<article class="paper"><h2>${r.id?E.placeOf(s,r.id)+' · 夜':'独寝'}</h2>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}${notesHtml(r)}<button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;}
  const list=E.nightChoices(s),ai=AI.aiMode()!=='off';
  return `<div class="stage night" style="--bg:url('${abs(BG.palace)}')"><div class="stage-top"><button data-act="go" data-to="home">‹ 再等等</button><span>${dateText(s)} · 夜</span></div><article class="paper">
   <h2>今夜去哪里？</h2>
   ${busy?'<p class="muted center wait">灯一盏一盏亮起来……</p>':`
   <section class="people">${list.map(x=>`<button class="pc" data-act="night-go" data-id="${x.id}"><img src="${face(x.id)}" alt=""><div><b>${PEOPLE[x.id].name}${x.special?'<em class="ready">有话想说</em>':x.knot?'<em class="knot">心结</em>':''}</b><span>${E.placeOf(s,x.id)} · ${stageOf(s.people[x.id].aff)}</span></div></button>`).join('')}
    <button class="pc" data-act="night-go" data-id=""><div><b>独寝</b><span>一个人睡，圣躬 +3</span></div></button></section>
-  ${ai?'<input class="night-line" id="nightLine" maxlength="60" placeholder="（可选）进门时想说的第一句话">':''}
+  ${ai?`<input class="night-line" id="nightLine" maxlength="60" placeholder="（可选）进门时想说的第一句话${E.freedomOf(s)>1?'，说了会先掷骰':''}">`:''}
   <p class="muted small">“有话想说”的人，今夜会有一段新剧情。</p>`}
  </article></div>`;
 }
@@ -253,6 +256,7 @@ function settingsView(){
   ${m!=='server'?(()=>{const c=AI.savedConnection();return `<form class="card api" data-act="api"><b>使用自己的 API</b><p class="small">默认 DeepSeek。密钥只存在这台设备的浏览器里，不进存档。</p>
    <label>地址<input name="url" value="${esc(c.url)}"></label><label>模型<input name="model" value="${esc(c.model)}"></label><label>密钥<input name="key" type="password" placeholder="${c.key?'已保存，留空不改':'sk-……'}" autocomplete="off"></label>
    <label class="chk"><input type="checkbox" name="remember" checked> 记住在这台设备上</label><button ${busy?'disabled':''}>${busy?'正在测试……':'测试并启用'}</button></form>`;})():''}
+  ${s?`<div class="card freedom"><b>自由度</b><p>决定 AI 推演听不听你的。下旨、召见时亲口说的话、夜里的第一句会用到。没开 AI 时不起作用。</p>${[1,2,3].map(l=>`<button data-act="freedom" data-l="${l}" class="${E.freedomOf(s)===l?'on':''}"><b>${l} 档 · ${FREEDOM[l].name}</b><span>${FREEDOM[l].desc}</span></button>`).join('')}</div>`:''}
   <div class="card"><b>存档</b><p>每个动作后自动保存在这台设备的浏览器里。</p>${s?'<button data-act="new-confirm">重新开始</button> ':''}<button data-act="title">回到标题</button></div>
   <div class="card"><b>旧版</b><p>以前的版本还在，可以继续玩旧存档。</p><a href="?legacy=1">打开旧版</a></div>
  </main>${s?nav():''}`;
@@ -264,7 +268,7 @@ function titleView(){
   ${has?'<button class="primary" data-act="continue">继续</button>':''}
   <button class="${has?'':'primary'}" data-act="${has?'new-confirm':'new'}">新开一局</button>
   <p class="muted small">${(()=>{const L=has&&E.load();return (L?.life>1?`第${L.life}世 · `:'')+['第一卷 · 元年至二年','第二卷 · 三年至四年','第三卷 · 五年至六年'][(L?.vol||1)-1];})()} · 每卷约一小时 · AI ${AI.aiMode()==='off'?'未开启':'已开启'} · <a href="#" data-act="go" data-to="settings">设置</a></p>
-  <details class="how"><summary>怎么玩</summary><p>一个月是一回合。月初先处置要事；然后有三个时辰，可以召见、赏赐、下旨、批折、微服或休养；入夜选一处去，或独寝。月末结算。</p><p>情分到「相知」，那个人会在夜里有话想说；到「倾心」，还有一次说破心意的机会。若你在两难里没站在谁那边，那人会有心结，要当面说开。</p><p>两年为一卷，共三卷，存档和情分一路带下去。每月有人过生辰，年节可以选一个人陪着过。走完任何一卷，都可以带着一样记忆“再活一世”。</p></details>
+  <details class="how"><summary>怎么玩</summary><p>一个月是一回合。月初先处置要事；然后有三个时辰，可以召见、赏赐、下旨、批折、微服或休养；入夜选一处去，或独寝。月末结算。</p><p>情分到「相知」，那个人会在夜里有话想说；到「倾心」，还有一次说破心意的机会。若你在两难里没站在谁那边，那人会有心结，要当面说开。</p><p>两年为一卷，共三卷，存档和情分一路带下去。每月有人过生辰，年节可以选一个人陪着过。走完任何一卷，都可以带着一样记忆“再活一世”。</p><p>设置里有三档自由度：一档言出法随；二档、三档在下旨和亲口说话前先掷骰，大吉照你写的走，大凶对方会找理由回绝。</p></details>
  </div></div>`;
 }
 
@@ -313,6 +317,7 @@ const ACTS={
  vol2:()=>{E.startVolume2(s);save();go({name:'home'});},
  vol3:()=>{E.startVolume3(s);save();go({name:'home'});},
  rebirth:()=>go({name:'rebirth'}),
+ freedom:el=>{E.setFreedom(s,el.dataset.l);save();toast('自由度：'+FREEDOM[s.freedom].name);render();},
  boon:el=>{s=E.newGamePlus(s,el.dataset.b);save();toast(`第${s.life}世`);go({name:'home'});},
  go:el=>{const to=el.dataset.to;if(to==='home'&&s.ended&&!view.report)return go({name:'ending'});go({name:to});},
  title:()=>go({name:'title'}),
@@ -359,9 +364,9 @@ const ACTS={
  night:()=>{if(s.agenda.length)return toast('先把要事办完。');if(s.ap>0&&!confirm(`还有 ${s.ap} 个时辰没用。确定入夜吗？`))return;go({name:'night'});},
  'night-go':el=>{const id=el.dataset.id||null;const line=(document.getElementById('nightLine')?.value||'').trim();
   if(id&&E.hasStory(s,id)){const sid=E.queueSpecial(s,id);save();return go({name:'scene',id:sid});}
-  withBusy(async()=>{let v=null;if(id&&AI.aiMode()!=='off')v=await AI.nightScene(s,id,line);
+  withBusy(async()=>{let v=null,fate=null;if(id&&AI.aiMode()!=='off'){if(line)fate=E.rollFate(s,'night',id);v=await AI.nightScene(s,id,line,fate);}
    const lines=id?NIGHT_LINES[id]:null;const text=id?(v?.text||lines[(s.month+s.year)%lines.length]):'你让人都退下，一个人睡了。难得一夜无梦。';
-   const r=E.spendNight(s,id,{affection:v?v.affection:3,memory:v?.memory||''});view.result={...r,id,text:!v&&r.birthday?BIRTH_LINES[id].night:text};});
+   const r=E.spendNight(s,id,{affection:v?v.affection:3,memory:v?.memory||'',fate:v?fate:null});view.result={...r,id,fate:v?fate:null,text:!v&&r.birthday?BIRTH_LINES[id].night:text};});
  },
  'month-end':()=>monthEnd(),
  ending:()=>go({name:'ending'}),
@@ -389,16 +394,16 @@ function opener(id,letter){
 
 async function sayHandler(text){
  const c=view.chat;if(!text||c.turns>=6)return;
- await withBusy(async()=>{c.msgs.push({who:'player',text});const r=await AI.chatReply(s,c.id,c.msgs,{letter:c.letter});
+ await withBusy(async()=>{c.msgs.push({who:'player',text});if(!c.fate){c.fate=E.rollFate(s,'chat',c.id);if(!c.fate.free)c.msgs.push({who:'sys',tier:c.fate.tier,text:fateText(c.fate)+'：'+FATE_SHORT[c.fate.tier]});}const r=await AI.chatReply(s,c.id,c.msgs,{letter:c.letter,fate:c.fate});
   if(!r){c.msgs.push({who:'npc',text:'（AI 没有回应：'+(AI.aiError()||'连接失败')+'。可以先用上面的话题。）'});c.msgs.at(-2).failed=true;return;}
   const d=E.applyChat(s,c,{affection:r.affection,memory:r.memory});c.msgs.push({who:'npc',text:r.reply,d,mood:r.mood});
   if(r.memory)toast(`${PEOPLE[c.id].name}记下了：${r.memory}`);});
 }
 async function decreeHandler(text){
  if(!text)return toast('旨意还是空的。');
- await withBusy(async()=>{const v=await AI.edictResult(s,text,CORE.filter(id=>E.present(s,id)&&s.people[id].met));
+ await withBusy(async()=>{const fate=E.rollFate(s,'edict');const v=await AI.edictResult(s,text,CORE.filter(id=>E.present(s,id)&&s.people[id].met),fate);
   if(!v)throw Error('旨意没能传下去：'+(AI.aiError()||'AI 未回应')+'。时辰没有用掉。');
-  const r=E.applyEdict(s,text,v);view.result={...r,title:v.title,src:text,text:v.narration};});
+  const r=E.applyEdict(s,text,{...v,fate});view.result={...r,title:v.title,src:text,text:v.narration,fate};});
 }
 
 app.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el||el.tagName==='FORM')return;if(el.disabled)return;const f=ACTS[el.dataset.act];if(f){e.preventDefault();f(el);}});

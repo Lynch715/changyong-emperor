@@ -6,6 +6,7 @@ import {MORE_PETITIONS,SMALL_EVENTS} from './events.js';
 import {SCENES2,AGENDA2,CRISES2,REPAIR2} from './vol2.js';
 import {SCENES3,AGENDA3,CRISES3,REPAIR3} from './vol3.js';
 import {VISITS} from './visits.js';
+import {tierOf,fateBonus,boundUp} from './fate.js';
 import {BIRTH,BIRTH_SKIP,festivalOf,festId,festivalScene} from './festivals.js';
 import {SURPRISES,rivalsOf,friendsOf,JEALOUS,FRIEND_LINES} from './social.js';
 const POOL=[...PETITIONS,...MORE_PETITIONS,...SMALL_EVENTS];
@@ -33,7 +34,7 @@ export const WEATHER={春:['晴','雨','风'],夏:['晴','雨','闷热'],秋:['�
 export const weatherOf=s=>WEATHER[SEASON(s.month)].includes(s.weather)?s.weather:WEATHER[SEASON(s.month)][0];
 
 export function newGame(seed=Date.now()%2147483647){
- const s={version:1,vol:1,flags:{},seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
+ const s={version:1,vol:1,freedom:2,flags:{},seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
  for(const id of CORE)s.people[id]={aff:PEOPLE[id].start,met:false,knot:null,first:false,second:false,third:false,lover:false,firstAt:null,secondAt:null,memories:[]};
  bind(s);startMonth(s);return s;
 }
@@ -159,9 +160,19 @@ export function beginChat(s,id){if(!present(s,id))throw Error('还见不到这�
 // 一次召见最多加 8 点，单句 -5～+4
 export const CHAT_CAP=8;
 export function applyChat(s,chat,{affection=0,memory=''}={}){
- const room=Math.max(0,CHAT_CAP-chat.gained);let n=Math.max(-5,Math.min(4,Math.round(affection)));if(n>0)n=Math.min(n,room);
+ const room=Math.max(0,CHAT_CAP-chat.gained);let n=fateClamp(Math.max(-5,Math.min(4,Math.round(affection))),chat.fate);if(n>0)n=Math.min(n,room);
  const d=gain(s,chat.id,n);chat.gained+=Math.max(0,d);chat.turns++;count(s,'lines');remember(s,chat.id,memory);return d;
 }
+// ---------- 自由度与掷骰 ----------
+export const freedomOf=s=>[1,2,3].includes(s.freedom)?s.freedom:2;
+export function setFreedom(s,l){if(![1,2,3].includes(+l))throw Error('没有这一档。');s.freedom=+l;return s.freedom;}
+// kind：edict / chat / night。一档不掷，当作大吉
+export function rollFate(s,kind,id){
+ const level=freedomOf(s);if(level===1)return {tier:4,free:true,level};
+ const d=1+Math.floor(rand(s)*20),bonus=fateBonus(s,kind,id),total=d+bonus.reduce((a,[,b])=>a+b,0);
+ const f={d,bonus,total,tier:tierOf(level,total),level,kind};count(s,'rolls');if(f.tier===4)count(s,'bigluck');return f;
+}
+const fateClamp=(n,fate)=>{if(!fate||fate.free)return n;let v=boundUp(n,fate.tier);if(fate.tier===0)v=Math.min(v,0);if(fate.tier===1)v=Math.min(v,1);if(fate.tier===4&&fate.kind!=='edict')v=Math.max(v,2);return v;};
 export function hintLike(s,id){
  s.known=s.known&&!Array.isArray(s.known)?s.known:{};
  const k=s.known[id]=s.known[id]&&!Array.isArray(s.known[id])?s.known[id]:{};
@@ -177,11 +188,11 @@ export function giveGift(s,id,giftId){
  log(s,`赏${PEOPLE[id].name}${g.name}`,'赏');return {liked,disliked,birthday:bd!==null,repeat:times>0,stats,people:{...(d?{[id]:d}:{}),...so.people},notes:so.notes,knot:!!s.people[id].knot};
 }
 // 旨意的后果由 AI 判断，这里只限幅
-export function applyEdict(s,text,{effects={},affection={},narration='',title=''}={}){
- spend(s);const bounded={};for(const st of STATS){const v=Number(effects[st.id]);if(Number.isFinite(v))bounded[st.id]=Math.max(-8,Math.min(8,Math.round(v)));}
+export function applyEdict(s,text,{effects={},affection={},narration='',title='',fate=null}={}){
+ spend(s);const bounded={};for(const st of STATS){const v=Number(effects[st.id]);if(Number.isFinite(v))bounded[st.id]=boundUp(Math.max(-8,Math.min(8,Math.round(v))),fate&&!fate.free?fate.tier:4);}
  const total=Object.values(bounded).reduce((a,b)=>a+Math.max(0,b),0);if(total>12)for(const k in bounded)if(bounded[k]>0)bounded[k]=Math.round(bounded[k]*12/total);
  const stats=applyStats(s,bounded),people={};
- for(const[cid,v]of Object.entries(affection||{}))if(PEOPLE[cid]&&present(s,cid)){const d=gain(s,cid,Math.max(-5,Math.min(5,Math.round(Number(v)||0))));if(d)people[cid]=d;}
+ for(const[cid,v]of Object.entries(affection||{}))if(PEOPLE[cid]&&present(s,cid)){const d=gain(s,cid,boundUp(Math.max(-5,Math.min(5,Math.round(Number(v)||0))),fate&&!fate.free?fate.tier:4));if(d)people[cid]=d;}
  log(s,`下旨：${title||text.slice(0,24)}`,'旨');count(s,'edicts');
  s.edicts=s.edicts||[];const n=s.edicts.length+1;s.edicts.push({n,text:text.slice(0,120),title:title||text.slice(0,8),narration:String(narration).slice(0,400),effects:bounded,at:idx(s.year,s.month),due:idx(s.year,s.month)+2+Math.floor(rand(s)*2)});return {stats,people,text:narration};
 }
@@ -193,10 +204,10 @@ export function rest(s){spend(s);const stats=applyStats(s,{health:8+(weatherOf(s
 
 // ---------- 夜 ----------
 export function nightChoices(s){return CORE.filter(id=>present(s,id)&&!away(s,id)&&s.people[id].met).map(id=>({id,special:storyOf(s,id),knot:!!s.people[id].knot}));}
-export function spendNight(s,id,{affection=4,memory=''}={}){
+export function spendNight(s,id,{affection=4,memory='',fate=null}={}){
  if(s.night)throw Error('今夜已经安排过了。');if(s.agenda.length)throw Error('先把本月要事办完。');s.night=true;
  if(!id){const stats=applyStats(s,{health:3});log(s,'独寝','夜');return {stats,people:{}};}
- let d=gain(s,id,Math.max(0,Math.min(4,Math.round(affection))));remember(s,id,memory);const bd=celebrate(s,id,2);if(bd)d+=bd;
+ let d=gain(s,id,Math.max(0,Math.min(4,fateClamp(Math.round(affection),fate&&{...fate,kind:'night'}))));remember(s,id,memory);const bd=celebrate(s,id,2);if(bd)d+=bd;
  const heavy=s.lastNight===id;s.lastNight=id;const so=social(s,id,heavy);log(s,`夜里在${placeOf(s,id)}，陪着${PEOPLE[id].name}`,'夜');return {stats:{},people:{...so.people,...(d?{[id]:d}:{})},notes:so.notes,birthday:bd!==null};
 }
 // 夜里遇到第二幕剧情时，作为要事插入
@@ -240,7 +251,7 @@ export const BOONS={
 export const pastHearts=prev=>CORE.filter(id=>(prev?.people?.[id]?.aff||0)>=65);
 export function newGamePlus(prev,boon,seed=Date.now()%2147483647){
  if(!prev?.ended)throw Error('这一世还没走完。');if(!BOONS[boon])throw Error('没有这样的记忆。');
- const s=newGame(seed);s.life=(prev.life||1)+1;s.boon=boon;
+ const s=newGame(seed);s.freedom=freedomOf(prev);s.life=(prev.life||1)+1;s.boon=boon;
  const past=pastHearts(prev);s.past=Object.fromEntries(past.map(id=>[id,{lover:!!prev.people[id].lover}]));
  for(const id of past)remember(s,id,prev.people[id].lover?'梦里见过皇上，醒来却想不起梦见了什么':'总觉得很久以前，见过皇上');
  if(boon==='love')for(const id of past)s.people[id].aff=clamp(s.people[id].aff+12);

@@ -282,3 +282,11 @@ input,textarea{min-width:0}
 .rebirth .past span{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:20px;background:rgba(200,163,90,.18);font-size:14px}
 .rebirth .past img{width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:top}
 .rebirth .options button{text-align:left;line-height:1.5}
+/* 0.37 掷骰与自由度 */
+.fate{font-size:13px;line-height:1.5;padding:6px 10px;border-radius:8px;margin:8px 0;background:rgba(80,80,80,.08);color:var(--ink-soft)}
+.fate.t4{background:#f6e3b4;color:#7a4e0c;font-weight:600}.fate.t3{background:#eef0d8;color:#4e5a1e}
+.fate.t1{background:#f1e0dc;color:#7d3a2e}.fate.t0{background:#e9c9c3;color:#7a1d16;font-weight:600}
+.msg.sys{align-self:center;text-align:center;max-width:92%}
+.card.freedom button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;margin-top:8px;text-align:left;min-height:44px}
+.card.freedom button span{font-size:12.5px;opacity:.8;line-height:1.45}
+.card.freedom button.on{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}

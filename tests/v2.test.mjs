@@ -198,3 +198,27 @@ test('批折：朝局 +3、圣躬 −2，设值房后只伤 1 点，占一个时
  const s=E.newGame(1);s.agenda=[];s.stats.court=50;s.stats.health=50;const ap=s.ap;const r=E.review(s);assert.equal(s.ap,ap-1);assert.deepEqual(r.stats,{court:3,health:-2});assert.ok(r.text);
  s.done.W08='council';assert.deepEqual(E.review(s).stats,{court:3,health:-1});
 });
+
+import {tierOf,TIERS} from '../src/v2/fate.js';
+test('自由度：一档不掷骰；三档比二档难；朝局和情分会加减点',()=>{
+ const s=E.newGame(3);assert.equal(E.freedomOf(s),2);assert.equal(E.freedomOf({}),2,'旧存档默认二档');assert.throws(()=>E.setFreedom(s,4));
+ E.setFreedom(s,1);const f=E.rollFate(s,'edict');assert.equal(f.free,true);assert.equal(f.tier,4);
+ const rate=l=>{const x=E.newGame(7);E.setFreedom(x,l);let big=0,bad=0;for(let i=0;i<2000;i++){const r=E.rollFate(x,'edict');if(r.tier===4)big++;if(r.tier===0)bad++;}return {big,bad};};
+ const r2=rate(2),r3=rate(3);assert.ok(r2.big>r3.big*1.5&&r3.bad>r2.bad*2,JSON.stringify([r2,r3]));
+ for(let t=-1;t<=24;t++){assert.ok(tierOf(3,t)<=tierOf(2,t));}assert.equal(TIERS[tierOf(2,20)],'大吉');assert.equal(TIERS[tierOf(3,1)],'大凶');
+ s.freedom=2;s.stats.court=80;assert.deepEqual(E.rollFate(s,'edict').bonus,[['朝局 80',2]]);
+ s.people.C07.aff=70;s.people.C07.knot={source:'K01',text:'x'};assert.equal(E.rollFate(s,'chat','C07').bonus.reduce((a,[,b])=>a+b,0),0);
+});
+test('掷骰兜底：大凶没有好处，凶减半，召见大吉至少 +2',()=>{
+ const f=t=>({d:10,bonus:[],total:10,tier:t,level:2});
+ const e=t=>{const s=E.newGame(1);s.agenda=[];s.stats.treasury=50;s.stats.people=50;s.people.C02.met=true;s.people.C02.aff=40;return [s,E.applyEdict(s,'x',{effects:{people:6,treasury:-4},affection:{C02:4},fate:f(t)})];};
+ let [,r]=e(0);assert.equal(r.stats.people,undefined);assert.equal(r.stats.treasury,-4);assert.equal(r.people.C02,undefined);
+ [,r]=e(1);assert.equal(r.stats.people,3);assert.equal(r.people.C02,2);
+ [,r]=e(4);assert.equal(r.stats.people,6);
+ const c=t=>{const s=E.newGame(1);s.agenda=[];s.people.C02.aff=40;const ch=E.beginChat(s,'C02');ch.fate={...f(t),kind:'chat'};return [s,ch];};
+ let [s,ch]=c(0);assert.equal(E.applyChat(s,ch,{affection:4}),0);assert.equal(E.applyChat(s,ch,{affection:-3}),-3);
+ [s,ch]=c(1);assert.equal(E.applyChat(s,ch,{affection:4}),1);
+ [s,ch]=c(4);assert.equal(E.applyChat(s,ch,{affection:0}),2);
+ const n=E.newGame(1);n.agenda=[];n.ap=0;n.people.C02.met=true;n.people.C02.aff=40;const rn=E.spendNight(n,'C02',{affection:4,fate:f(0)});assert.equal(rn.people.C02,undefined);
+ const prev=E.newGame(2);prev.ended=true;E.setFreedom(prev,3);assert.equal(E.newGamePlus(prev,'purse',3).freedom,3);
+});
