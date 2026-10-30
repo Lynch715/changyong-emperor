@@ -67,7 +67,7 @@ function guide(){
 // ---------- 首页：本月 ----------
 function home(){
  const pending=E.pendingScene(s),sc=pending&&E.scene(pending);
- const acts=[['chat','召见'],['gift','赏赐'],['edict','下旨'],['review','批折'],['outing','微服'],['rest','休养']];
+ const acts=[['chat','召见'],['gift','赏赐'],['edict','下旨'],['review',`批折 · ${s.memorials?.length||0}`],['outing','微服'],['rest','休养']];
  // 身边的人开局就都摆出来；没见过的标“未见”，召入宫的人也在内
  const ppl=[...CORE.filter(id=>E.present(s,id)&&!E.gone?.(s,id)),...Object.keys(s.inPalace||{})];
  const later=CORE.filter(id=>!E.present(s,id)||!s.people[id].met).length;
@@ -166,6 +166,7 @@ const PRESET_EDICTS=[
  {title:'开恩科',text:'今岁加开恩科，广纳寒门之士。',effects:{court:4,treasury:-3,people:1},narration:'恩科的消息传出去，各省的读书人都动了起来。考场里坐满了人，有白发的老秀才，也有十几岁的少年。放榜那天，有一半的新科进士出身寒门。'},
  {title:'赦免轻罪',text:'京畿牢狱中，轻罪者一律释放回家。',effects:{people:4,court:-2},narration:'几百个犯人走出了牢门，有的人在门口就跪下磕头。刑部的几位老臣连上了三道折子，说这样下去法度要乱。百姓却都说，新皇上是个心软的。'}
 ];
+function memorialView(){const r=s.reviewSession;return `${header()}<main><button data-act="go" data-to="home">‹ 合上折匣</button><h2>折匣 · ${s.memorials.length} 道</h2><p>本时辰还可批 ${r?.left||0} 道；留中也算一道。合上再开用一个时辰。</p>${view.feedback?paras(view.feedback):''}${s.memorials.map(m=>`<article class="crisis"><h3>${esc(m.title)}</h3><small>${esc(m.author)} · ${esc(m.province)} · ${esc(m.type)}</small>${paras(m.body)}<div class="options">${E.memorialOptions(m).map(([id,label])=>`<button data-act="memorial" data-id="${m.uid}" data-choice="${id}" ${!r?.left||r.held.includes(m.uid)?'disabled':''}>${esc(label)}${id==='approve'?' · 国库十八万两':''}</button>`).join('')}</div>${AI.aiMode()!=='off'&&r?.left&&!r.held.includes(m.uid)?`<form data-act="memorial-write" data-id="${m.uid}"><label>亲笔批<textarea name="t" maxlength="200" required></textarea></label><button ${busy?'disabled':''}>${busy?'候回报……':'朱批'}</button></form>`:''}</article>`).join('')}</main>`;}
 function edictView(){
  const r=view.result,ai=AI.aiMode()!=='off';
  if(r)return `<div class="stage" style="--bg:url('${abs(BG.court)}')"><article class="paper"><h2>${esc(r.title||'旨意')}</h2><div class="choice">朱批：${esc(r.src)}</div>${fateLine(r.fate)}${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="done">好</button></article></div>`;
@@ -206,7 +207,7 @@ function summaryView(){
  const next=s.ended?0:s.agenda.length;
  return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><article class="paper summary">
   <h2>${YEAR_NAME(r.y)}年${MONTHS[r.m-1]} · 月末</h2>
-  <h4>这个月</h4>${chips(r.stats,r.people)||'<p class="muted">风平浪静。</p>'}
+  ${(r.govNotes||[]).map(n=>`<p>${esc(n)}</p>`).join('')}<h4>这个月</h4>${chips(r.stats,r.people)||'<p class="muted">风平浪静。</p>'}
   <p class="muted small">${['treasury','inner'].map(k=>`${statName(k)}：进 ${moneyText(r.ledger[k].in)}，出 ${moneyText(r.ledger[k].out)}，余 ${moneyText(r.balances[k])}`).join('<br>')}<br>${r.cooled.length?`<br>${r.cooled.map(nm).join('、')}这个月没见到你，情分淡了一点。`:''}${r.forgot?.length?`<br>${r.forgot.map(nm).join('、')}的生辰，你没有去。情分 −3。`:''}</p>
   ${r.crises.filter(c=>c.status!=='later').map(c=>`<div class="crisis mini ${c.status}"><b>${c.name}</b><em>${{open:'进行中',solved:'已了结',failed:'没办好'}[c.status]}</em></div>`).join('')}
   ${s.ended?`<button class="primary" data-act="ending">${['两年过去了','四年过去了','六年过去了'][(s.vol||1)-1]} ›</button>`:`<h4>下个月</h4><p>${dateText(s)}${next?`，有 ${next} 件要事。`:'，暂无要事。'}</p>${E.birthdays(s).length?`<p class="new">下个月是${E.birthdays(s).map(nm).join('、')}的生辰。</p>`:''}${CORE.filter(id=>E.present(s,id)&&!s.people[id].met&&PEOPLE[id].from[0]===s.year&&PEOPLE[id].from[1]===s.month).map(id=>`<p class="new">新面孔：${PEOPLE[id].name}（${PEOPLE[id].title}）</p>`).join('')}<button class="primary" data-act="go" data-to="home">进入${MONTHS[s.month-1]} ›</button>`}
@@ -322,7 +323,7 @@ function celebration(){
  else if(c.k==='ach'){big=`${c.a.icon}`;small=`成就解锁 · ${c.a.title}<br><span>${esc(c.a.desc)}</span>`;cls='ach-pop';}
  return `<div class="cele ${cls}" data-act="cele">${img?`<img src="${img}" alt="">`:''}<div class="cele-box"><b>${big}</b><p>${small}</p><small>点一下继续</small></div></div>`;
 }
-const VIEWS={rest:restView,outings:outingsView,nanfeng:nanfengView,rebirth:rebirthView,gallery:galleryView,replay:replayView,title:titleView,home,scene:sceneView,pick:()=>pickPerson(view.kind),chat:chatView,gift:giftView,edict:edictView,result:resultView,night:nightView,summary:summaryView,ending:endingView,people:peopleView,log:logView,settings:settingsView};
+const VIEWS={memorials:memorialView,rest:restView,outings:outingsView,nanfeng:nanfengView,rebirth:rebirthView,gallery:galleryView,replay:replayView,title:titleView,home,scene:sceneView,pick:()=>pickPerson(view.kind),chat:chatView,gift:giftView,edict:edictView,result:resultView,night:nightView,summary:summaryView,ending:endingView,people:peopleView,log:logView,settings:settingsView};
 let lastVibration=null;
 function render(){if(!audienceOf().confirmed){app.innerHTML=ageView();return;}const c=s?.cele?.[0];if(c!==lastVibration){lastVibration=c;if(c&&['stage','lover'].includes(c.k)){try{globalThis.navigator?.vibrate?.(30);}catch{}}}app.innerHTML=(VIEWS[view.name]||home)()+(['home','summary','people','gallery','ending'].includes(view.name)&&!busy?celebration():'');const m=document.getElementById('msgs');if(m)m.scrollTop=m.scrollHeight;if(view.name==='chat'&&!busy)app.querySelector('.say input')?.focus();}
 function go(v){view=v;render();window.scrollTo(0,0);}
@@ -393,7 +394,8 @@ const ACTS={
  'plan-idea':el=>{const ta=document.getElementById(el.dataset.target);if(ta){ta.value=(el.dataset.target==='restPlan'?REST_IDEAS:nightIdeas(view.id))[+el.dataset.i];ta.focus();}},
  'rest-plan':()=>{const plan=(document.getElementById('restPlan')?.value||'').trim(),companion=document.getElementById('restCompanion')?.value||null;if(!plan)return toast('写个安排，或选“照常歇着”。');if(!planAllowed(plan,companion))return toast(PLAN_NOTICE);view.draft=plan;view.companion=companion;
   withBusy(async()=>{const fate=E.rollFate(s,'rest',companion),v=await AI.restScene(s,plan,{companion,fate});const r=v?E.plannedRest(s,plan,{...v,companion,fate}):E.rest(s);view={name:'result',result:{...r,bg:BG.garden}};});},
- review:()=>{const r=E.review(s);save();go({name:'result',result:{...r,bg:BG.desk}});},
+ review:()=>{try{E.review(s);save();go({name:'memorials'});}catch(e){toast(e.message);}},
+ memorial:el=>{try{const r=E.judgeMemorial(s,el.dataset.id,el.dataset.choice);view.feedback=r.text;save();render();}catch(e){toast(e.message);}},
  done:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});afterAction();},
  night:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});if(s.agenda.length)return toast('先把要事办完。');if(s.night)return monthEnd();if(E.stayOf(s))return go({name:'night',id:E.stayOf(s)});if(s.ap>0&&!confirm(`还有 ${s.ap} 个时辰没用。确定入夜吗？`))return;go({name:'night'});},
  'night-select':el=>go({name:'night',id:el.dataset.id||null}),
@@ -447,6 +449,7 @@ app.addEventListener('error',e=>{const img=e.target;if(img.tagName!=='IMG'||!img
 app.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el||el.tagName==='FORM')return;if(el.disabled)return;const f=ACTS[el.dataset.act];if(f){e.preventDefault();f(el);}});
 app.addEventListener('change',e=>{if(e.target.dataset.pref==='tenderness'){try{setTenderness(e.target.checked);}catch(err){toast(err.message);render();}}});
 app.addEventListener('submit',e=>{e.preventDefault();if(!audienceOf().confirmed)return;const f=e.target,t=(f.t?.value||'').trim();if(f.dataset.act==='transfer'){try{const r=E.transferFunds(s,f.direction.value,f.amount.value);save();go({name:'result',result:r});}catch(e){toast(e.message);}}else if(f.dataset.act==='say')sayHandler(t);else if(f.dataset.act==='decree')decreeHandler(t);
+ else if(f.dataset.act==='memorial-write')withBusy(async()=>{const fate=E.rollFate(s,'edict'),v=await AI.edictResult(s,t,CAST.filter(id=>E.present(s,id)),fate);if(!v)throw Error('朱批未发出，可重试。');const r=E.writeMemorial(s,f.dataset.id,t,{...v,fate});view.feedback=r.text;});
  else if(f.dataset.act==='api'){const d={url:f.url.value.trim(),model:f.model.value.trim(),key:f.key.value.trim()},rem=f.remember.checked;withBusy(async()=>{await AI.saveConnection(d,rem);toast('AI 已开启');});}});
 
 (async()=>{render();if(!audienceOf().confirmed)return;await AI.initAI();s=E.load();render();})();

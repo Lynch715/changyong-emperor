@@ -1,3 +1,4 @@
+import * as G from './government.js';
 import {planAllowed,PLAN_NOTICE,restCost} from './plans.js';
 import {OFFICES,currentTitle,initAppointments,validateAppointments,recordAppointment,officeMonthly,appointmentOptions,officePlace} from './appointments.js';
 export {appointmentOptions} from './appointments.js';
@@ -42,7 +43,7 @@ export const weatherOf=s=>WEATHER[SEASON(s.month)].includes(s.weather)?s.weather
 export function newGame(seed=Date.now()%2147483647){
  const s={economyVersion:1,version:1,vol:1,freedom:2,flags:{},seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
  for(const id of CAST)s.people[id]={aff:PEOPLE[id].start,met:false,knot:null,first:false,second:false,third:false,lover:false,firstAt:null,secondAt:null,memories:[]};
- initAppointments(initTravel(s));bind(s);startMonth(s);return s;
+ G.initGovernment(initAppointments(initTravel(s)));bind(s);startMonth(s);return s;
 }
 
 // ---------- 人物 ----------
@@ -84,6 +85,7 @@ export function log(s,text,kind='事'){s.log.push({y:s.year,m:s.month,kind,text}
 
 // ---------- 月 ----------
 export function startMonth(s){
+ G.memorialMonth(s,rand);
  s.ledger=emptyLedger();
  s.weather=WEATHER[SEASON(s.month)][Math.floor(rand(s)*3)];
  s.ap=AP_PER_MONTH;s.night=false;s.delta={stats:{},people:{}};s.chats=0;
@@ -96,7 +98,7 @@ export function startMonth(s){
  for(const id of CORE)if(away(s,id)&&!gone(s,id)){if(secondReady(s,id,true))s.agenda.push(PEOPLE[id].second);else if(thirdReady(s,id,true))s.agenda.push(thirdOf(id));else if(fourthReady(s,id,true))s.agenda.push(fourthOf(id));else if(fifthReady(s,id,true))s.agenda.push(fifthOf(id));}
  // 要事少的月份，抽一件奏折或宫闱小事
  const last=s.month===12&&LAST_YEARS.includes(s.year);
- if(!last&&(s.agenda.length===0||(s.agenda.length===1&&rand(s)<0.5))){const left=POOL.filter(p=>!s.used.petitions.includes(p.id)&&(!p.months||p.months.includes(s.month))&&(!p.need||(present(s,p.need)&&s.people[p.need].met&&!away(s,p.need))));if(left.length){const p=left[Math.floor(rand(s)*left.length)];s.used.petitions.push(p.id);s.agenda.push(p.id);}}
+ if(!last&&(s.agenda.length===0||(s.agenda.length===1&&rand(s)<0.5))){const left=SMALL_EVENTS.filter(p=>!s.used.petitions.includes(p.id)&&(!p.months||p.months.includes(s.month))&&(!p.need||(present(s,p.need)&&s.people[p.need].met&&!away(s,p.need))));if(left.length){const p=left[Math.floor(rand(s)*left.length)];s.used.petitions.push(p.id);s.agenda.push(p.id);}}
  for(const id of CORE)if(present(s,id)&&!s.people[id].met&&!SCENES[PEOPLE[id].first]?.id)s.people[id].met=true;
  // 情分够了的人，有时会自己找上门来
  s.visit=null;
@@ -262,7 +264,12 @@ export function transferFunds(s,direction,amount){
 }
 // 批折：朝局 +3，圣躬 −2；设了值房之后只伤 1 点
 const REVIEWS=['你把积压的折子一本本看完。有一本说某县修桥，银子报了三遍，你朱批：查。','山东巡抚报了今年的雨水，字写得工整，事也办得明白。你在折尾批了一句：好，照此办。','两道折子说的是同一件事，口径却对不上。你把两本并排摆着看了半个时辰，批了四个字：据实再奏。','有个知县在折子里絮絮叨叨讲了半页县里的庄稼。你本想批“知道了”，想了想，改成：朕都看了，你辛苦。'];
-export function review(s){spend(s);s.reviews=(s.reviews||0)+1;const stats=applyStats(s,{court:3,health:s.done?.W08==='council'?-1:-2});log(s,'批了一批折子','政');count(s,'reviews');return {title:'批折',text:REVIEWS[(s.reviews-1)%REVIEWS.length]+(s.done?.W08==='council'?'\n\n值房的人先替你分好了，看得快了许多。':''),stats,people:{}};}
+export function review(s){return G.beginReview(s,spend);}
+export const memorialOptions=G.memorialOptions;
+export function judgeMemorial(s,uid,choice){return G.decideMemorial(s,uid,choice,{funds,applyStats,log});}
+// 亲笔批复复用下旨限幅与骰面，只消耗折匣已付的时辰。
+export function writeMemorial(s,uid,text,result){const m=G.checkReview(s,uid);if(!String(text).trim())throw Error('请写下朱批。');const prior=s.ap;s.ap=1;let r;try{r=applyEdict(s,`就${m.province}「${m.title}」朱批：${text}`,result);}finally{s.ap=prior;}s.reviewSession.left--;s.memorials=s.memorials.filter(x=>x.uid!==uid);return {...r,title:m.title,text:result.narration};}
+
 export function rest(s){spend(s);const stats=applyStats(s,{health:8+(weatherOf(s)==='闷热'?2:0)});log(s,'闭门休养了一日','行');return {title:'休养',text:'你推开折子，让苏培盛把门关上。睡了一个整觉，醒来时窗外的光正好。',stats,people:{}};}
 
 // 自拟休养：先检查人选和银子，成功后才用时辰。普通休养仍走上面的原流程。
@@ -318,6 +325,7 @@ export function endMonth(s){
  if(s.nanfeng?.visit&&!s.nanfeng.visit.done)throw Error('先把馆里的茶喝完。');
  if(s.agenda.length)throw Error('本月还有要事没办。');
  const report={y:s.year,m:s.month,stats:{...s.delta.stats},people:{...s.delta.people}};
+ G.backlog(s,applyStats);
  const beforeDuties={...s.delta.stats};const duties=officeMonthly(s,rand(s)<.25);const {treasury:extraSilver=0,...extraStats}=duties.changes;for(const text of duties.notes)log(s,text,'任');
  const tick={...applyStats(s,extraStats),...applyStats(s,s.year>=5?{health:-2,palace:-1}:s.year>=3?{health:-1,court:-1,people:-1}:{health:-1}),...funds(s,{treasury:ECONOMY.income[(s.vol||1)-1]+extraSilver,inner:ECONOMY.innerIncome})};for(const k of Object.keys(tick))tick[k]=silver((s.delta.stats[k]||0)-(beforeDuties[k]||0));report.income=tick;
  for(const[k,v]of Object.entries(tick))report.stats[k]=(report.stats[k]||0)+v;
@@ -325,6 +333,7 @@ export function endMonth(s){
  report.forgot=[];for(const id of birthdays(s)){const p=s.people[id];if(birthdayDone(s,id)||p.aff<25)continue;p.aff=clamp(p.aff-3);report.people[id]=(report.people[id]||0)-3;remember(s,id,'生辰那个月，你没有来');log(s,`${PEOPLE[id].name}的生辰，你没有去`,'情');report.forgot.push(id);}
  // 久不相见，情分会慢慢淡
  report.cooled=[];for(const id of CORE){const p=s.people[id];if(p.met&&!s.delta.people[id]&&!report.forgot.includes(id)&&p.aff>30&&present(s,id)&&!away(s,id)){p.aff=clamp(p.aff-(p.aff>=45?2:1));report.cooled.push(id);}}
+ report.govNotes=[...s.govNotes];report.stats={...s.delta.stats};
  report.ledger=structuredClone(s.ledger);report.balances={treasury:s.stats.treasury,inner:s.stats.inner};
  settleCrises(s);
  report.crises=ALL_CRISES.filter(c=>c.vol===(s.vol||1)).map(c=>({id:c.id,name:c.name,status:crisisStatus(s,c)}));
@@ -363,4 +372,4 @@ export function ending(s){
 }
 
 export function save(s,storage=globalThis.localStorage){try{storage.setItem(SAVE_KEY,JSON.stringify(s));return true;}catch{return false;}}
-export function load(storage=globalThis.localStorage){try{const s=JSON.parse(storage.getItem(SAVE_KEY)||'null');return s?.version===1?bind(initAppointments(initTravel(initEconomy(s)))):null;}catch{return null;}}
+export function load(storage=globalThis.localStorage){try{const s=JSON.parse(storage.getItem(SAVE_KEY)||'null');return s?.version===1?bind(G.initGovernment(initAppointments(initTravel(initEconomy(s))))):null;}catch{return null;}}

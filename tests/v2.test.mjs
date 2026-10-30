@@ -194,9 +194,9 @@ test('专心对一个人，六年能走完五幕并相守',()=>{
  const p=s.people.C02;assert.equal(n,72);assert.ok(p.fourth&&p.fifth&&p.lover,'苏培盛五幕走完');assert.equal(E.ending(s).people.find(x=>x.id==='C02').tier,3);
  assert.ok((s.count.bdays||0)>=5,'每年二月都记得苏培盛的生辰');assert.ok(s.count.festivals>=10);
 });
-test('批折：朝局 +3、圣躬 −2，设值房后只伤 1 点，占一个时辰',()=>{
- const s=E.newGame(1);s.agenda=[];s.stats.court=50;s.stats.health=50;const ap=s.ap;const r=E.review(s);assert.equal(s.ap,ap-1);assert.deepEqual(r.stats,{court:3,health:-2});assert.ok(r.text);
- s.done.W08='council';assert.deepEqual(E.review(s).stats,{court:3,health:-1});
+test('批折打开折匣只占一个时辰，固定收益移除，值房可批五道',()=>{
+ const s=E.newGame(1);s.agenda=[];const ap=s.ap;assert.deepEqual(E.review(s).stats,{});assert.equal(s.ap,ap-1);assert.equal(s.reviewSession.left,3);
+ s.done.W08='council';E.review(s);assert.equal(s.reviewSession.left,5);
 });
 
 import {tierOf,TIERS} from '../src/v2/fate.js';
