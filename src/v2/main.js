@@ -1,3 +1,4 @@
+import {PORTRAIT_IDS,placeBackground,NIGHT_BG,portraitFile} from './art.js';
 import {audienceOf,confirmAge,setTenderness} from './audience.js';
 import {GROUPS} from './roster.js';
 import {PLACES,DESTINATIONS} from './outings.js';
@@ -27,9 +28,9 @@ const statValue=(k,n)=>['treasury','inner'].includes(k)?moneyText(n):n;
 const statName=id=>STATS.find(x=>x.id===id)?.name||id;
 const nm=id=>NAMES[id]||PEOPLE[id]?.name||'';
 const dateText=st=>`雍正${YEAR_NAME(st.year)}年 · ${MONTHS[st.month-1]}`;
-const THUMBS=new Set(['C01','C02','C03','C04','C05','C06','C07','C08','C09','C10','C11','C19','C20','C21','C22','C26','C28','C32',...Array.from({length:22},(_,i)=>'C'+(i+11)).filter(id=>id!=='C23')]);
+const THUMBS=PORTRAIT_IDS;
 const face=id=>THUMBS.has(id)?thumb(id):portrait(id);
-const avatar=(id,cls='')=>THUMBS.has(id)?`<img class="${cls}" src="${cls==='portrait'?portrait(id):face(id)}" alt="${esc(nm(id))}">`:`<span class="avatar ${cls}" aria-label="${esc(nm(id))}">${esc((PEOPLE[id]?.name||nm(id)||'人')[0])}</span>`;
+const avatar=(id,cls='')=>THUMBS.has(id)?`<picture class="portrait-media"><source type="image/webp" srcset="${portraitFile(id,cls==='portrait'||cls==='person-face'?'mobile':'thumb')}"><img class="${cls}" data-person="${id}" src="${portraitFile(id,cls==='portrait'||cls==='person-face'?'mobile':'thumb','png')}" loading="${cls==='portrait'?'eager':'lazy'}" decoding="async" alt="${esc(nm(id))}"></picture>`:`<span class="avatar ${cls}" aria-label="${esc(nm(id))}">${esc((PEOPLE[id]?.name||nm(id)||'人')[0])}</span>`;
 const abs=p=>new URL(p,location.href).href;
 const save=()=>{if(!s)return;for(const a of updateGallery(s))E.cele(s,{k:'ach',a});E.save(s);};
 
@@ -176,17 +177,17 @@ function edictView(){
  </article></div>`;
 }
 
-function outingsView(){return `${header()}<main><div class="bar-title"><button data-act="go" data-to="home">‹ 返回</button><b>微服去哪里？</b></div><p class="muted">选好去处才用时辰。这里的花费都走内帑。</p><section class="places">${Object.entries(PLACES).map(([id,p])=>`<button data-act="travel" data-id="${id}" ${!E.canAct(s)||s.stats.inner<p.cost?'disabled':''}><b>${p.name}</b><span>${p.desc}</span><small>内帑 ${moneyText(p.cost)}${s.stats.inner<p.cost?' · 内帑不足':''}</small><small>${p.hint}</small></button>`).join('')}</section></main>`;}
-function nanfengView(){return `${header()}<main><h3 class="sec">南风馆 · 灯下</h3><p>今夜不问姓名，只听一曲，或下一局棋。</p><section class="places">${[['N02','听雨汐弹琵琶、唱曲'],['N01','和花妍下棋、说话'],['tea','只喝茶听曲']].filter(([id])=>!s.freed[id]).map(([id,label])=>`<button data-act="company" data-id="${id}">${label}</button>`).join('')}</section><p class="muted small">入馆的银子已付过。坐定后，这一回便结束。</p></main>`;}
+function outingsView(){return `${header()}<main><div class="bar-title"><button data-act="go" data-to="home">‹ 返回</button><b>微服去哪里？</b></div><p class="muted">选好去处才用时辰。这里的花费都走内帑。</p><section class="places">${Object.entries(PLACES).map(([id,p])=>`<button data-act="travel" data-id="${id}" ${!E.canAct(s)||s.stats.inner<p.cost?'disabled':''}><img class="place-thumb" src="${placeBackground(id,s.month,'thumb')}" loading="lazy" decoding="async" alt="${p.name}"><b>${p.name}</b><span>${p.desc}</span><small>内帑 ${moneyText(p.cost)}${s.stats.inner<p.cost?' · 内帑不足':''}</small><small>${p.hint}</small></button>`).join('')}</section></main>`;}
+function nanfengView(){return `${header()}<main class="nanfeng-hall" style="--place-bg:url('${abs(placeBackground('nanfeng-interior',s.month))}')"><h3 class="sec">南风馆 · 灯下</h3><p>今夜不问姓名，只听一曲，或下一局棋。</p><section class="places">${[['N02','听雨汐弹琵琶、唱曲'],['N01','和花妍下棋、说话'],['tea','只喝茶听曲']].filter(([id])=>!s.freed[id]).map(([id,label])=>`<button data-act="company" data-id="${id}">${label}</button>`).join('')}</section><p class="muted small">入馆的银子已付过。坐定后，这一回便结束。</p></main>`;}
 
 // ---------- 白天的小结果（微服、休养） ----------
 function resultView(){const r=view.result;return `<div class="stage" style="--bg:url('${abs(r.bg||BG.garden)}')">${r.id?`<img class="portrait" src="${portrait(r.id)}" alt="">`:''}<article class="paper"><h2>${esc(r.title)}</h2>${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="done">好</button></article></div>`;}
 
 // ---------- 夜 ----------
 function nightView(){
- if(view.result){const r=view.result;return `<div class="stage night" style="--bg:url('${abs(BG.palace)}')">${r.id?`<img class="portrait" src="${portrait(r.id)}" alt="">`:''}<article class="paper"><h2>${r.id?E.placeOf(s,r.id)+' · 夜':'独寝'}</h2>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}${notesHtml(r)}<button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;}
+ if(view.result){const r=view.result;return `<div class="stage night" style="--bg:url('${abs(NIGHT_BG)}')">${r.id?`<img class="portrait" src="${portrait(r.id)}" alt="">`:''}<article class="paper"><h2>${r.id?E.placeOf(s,r.id)+' · 夜':'独寝'}</h2>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}${notesHtml(r)}<button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;}
  const list=E.nightChoices(s),ai=AI.aiMode()!=='off';
- return `<div class="stage night" style="--bg:url('${abs(BG.palace)}')"><div class="stage-top"><button data-act="go" data-to="home">‹ 再等等</button><span>${dateText(s)} · 夜</span></div><article class="paper">
+ return `<div class="stage night" style="--bg:url('${abs(NIGHT_BG)}')"><div class="stage-top"><button data-act="go" data-to="home">‹ 再等等</button><span>${dateText(s)} · 夜</span></div><article class="paper">
   <h2>今夜去哪里？</h2>
   ${busy?'<p class="muted center wait">灯一盏一盏亮起来……</p>':`
   <section class="people">${list.map(x=>`<button class="pc" data-act="night-go" data-id="${x.id}"><img src="${face(x.id)}" alt=""><div><b>${PEOPLE[x.id].name}${x.special?'<em class="ready">有话想说</em>':x.knot?'<em class="knot">心结</em>':''}</b><span>${E.placeOf(s,x.id)} · ${stageOf(s.people[x.id].aff)}</span></div></button>`).join('')}
@@ -374,8 +375,8 @@ const ACTS={
  fill:el=>{const ta=app.querySelector('textarea');if(ta){ta.value=PRESET_EDICTS[el.dataset.i].text;ta.focus();}},
  preset:el=>{const e=PRESET_EDICTS[el.dataset.i];const r=E.applyEdict(s,e.text,{effects:e.effects,title:e.title,narration:e.narration});save();go({name:'edict',result:{...r,title:e.title,src:e.text}});},
  outing:()=>go({name:'outings'}),
- travel:el=>{try{const r=E.goOuting(s,el.dataset.id);save();go({name:'result',result:{...r,bg:BG.garden}});}catch(e){toast(e.message);}},
- company:el=>{try{const r=E.nanfengCompany(s,el.dataset.id);save();go({name:'result',result:r});}catch(e){toast(e.message);}},
+ travel:el=>{try{const r=E.goOuting(s,el.dataset.id);save();go({name:'result',result:{...r,bg:placeBackground(el.dataset.id,s.month)}});}catch(e){toast(e.message);}},
+ company:el=>{try{const r=E.nanfengCompany(s,el.dataset.id);save();go({name:'result',result:{...r,bg:placeBackground('nanfeng-interior',s.month)}});}catch(e){toast(e.message);}},
  visit:()=>{const r=E.acceptVisit(s);save();go({name:'result',result:{...r,bg:bgFor(E.placeOf(s,r.id))}});},
  cele:()=>{s.cele.shift();E.save(s);render();},
  replay:el=>go({name:'replay',id:el.dataset.id}),
@@ -428,6 +429,7 @@ async function decreeHandler(text){
   const r=E.applyEdict(s,text,{...v,fate});view.result={...r,title:v.title,src:text,text:v.narration,fate};});
 }
 
+app.addEventListener('error',e=>{const img=e.target;if(img.tagName!=='IMG'||!img.dataset.person)return;const id=img.dataset.person,span=document.createElement('span');span.className='avatar '+img.className;span.textContent=(PEOPLE[id]?.name||'人')[0];span.setAttribute('aria-label',nm(id));(img.closest('picture')||img).replaceWith(span);},true);
 app.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el||el.tagName==='FORM')return;if(el.disabled)return;const f=ACTS[el.dataset.act];if(f){e.preventDefault();f(el);}});
 app.addEventListener('change',e=>{if(e.target.dataset.pref==='tenderness'){try{setTenderness(e.target.checked);}catch(err){toast(err.message);render();}}});
 app.addEventListener('submit',e=>{e.preventDefault();if(!audienceOf().confirmed)return;const f=e.target,t=(f.t?.value||'').trim();if(f.dataset.act==='transfer'){try{const r=E.transferFunds(s,f.direction.value,f.amount.value);save();go({name:'result',result:r});}catch(e){toast(e.message);}}else if(f.dataset.act==='say')sayHandler(t);else if(f.dataset.act==='decree')decreeHandler(t);

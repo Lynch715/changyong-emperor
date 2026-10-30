@@ -1,0 +1,166 @@
+{
+  "portraits": [
+    {
+      "id": "C37",
+      "name": "蒋廷锡",
+      "brief": "四十余岁文官，端雅细长脸，短须，石青外褂，二品文官锦鸡补子与红色顶戴，手持折册",
+      "source": "assets/char_C37_base.png"
+    },
+    {
+      "id": "C38",
+      "name": "马齐",
+      "brief": "七十余岁老臣，宽脸，花白长须，深褐石青常服，一品文官仙鹤补子，持笏静立",
+      "source": "assets/char_C38_base.png"
+    },
+    {
+      "id": "C39",
+      "name": "朱轼",
+      "brief": "五十余岁老臣，清瘦面容，灰白短须，朴素藏蓝长袍外褂，手持书卷，不用补子标定官阶",
+      "source": "assets/char_C39_base.png"
+    },
+    {
+      "id": "C40",
+      "name": "傅尔丹",
+      "brief": "中年驻防将领，方脸，浓眉短髭，暗红与铁灰清式长袍、便帽，佩带收鞘兵刃，不设未经确定的品级补子",
+      "source": "assets/char_C40_base.png"
+    },
+    {
+      "id": "C41",
+      "name": "查郎阿",
+      "brief": "中年边将，略瘦长脸，风霜肤色，棕黑清式袍褂、清式便帽，握折叠舆图，兵刃收鞘，不设品阶补子",
+      "source": "assets/char_C41_base.png"
+    },
+    {
+      "id": "C42",
+      "name": "允禵",
+      "brief": "三十五岁宗室男性，坚毅宽颧，清代剃额长辫，深蓝浅紫常服、玉带，站姿端正，不用朝服虚定此时爵秩",
+      "source": "assets/char_C42_base.png"
+    },
+    {
+      "id": "C43",
+      "name": "允禄",
+      "brief": "二十八岁成年亲王，年轻但成熟面貌，清代剃额长辫，石青月白亲王常服，细致团纹与玉带，手持合拢乐谱",
+      "source": "assets/char_C43_base.png"
+    },
+    {
+      "id": "C44",
+      "name": "张起麟",
+      "brief": "三十五岁成年太监，清瘦长脸，无胡须，灰青深蓝太监常服与圆帽，持拂尘，恭谨而机敏",
+      "source": "assets/char_C44_base.png"
+    },
+    {
+      "id": "C45",
+      "name": "陈福",
+      "brief": "四十五岁成年太监，圆脸，眼角纹理，无胡须，深茶褐太监常服与圆帽，双手持巾，朴实恭敬",
+      "source": "assets/char_C45_base.png"
+    },
+    {
+      "id": "C46",
+      "name": "耿氏",
+      "brief": "三十四岁成年妃嫔，圆润温厚脸，蓝绿清宫嫔位常服，精致而克制的钿饰，双手轻合于身前",
+      "source": "assets/char_C46_base.png"
+    },
+    {
+      "id": "C47",
+      "name": "宋氏",
+      "brief": "四十六岁成熟妃嫔，细长脸，有自然年龄纹理，沉紫茶褐清宫嫔位常服与素雅钿饰，沉静站姿",
+      "source": "assets/char_C47_base.png"
+    },
+    {
+      "id": "N01",
+      "name": "花妍",
+      "brief": "二十八岁成年男子，成熟秀丽骨相，明确成年男性，清式长袍层叠完整，孔雀蓝绣金与酒红华美织物、雅致首饰，精致舞台妆，端雅神态，双手持棋盒，体面自然站姿，全身充分遮盖，不画裸露或性暗示姿势",
+      "source": "assets/char_N01_base.png"
+    },
+    {
+      "id": "N02",
+      "name": "雨汐",
+      "brief": "二十六岁成年女子，成熟明艳面貌，石榴红与暖金的华美清式完整衣裙，精细首饰与舞台妆，端庄风韵，抱琵琶静立，全身充分遮盖，不画裸露或性暗示姿势",
+      "source": "assets/char_N02_base.png"
+    }
+  ],
+  "backgrounds": [
+    {
+      "id": "rice",
+      "name": "城南米市",
+      "brief": "雍正年间北京外城米市，木铺米袋粮斗，成年买米人和挑夫，小规模清初街景，生活气息，晨光",
+      "source": "assets/bg_v039_rice.png"
+    },
+    {
+      "id": "liuli",
+      "name": "琉璃厂",
+      "brief": "雍正年间北京琉璃厂的早期书肆，小街砖木店铺，旧书与字画摊，成年书生翻书，清初风貌，避免现代街牌",
+      "source": "assets/bg_v039_liuli.png"
+    },
+    {
+      "id": "temple",
+      "name": "报国寺庙市",
+      "brief": "雍正年间北京报国寺的书画古玩庙市，古寺院落、布摊旧书青瓷旧砚，成年游人，暖日低饱和",
+      "source": "assets/bg_v039_temple.png"
+    },
+    {
+      "id": "tianqiao",
+      "name": "天桥",
+      "brief": "清初北京天桥附近的市井空地，成年说书人、摔跤艺人、成人看客，朴素摊棚，市井热闹，无现代地标",
+      "source": "assets/bg_v039_tianqiao.png"
+    },
+    {
+      "id": "qianmen",
+      "name": "前门大栅栏",
+      "brief": "清初北京前门大栅栏茶楼与戏园街巷，木招牌不写可读字，成年行人，午后斜光，砖木铺面",
+      "source": "assets/bg_v039_qianmen.png"
+    },
+    {
+      "id": "shicha-summer",
+      "name": "什刹海夏荷",
+      "brief": "清初北京什刹海夏日，盛大荷叶与含苞荷花、小舟、柳树、远处低矮京城屋檐，无现代设施，静谧湿润午后",
+      "source": "assets/bg_v039_shicha-summer.png"
+    },
+    {
+      "id": "shicha-winter",
+      "name": "什刹海冬日冰嬉",
+      "brief": "清初北京什刹海冬日，宽阔冰面，几位成年清代冰嬉者练习滑行，远处柳枝与屋檐，薄雪寒光，无现代护具",
+      "source": "assets/bg_v039_shicha-winter.png"
+    },
+    {
+      "id": "baiyun",
+      "name": "白云观",
+      "brief": "清初北京白云观门前院落，石猴与古树，少量成年道士香客，清静明朗，旧砖木，无现代字牌",
+      "source": "assets/bg_v039_baiyun.png"
+    },
+    {
+      "id": "river",
+      "name": "护城河边",
+      "brief": "雍正年间京城护城河水岸、石桥、柳树、远处城墙，傍晚温柔日光，小小成年路人，无现代物品",
+      "source": "assets/bg_v039_river.png"
+    },
+    {
+      "id": "nanfeng-exterior",
+      "name": "南风馆外城巷口",
+      "brief": "虚构的清初北京外城私寓巷口，砖墙木门、遮光灯笼、雨后青砖、含蓄华丽门面，不出现人体展示，无可读文字，无人",
+      "source": "assets/bg_v039_nanfeng-exterior.png"
+    },
+    {
+      "id": "nanfeng-interior",
+      "name": "南风馆厅堂",
+      "brief": "虚构的清初私寓厅堂，华丽但典雅的灯火、轻纱幔、螺钿桌、琵琶架、棋盘与茶盏，无床榻，无人，无性暗示陈设",
+      "source": "assets/bg_v039_nanfeng-interior.png"
+    },
+    {
+      "id": "bedchamber",
+      "name": "夜晚寝殿",
+      "brief": "雍正年间养心殿寝殿的安静夜景，完整床榻与垂下的帐幔、暖灯、香几、衣架与茶盏，庄重安稳，无人，无裸露，无性行为",
+      "source": "assets/bg_v039_bedchamber.png"
+    }
+  ],
+  "reuse": "已有 C01—C22、C24—C32 立绘继续复用；C33—C36 未进入新版 roster，本轮不重复造人。只有文字出场的青禾、照水、闻笙刻意不设立绘。已有宫殿背景保留，用于既有剧情，不冒充专用微服地点图。",
+  "portrait_style_prompt": "清宫叙事游戏独立完整全身立绘，低饱和矿物色与细致工笔，真实织物，独特成年骨相，清代雍正朝完整服饰，不模仿演员；1024×1536，居中，上下留透明边距，无文字水印，无裸露或性暗示。参考：assets/char_C28_base.png 或 assets/char_C06_base.png。",
+  "background_style_prompt": "雍正年间北京历史叙事背景，低饱和矿物色，精细砖木织物，自然光，横版16:9，完整远中近景，下部保留界面叠字空间，无可读文字、UI、现代物件或水印；人物只作成年环境点景。参考：assets/exports/s11-v1/cover-display.webp。",
+  "costume_source": "https://www.dpm.org.cn/journal/247153.html",
+  "revision_notes": {
+    "C37": "将仙鹤改成二品锦鸡补子",
+    "C44": "移除文官补子，使用不虚定品阶的太监常服",
+    "C45": "移除文官补子，使用不虚定品阶的太监常服",
+    "N01": "去掉官帽和胡须，保留明确成年的男性棋师形象"
+  }
+}

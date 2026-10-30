@@ -9085,6 +9085,2871 @@
       "depicts": "停曲放杯的共同场景；不描绘特定分支结果",
       "export_manifest": "design/S11/导出登记.json",
       "runtime_catalog": "src/art-catalog.js"
+    },
+    {
+      "asset_id": "char_C37_base",
+      "character_id": "C37",
+      "name": "蒋廷锡",
+      "category": "portrait",
+      "release": "v0.39.0",
+      "path": "assets/char_C37_base.png",
+      "source_file": "assets/char_C37_base.png",
+      "actual_dimensions": [
+        1024,
+        1536
+      ],
+      "required_transparency": true,
+      "sha256": "355e219d84511749d7a10cc38a48ce43742aad52d095d9b085ba5e78bbc1fa78",
+      "generator": "built-in image_gen",
+      "visual_brief": "四十余岁文官，端雅细长脸，短须，石青外褂，二品文官锦鸡补子与红色顶戴，手持折册",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_C37_base-display.png",
+          "format": "PNG",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 649267,
+          "sha256": "824ac45157280be17da9d84ceaac4b5974c6f0175895bf2f3f13f1bf602fc175",
+          "role": "display",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C37_base-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 104130,
+          "sha256": "4c38fdbb2917d45c5877a2c51e762c2b90b7b9c084b64a0fc127c9ec0c299b22",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C37_base-mobile.png",
+          "format": "PNG",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 178241,
+          "sha256": "f5f912cf183e9bf6c6e7aa67f4a6712e0f988ae05e160895ebccebf0debbf7ad",
+          "role": "mobile",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C37_base-mobile.webp",
+          "format": "WebP",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 34996,
+          "sha256": "8bab1626bf3fae6d5b5546355b0368f16b32ae19d464b29827821aa5345c60be",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C37_base-thumb.png",
+          "format": "PNG",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 24167,
+          "sha256": "cef5bdc95fc0db8024ca3a584d5de5cfde0dbc885356e41b58a2348325d71c73",
+          "role": "thumb",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C37_base-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 17682,
+          "sha256": "12aabecdb6b85c021970b6825d8061a7ea7e1355851ec8bc9ed0a858c45437a7",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/char_C37_base-dimensions.png",
+      "age_note": "视觉年龄为明确成年人，不作为出生年月"
+    },
+    {
+      "asset_id": "char_C38_base",
+      "character_id": "C38",
+      "name": "马齐",
+      "category": "portrait",
+      "release": "v0.39.0",
+      "path": "assets/char_C38_base.png",
+      "source_file": "assets/char_C38_base.png",
+      "actual_dimensions": [
+        1024,
+        1536
+      ],
+      "required_transparency": true,
+      "sha256": "e492543c9da254d1d555ebc59c7800d74d6e99e832b81dc27856df6f6b176344",
+      "generator": "built-in image_gen",
+      "visual_brief": "七十余岁老臣，宽脸，花白长须，深褐石青常服，一品文官仙鹤补子，持笏静立",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_C38_base-display.png",
+          "format": "PNG",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 666424,
+          "sha256": "8a7b48e31b13f7ce534b0e497d53fb70523ef756e073c3c23b0ded8d311eae33",
+          "role": "display",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C38_base-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 100458,
+          "sha256": "7314be886eb71a658d5d2701b0b236418da228cbc22b375c032f8738fdadf64f",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C38_base-mobile.png",
+          "format": "PNG",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 174854,
+          "sha256": "b01d0d3294b5f0412acf0a31fdd9e42c80ea5ef3e2e43c951589879d28abe2aa",
+          "role": "mobile",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C38_base-mobile.webp",
+          "format": "WebP",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 31842,
+          "sha256": "8d18d47bcd8c698b7d1bc9856ff1f7a6feb08b5ef319ade569cf9863d311322a",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C38_base-thumb.png",
+          "format": "PNG",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 23151,
+          "sha256": "fcb93ab1cd8e18036b6c9b7ba5baf640bea1444bfdaf2c8eea8a15cd0fe4cdfd",
+          "role": "thumb",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C38_base-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 16354,
+          "sha256": "30758057fc14aa5350a0c4e95cefe1d073bf9b78993f4f147bf52ff09fe015cd",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/char_C38_base-dimensions.png",
+      "age_note": "视觉年龄为明确成年人，不作为出生年月"
+    },
+    {
+      "asset_id": "char_C39_base",
+      "character_id": "C39",
+      "name": "朱轼",
+      "category": "portrait",
+      "release": "v0.39.0",
+      "path": "assets/char_C39_base.png",
+      "source_file": "assets/char_C39_base.png",
+      "actual_dimensions": [
+        1024,
+        1536
+      ],
+      "required_transparency": true,
+      "sha256": "156906a5a27967a1ead74eab348b8bf2046bb40122859818b739b7ca080cc7fe",
+      "generator": "built-in image_gen",
+      "visual_brief": "五十余岁老臣，清瘦面容，灰白短须，朴素藏蓝长袍外褂，手持书卷，不用补子标定官阶",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_C39_base-display.png",
+          "format": "PNG",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 640612,
+          "sha256": "0fd51e13597f17d95b748894e6a0f081a0a85757677365701096f65aa9f90a8a",
+          "role": "display",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C39_base-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 95082,
+          "sha256": "9f679375baf4722056b5cc3d7b11dad0d1b146b84d257d818a86c20177b5083c",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C39_base-mobile.png",
+          "format": "PNG",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 166637,
+          "sha256": "2dd757deec236a62abd932ae639e370691dab70b2f51151b7405f36bf03877cb",
+          "role": "mobile",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C39_base-mobile.webp",
+          "format": "WebP",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 29576,
+          "sha256": "676a0e6eff1443f2293011662a12e6400b7d651f1397559daa213f57b20be41b",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C39_base-thumb.png",
+          "format": "PNG",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 22054,
+          "sha256": "204bd68a1a4be0128dc6649a8c811725d486abd83dd62b92ca2e8721cd6c1a7c",
+          "role": "thumb",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C39_base-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 15446,
+          "sha256": "cadfd00de691278330866fe1af9b85c5ddcb951bde529bfb6de0a79087afba93",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/char_C39_base-dimensions.png",
+      "age_note": "视觉年龄为明确成年人，不作为出生年月"
+    },
+    {
+      "asset_id": "char_C40_base",
+      "character_id": "C40",
+      "name": "傅尔丹",
+      "category": "portrait",
+      "release": "v0.39.0",
+      "path": "assets/char_C40_base.png",
+      "source_file": "assets/char_C40_base.png",
+      "actual_dimensions": [
+        1024,
+        1536
+      ],
+      "required_transparency": true,
+      "sha256": "b868b882a7ea3a43775737d0aa3b52a23c95ea314a879dd52aa352f686ccde26",
+      "generator": "built-in image_gen",
+      "visual_brief": "中年驻防将领，方脸，浓眉短髭，暗红与铁灰清式长袍、便帽，佩带收鞘兵刃，不设未经确定的品级补子",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_C40_base-display.png",
+          "format": "PNG",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 689807,
+          "sha256": "3cf5103db1983c6b2645ce9530f5806d5ee25be9f083a699894b070e02522eae",
+          "role": "display",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C40_base-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 108566,
+          "sha256": "0e24eaa8135e41f4a4560a79a6f926f4446d31b34c48f9df1cb8b69018abd7e6",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C40_base-mobile.png",
+          "format": "PNG",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 181588,
+          "sha256": "7b91cf581f4c90474fcc7de5b0dd2cac90c1e4c3980efd0d121234bf16a280c6",
+          "role": "mobile",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C40_base-mobile.webp",
+          "format": "WebP",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 33616,
+          "sha256": "13b822a806a14c79e08f0b33fcda983019f1c82d8b5312440ea7d6d6bda63411",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C40_base-thumb.png",
+          "format": "PNG",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 24232,
+          "sha256": "cc27ab9290da9fb1e2e1f79160876c492e061493632642e0dae5a9097a4187a5",
+          "role": "thumb",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C40_base-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 17686,
+          "sha256": "8a1b2848df11f31ed95bb24e0652e275aecf2e602147461bbeda2b25ded7c099",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/char_C40_base-dimensions.png",
+      "age_note": "视觉年龄为明确成年人，不作为出生年月"
+    },
+    {
+      "asset_id": "char_C41_base",
+      "character_id": "C41",
+      "name": "查郎阿",
+      "category": "portrait",
+      "release": "v0.39.0",
+      "path": "assets/char_C41_base.png",
+      "source_file": "assets/char_C41_base.png",
+      "actual_dimensions": [
+        1024,
+        1536
+      ],
+      "required_transparency": true,
+      "sha256": "d3641e96e0ca01807e8d93982d4811a301656315906c515c0575956d091ef51d",
+      "generator": "built-in image_gen",
+      "visual_brief": "中年边将，略瘦长脸，风霜肤色，棕黑清式袍褂、清式便帽，握折叠舆图，兵刃收鞘，不设品阶补子",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_C41_base-display.png",
+          "format": "PNG",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 628932,
+          "sha256": "195a56bb5371301a43ca91bcdefbab13ef544df76b6edd6f19a11defd14a6ab7",
+          "role": "display",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C41_base-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 96102,
+          "sha256": "cd24faf2a5bf11eaf5840f6b1046be4c21a3dec86aecb1e05b16d95512843c1d",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C41_base-mobile.png",
+          "format": "PNG",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 166332,
+          "sha256": "1a1e306174df1f0a0b63540908f0c8455e6f0e879f5b2e53e716d91874c958ae",
+          "role": "mobile",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C41_base-mobile.webp",
+          "format": "WebP",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 30026,
+          "sha256": "0318c8b32ec1142cd357d8cae3bc12eb42e4b759aa77e6fafaa3b71b4b9eccf4",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C41_base-thumb.png",
+          "format": "PNG",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 22158,
+          "sha256": "0cc1880df09ba0463a5f81b2a1e7555834ad36e98e843d5f30ec66c1a62a9cb2",
+          "role": "thumb",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C41_base-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 15144,
+          "sha256": "ad62e7895af273f557b3adaefc2b4daf337d25339d6a9edca50cb96c6dfc1940",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/char_C41_base-dimensions.png",
+      "age_note": "视觉年龄为明确成年人，不作为出生年月"
+    },
+    {
+      "asset_id": "char_C42_base",
+      "character_id": "C42",
+      "name": "允禵",
+      "category": "portrait",
+      "release": "v0.39.0",
+      "path": "assets/char_C42_base.png",
+      "source_file": "assets/char_C42_base.png",
+      "actual_dimensions": [
+        1024,
+        1536
+      ],
+      "required_transparency": true,
+      "sha256": "80be8b9d02cd7173f927448d706c1b84bdbbb710df7e5bf911f28d88ee96a17e",
+      "generator": "built-in image_gen",
+      "visual_brief": "三十五岁宗室男性，坚毅宽颧，清代剃额长辫，深蓝浅紫常服、玉带，站姿端正，不用朝服虚定此时爵秩",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_C42_base-display.png",
+          "format": "PNG",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 664745,
+          "sha256": "0572a4d838088d1496e3088276bc38065083edfbe9e6afc69761154615bfe9a6",
+          "role": "display",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C42_base-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 106684,
+          "sha256": "4daff3cd4ffd11c5182b1b0f7ad60ce9026537687a9018b64f0f7963c86ec3b1",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C42_base-mobile.png",
+          "format": "PNG",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 174901,
+          "sha256": "ba00c312019efb6743d12476de9284da65e1896a05375ef9566ac83e40b6105e",
+          "role": "mobile",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C42_base-mobile.webp",
+          "format": "WebP",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 32964,
+          "sha256": "697b11f189f1e5fc065384203524d9f83abafa8108ee4e2dcdab8f713e5b7aba",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C42_base-thumb.png",
+          "format": "PNG",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 23159,
+          "sha256": "1b640dd4420387934a30dd0b7187719ba4feb5f551c29af6af351042d488aac8",
+          "role": "thumb",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C42_base-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 16698,
+          "sha256": "1985c6c771efe76e9004611886e6cfc46fec799176a657b2eb5a5e396bd3e0f4",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/char_C42_base-dimensions.png",
+      "age_note": "视觉年龄为明确成年人，不作为出生年月"
+    },
+    {
+      "asset_id": "char_C43_base",
+      "character_id": "C43",
+      "name": "允禄",
+      "category": "portrait",
+      "release": "v0.39.0",
+      "path": "assets/char_C43_base.png",
+      "source_file": "assets/char_C43_base.png",
+      "actual_dimensions": [
+        1024,
+        1536
+      ],
+      "required_transparency": true,
+      "sha256": "bf5b4f756dd3332d8c6551466e898176a39575f1538bd3bbe8b072fe78eadcc6",
+      "generator": "built-in image_gen",
+      "visual_brief": "二十八岁成年亲王，年轻但成熟面貌，清代剃额长辫，石青月白亲王常服，细致团纹与玉带，手持合拢乐谱",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_C43_base-display.png",
+          "format": "PNG",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 702607,
+          "sha256": "55541bb7501f0e795918cfbcee8e5e8ba90c11636e0e7048dbe94098ff07e21c",
+          "role": "display",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C43_base-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 123134,
+          "sha256": "b2503c18cfa0b135fa6332eff93b3245884a0081a787828cf2b9fbc0ea76d5eb",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C43_base-mobile.png",
+          "format": "PNG",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 184203,
+          "sha256": "cbceb4031604bf1f6e18501a85ff1ffe5ecd41cdb5397b53e77e0dffa43dac15",
+          "role": "mobile",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C43_base-mobile.webp",
+          "format": "WebP",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 36648,
+          "sha256": "33281280eae52fcf548819505fe1897d9430bfde32733bc17ec8bb3b797a94e5",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C43_base-thumb.png",
+          "format": "PNG",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 24141,
+          "sha256": "d569597f84695702f6b5370bb83c6c757c778ffd5eda3c36b6a52f2dc8bd4b75",
+          "role": "thumb",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C43_base-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 17500,
+          "sha256": "9603ff628a96d5d53e14b457c5199b76d5a24ab85095bbdccd74c7ce9f70bbe6",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/char_C43_base-dimensions.png",
+      "age_note": "视觉年龄为明确成年人，不作为出生年月"
+    },
+    {
+      "asset_id": "char_C44_base",
+      "character_id": "C44",
+      "name": "张起麟",
+      "category": "portrait",
+      "release": "v0.39.0",
+      "path": "assets/char_C44_base.png",
+      "source_file": "assets/char_C44_base.png",
+      "actual_dimensions": [
+        1024,
+        1536
+      ],
+      "required_transparency": true,
+      "sha256": "782dfb46a94267528d692b38aa6f857906f0027e9b22b5d4029d0fac2c55bb77",
+      "generator": "built-in image_gen",
+      "visual_brief": "三十五岁成年太监，清瘦长脸，无胡须，灰青深蓝太监常服与圆帽，持拂尘，恭谨而机敏",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_C44_base-display.png",
+          "format": "PNG",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 697732,
+          "sha256": "3971f07321edf14c66fb90f67182722ce4afce8e77b65e85de69d72e05640f88",
+          "role": "display",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C44_base-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 110256,
+          "sha256": "ff63496fa99ef3209d235b85d812b97aefc85a192a3892278e384ab3b58faf9a",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C44_base-mobile.png",
+          "format": "PNG",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 190167,
+          "sha256": "1c80be9703651f89a90ab4b893f8de6555920407fcb665b7917dc3c77ea4aae6",
+          "role": "mobile",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C44_base-mobile.webp",
+          "format": "WebP",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 36830,
+          "sha256": "a47c3c79af9a52ff0c846708b6b8983c63b754944d90f78327c202e722d207bd",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C44_base-thumb.png",
+          "format": "PNG",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 25983,
+          "sha256": "858e32cd99cce2e7b8ec717d7d5a51a476fe1590d0d8884a79197e9efc73c801",
+          "role": "thumb",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C44_base-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 18084,
+          "sha256": "f06760d65a39d8fc73822a81c7dee13a59ecc8532ad8ff7933225f74c9b05a59",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/char_C44_base-dimensions.png",
+      "age_note": "视觉年龄为明确成年人，不作为出生年月"
+    },
+    {
+      "asset_id": "char_C45_base",
+      "character_id": "C45",
+      "name": "陈福",
+      "category": "portrait",
+      "release": "v0.39.0",
+      "path": "assets/char_C45_base.png",
+      "source_file": "assets/char_C45_base.png",
+      "actual_dimensions": [
+        1024,
+        1536
+      ],
+      "required_transparency": true,
+      "sha256": "82f00e1f609e5e49a269e46a43510b1c714fd1398722fd845dd949d4e4b911d8",
+      "generator": "built-in image_gen",
+      "visual_brief": "四十五岁成年太监，圆脸，眼角纹理，无胡须，深茶褐太监常服与圆帽，双手持巾，朴实恭敬",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_C45_base-display.png",
+          "format": "PNG",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 613580,
+          "sha256": "525cbd2ac4a8ac29a85508c9a2274506bb7e44f4f344b446c25b58fca057b530",
+          "role": "display",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C45_base-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 87568,
+          "sha256": "46e4bdf0fc2d454cb00f989ae77e77cfd82dae1d9faaa3b9f2a49626e6fc0943",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C45_base-mobile.png",
+          "format": "PNG",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 166727,
+          "sha256": "a8fdc2e548c94eb2df53ec47fd8197094eba888feed12a314b55860aac095445",
+          "role": "mobile",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C45_base-mobile.webp",
+          "format": "WebP",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 29740,
+          "sha256": "0a5daec288030fe2cbfef1e401144b41fe7df151b566ae96b9952bed811add91",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C45_base-thumb.png",
+          "format": "PNG",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 22889,
+          "sha256": "f343a78e4187cf20e025232a350a07b2d868205a0417a68c12f57f2a9a370ba9",
+          "role": "thumb",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C45_base-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 15872,
+          "sha256": "5ce51e0b5fa8bc03d715686fee69834a31235459c69ec2c159c172932abcc31c",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/char_C45_base-dimensions.png",
+      "age_note": "视觉年龄为明确成年人，不作为出生年月"
+    },
+    {
+      "asset_id": "char_C46_base",
+      "character_id": "C46",
+      "name": "耿氏",
+      "category": "portrait",
+      "release": "v0.39.0",
+      "path": "assets/char_C46_base.png",
+      "source_file": "assets/char_C46_base.png",
+      "actual_dimensions": [
+        1024,
+        1536
+      ],
+      "required_transparency": true,
+      "sha256": "4a4f47fdfc42c7bf94ab8b4ddd7ac51fc176d5ebb7cb9410962296b70ed9b90c",
+      "generator": "built-in image_gen",
+      "visual_brief": "三十四岁成年妃嫔，圆润温厚脸，蓝绿清宫嫔位常服，精致而克制的钿饰，双手轻合于身前",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_C46_base-display.png",
+          "format": "PNG",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 773176,
+          "sha256": "42d9f701ddd6a93f751fe5ddfe29b7be8e0c73d4dbb204204545579c6c69a971",
+          "role": "display",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C46_base-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 151364,
+          "sha256": "f7f5704fc0b17cab35a08ad64df8e2906cc91aefd70389cd532b1cdbdc4ebd29",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C46_base-mobile.png",
+          "format": "PNG",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 208102,
+          "sha256": "91a91b0e47531746489f4ed3d757eb6ea6c8e36274143ebd8f5034483d8570f1",
+          "role": "mobile",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C46_base-mobile.webp",
+          "format": "WebP",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 44828,
+          "sha256": "6d6f438f05318c312bdaf99ae731e9b8b2b8ce2f4c35e914d3d57c4bcb729f6f",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C46_base-thumb.png",
+          "format": "PNG",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 27049,
+          "sha256": "f12cd06fed82218a1c341373ee1550a029d783f8af44f34a92452560220919fb",
+          "role": "thumb",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C46_base-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 19708,
+          "sha256": "036358bdb379374661b571999a6b93b1ac6b14e34c50cb446e42dc62cbf0d062",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/char_C46_base-dimensions.png",
+      "age_note": "视觉年龄为明确成年人，不作为出生年月"
+    },
+    {
+      "asset_id": "char_C47_base",
+      "character_id": "C47",
+      "name": "宋氏",
+      "category": "portrait",
+      "release": "v0.39.0",
+      "path": "assets/char_C47_base.png",
+      "source_file": "assets/char_C47_base.png",
+      "actual_dimensions": [
+        1024,
+        1536
+      ],
+      "required_transparency": true,
+      "sha256": "281f2983df564fc7fee02aef7fdb2959e3cdd267f604f757058b5cfa4df812bb",
+      "generator": "built-in image_gen",
+      "visual_brief": "四十六岁成熟妃嫔，细长脸，有自然年龄纹理，沉紫茶褐清宫嫔位常服与素雅钿饰，沉静站姿",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_C47_base-display.png",
+          "format": "PNG",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 726480,
+          "sha256": "f27883fd2076d7cb3f6678093db5d760a7f8ff3689220386029359e63324cdba",
+          "role": "display",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C47_base-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 124608,
+          "sha256": "ef8af69c49b24efe887541fb08a048d274e8ae7b622e36eb171bc0d1289fd839",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C47_base-mobile.png",
+          "format": "PNG",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 197863,
+          "sha256": "494f0567739f50929c7908405de04df4b6fd8e7adf564eaffa390e7d66534089",
+          "role": "mobile",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C47_base-mobile.webp",
+          "format": "WebP",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 38738,
+          "sha256": "86ddc587e54af1fecb63130efb4415cffb242ed77780fde7a8f395d80a84ccba",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C47_base-thumb.png",
+          "format": "PNG",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 26164,
+          "sha256": "0b6872b520d8e14b224eef3f19fefd2d4e4ffbe278f9cd9e8aa74c1b7fa268a9",
+          "role": "thumb",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_C47_base-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 19044,
+          "sha256": "47959ed3ece237fdc7cffe0aaa5d9f4c6292a0a5a1bf16715485bf846b38d77a",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/char_C47_base-dimensions.png",
+      "age_note": "视觉年龄为明确成年人，不作为出生年月"
+    },
+    {
+      "asset_id": "char_N01_base",
+      "character_id": "N01",
+      "name": "花妍",
+      "category": "portrait",
+      "release": "v0.39.0",
+      "path": "assets/char_N01_base.png",
+      "source_file": "assets/char_N01_base.png",
+      "actual_dimensions": [
+        1024,
+        1536
+      ],
+      "required_transparency": true,
+      "sha256": "bb95115271640b654d52ced240868d534abb3d3a1b5796827bacf69216932720",
+      "generator": "built-in image_gen",
+      "visual_brief": "二十八岁成年男子，成熟秀丽骨相，明确成年男性，清式长袍层叠完整，孔雀蓝绣金与酒红华美织物、雅致首饰，精致舞台妆，端雅神态，双手持棋盒，体面自然站姿，全身充分遮盖，不画裸露或性暗示姿势",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_N01_base-display.png",
+          "format": "PNG",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 852191,
+          "sha256": "41c426c37f970ce34559b542184adf07fe6fbe560db67bbaf674ba5cc11627cf",
+          "role": "display",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N01_base-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 153290,
+          "sha256": "d508886149cfb5a8a3ae0280caebcb8852f6ebe2d621edb18f93ef6a15db031a",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N01_base-mobile.png",
+          "format": "PNG",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 232666,
+          "sha256": "460cae1f36482af21f760d5985db2d60f5139eabace58cc08fae950698dae637",
+          "role": "mobile",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N01_base-mobile.webp",
+          "format": "WebP",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 48634,
+          "sha256": "f37d53b97a25accf401b8cab705d26069fbb712dcec9d7cc106866fe1f688ee5",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N01_base-thumb.png",
+          "format": "PNG",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 30244,
+          "sha256": "4ccf01012f5ca905c6bd841f9ee1f12444e90d75bc86f73fcdd3f1893bb895c9",
+          "role": "thumb",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N01_base-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 23710,
+          "sha256": "34c6fb7678d9280df5681db3047a627a8d7d8773aa715cf4cca1f6f5aac6e6dc",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/char_N01_base-dimensions.png",
+      "age_note": "视觉年龄为明确成年人，不作为出生年月"
+    },
+    {
+      "asset_id": "char_N02_base",
+      "character_id": "N02",
+      "name": "雨汐",
+      "category": "portrait",
+      "release": "v0.39.0",
+      "path": "assets/char_N02_base.png",
+      "source_file": "assets/char_N02_base.png",
+      "actual_dimensions": [
+        1024,
+        1536
+      ],
+      "required_transparency": true,
+      "sha256": "a419ab2955f17e2de06c7cbd6cfa7e48b21000e899d86e4264d866b6811a0a89",
+      "generator": "built-in image_gen",
+      "visual_brief": "二十六岁成年女子，成熟明艳面貌，石榴红与暖金的华美清式完整衣裙，精细首饰与舞台妆，端庄风韵，抱琵琶静立，全身充分遮盖，不画裸露或性暗示姿势",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_N02_base-display.png",
+          "format": "PNG",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 900091,
+          "sha256": "e64c6874fd433d062a12b826f2910d02c3d2cb929ab8d953168a8edf78791a7a",
+          "role": "display",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N02_base-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            768,
+            1152
+          ],
+          "mode": "RGBA",
+          "bytes": 181618,
+          "sha256": "bbdad72c9509d446f3a4c2e236df51fb74499793e3a57c1896ac00e2aed7b304",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N02_base-mobile.png",
+          "format": "PNG",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 239666,
+          "sha256": "67ae11c22bc620f26272a0978a31e10140594206a9417a08bc6ec9698735c5a7",
+          "role": "mobile",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N02_base-mobile.webp",
+          "format": "WebP",
+          "dimensions": [
+            384,
+            576
+          ],
+          "mode": "RGBA",
+          "bytes": 52844,
+          "sha256": "501c648b1366e1cfa146f9a2baa9f533d9925002f01e53e1d8ff0bb1d1ae498b",
+          "role": "mobile",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N02_base-thumb.png",
+          "format": "PNG",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 30920,
+          "sha256": "4e965ae0150a03df987626c3a66398ac941067e72684ceaab890859ede51949c",
+          "role": "thumb",
+          "encoding": {}
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N02_base-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            128,
+            192
+          ],
+          "mode": "RGBA",
+          "bytes": 23590,
+          "sha256": "e062d8c2a6031b724116b74847807f21ad568cbe11fabe26f982f274cbd0b6cd",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/char_N02_base-dimensions.png",
+      "age_note": "视觉年龄为明确成年人，不作为出生年月"
+    },
+    {
+      "asset_id": "bg_v039_rice",
+      "character_id": null,
+      "name": "城南米市",
+      "category": "background",
+      "release": "v0.39.0",
+      "path": "assets/bg_v039_rice.png",
+      "source_file": "assets/bg_v039_rice.png",
+      "actual_dimensions": [
+        1672,
+        941
+      ],
+      "required_transparency": false,
+      "sha256": "bba9a7e4166a2dffe92789262973160ad49d97eda72b336c2d4d1b0fe55d0d26",
+      "generator": "built-in image_gen",
+      "visual_brief": "雍正年间北京外城米市，木铺米袋粮斗，成年买米人和挑夫，小规模清初街景，生活气息，晨光",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/bg_v039_rice-full.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 490640,
+          "sha256": "20687df8c9ac9de257bed15e64f77653178cedc43fd5b93bc2c78f1d9325c808",
+          "role": "full",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_rice-full.webp",
+          "format": "WebP",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 380870,
+          "sha256": "5ce51e01770df0b7f1b07cb13dd8110a707083150db760a5fc0d63bacf741fe1",
+          "role": "full",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_rice-display.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 319209,
+          "sha256": "5758272562191171aed9787a10b1d6dcedf733edc183b50c99e172ace16c75fc",
+          "role": "display",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_rice-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 257068,
+          "sha256": "9f62891117d54f42ff5f954ac7734b731b9328ac96ff820038723db56d568965",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_rice-thumb.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 25890,
+          "sha256": "ba037455e6a4808b0f43ee854bbc2cb36df226890dfda66f2f3b26e4c971afe3",
+          "role": "thumb",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_rice-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 94120,
+          "sha256": "2708025b4955350dee172234d4dfc9df6f8d8fefc6c292e9b7fc38f965984c33",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/bg_v039_rice-dimensions.png",
+      "age_note": null
+    },
+    {
+      "asset_id": "bg_v039_liuli",
+      "character_id": null,
+      "name": "琉璃厂",
+      "category": "background",
+      "release": "v0.39.0",
+      "path": "assets/bg_v039_liuli.png",
+      "source_file": "assets/bg_v039_liuli.png",
+      "actual_dimensions": [
+        1672,
+        941
+      ],
+      "required_transparency": false,
+      "sha256": "28acddf1701a8571c5075c0816a6f64778e806d02d0a64ef22f04b213c087872",
+      "generator": "built-in image_gen",
+      "visual_brief": "雍正年间北京琉璃厂的早期书肆，小街砖木店铺，旧书与字画摊，成年书生翻书，清初风貌，避免现代街牌",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/bg_v039_liuli-full.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 506351,
+          "sha256": "c3aaa3bb601b918cdaec90fca9624a7a70ef88cf5734e25072e770bf47c53ac9",
+          "role": "full",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_liuli-full.webp",
+          "format": "WebP",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 391406,
+          "sha256": "0985b8b5a47aa55bfe349e489c3969f8b311ca462ea0065ea222324a65e06cb7",
+          "role": "full",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_liuli-display.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 331439,
+          "sha256": "8e045ab843bb56c2282fc188a1864da1524205a80297bfbbf05a4435bd8c484b",
+          "role": "display",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_liuli-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 264132,
+          "sha256": "b5490583796711321d5b525da73e3938386f4d2d0ae3a917b55bcf851cda8102",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_liuli-thumb.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 26905,
+          "sha256": "e972c08120896644f8274484c80b8b459a9e0cc8bccb3391261d6ce294c4f616",
+          "role": "thumb",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_liuli-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 95354,
+          "sha256": "c25e63a66f34e54a51e690e0d41689b0f4d5b704c8905b307b895509d2b7cc57",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/bg_v039_liuli-dimensions.png",
+      "age_note": null
+    },
+    {
+      "asset_id": "bg_v039_temple",
+      "character_id": null,
+      "name": "报国寺庙市",
+      "category": "background",
+      "release": "v0.39.0",
+      "path": "assets/bg_v039_temple.png",
+      "source_file": "assets/bg_v039_temple.png",
+      "actual_dimensions": [
+        1672,
+        941
+      ],
+      "required_transparency": false,
+      "sha256": "5fd7f5e823f6e0cbc1b14bc7d2ff5cba94a8a4617d5e83f85f01759695251619",
+      "generator": "built-in image_gen",
+      "visual_brief": "雍正年间北京报国寺的书画古玩庙市，古寺院落、布摊旧书青瓷旧砚，成年游人，暖日低饱和",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/bg_v039_temple-full.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 588870,
+          "sha256": "48e91c593c2b7e5ecb1de7754d286398e83a2310cf96a79291b6b527033f0713",
+          "role": "full",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_temple-full.webp",
+          "format": "WebP",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 488454,
+          "sha256": "67966ea9027e6151435b3f7d6c5052ed9fe785cc2f2d22ef6c27277c3cdd3346",
+          "role": "full",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_temple-display.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 380782,
+          "sha256": "6fc01f32b292c6c8a746c6133e24358afd593f9a4093e469e54d2d2e103ae4d4",
+          "role": "display",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_temple-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 322872,
+          "sha256": "73333c80cd71eb8abdf4b60c1ec03a5acae9b36b445ec8ae3ee02d68977e1b5d",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_temple-thumb.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 28688,
+          "sha256": "accbc9e519b95da7b3770209bedd5f28a948d33e768a8d3ed8340c2b2b127fd8",
+          "role": "thumb",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_temple-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 100088,
+          "sha256": "30dda0095aaa6175c5f6d2f97487c35240cae2ed2bade10675be40668e1d932b",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/bg_v039_temple-dimensions.png",
+      "age_note": null
+    },
+    {
+      "asset_id": "bg_v039_tianqiao",
+      "character_id": null,
+      "name": "天桥",
+      "category": "background",
+      "release": "v0.39.0",
+      "path": "assets/bg_v039_tianqiao.png",
+      "source_file": "assets/bg_v039_tianqiao.png",
+      "actual_dimensions": [
+        1672,
+        941
+      ],
+      "required_transparency": false,
+      "sha256": "67ec7e9e18483455ab1692d243bc335ba159e881a99ed280d8bfdf7da704ea90",
+      "generator": "built-in image_gen",
+      "visual_brief": "清初北京天桥附近的市井空地，成年说书人、摔跤艺人、成人看客，朴素摊棚，市井热闹，无现代地标",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/bg_v039_tianqiao-full.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 502350,
+          "sha256": "eb9c30354d5afc6a2c1721b3ef0148b4626d14e31a3ced56ac4abff63fb19516",
+          "role": "full",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_tianqiao-full.webp",
+          "format": "WebP",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 396652,
+          "sha256": "d3feac0a8b669cb53661d1af9ce84d505e827a15c57f4635969597fce8c27fca",
+          "role": "full",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_tianqiao-display.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 327412,
+          "sha256": "ddba7df4df551d48ee920d7915e80ebba7c21bd786d7891cfcc254c5cd465637",
+          "role": "display",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_tianqiao-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 268926,
+          "sha256": "b81baba4bdc2e10810eb3dd421bd52d01534aee1a13c5e53f599e699a5282525",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_tianqiao-thumb.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 26522,
+          "sha256": "aed9de974d57c334096f4a50e3e7dd3adf7ec1d0ceec68c72f25addcf8ea5cb6",
+          "role": "thumb",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_tianqiao-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 93402,
+          "sha256": "3bae9b83c8ce88b13f24a098a0477c9021a685f97e57641f99bc235dc4d740e8",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/bg_v039_tianqiao-dimensions.png",
+      "age_note": null
+    },
+    {
+      "asset_id": "bg_v039_qianmen",
+      "character_id": null,
+      "name": "前门大栅栏",
+      "category": "background",
+      "release": "v0.39.0",
+      "path": "assets/bg_v039_qianmen.png",
+      "source_file": "assets/bg_v039_qianmen.png",
+      "actual_dimensions": [
+        1672,
+        941
+      ],
+      "required_transparency": false,
+      "sha256": "e74c5677519d3e06cf64caa16cd6298fd3887d24adb4f953012d7c98cf252022",
+      "generator": "built-in image_gen",
+      "visual_brief": "清初北京前门大栅栏茶楼与戏园街巷，木招牌不写可读字，成年行人，午后斜光，砖木铺面",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/bg_v039_qianmen-full.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 563294,
+          "sha256": "cd6acb23c78caac0d711bd287ee29a54ea35e0bba819cb43ffdc9dc68231ee9e",
+          "role": "full",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_qianmen-full.webp",
+          "format": "WebP",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 452622,
+          "sha256": "9372b85503f59e289f6dae9104c24116ef408cf203178a4c8cd25d0f24da47a1",
+          "role": "full",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_qianmen-display.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 364101,
+          "sha256": "5316cb79f1b3057006ff99b86e2161f7082f2cd9543f769edd142a0b9bc4014f",
+          "role": "display",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_qianmen-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 305400,
+          "sha256": "bebceb6ed00aa87e1dbe88c925b6296e34f8b3b9cde83bd48f159dd8280adb52",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_qianmen-thumb.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 27479,
+          "sha256": "4c4f2a98db1f8ea61b46a3af55eda016892739cb81dfedf0f31f5bb839e1d9e8",
+          "role": "thumb",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_qianmen-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 99664,
+          "sha256": "f3dc56aa5d28f2630492fffcfe1f1933bb13a2d26bdb6af89d3f030b5b5b5749",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/bg_v039_qianmen-dimensions.png",
+      "age_note": null
+    },
+    {
+      "asset_id": "bg_v039_shicha-summer",
+      "character_id": null,
+      "name": "什刹海夏荷",
+      "category": "background",
+      "release": "v0.39.0",
+      "path": "assets/bg_v039_shicha-summer.png",
+      "source_file": "assets/bg_v039_shicha-summer.png",
+      "actual_dimensions": [
+        1672,
+        941
+      ],
+      "required_transparency": false,
+      "sha256": "0c5f75d2fb1cb9b85b576fa8fc4896d0952a150e421965a54156a561c81129ff",
+      "generator": "built-in image_gen",
+      "visual_brief": "清初北京什刹海夏日，盛大荷叶与含苞荷花、小舟、柳树、远处低矮京城屋檐，无现代设施，静谧湿润午后",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/bg_v039_shicha-summer-full.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 532802,
+          "sha256": "808c2e0d2ac83f94347cd3457e72efd5f71b883e4e29da110f49d2eadc627672",
+          "role": "full",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_shicha-summer-full.webp",
+          "format": "WebP",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 426100,
+          "sha256": "eeb703c6b7e55a8dc14ab6f1c80b9216255def0b7cb6b4d0814c676ccacfea18",
+          "role": "full",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_shicha-summer-display.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 342204,
+          "sha256": "93b12bcd7f03a3d2ae802dfee56a26e0e09dec60969e8f9d0a9f3f9d25c7c4fa",
+          "role": "display",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_shicha-summer-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 284010,
+          "sha256": "d530c4ae8a2636bd072e0e7bce87a9254de4874c491a46d957877cc7ac883b6b",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_shicha-summer-thumb.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 25609,
+          "sha256": "fb0926d23eca423a7df27960d1a1c2a3f74cd1d939f3d8376a93458a1f61eed3",
+          "role": "thumb",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_shicha-summer-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 100426,
+          "sha256": "14956ca30a8a79e38b6eb8f66b5d5d62ebf5e143f171b90ddd2b8d920d23c777",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/bg_v039_shicha-summer-dimensions.png",
+      "age_note": null
+    },
+    {
+      "asset_id": "bg_v039_shicha-winter",
+      "character_id": null,
+      "name": "什刹海冬日冰嬉",
+      "category": "background",
+      "release": "v0.39.0",
+      "path": "assets/bg_v039_shicha-winter.png",
+      "source_file": "assets/bg_v039_shicha-winter.png",
+      "actual_dimensions": [
+        1672,
+        941
+      ],
+      "required_transparency": false,
+      "sha256": "4c8dff6f2005989b1259a05ab1ebc70f640d0d314ff5834bbc8fcc877c8afe02",
+      "generator": "built-in image_gen",
+      "visual_brief": "清初北京什刹海冬日，宽阔冰面，几位成年清代冰嬉者练习滑行，远处柳枝与屋檐，薄雪寒光，无现代护具",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/bg_v039_shicha-winter-full.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 480079,
+          "sha256": "9a6d5b8afaa0275109f318f975e5f5da6d85fe30b14725178710997634fea223",
+          "role": "full",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_shicha-winter-full.webp",
+          "format": "WebP",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 374870,
+          "sha256": "2652ff29ba0bcf6f58948538824952f0e47ef0a9e2d5f6534de89fffe6fc7943",
+          "role": "full",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_shicha-winter-display.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 309507,
+          "sha256": "b508895d96a7c954d972d0cd6dfef04fb50aa68c0e83130adb082e0c7acf2536",
+          "role": "display",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_shicha-winter-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 255168,
+          "sha256": "262e67ec60421f93f93a148dd99f32e6823f1f453dea1f25d1683f47a6107a34",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_shicha-winter-thumb.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 23053,
+          "sha256": "a58b1b2c852964661a27b9d62ba4e169934b476a5990f5c5ccfcdef5d62c910a",
+          "role": "thumb",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_shicha-winter-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 86740,
+          "sha256": "bde2ab39f0701ca222bde1872bc9cd6b599ced0c8ad658e763d72cfaeab1138c",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/bg_v039_shicha-winter-dimensions.png",
+      "age_note": null
+    },
+    {
+      "asset_id": "bg_v039_baiyun",
+      "character_id": null,
+      "name": "白云观",
+      "category": "background",
+      "release": "v0.39.0",
+      "path": "assets/bg_v039_baiyun.png",
+      "source_file": "assets/bg_v039_baiyun.png",
+      "actual_dimensions": [
+        1672,
+        941
+      ],
+      "required_transparency": false,
+      "sha256": "6d96f1f7dbc5686e1805558a23dd92cdc1508e84eab59da358c1da65744e59d1",
+      "generator": "built-in image_gen",
+      "visual_brief": "清初北京白云观门前院落，石猴与古树，少量成年道士香客，清静明朗，旧砖木，无现代字牌",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/bg_v039_baiyun-full.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 545929,
+          "sha256": "6698bc1ae0626bb002ac5371a333fd17c1c9b9e826d16151d6b128ae8b86c39f",
+          "role": "full",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_baiyun-full.webp",
+          "format": "WebP",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 441782,
+          "sha256": "f2c92a396f1f4362027bac020455e06f0a4d3e399bcb220f9a38c36474d028bc",
+          "role": "full",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_baiyun-display.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 353515,
+          "sha256": "3266f6b97299e66624384f2f704f413618f39ba589f27a151c3b2ab720bae242",
+          "role": "display",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_baiyun-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 298216,
+          "sha256": "919fde9f1fbd0e9ec13441d4a0b6b6dc3896db9268b512bba9b2bfd1ff45b3c1",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_baiyun-thumb.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 27269,
+          "sha256": "f4c08e6da905085317c0f16b6e8fc0af81ae474cc41884d862d19663dc43cb05",
+          "role": "thumb",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_baiyun-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 99734,
+          "sha256": "ca728ec6e9d24c4762a946219e3504b70667afa0b11946e235f78c85e725323b",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/bg_v039_baiyun-dimensions.png",
+      "age_note": null
+    },
+    {
+      "asset_id": "bg_v039_river",
+      "character_id": null,
+      "name": "护城河边",
+      "category": "background",
+      "release": "v0.39.0",
+      "path": "assets/bg_v039_river.png",
+      "source_file": "assets/bg_v039_river.png",
+      "actual_dimensions": [
+        1672,
+        941
+      ],
+      "required_transparency": false,
+      "sha256": "7fb5192c24f1b68ee208c0f20c7590eb5cc4f612d962e26678c0802357b93e3b",
+      "generator": "built-in image_gen",
+      "visual_brief": "雍正年间京城护城河水岸、石桥、柳树、远处城墙，傍晚温柔日光，小小成年路人，无现代物品",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/bg_v039_river-full.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 464370,
+          "sha256": "3d14c5e87c6f65b54e5beac77770aa019deddcbb3512b5afa47e8a6b16fab4e1",
+          "role": "full",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_river-full.webp",
+          "format": "WebP",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 362692,
+          "sha256": "549547d50b0b0f0337eb98aba5d90d0c051f3111c4c6733d38f4bfd531e863bd",
+          "role": "full",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_river-display.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 299812,
+          "sha256": "dc55b189725ddf55f0d1bdfc77d7b8221caaaad100108ee8602c801700f38a82",
+          "role": "display",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_river-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 248268,
+          "sha256": "9b27d7f0c711f2eb830aa0115f6e4b9e9d8bc4463bd7e1b7bbe6fe5bd4483236",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_river-thumb.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 22979,
+          "sha256": "32e8d6ca9c874a52104c0848a5640cda94e7d2499a7d367edd66a600968b1639",
+          "role": "thumb",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_river-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 92088,
+          "sha256": "1b7012bd9d30c8bff2db662d5dbdf144f358f29448faa6580865ace98e075858",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/bg_v039_river-dimensions.png",
+      "age_note": null
+    },
+    {
+      "asset_id": "bg_v039_nanfeng-exterior",
+      "character_id": null,
+      "name": "南风馆外城巷口",
+      "category": "background",
+      "release": "v0.39.0",
+      "path": "assets/bg_v039_nanfeng-exterior.png",
+      "source_file": "assets/bg_v039_nanfeng-exterior.png",
+      "actual_dimensions": [
+        1672,
+        941
+      ],
+      "required_transparency": false,
+      "sha256": "3ce05ed4287799546b6f6104307a8ae1439b98fd4a16f1ec85d6dc293d7a1d59",
+      "generator": "built-in image_gen",
+      "visual_brief": "虚构的清初北京外城私寓巷口，砖墙木门、遮光灯笼、雨后青砖、含蓄华丽门面，不出现人体展示，无可读文字，无人",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/bg_v039_nanfeng-exterior-full.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 462181,
+          "sha256": "2f109734c18050b27cc4801ca942e9f1ca8a547a0333153c5240c3c6f517389e",
+          "role": "full",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_nanfeng-exterior-full.webp",
+          "format": "WebP",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 359500,
+          "sha256": "a269a06c4b6b14b894fa6e1592a63e5bfc9544bcb89a0e517b7190d89ba63e92",
+          "role": "full",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_nanfeng-exterior-display.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 300070,
+          "sha256": "80ef42d29973ebe6850ad2319ce8f651e5c76b4046ff0c0241d9f204a1ab87c5",
+          "role": "display",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_nanfeng-exterior-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 242130,
+          "sha256": "1efb0a0fa6edd51e4e6ab09116fcf7e69d9bbb575c58112761ea817dbe8ab94e",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_nanfeng-exterior-thumb.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 23661,
+          "sha256": "b05bb672b7c413afc1662e2c7ebec3a47eaf4155e0ebcb29945906a6e7e1737f",
+          "role": "thumb",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_nanfeng-exterior-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 89810,
+          "sha256": "f0b369a91313947c856cb1c08551f726df0e9a2831343f0526e63c25a03c8dcc",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/bg_v039_nanfeng-exterior-dimensions.png",
+      "age_note": null
+    },
+    {
+      "asset_id": "bg_v039_nanfeng-interior",
+      "character_id": null,
+      "name": "南风馆厅堂",
+      "category": "background",
+      "release": "v0.39.0",
+      "path": "assets/bg_v039_nanfeng-interior.png",
+      "source_file": "assets/bg_v039_nanfeng-interior.png",
+      "actual_dimensions": [
+        1672,
+        941
+      ],
+      "required_transparency": false,
+      "sha256": "cb428f57354866b0bf9748e25293d33143cb5be4c2ee454463598ebceee6a8d3",
+      "generator": "built-in image_gen",
+      "visual_brief": "虚构的清初私寓厅堂，华丽但典雅的灯火、轻纱幔、螺钿桌、琵琶架、棋盘与茶盏，无床榻，无人，无性暗示陈设",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/bg_v039_nanfeng-interior-full.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 505765,
+          "sha256": "3bc66350d4fdafd38f804a1fd6d7f08f387452ade0b58e713f3df4fa49579837",
+          "role": "full",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_nanfeng-interior-full.webp",
+          "format": "WebP",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 396840,
+          "sha256": "5e602ae2775da023a757fe7f012833459a3cef2552bdd3a3c1330637b599cc2c",
+          "role": "full",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_nanfeng-interior-display.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 328041,
+          "sha256": "c470f62fcd8f4a956abfec6ce3a3cd6b6452cca0bc0e83a38a53dd9cd91bdda7",
+          "role": "display",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_nanfeng-interior-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 267132,
+          "sha256": "03cb275c502e7b5ad6a67394f6024c11b5ab80e3204abd4f27bec20f982d0fa0",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_nanfeng-interior-thumb.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 26310,
+          "sha256": "8606cc239ebd36d365172d94d82956d49739cfe8b5de522535d9ff5809b71397",
+          "role": "thumb",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_nanfeng-interior-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 92436,
+          "sha256": "d1d3df3796a7e450394a903a3572a9bb641c88c1544f5378903c40a38cbf78b4",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/bg_v039_nanfeng-interior-dimensions.png",
+      "age_note": null
+    },
+    {
+      "asset_id": "bg_v039_bedchamber",
+      "character_id": null,
+      "name": "夜晚寝殿",
+      "category": "background",
+      "release": "v0.39.0",
+      "path": "assets/bg_v039_bedchamber.png",
+      "source_file": "assets/bg_v039_bedchamber.png",
+      "actual_dimensions": [
+        1672,
+        941
+      ],
+      "required_transparency": false,
+      "sha256": "0ead093e11164d5d15d9e8efb12c01bb34060f1bd2e26973e62fff819c23ee30",
+      "generator": "built-in image_gen",
+      "visual_brief": "雍正年间养心殿寝殿的安静夜景，完整床榻与垂下的帐幔、暖灯、香几、衣架与茶盏，庄重安稳，无人，无裸露，无性行为",
+      "status": "generated-reviewed",
+      "prompt_files": [
+        "design/S11/0.39-补图清单.json"
+      ],
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/bg_v039_bedchamber-full.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 402124,
+          "sha256": "c4667ed49e5be08577fa1d66ba9cca40e03139aff0d8494a5964cb1527b8a41e",
+          "role": "full",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_bedchamber-full.webp",
+          "format": "WebP",
+          "dimensions": [
+            1672,
+            941
+          ],
+          "mode": "RGB",
+          "bytes": 297638,
+          "sha256": "71796c20fd360255d7789bd49ce731ed2277258b8dde460d093eb1d827a2bd86",
+          "role": "full",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_bedchamber-display.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 259680,
+          "sha256": "549d4d71640d67cf48d880c83b765718f197a98cd58feafffcc07a2cd2b04e9d",
+          "role": "display",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_bedchamber-display.webp",
+          "format": "WebP",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "mode": "RGB",
+          "bytes": 201420,
+          "sha256": "653786b0d9569c07bdb22efb28d8d919c25aeeb54b80ca56dedf45dc5de56ef3",
+          "role": "display",
+          "encoding": {
+            "quality": 86,
+            "method": 6
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_bedchamber-thumb.jpg",
+          "format": "JPEG",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 21322,
+          "sha256": "3ffd6584f62a879e122d759eb68c7987760b5957fbc8985ff42d44faeac714f9",
+          "role": "thumb",
+          "encoding": {
+            "quality": 88
+          }
+        },
+        {
+          "path": "assets/exports/s11-v1/bg_v039_bedchamber-thumb.webp",
+          "format": "WebP",
+          "dimensions": [
+            320,
+            180
+          ],
+          "mode": "RGB",
+          "bytes": 82672,
+          "sha256": "b9bc15fb6c1303e59be61ed01f1a71b51abe2f0d5e8d6925c123acf692ae4c8a",
+          "role": "thumb",
+          "encoding": {
+            "lossless": true
+          }
+        }
+      ],
+      "review_image": "output/playwright/v039/bg_v039_bedchamber-dimensions.png",
+      "age_note": null
+    }
+  ],
+  "v039_added": 25,
+  "intentionally_unillustrated_v039": [
+    {
+      "name": "青禾",
+      "status": "刻意不设",
+      "reason": "仅在固定文字中出现，不在roster、人物卡或对话页露面"
+    },
+    {
+      "name": "照水",
+      "status": "刻意不设",
+      "reason": "仅在固定文字中出现，不在roster、人物卡或对话页露面"
+    },
+    {
+      "name": "闻笙",
+      "status": "刻意不设",
+      "reason": "仅在固定文字中出现，不在roster、人物卡或对话页露面"
     }
   ]
 }
