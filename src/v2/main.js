@@ -49,20 +49,14 @@ function apPips(){return `<span class="pips">${Array.from({length:E.AP_PER_MONTH
 function guide(){
  if(s.stats.treasury<20&&!s.agenda.length&&s.ap>0)return `国库只剩 ${s.stats.treasury}。少赏赐，或下旨开源节流。还有 ${s.ap} 个时辰。`;
  if(s.agenda.length)return `本月有 ${s.agenda.length} 件要事等你处置。`;
- if(s.ap>0)return `还有 ${s.ap} 个时辰。召见、赏赐、下旨、出宫或休养，各用一个。`;
+ if(s.ap>0)return `还有 ${s.ap} 个时辰。每件事用一个。`;
  return '今日的时辰用完了。入夜，选一处去。';
 }
 
 // ---------- 首页：本月 ----------
 function home(){
  const pending=E.pendingScene(s),sc=pending&&E.scene(pending);
- const acts=[
-  ['chat','召见','找一个人说话。AI 会让对方真的接住你的话',''],
-  ['gift','赏赐','送对东西，情分涨得快。要花国库',''],
-  ['edict','下旨','亲笔写一道旨意，看它会掀起什么',AI.aiMode()==='off'?'（无 AI 时只能选拟好的旨意）':''],
-  ['outing','微服','出宫走走，看看真实的京城',''],
-  ['rest','休养','什么都不做，养一养身子','']
- ];
+ const acts=[['chat','召见'],['gift','赏赐'],['edict','下旨'],['review','批折'],['outing','微服'],['rest','休养']];
  const ppl=CORE.filter(id=>E.present(s,id)&&s.people[id].met);
  const later=CORE.filter(id=>!E.present(s,id)||!s.people[id].met).length;
  return `${header()}
@@ -75,7 +69,7 @@ function home(){
     <div><small>本月要事 · ${s.agenda.length} 件</small><b>${esc(sc.title)}</b><span>${esc(nm(sc.actor)||'')}${sc.location||sc.place?' · '+esc(sc.location||sc.place):''}</span></div>
     <em>处置 ›</em></button>`:''}
   <section class="acts ${sc?'locked':''}">
-   ${acts.map(([id,t,d,n])=>`<button data-act="${id}" ${!E.canAct(s)?'disabled':''}><b>${t}</b><span>${d}${n}</span></button>`).join('')}
+   ${acts.map(([id,t])=>`<button data-act="${id}" ${!E.canAct(s)?'disabled':''}><b>${t}</b></button>`).join('')}
   </section>
   <button class="night-btn ${!sc&&s.ap===0?'glow':''}" data-act="night" ${sc?'disabled':''}>入夜 ›<span>${s.ap>0&&!sc?`还剩 ${s.ap} 个时辰`:'选一处去，或独寝'}</span></button>
 
@@ -270,7 +264,7 @@ function titleView(){
   ${has?'<button class="primary" data-act="continue">继续</button>':''}
   <button class="${has?'':'primary'}" data-act="${has?'new-confirm':'new'}">新开一局</button>
   <p class="muted small">${(()=>{const L=has&&E.load();return (L?.life>1?`第${L.life}世 · `:'')+['第一卷 · 元年至二年','第二卷 · 三年至四年','第三卷 · 五年至六年'][(L?.vol||1)-1];})()} · 每卷约一小时 · AI ${AI.aiMode()==='off'?'未开启':'已开启'} · <a href="#" data-act="go" data-to="settings">设置</a></p>
-  <details class="how"><summary>怎么玩</summary><p>一个月是一回合。月初先处置要事；然后有三个时辰，可以召见、赏赐、下旨、微服或休养；入夜选一处去，或独寝。月末结算。</p><p>情分到「相知」，那个人会在夜里有话想说；到「倾心」，还有一次说破心意的机会。若你在两难里没站在谁那边，那人会有心结，要当面说开。</p><p>两年为一卷，共三卷，存档和情分一路带下去。每月有人过生辰，年节可以选一个人陪着过。走完任何一卷，都可以带着一样记忆“再活一世”。</p></details>
+  <details class="how"><summary>怎么玩</summary><p>一个月是一回合。月初先处置要事；然后有三个时辰，可以召见、赏赐、下旨、批折、微服或休养；入夜选一处去，或独寝。月末结算。</p><p>情分到「相知」，那个人会在夜里有话想说；到「倾心」，还有一次说破心意的机会。若你在两难里没站在谁那边，那人会有心结，要当面说开。</p><p>两年为一卷，共三卷，存档和情分一路带下去。每月有人过生辰，年节可以选一个人陪着过。走完任何一卷，都可以带着一样记忆“再活一世”。</p></details>
  </div></div>`;
 }
 
@@ -360,6 +354,7 @@ const ACTS={
  cele:()=>{s.cele.shift();E.save(s);render();},
  replay:el=>go({name:'replay',id:el.dataset.id}),
  rest:()=>{const r=E.rest(s);save();go({name:'result',result:{...r,bg:BG.desk}});},
+ review:()=>{const r=E.review(s);save();go({name:'result',result:{...r,bg:BG.desk}});},
  done:()=>afterAction(),
  night:()=>{if(s.agenda.length)return toast('先把要事办完。');if(s.ap>0&&!confirm(`还有 ${s.ap} 个时辰没用。确定入夜吗？`))return;go({name:'night'});},
  'night-go':el=>{const id=el.dataset.id||null;const line=(document.getElementById('nightLine')?.value||'').trim();

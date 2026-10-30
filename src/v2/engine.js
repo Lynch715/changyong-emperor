@@ -186,6 +186,9 @@ export function applyEdict(s,text,{effects={},affection={},narration='',title=''
  s.edicts=s.edicts||[];const n=s.edicts.length+1;s.edicts.push({n,text:text.slice(0,120),title:title||text.slice(0,8),narration:String(narration).slice(0,400),effects:bounded,at:idx(s.year,s.month),due:idx(s.year,s.month)+2+Math.floor(rand(s)*2)});return {stats,people,text:narration};
 }
 export function goOuting(s){spend(s);const left=OUTINGS.map((o,i)=>i).filter(i=>!s.used.outings.includes(i));const pool=left.length?left:OUTINGS.map((o,i)=>i);const i=pool[Math.floor(rand(s)*pool.length)];s.used.outings.push(i);const o=OUTINGS[i];const stats=applyStats(s,{...o.effects,health:(o.effects.health||0)+(weatherOf(s)==='雪'?-2:0)});log(s,`微服：${o.title}`,'行');return {title:o.title,text:o.text+(o.note?'\n\n'+o.note:''),stats,people:{}};}
+// 批折：朝局 +3，圣躬 −2；设了值房之后只伤 1 点
+const REVIEWS=['你把积压的折子一本本看完。有一本说某县修桥，银子报了三遍，你朱批：查。','山东巡抚报了今年的雨水，字写得工整，事也办得明白。你在折尾批了一句：好，照此办。','两道折子说的是同一件事，口径却对不上。你把两本并排摆着看了半个时辰，批了四个字：据实再奏。','有个知县在折子里絮絮叨叨讲了半页县里的庄稼。你本想批“知道了”，想了想，改成：朕都看了，你辛苦。'];
+export function review(s){spend(s);s.reviews=(s.reviews||0)+1;const stats=applyStats(s,{court:3,health:s.done?.W08==='council'?-1:-2});log(s,'批了一批折子','政');count(s,'reviews');return {title:'批折',text:REVIEWS[(s.reviews-1)%REVIEWS.length]+(s.done?.W08==='council'?'\n\n值房的人先替你分好了，看得快了许多。':''),stats,people:{}};}
 export function rest(s){spend(s);const stats=applyStats(s,{health:8+(weatherOf(s)==='闷热'?2:0)});log(s,'闭门休养了一日','行');return {title:'休养',text:'你推开折子，让苏培盛把门关上。睡了一个整觉，醒来时窗外的光正好。',stats,people:{}};}
 
 // ---------- 夜 ----------
