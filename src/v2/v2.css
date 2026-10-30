@@ -298,3 +298,11 @@ input,textarea{min-width:0}
 .transfer{padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:18px}
 .transfer label{display:block;margin:8px 0}
 .transfer input,.transfer select{display:block;width:100%;min-height:44px;font:inherit;padding:8px;background:#fffaf0;color:var(--ink);border:1px solid var(--line);border-radius:6px}
+
+.places{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.places button{padding:14px;border:1px solid var(--desk-line);border-radius:10px;background:var(--desk-soft);text-align:left;display:flex;flex-direction:column;gap:5px}
+.places b{font-size:21px;color:var(--gold-soft)}.places span,.places small{line-height:1.7;color:#b8c5cb}
+.avatar{display:inline-flex;align-items:center;justify-content:center;flex:none;width:56px;height:56px;border-radius:50%;border:1px solid var(--gold);color:var(--gold-soft);background:var(--desk);font-family:var(--brush);font-size:28px}
+.avatar.portrait{width:120px;height:140px;border-radius:12px;margin:24px auto 0}
+.avatar.person-face{width:95px;height:150px;border-radius:8px}
+@media(max-width:520px){.places{grid-template-columns:minmax(0,1fr)}}

@@ -1,3 +1,4 @@
+import {PERFORMERS} from './outings.js';
 // 新版数据：人物、月历、赏赐、出巡、空月奏折、无 AI 时的回退文字与结局。
 export const ECONOMY={startTreasury:800,startInner:50,point:10,legacyScale:800/60,fullTreasury:6000,income:[55,65,80],innerIncome:4,outingCost:0.08,banquetCost:1.5,deficitGoal:600,reformGoal:470};
 export const STATS=[
@@ -46,6 +47,8 @@ export const PEOPLE={
   likes:['wine','jewel','silk'],dislikes:['flowers','music'],first:'R03-01',second:'R03-02'}
 };
 export const CORE=Object.keys(PEOPLE);
+Object.assign(PEOPLE,PERFORMERS);
+export const CAST=Object.keys(PEOPLE);
 // 只在主线里出场的人
 export const NAMES={C01:'雍正',C21:'太后',C11:'敬妃',C19:'颂芝',C20:'宝鹃',C22:'卫临',C26:'允祥',C28:'张廷玉',C32:'岳钟琪',...Object.fromEntries(Object.entries(PEOPLE).map(([k,v])=>[k,v.name]))};
 
@@ -87,6 +90,7 @@ export const CRISES=[
 ];
 
 export const GIFTS={
+ antique:{name:'庙市寻来的古玩',category:'古玩',innerCost:0,cost:0,inventory:true},
  tea:{innerCost:0.05,name:'新贡的龙井',cost:2},handwarmer:{innerCost:0.08,name:'錾花铜手炉',cost:2},silk:{innerCost:0.2,name:'江宁织造的云锦',cost:5},
  flowers:{innerCost:0.01,name:'御园新开的花',cost:1},jewel:{innerCost:0.35,name:'内务府的点翠簪',cost:6},book:{innerCost:0.12,name:'内府藏的善本',cost:3},
  music:{innerCost:0.15,name:'一支旧玉笛',cost:4},wine:{innerCost:0.06,name:'御酒两坛',cost:3},rest:{innerCost:0,name:'准三日的假',cost:0}
