@@ -5,8 +5,8 @@ import {SUMMON_ROLES} from '../src/v2/outings.js';
 const base=()=>{const s=E.newGame(40);s.agenda=[];s.year=2;s.month=5;s.stats.inner=60;for(const id of ['N01','N02'])Object.assign(s.people[id],{met:true,aff:50});return s;};
 
 test('0.40 召宫外人入宫：情分、赎金、身份与性别限制',()=>{
- const s=base();assert.deepEqual(E.summonRoles(s,'N01').map(r=>r.key).sort(),['qi','study']);assert.deepEqual(E.summonRoles(s,'N02').map(r=>r.key).sort(),['consort','music','study']);
- assert.throws(()=>E.summonToPalace(s,'N01','consort'),/不合适/);
+ const s=base();assert.deepEqual(E.summonRoles(s,'N01').map(r=>r.key).sort(),['consort','qi','study']);assert.deepEqual(E.summonRoles(s,'N02').map(r=>r.key).sort(),['consort','music','study']);
+ assert.throws(()=>E.summonToPalace(s,'N02','qi'),/不合适/);
  s.people.N01.aff=40;assert.match(E.summonReason(s,'N01'),/48/);s.people.N01.aff=50;
  const inner=s.stats.inner,ap=s.ap,r=E.summonToPalace(s,'N01','study');
  assert.equal(s.ap,ap-1);assert.ok(Math.abs(s.stats.inner-(inner-15))<1e-6,'未赎身要付赎金');assert.ok(r.text);
@@ -29,3 +29,6 @@ test('0.40 南风馆留宿：算作当夜，只陪一人，掷骰有风险，旧
  assert.ok(bad,'三档能掷出大凶');assert.ok(bad.stats.court<0&&bad.notes.length&&bad.people.C07<0);
  const old=base();delete old.inPalace;old.nanfeng={seen:true,visit:null};old.people.C02.met=true;assert.ok(E.nightChoices(old).length>=1);
 });
+
+test('0.40.1 花妍也能册封，住钟粹宫，可以晋位',()=>{const s=E.newGame(41);s.agenda=[];s.year=2;s.month=5;s.stats.inner=60;Object.assign(s.people.N01,{met:true,aff:50});
+ const r=E.summonToPalace(s,'N01','consort');assert.match(r.text,/花妍/);assert.equal(E.placeOf(s,'N01'),'钟粹宫');assert.equal(s.appointments.N01.title,'答应');assert.ok(E.appointmentOptions(s,'N01').some(o=>o.title==='常在'));});

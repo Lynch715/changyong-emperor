@@ -48,7 +48,7 @@ export function newGame(seed=Date.now()%2147483647){
 // ---------- 人物 ----------
 export const present=(s,id)=>!before(s,PEOPLE[id].from);
 export const away=(s,id)=>{if(s.freed?.[id]?.destination==='home')return true;const place=officePlace(s,id);if(place)return ['直隶','江南','西北','云贵'].includes(place);if(PEOPLE[id].public&&['云贵','河南','浙江','四川','北疆','西北'].includes(PEOPLE[id].place))return true;return !!s.flags?.['away_'+id]||(PEOPLE[id].away||[]).some(([y,m])=>y===s.year&&m===s.month);};
-export function placeOf(s,id){const office=officePlace(s,id);if(office)return office;if(s.inPalace?.[id])return SUMMON_ROLES[s.inPalace[id].role]?.place||'宫中';if(s.freed?.[id])return {home:'故乡',city:'京城宅院',palace:'宫中值房'}[s.freed[id].destination];if(id==='C03'&&s.year>=3)return s.flags?.nian_prison?'刑部大牢':s.flags?.nian_away?'杭州':'年府';return PEOPLE[id].place;}
+export function placeOf(s,id){const office=officePlace(s,id);if(office)return office;if(s.inPalace?.[id]){const r=SUMMON_ROLES[s.inPalace[id].role];return r?.places?.[id]||r?.place||'宫中';}if(s.freed?.[id])return {home:'故乡',city:'京城宅院',palace:'宫中值房'}[s.freed[id].destination];if(id==='C03'&&s.year>=3)return s.flags?.nian_prison?'刑部大牢':s.flags?.nian_away?'杭州':'年府';return PEOPLE[id].place;}
 export const titleOf=(s,id)=>currentTitle(s,id);
 export const gone=(s,id)=>!!s.flags?.['gone_'+id];
 export const affectionStage=(s,id)=>{const n=s.people[id].aff;return PEOPLE[id].secondary?(n>=85?'深信':n>=65?'亲近':n>=45?'信任':n>=25?'相识':'生疏'):stageOf(n);};
@@ -245,7 +245,7 @@ export function summonToPalace(s,id,role){const r=SUMMON_ROLES[role];if(!r||!r.w
  Object.assign(stats,applyStats(s,r.effects));const d=gain(s,id,role==='consort'?10:6);recordAppointment(s,id,role==='consort'?'rank0':null,r.name,'召入宫');remember(s,id,'被皇上召入宫中，做了'+r.name);
  const people={[id]:d};if(role==='consort')for(const cid of ['C06','C07','C08','C09','C10']){const p=s.people[cid];if(p?.met&&p.aff>=40&&present(s,cid)){const x=gain(s,cid,-2);if(x)people[cid]=x;}}
  log(s,`召${PEOPLE[id].name}入宫，做了${r.name}`,'情');count(s,'summons');
- const text={study:`${PEOPLE[id].name}换了宫里的衣裳，第一回跟在你身后进养心殿，脚步放得很轻。张廷玉看了一眼，什么也没说；第二天，言官的折子就递上来了。`,qi:'懋勤殿收拾出一间小屋，摆了一副新棋。花妍在棋盘前跪下谢恩，抬头时，眼里有光。',music:'雨汐抱着那把旧琵琶进了南府。教习们起初不肯认她，听完一曲，都不说话了。',consort:'景阳宫打扫出来，雨汐被册为答应。宗人府递了几道折子，后宫里有人整整三天没出门。她来谢恩时跪得很低，说这辈子没想过还能有个家。'}[role];
+ const text={study:`${PEOPLE[id].name}换了宫里的衣裳，第一回跟在你身后进养心殿，脚步放得很轻。张廷玉看了一眼，什么也没说；第二天，言官的折子就递上来了。`,qi:'懋勤殿收拾出一间小屋，摆了一副新棋。花妍在棋盘前跪下谢恩，抬头时，眼里有光。',music:'雨汐抱着那把旧琵琶进了南府。教习们起初不肯认她，听完一曲，都不说话了。',consort:id==='N01'?'钟粹宫打扫出来，花妍被册为答应。宗人府的折子一道接一道，说祖宗家法里从无此例；后宫里有人摔了茶盏。他来谢恩时跪得很低，把那副旧棋盘也带进了宫，说往后只同一个人下。':'景阳宫打扫出来，雨汐被册为答应。宗人府递了几道折子，后宫里有人整整三天没出门。她来谢恩时跪得很低，说这辈子没想过还能有个家。'}[role];
  return {title:'召入宫中',text,stats,people};}
 export function nanfengStay(s,id){const v=s.nanfeng?.visit;if(!v||v.done)throw Error('今天没在馆里。');if(!['N01','N02'].includes(id)||s.freed?.[id])throw Error('今夜留不了。');if(s.agenda.length)throw Error('先把本月要事办完。');if(s.night)throw Error('今夜已经安排过了。');if(s.people[id].aff<36)throw Error('还没熟到能留宿的地步（情分要 36）。');if(s.stats.inner<1)throw Error('内帑不足。');
  v.done=true;s.ap=0;const stats=funds(s,{inner:-1});s.nanfeng.stay={id,at:monthKey(s)};const risk=rollFate(s,'outing'),people={},notes=[];
