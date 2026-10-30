@@ -1,3 +1,4 @@
+import {treasuryIndex} from './economy.js';
 // 珍藏：成就、看过的剧情、见过的结局。跨存档保留在这台设备上。
 import {CORE} from './data.js';
 export const GALLERY_KEY='changyong-v2-gallery';
@@ -18,7 +19,7 @@ export const ACHIEVEMENTS=[
  {id:'visit10',icon:'院',title:'门庭若市',desc:'被人主动探望十次',check:s=>(s.count?.visits||0)>=10},
  {id:'talk',icon:'言',title:'话匣子',desc:'召见时说满一百句话',check:s=>(s.count?.lines||0)>=100},
  {id:'edict',icon:'旨',title:'金口玉言',desc:'亲笔下十道旨意',check:s=>(s.count?.edicts||0)>=10},
- {id:'rich',icon:'银',title:'国库充盈',desc:'国库达到 90',check:s=>s.stats.treasury>=90},
+ {id:'rich',icon:'银',title:'国库充盈',desc:'国库达到 5400 万两',check:s=>treasuryIndex(s)>=90},
  {id:'people',icon:'民',title:'民心所向',desc:'民心达到 100',check:s=>s.stats.people>=100},
  {id:'deficit',icon:'账',title:'填平窟窿',desc:'了结“各省亏空”',check:s=>s.crises?.deficit==='solved'},
  {id:'nian',icon:'印',title:'大将军善终',desc:'这一世，年羹尧没有走上死路',check:s=>!!s.flags?.nian_safe},

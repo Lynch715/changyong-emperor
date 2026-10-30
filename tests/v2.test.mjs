@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as E from '../src/v2/engine.js';
-import {PEOPLE,AGENDA,CORE,STAT_MAP,STATS} from '../src/v2/data.js';
+import {PEOPLE,AGENDA,CORE,STAT_MAP,STATS,ECONOMY} from '../src/v2/data.js';
 import {REWRITE} from '../src/v2/rewrite.js';
 import {SCENES} from '../src/v2/content.js';
 
@@ -26,7 +26,7 @@ test('两年能完整走完，有结局', ()=>{
  }
  assert.ok(s.ended);assert.equal(n,24);
  const e=E.ending(s);assert.ok(e.score>0);
- for(const v of Object.values(s.stats))assert.ok(v>=0&&v<=100);
+ for(const[k,v]of Object.entries(s.stats))assert.ok(v>=0&&(['treasury','inner'].includes(k)||v<=100));
 });
 test('心结挡住情分上涨，说开后解除', ()=>{
  const s=E.newGame(1);s.people.C07.knot={source:'K01',text:'七夕两宫'};s.people.C07.met=true;
@@ -35,7 +35,7 @@ test('心结挡住情分上涨，说开后解除', ()=>{
 });
 test('旨意的数值被限幅', ()=>{
  const s=E.newGame(1);s.agenda=[];const r=E.applyEdict(s,'大赦天下',{effects:{treasury:50,people:50,court:50},affection:{C02:40,X:3}});
- assert.ok(Object.values(r.stats).every(v=>v<=8));assert.ok(Object.values(r.stats).reduce((a,b)=>a+Math.max(0,b),0)<=12);assert.ok((r.people.C02||0)<=5);
+ const points=Object.entries(r.stats).map(([k,v])=>k==='treasury'?v/ECONOMY.point:v);assert.ok(points.every(v=>v<=8));assert.ok(points.reduce((a,b)=>a+Math.max(0,b),0)<=12);assert.ok((r.people.C02||0)<=5);
 });
 import {ROMANCE,LOVER_ENDING} from '../src/v2/romance.js';
 import {MORE_PETITIONS,SMALL_EVENTS} from '../src/v2/events.js';
@@ -162,7 +162,7 @@ test('第三卷：场景齐全，六年走完，年羹尧的去留影响西北�
   while(!s.ended&&n<30)play();E.startVolume2(s);while(!s.ended&&n<60)play();
   assert.throws(()=>E.startVolume2(s));E.startVolume3(s);assert.equal(s.year,5);assert.equal(s.vol,3);
   while(!s.ended&&n<90)play();
-  assert.equal(n,72,pick);assert.ok(s.ended);for(const v of Object.values(s.stats))assert.ok(v>=0&&v<=100);
+  assert.equal(n,72,pick);assert.ok(s.ended);for(const[k,v]of Object.entries(s.stats))assert.ok(v>=0&&(['treasury','inner'].includes(k)||v<=100));
   assert.ok(E.ending(s).solved<=3);
  }
  assert.ok(seen.keep.includes('nian')&&!seen.keep.includes('nianhz'));assert.ok(seen.hangzhou.includes('nianhz')&&!seen.hangzhou.includes('nian'));assert.ok(!seen.punish.some(x=>x.startsWith('nian')));
@@ -177,7 +177,7 @@ test('再活一世：三种记忆各有效果，似曾相识的人记得',()=>{
  assert.equal(a.people.C07.aff,base.people.C07.aff+12);assert.equal(a.people.C02.aff,base.people.C02.aff+12);assert.equal(a.people.C06.aff,base.people.C06.aff);
  assert.ok(a.people.C07.memories.some(m=>m.text.includes('梦里')));assert.deepEqual(Object.keys(a.past).sort(),['C02','C07']);
  const k=E.newGamePlus(prev,'know',5);for(const id of CORE){for(const g of PEOPLE[id].likes)assert.equal(k.known[id][g],true);for(const g of PEOPLE[id].dislikes)assert.equal(k.known[id][g],false);}
- const p=E.newGamePlus(prev,'purse',5);assert.equal(p.stats.treasury,base.stats.treasury+12);assert.equal(p.stats.health,base.stats.health+5);
+ const p=E.newGamePlus(prev,'purse',5);assert.equal(p.stats.treasury,base.stats.treasury+12*ECONOMY.point);assert.equal(p.stats.health,base.stats.health+5);
  const third=E.newGamePlus({...p,ended:true},'love',6);assert.equal(third.life,3);
  const mem={d:{},getItem(k){return this.d[k]??null},setItem(k,v){this.d[k]=v}};assert.ok(updateGallery(third,mem).some(x=>x.id==='life3'));
 });
@@ -212,7 +212,7 @@ test('自由度：一档不掷骰；三档比二档难；朝局和情分会加�
 test('掷骰兜底：大凶没有好处，凶减半，召见大吉至少 +2',()=>{
  const f=t=>({d:10,bonus:[],total:10,tier:t,level:2});
  const e=t=>{const s=E.newGame(1);s.agenda=[];s.stats.treasury=50;s.stats.people=50;s.people.C02.met=true;s.people.C02.aff=40;return [s,E.applyEdict(s,'x',{effects:{people:6,treasury:-4},affection:{C02:4},fate:f(t)})];};
- let [,r]=e(0);assert.equal(r.stats.people,undefined);assert.equal(r.stats.treasury,-4);assert.equal(r.people.C02,undefined);
+ let [,r]=e(0);assert.equal(r.stats.people,undefined);assert.equal(r.stats.treasury,-4*ECONOMY.point);assert.equal(r.people.C02,undefined);
  [,r]=e(1);assert.equal(r.stats.people,3);assert.equal(r.people.C02,2);
  [,r]=e(4);assert.equal(r.stats.people,6);
  const c=t=>{const s=E.newGame(1);s.agenda=[];s.people.C02.aff=40;const ch=E.beginChat(s,'C02');ch.fate={...f(t),kind:'chat'};return [s,ch];};

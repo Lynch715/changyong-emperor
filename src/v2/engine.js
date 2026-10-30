@@ -1,3 +1,5 @@
+import {silver,treasuryIndex,initEconomy,emptyLedger,funds} from './economy.js';
+export {treasuryIndex} from './economy.js';
 // 新版引擎：一月一回合。月初处理要事，白天三个行动，夜里留一人，月末结算。
 import {SCENES as RAW,REPAIR} from './content.js';
 import {REWRITE} from './rewrite.js';
@@ -18,7 +20,7 @@ export const LAST_YEARS=[2,4,6];
 const ALL_AGENDA={...AGENDA,...AGENDA2,...AGENDA3};
 export const ALL_CRISES=[...CRISES.map(c=>({vol:1,...c})),...CRISES2,...CRISES3];
 const ALL_REPAIR={...REPAIR,...REPAIR2,...REPAIR3};
-import {PEOPLE,CORE,START_STATS,STAT_MAP,STATS,AGENDA,CRISES,GIFTS,OUTINGS,PETITIONS,stageOf,SEASON} from './data.js';
+import {PEOPLE,CORE,START_STATS,STAT_MAP,STATS,AGENDA,CRISES,GIFTS,OUTINGS,PETITIONS,stageOf,SEASON,ECONOMY} from './data.js';
 
 // 用改写稿覆盖原稿的正文与选项文字
 const SCENES=Object.fromEntries(Object.entries(RAW).map(([id,sc])=>{const w=REWRITE[id];if(!w)return [id,sc];return [id,{...sc,title:w.title||sc.title,body:w.body||sc.body,dep:w.dep,options:sc.options.map(o=>({...o,...(w.options?.[o.id]||{})}))}];}));
@@ -34,7 +36,7 @@ export const WEATHER={春:['晴','雨','风'],夏:['晴','雨','闷热'],秋:['�
 export const weatherOf=s=>WEATHER[SEASON(s.month)].includes(s.weather)?s.weather:WEATHER[SEASON(s.month)][0];
 
 export function newGame(seed=Date.now()%2147483647){
- const s={version:1,vol:1,freedom:2,flags:{},seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
+ const s={economyVersion:1,version:1,vol:1,freedom:2,flags:{},seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
  for(const id of CORE)s.people[id]={aff:PEOPLE[id].start,met:false,knot:null,first:false,second:false,third:false,lover:false,firstAt:null,secondAt:null,memories:[]};
  bind(s);startMonth(s);return s;
 }
@@ -70,13 +72,14 @@ export function applyStats(s,effects={},scale=1){
  const out={};
  for(const[k,v]of Object.entries(effects||{})){const map=STAT_MAP[k]||(STATS.some(x=>x.id===k)?[k,1]:null);if(!map||!Number.isFinite(v))continue;const [to,f]=map;out[to]=(out[to]||0)+v*f*scale;}
  const applied={};
- for(const[k,v]of Object.entries(out)){const before=s.stats[k];s.stats[k]=clamp(before+v);const d=s.stats[k]-before;if(d){applied[k]=d;s.delta.stats[k]=(s.delta.stats[k]||0)+d;}}
+ for(const[k,v]of Object.entries(out)){if(k==='treasury'||k==='inner'){Object.assign(applied,funds(s,{[k]:v*(k==='treasury'?ECONOMY.point:1)}));continue;}const before=s.stats[k];s.stats[k]=clamp(before+v);const d=s.stats[k]-before;if(d){applied[k]=d;s.delta.stats[k]=(s.delta.stats[k]||0)+d;}}
  return applied;
 }
 export function log(s,text,kind='事'){s.log.push({y:s.year,m:s.month,kind,text});if(s.log.length>300)s.log.shift();}
 
 // ---------- 月 ----------
 export function startMonth(s){
+ s.ledger=emptyLedger();
  s.weather=WEATHER[SEASON(s.month)][Math.floor(rand(s)*3)];
  s.ap=AP_PER_MONTH;s.night=false;s.delta={stats:{},people:{}};s.chats=0;
  s.agenda=(ALL_AGENDA[monthKey(s)]||[]).filter(id=>!s.done[id]);s.bdayDone=[];
@@ -133,6 +136,8 @@ export function choose(s,id,optId){
  let effects={...opt.effects};
  if(id==='G03')effects=s.done.G02==='strict'?{people:-3,court:1}:{people:2,court:2};
  if(id==='G06')effects=s.done.G04==='full'?{court:-3}:s.done.G04==='pause'?{court:-2,people:-1}:{court:3};
+ if(effects.treasury<0&&(/^(R|XR|Y|Z)/.test(id)||['relation','extension','festival'].includes(sc.kind)||id==='W10')){effects.inner=sc.kind==='festival'? -ECONOMY.banquetCost:effects.treasury*.1;delete effects.treasury;}
+ if(effects.inner<0&&s.stats.inner< -effects.inner)throw Error('内帑不足。');
  const stats=applyStats(s,effects),people={};
  const add=(cid,n)=>{const d=gain(s,cid,n);if(d)people[cid]=(people[cid]||0)+d;};
  if(['relation','extension'].includes(sc.kind)){const n={warm:6,develop:6,work:3,cooperate:3,distance:1,unsure:2}[optId]??3;const cid=sc.actor;s.people[cid].met=true;
@@ -182,21 +187,28 @@ export function hintLike(s,id){
 export function repairKnot(s,chat){const p=s.people[chat.id];if(!p.knot)return null;const line=ALL_REPAIR[p.knot.source]?.[chat.id]||'你们把那件事说开了。';log(s,`与${PEOPLE[chat.id].name}说开了「${p.knot.text}」`,'情');p.knot=null;cele(s,{k:'knot',id:chat.id});count(s,'knots');gain(s,chat.id,3);chat.gained+=3;return line;}
 
 export function giveGift(s,id,giftId){
- const g=GIFTS[giftId];if(!g)throw Error('没有这件东西。');if(s.stats.treasury<g.cost)throw Error('国库不够了。');
- spend(s);const stats=applyStats(s,{treasury:-g.cost});const liked=PEOPLE[id].likes.includes(giftId),disliked=PEOPLE[id].dislikes.includes(giftId);s.gifted=s.gifted||{};const k=id+':'+giftId,times=s.gifted[k]||0;s.gifted[k]=times+1;let d=gain(s,id,disliked?-3:times?1:liked?6:2);s.people[id].met=true;const bd=celebrate(s,id,disliked?0:3);if(bd)d+=bd;
+ const g=GIFTS[giftId];if(!g)throw Error('没有这件东西。');if(s.stats.inner<g.innerCost)throw Error('内帑不足。');
+ spend(s);const stats=applyStats(s,{inner:-g.innerCost});const liked=PEOPLE[id].likes.includes(giftId),disliked=PEOPLE[id].dislikes.includes(giftId);s.gifted=s.gifted||{};const k=id+':'+giftId,times=s.gifted[k]||0;s.gifted[k]=times+1;let d=gain(s,id,disliked?-3:times?1:liked?6:2);s.people[id].met=true;const bd=celebrate(s,id,disliked?0:3);if(bd)d+=bd;
  const so=g.cost>=5?social(s,id,false):{people:{},notes:[]};
  log(s,`赏${PEOPLE[id].name}${g.name}`,'赏');return {liked,disliked,birthday:bd!==null,repeat:times>0,stats,people:{...(d?{[id]:d}:{}),...so.people},notes:so.notes,knot:!!s.people[id].knot};
 }
 // 旨意的后果由 AI 判断，这里只限幅
-export function applyEdict(s,text,{effects={},affection={},narration='',title='',fate=null}={}){
- spend(s);const bounded={};for(const st of STATS){const v=Number(effects[st.id]);if(Number.isFinite(v))bounded[st.id]=boundUp(Math.max(-8,Math.min(8,Math.round(v))),fate&&!fate.free?fate.tier:4);}
+export function applyEdict(s,text,{effects={},affection={},narration='',title='',fate=null,inner=0}={}){
+ spend(s);const bounded={};for(const st of STATS.filter(x=>x.id!=='inner')){const v=Number(effects[st.id]);if(Number.isFinite(v))bounded[st.id]=boundUp(Math.max(-8,Math.min(8,Math.round(v))),fate&&!fate.free?fate.tier:4);}
  const total=Object.values(bounded).reduce((a,b)=>a+Math.max(0,b),0);if(total>12)for(const k in bounded)if(bounded[k]>0)bounded[k]=Math.round(bounded[k]*12/total);
- const stats=applyStats(s,bounded),people={};
+ const stats=applyStats(s,{...bounded,inner:boundUp(Math.max(-20,Math.min(20,Number(inner)||0)),fate&&!fate.free?fate.tier:4)}),people={};
  for(const[cid,v]of Object.entries(affection||{}))if(PEOPLE[cid]&&present(s,cid)){const d=gain(s,cid,boundUp(Math.max(-5,Math.min(5,Math.round(Number(v)||0))),fate&&!fate.free?fate.tier:4));if(d)people[cid]=d;}
  log(s,`下旨：${title||text.slice(0,24)}`,'旨');count(s,'edicts');
  s.edicts=s.edicts||[];const n=s.edicts.length+1;s.edicts.push({n,text:text.slice(0,120),title:title||text.slice(0,8),narration:String(narration).slice(0,400),effects:bounded,at:idx(s.year,s.month),due:idx(s.year,s.month)+2+Math.floor(rand(s)*2)});return {stats,people,text:narration};
 }
-export function goOuting(s){spend(s);const left=OUTINGS.map((o,i)=>i).filter(i=>!s.used.outings.includes(i));const pool=left.length?left:OUTINGS.map((o,i)=>i);const i=pool[Math.floor(rand(s)*pool.length)];s.used.outings.push(i);const o=OUTINGS[i];const stats=applyStats(s,{...o.effects,health:(o.effects.health||0)+(weatherOf(s)==='雪'?-2:0)});log(s,`微服：${o.title}`,'行');return {title:o.title,text:o.text+(o.note?'\n\n'+o.note:''),stats,people:{}};}
+export function goOuting(s){if(s.stats.inner<ECONOMY.outingCost)throw Error('内帑不足。');spend(s);const travel=funds(s,{inner:-ECONOMY.outingCost});const left=OUTINGS.map((o,i)=>i).filter(i=>!s.used.outings.includes(i));const pool=left.length?left:OUTINGS.map((o,i)=>i);const i=pool[Math.floor(rand(s)*pool.length)];s.used.outings.push(i);const o=OUTINGS[i];const stats=applyStats(s,{...o.effects,health:(o.effects.health||0)+(weatherOf(s)==='雪'?-2:0)});log(s,`微服：${o.title}`,'行');return {title:o.title,text:o.text+(o.note?'\n\n'+o.note:''),stats:{...stats,...travel},people:{}};}
+// 拨银与下旨一样占一个时辰，两边的银子不会凭空增减。
+export function transferFunds(s,direction,amount){
+ amount=silver(Number(amount));if(!['toInner','toTreasury'].includes(direction)||!Number.isFinite(amount)||amount<=0)throw Error('请写清拨多少银子。');
+ const from=direction==='toInner'?'treasury':'inner',to=from==='treasury'?'inner':'treasury';if(s.stats[from]<amount)throw Error(from==='inner'?'内帑不足。':'国库不足。');spend(s);
+ const stats={...funds(s,{[from]:-amount,[to]:amount}),...applyStats(s,direction==='toInner'?{court:-2}:{people:2})};
+ log(s,direction==='toInner'?'从户部拨银进内务府':'从内务府拨银充国库','银');return {title:'拨银',text:direction==='toInner'?'户部把银子送进了内务府。第二天，言官的折子也跟着到了。':'内务府的银车出了宫门。户部的人接了银，先去补了欠下的赈粮。',stats,people:{}};
+}
 // 批折：朝局 +3，圣躬 −2；设了值房之后只伤 1 点
 const REVIEWS=['你把积压的折子一本本看完。有一本说某县修桥，银子报了三遍，你朱批：查。','山东巡抚报了今年的雨水，字写得工整，事也办得明白。你在折尾批了一句：好，照此办。','两道折子说的是同一件事，口径却对不上。你把两本并排摆着看了半个时辰，批了四个字：据实再奏。','有个知县在折子里絮絮叨叨讲了半页县里的庄稼。你本想批“知道了”，想了想，改成：朕都看了，你辛苦。'];
 export function review(s){spend(s);s.reviews=(s.reviews||0)+1;const stats=applyStats(s,{court:3,health:s.done?.W08==='council'?-1:-2});log(s,'批了一批折子','政');count(s,'reviews');return {title:'批折',text:REVIEWS[(s.reviews-1)%REVIEWS.length]+(s.done?.W08==='council'?'\n\n值房的人先替你分好了，看得快了许多。':''),stats,people:{}};}
@@ -224,12 +236,13 @@ function settleCrises(s){s.crises=s.crises||{};for(const c of ALL_CRISES){if(s.c
 export function endMonth(s){
  if(s.agenda.length)throw Error('本月还有要事没办。');
  const report={y:s.year,m:s.month,stats:{...s.delta.stats},people:{...s.delta.people}};
- const tick=applyStats(s,s.year>=5?{treasury:3,health:-2,palace:-1}:s.year>=3?{treasury:3,health:-1,court:-1,people:-1}:{treasury:5,health:-1});report.income=tick;
+ const tick={...applyStats(s,s.year>=5?{health:-2,palace:-1}:s.year>=3?{health:-1,court:-1,people:-1}:{health:-1}),...funds(s,{treasury:ECONOMY.income[(s.vol||1)-1],inner:ECONOMY.innerIncome})};report.income=tick;
  for(const[k,v]of Object.entries(tick))report.stats[k]=(report.stats[k]||0)+v;
  // 生辰那个月一次也没去的，情分掉 3
  report.forgot=[];for(const id of birthdays(s)){const p=s.people[id];if(birthdayDone(s,id)||p.aff<25)continue;p.aff=clamp(p.aff-3);report.people[id]=(report.people[id]||0)-3;remember(s,id,'生辰那个月，你没有来');log(s,`${PEOPLE[id].name}的生辰，你没有去`,'情');report.forgot.push(id);}
  // 久不相见，情分会慢慢淡
  report.cooled=[];for(const id of CORE){const p=s.people[id];if(p.met&&!s.delta.people[id]&&!report.forgot.includes(id)&&p.aff>30&&present(s,id)&&!away(s,id)){p.aff=clamp(p.aff-(p.aff>=45?2:1));report.cooled.push(id);}}
+ report.ledger=structuredClone(s.ledger);report.balances={treasury:s.stats.treasury,inner:s.stats.inner};
  settleCrises(s);
  report.crises=ALL_CRISES.filter(c=>c.vol===(s.vol||1)).map(c=>({id:c.id,name:c.name,status:crisisStatus(s,c)}));
  if(s.month===12&&LAST_YEARS.includes(s.year)){s.ended=true;return report;}
@@ -245,7 +258,7 @@ export function startVolume3(s){if(!(s.ended&&s.year===4))throw Error('第二卷
 export const BOONS={
  love:{name:'旧情',desc:'上一世动了心的人（情分 65 以上），这一世开局情分 +12。'},
  know:{name:'旧识',desc:'记得每个人喜欢什么、讨厌什么，赏赐不用再猜。'},
- purse:{name:'旧账',desc:'记得哪里藏着银子：开局国库 +12，圣躬 +5。'}
+ purse:{name:'旧账',desc:'记得哪里藏着银子：开局国库多 120 万两，圣躬 +5。'}
 };
 // 上一世走到哪一卷都可以重来；动过心的人会“似曾相识”
 export const pastHearts=prev=>CORE.filter(id=>(prev?.people?.[id]?.aff||0)>=65);
@@ -256,15 +269,15 @@ export function newGamePlus(prev,boon,seed=Date.now()%2147483647){
  for(const id of past)remember(s,id,prev.people[id].lover?'梦里见过皇上，醒来却想不起梦见了什么':'总觉得很久以前，见过皇上');
  if(boon==='love')for(const id of past)s.people[id].aff=clamp(s.people[id].aff+12);
  if(boon==='know')s.known=Object.fromEntries(CORE.map(id=>[id,{...Object.fromEntries(PEOPLE[id].likes.map(g=>[g,true])),...Object.fromEntries(PEOPLE[id].dislikes.map(g=>[g,false]))}]));
- if(boon==='purse'){s.stats.treasury=clamp(s.stats.treasury+12);s.stats.health=clamp(s.stats.health+5);}
+ if(boon==='purse'){s.stats.treasury=silver(s.stats.treasury+12*ECONOMY.point);s.stats.health=clamp(s.stats.health+5);}
  s.log=[];log(s,`第${s.life}世：带着「${BOONS[boon].name}」醒来`,'卷');return s;
 }
 export function ending(s){
- const sum=Object.values(s.stats).reduce((a,b)=>a+b,0),solved=ALL_CRISES.filter(c=>c.vol===(s.vol||1)&&crisisStatus(s,c)==='solved').length;
+ const sum=treasuryIndex(s)+['people','court','palace','health'].reduce((a,k)=>a+s.stats[k],0),solved=ALL_CRISES.filter(c=>c.vol===(s.vol||1)&&crisisStatus(s,c)==='solved').length;
  const score=sum+solved*15;
  const people=CORE.filter(id=>s.people[id].met).map(id=>{const p=s.people[id];return {id,aff:p.aff,lover:!!p.lover,gone:gone(s,id),tier:p.lover&&p.aff>=85?3:p.aff>=65?2:p.aff>=45?1:0};});
  return {score,solved,people};
 }
 
 export function save(s,storage=globalThis.localStorage){try{storage.setItem(SAVE_KEY,JSON.stringify(s));return true;}catch{return false;}}
-export function load(storage=globalThis.localStorage){try{const s=JSON.parse(storage.getItem(SAVE_KEY)||'null');return s?.version===1?bind(s):null;}catch{return null;}}
+export function load(storage=globalThis.localStorage){try{const s=JSON.parse(storage.getItem(SAVE_KEY)||'null');return s?.version===1?bind(initEconomy(s)):null;}catch{return null;}}

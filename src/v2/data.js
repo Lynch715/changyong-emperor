@@ -1,12 +1,14 @@
 // 新版数据：人物、月历、赏赐、出巡、空月奏折、无 AI 时的回退文字与结局。
+export const ECONOMY={startTreasury:800,startInner:50,point:10,legacyScale:800/60,fullTreasury:6000,income:[55,65,80],innerIncome:4,outingCost:0.08,banquetCost:1.5,deficitGoal:600,reformGoal:470};
 export const STATS=[
- {id:'treasury',name:'国库',hint:'拨款、赏赐都要从这里出'},
+ {id:'treasury',name:'国库',hint:'户部银库，赈灾、河工与军费从这里出'},
+ {id:'inner',name:'内帑',hint:'内务府的银子，赏赐与宫里用度从这里出'},
  {id:'people',name:'民心',hint:'百姓的日子过得怎样'},
  {id:'court',name:'朝局',hint:'朝臣是否服你、政令是否通行'},
  {id:'palace',name:'后宫',hint:'六宫是否安宁有序'},
  {id:'health',name:'圣躬',hint:'你自己的身体与心绪'}
 ];
-export const START_STATS={treasury:60,people:55,court:55,palace:45,health:70};
+export const START_STATS={treasury:ECONOMY.startTreasury,inner:ECONOMY.startInner,people:55,court:55,palace:45,health:70};
 // 旧数值到新数值的换算
 export const STAT_MAP={treasury:['treasury',1],people:['people',1],stability:['court',1],execution:['court',1],defense:['court',1],palace:['palace',1],health:['health',1],mood:['health',0.5]};
 
@@ -80,14 +82,14 @@ export const SEASON=m=>['春','春','春','夏','夏','夏','秋','秋','秋','�
 // 要务：玩家始终看得到的三条局势线
 export const CRISES=[
  {id:'incense',name:'翊坤宫的香',desc:'欢宜香里有东西。停不停、怎么说，关系到年世兰的身子和她信不信你。',start:[1,3],scenes:['M03','R07-01'],deadline:[1,6]},
- {id:'deficit',name:'各省亏空',desc:'户部的账面上，到处是窟窿。年底前国库要回到 45 以上，不然明年什么事都办不成。',start:[1,4],scenes:['M04','G01','G02','G03'],deadline:[1,12],goal:s=>s.stats.treasury>=45},
+ {id:'deficit',name:'各省亏空',desc:'户部的账面上，到处是窟窿。年底前国库要攒回 600 万两，不然明年什么事都办不成。',start:[1,4],scenes:['M04','G01','G02','G03'],deadline:[1,12],goal:s=>s.stats.treasury>=ECONOMY.deficitGoal},
  {id:'army',name:'西北军饷',desc:'大将军凯旋，军需册里却有重复支领。查，还是不查？',start:[2,5],scenes:['M10','G04','G05','G06'],deadline:[2,8]}
 ];
 
 export const GIFTS={
- tea:{name:'新贡的龙井',cost:2},handwarmer:{name:'錾花铜手炉',cost:2},silk:{name:'江宁织造的云锦',cost:5},
- flowers:{name:'御园新开的花',cost:1},jewel:{name:'内务府的点翠簪',cost:6},book:{name:'内府藏的善本',cost:3},
- music:{name:'一支旧玉笛',cost:4},wine:{name:'御酒两坛',cost:3},rest:{name:'准三日的假',cost:0}
+ tea:{innerCost:0.05,name:'新贡的龙井',cost:2},handwarmer:{innerCost:0.08,name:'錾花铜手炉',cost:2},silk:{innerCost:0.2,name:'江宁织造的云锦',cost:5},
+ flowers:{innerCost:0.01,name:'御园新开的花',cost:1},jewel:{innerCost:0.35,name:'内务府的点翠簪',cost:6},book:{innerCost:0.12,name:'内府藏的善本',cost:3},
+ music:{innerCost:0.15,name:'一支旧玉笛',cost:4},wine:{innerCost:0.06,name:'御酒两坛',cost:3},rest:{innerCost:0,name:'准三日的假',cost:0}
 };
 // 赏赐后的回应（无 AI 时用）。liked/plain
 export const GIFT_LINES={
