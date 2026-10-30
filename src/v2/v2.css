@@ -214,3 +214,41 @@ dialog#modal{display:none}
 em.lover{background:#f2c4cf;color:#7a2440}
 .paper button.plain{display:block;margin:10px auto 0;background:none;border:0;color:var(--ink-soft);text-decoration:underline;font-size:14px}
 .paper .center{text-align:center}
+
+/* 来访 */
+.visit{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px;border-radius:12px;border:1px solid #e6a9b8;background:linear-gradient(100deg,#fbe9ee,#f3d6de);color:var(--ink);text-align:left;box-shadow:0 6px 24px rgba(0,0,0,.3);animation:rise .5s ease-out}
+.visit img{width:56px;height:56px;border-radius:50%;object-fit:cover;object-position:top;border:2px solid #e6a9b8;background:#f0d8dd;flex:none}
+.visit div{flex:1;display:flex;flex-direction:column}
+.visit small{color:#a03a57;font-size:12px}
+.visit b{font-family:var(--brush);font-size:22px;font-weight:400}
+.visit span{font-size:13px;color:var(--ink-soft)}
+.visit em{font-style:normal;color:#a03a57;font-weight:600;white-space:nowrap}
+
+/* 庆祝 */
+.cele{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;background:radial-gradient(circle at 50% 45%,rgba(200,163,90,.35),rgba(10,16,22,.92) 60%);animation:fade .3s ease-out;cursor:pointer;padding:24px}
+.cele img{height:min(48vh,420px);object-fit:contain;filter:drop-shadow(0 0 30px rgba(226,201,143,.55));animation:rise .5s ease-out;margin-bottom:-24px}
+.cele-box{position:relative;text-align:center;background:linear-gradient(var(--silk),var(--silk-deep));color:var(--ink);border:2px solid var(--gold);border-radius:10px;padding:18px 28px 14px;min-width:240px;max-width:360px;box-shadow:0 10px 40px rgba(0,0,0,.6);animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+.cele-box b{display:block;font-family:var(--brush);font-weight:400;font-size:34px;letter-spacing:3px;color:var(--cinnabar)}
+.cele-box p{margin:6px 0 8px;font-size:16px;line-height:1.7}
+.cele-box p span{font-size:13px;color:var(--ink-soft)}
+.cele-box small{font-size:12px;color:var(--ink-soft)}
+.cele.lover{background:radial-gradient(circle at 50% 45%,rgba(240,150,175,.45),rgba(10,16,22,.92) 60%)}
+.cele.lover .cele-box{border-color:#e6a9b8}.cele.lover .cele-box b{color:#a03a57}
+.cele.ach-pop .cele-box b{font-size:56px;width:84px;height:84px;line-height:84px;margin:0 auto 6px;border-radius:50%;background:var(--cinnabar);color:#fff;letter-spacing:0}
+.cele.sad .cele-box{border-color:#7f919b}.cele.sad .cele-box b{color:var(--ink-soft)}
+@keyframes fade{from{opacity:0}}
+
+/* 珍藏 */
+.sec small{font-family:var(--serif);font-size:14px;color:#9fb0b8;margin-left:6px}
+.achs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ach{padding:10px;border-radius:10px;background:var(--desk-soft);border:1px solid var(--desk-line);opacity:.55}
+.ach.got{opacity:1;border-color:var(--gold)}
+.ach i{display:inline-flex;width:32px;height:32px;border-radius:50%;align-items:center;justify-content:center;font-style:normal;font-family:var(--brush);font-size:20px;background:#33495a;color:#9fb0b8;margin-bottom:4px}
+.ach.got i{background:var(--cinnabar);color:#fff}
+.ach b{display:block;font-size:15px}.ach span{font-size:12px;color:#9fb0b8;line-height:1.5}
+.replays{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.replays button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px;border-radius:10px;background:var(--desk-soft);border:1px solid var(--desk-line);text-align:left}
+.replays button:hover{border-color:var(--gold)}
+.replays em{font-style:normal;font-size:11px;padding:0 6px;border-radius:6px;background:#40566a}
+.replays b{font-size:15px}.replays span{font-size:12px;color:#9fb0b8}
+.bottom button{font-size:14px}

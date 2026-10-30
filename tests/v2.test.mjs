@@ -73,3 +73,13 @@ test('第二卷：场景齐全，存档延续，四年走完', ()=>{
   if(pick==='keep')assert.ok(s.flags.nian_safe);
  }
 });
+import {VISITS} from '../src/v2/visits.js';
+import {ACHIEVEMENTS,updateGallery} from '../src/v2/gallery.js';
+test('来访与成就', ()=>{
+ for(const id of CORE){assert.equal(VISITS[id].length,3,id);for(const t of VISITS[id]){assert.ok(t.length>=2,id);for(const v of t)for(const k of Object.keys(v.effects||{}))assert.ok(STATS.some(s=>s.id===k),id+k);}}
+ const s=E.newGame(3);s.agenda=[];s.people.C02.aff=50;s.visit={id:'C02',tier:0,i:0};const ap=s.ap;const r=E.acceptVisit(s);assert.equal(s.ap,ap);assert.ok(r.people.C02>0);assert.equal(E.visitOf(s),null);
+ s.people.C02.aff=44;E.gain(s,'C02',2);assert.ok(s.cele.some(c=>c.k==='stage'&&c.stage==='相知'));
+ const mem={d:{},getItem(k){return this.d[k]??null},setItem(k,v){this.d[k]=v}};
+ const fresh=updateGallery(s,mem);assert.ok(fresh.some(a=>a.id==='visit'));assert.equal(updateGallery(s,mem).length,0);
+ for(const a of ACHIEVEMENTS)assert.doesNotThrow(()=>a.check(E.newGame(1)));
+});

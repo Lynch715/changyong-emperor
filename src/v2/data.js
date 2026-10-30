@@ -106,7 +106,8 @@ export const GIFT_LINES={
 export const TOPICS=[
  {id:'greet',label:'问问近况',gain:3},
  {id:'heart',label:'说几句体己话',gain:4},
- {id:'work',label:'谈谈正事',gain:2,stat:{court:1}}
+ {id:'work',label:'谈谈正事',gain:2,stat:{court:1}},
+ {id:'likes',label:'问问喜欢什么',gain:2}
 ];
 export const TOPIC_LINES={
  C02:{greet:'“托皇上的福，奴才一切都好。”苏培盛顿了顿，“就是值房那只手炉，又叫小夏拿错了。”',heart:'苏培盛听着，低下头去：“奴才……奴才没想到皇上会问这个。”他站得笔直，眼眶却有点红。',work:'苏培盛把这几日的轮值一一报了，末了提醒你，户部的折子今夜还压着三本。'},

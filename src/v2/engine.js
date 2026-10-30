@@ -4,6 +4,7 @@ import {REWRITE} from './rewrite.js';
 import {ROMANCE} from './romance.js';
 import {MORE_PETITIONS,SMALL_EVENTS} from './events.js';
 import {SCENES2,AGENDA2,CRISES2,REPAIR2} from './vol2.js';
+import {VISITS} from './visits.js';
 const POOL=[...PETITIONS,...MORE_PETITIONS,...SMALL_EVENTS];
 export const thirdOf=id=>'L'+id.slice(1);
 export const fourthOf=id=>'Y'+id.slice(1);
@@ -40,8 +41,12 @@ export function gain(s,id,n,why=''){
  if(n>0&&p.knot)n=0;
  const before=p.aff;p.aff=clamp(p.aff+n);const d=p.aff-before;
  if(d)s.delta.people[id]=(s.delta.people[id]||0)+d;
+ if(d>0&&stageOf(p.aff)!==stageOf(before))cele(s,{k:'stage',id,stage:stageOf(p.aff)});
  return d;
 }
+// 值得庆祝的时刻：界面会逐个弹出
+export function cele(s,c){(s.cele=s.cele||[]).push(c);}
+const count=(s,k)=>{s.count=s.count||{};s.count[k]=(s.count[k]||0)+1;};
 export function remember(s,id,text){if(!text)return;const p=s.people[id];p.memories.push({y:s.year,m:s.month,text:String(text).slice(0,60)});if(p.memories.length>12)p.memories.shift();}
 export function secondReady(s,id,letter=false){const p=s.people[id];return p.first&&!p.second&&p.aff>=45&&!p.knot&&p.firstAt!==monthKey(s)&&present(s,id)&&(letter||!away(s,id));}
 export function thirdReady(s,id,letter=false){const p=s.people[id];return p.second&&!p.third&&p.aff>=65&&!p.knot&&p.secondAt!==monthKey(s)&&present(s,id)&&(letter||!away(s,id));}
@@ -69,7 +74,14 @@ export function startMonth(s){
  const last=s.month===12&&(s.year===2||s.year===4);
  if(!last&&(s.agenda.length===0||(s.agenda.length===1&&rand(s)<0.5))){const left=POOL.filter(p=>!s.used.petitions.includes(p.id)&&(!p.months||p.months.includes(s.month))&&(!p.need||(present(s,p.need)&&s.people[p.need].met&&!away(s,p.need))));if(left.length){const p=left[Math.floor(rand(s)*left.length)];s.used.petitions.push(p.id);s.agenda.push(p.id);}}
  for(const id of CORE)if(present(s,id)&&!s.people[id].met&&!SCENES[PEOPLE[id].first]?.id)s.people[id].met=true;
+ // 情分够了的人，有时会自己找上门来
+ s.visit=null;
+ const cand=CORE.filter(id=>{const p=s.people[id];return p.met&&p.aff>=40&&!p.knot&&present(s,id)&&!away(s,id)&&s.lastVisit?.[id]!==monthKey(s)&&!(s.visitedAt?.[id]>=idx(s.year,s.month)-2);});
+ if(cand.length&&rand(s)<0.5){const id=cand[Math.floor(rand(s)*cand.length)],p=s.people[id];const tier=p.lover?2:p.aff>=65?1:0;const list=VISITS[id][tier];s.visit={id,tier,i:Math.floor(rand(s)*list.length)};}
 }
+export function visitOf(s){if(!s.visit)return null;const v=VISITS[s.visit.id][s.visit.tier][s.visit.i];return {id:s.visit.id,...v};}
+// 来访：不占时辰，迎进来就有好处
+export function acceptVisit(s){const v=visitOf(s);if(!v)throw Error('没有人来。');s.visit=null;s.visitedAt=s.visitedAt||{};s.visitedAt[v.id]=idx(s.year,s.month);const stats=applyStats(s,v.effects||{}),d=gain(s,v.id,3);remember(s,v.id,v.memory||'');log(s,`${PEOPLE[v.id].name}来了：${v.title}`,'情');count(s,'visits');return {title:v.title,text:v.text,stats,people:d?{[v.id]:d}:{},id:v.id};}
 export const scene=id=>SCENES[id]||ROMANCE[id]||SCENES2[id]||POOL.find(p=>p.id===id);
 export const optionsFor=(s,sc)=>sc.options.filter(o=>!o.need||s.flags?.[o.need]);
 export const pendingScene=s=>s.agenda[0]||null;
@@ -86,7 +98,7 @@ export function choose(s,id,optId){
  if(['relation','extension'].includes(sc.kind)){const n={warm:6,develop:6,work:3,cooperate:3,distance:1,unsure:2}[optId]??3;const cid=sc.actor;s.people[cid].met=true;
   if(PEOPLE[cid].first===id){s.people[cid].first=true;s.people[cid].firstAt=monthKey(s);}if(PEOPLE[cid].second===id){s.people[cid].second=true;s.people[cid].secondAt=monthKey(s);}add(cid,n);}
  else if(sc.kind==='deep'){const cid=sc.actor,p=s.people[cid];p.fourth=true;add(cid,{stay:6,mid:3,hard:-3}[optId]??2);}
- else if(sc.kind==='romance'){const cid=sc.actor,p=s.people[cid];p.third=true;p.thirdAt=monthKey(s);if(optId==='confess'){p.lover=true;remember(s,cid,cid==='C05'?'皇兄把那个很长的梦告诉了他':'两人说开了心意');}add(cid,{confess:8,slow:5,restrain:1}[optId]??3);}
+ else if(sc.kind==='romance'){const cid=sc.actor,p=s.people[cid];p.third=true;p.thirdAt=monthKey(s);if(optId==='confess'){p.lover=true;cele(s,{k:'lover',id:cid});remember(s,cid,cid==='C05'?'皇兄把那个很长的梦告诉了他':'两人说开了心意');}add(cid,{confess:8,slow:5,restrain:1}[optId]??3);}
   else if(sc.kind==='dilemma'){for(const[cid,b]of Object.entries(opt.bonds||{}))add(cid,(b.trust||0)*2);if(opt.slight){add(opt.slight,-5);s.people[opt.slight].knot={source:id,text:sc.title};remember(s,opt.slight,'你在「'+sc.title+'」里没有选她/他');}}
  else if(PEOPLE[sc.actor]&&!opt.bond)add(sc.actor,2);
  if(opt.bond)for(const[cid,n]of Object.entries(opt.bond))if(s.people[cid])add(cid,n);
@@ -107,9 +119,10 @@ export function beginChat(s,id){if(!present(s,id))throw Error('还见不到这�
 export const CHAT_CAP=8;
 export function applyChat(s,chat,{affection=0,memory=''}={}){
  const room=Math.max(0,CHAT_CAP-chat.gained);let n=Math.max(-5,Math.min(4,Math.round(affection)));if(n>0)n=Math.min(n,room);
- const d=gain(s,chat.id,n);chat.gained+=Math.max(0,d);chat.turns++;remember(s,chat.id,memory);return d;
+ const d=gain(s,chat.id,n);chat.gained+=Math.max(0,d);chat.turns++;count(s,'lines');remember(s,chat.id,memory);return d;
 }
-export function repairKnot(s,chat){const p=s.people[chat.id];if(!p.knot)return null;const line=ALL_REPAIR[p.knot.source]?.[chat.id]||'你们把那件事说开了。';log(s,`与${PEOPLE[chat.id].name}说开了「${p.knot.text}」`,'情');p.knot=null;gain(s,chat.id,3);chat.gained+=3;return line;}
+export function hintLike(s,id){s.known=s.known&&!Array.isArray(s.known)?s.known:{};const k=s.known[id]=s.known[id]&&!Array.isArray(s.known[id])?s.known[id]:{};const g=PEOPLE[id].likes.find(x=>k[x]!==true);if(g)k[g]=true;return g||null;}
+export function repairKnot(s,chat){const p=s.people[chat.id];if(!p.knot)return null;const line=ALL_REPAIR[p.knot.source]?.[chat.id]||'你们把那件事说开了。';log(s,`与${PEOPLE[chat.id].name}说开了「${p.knot.text}」`,'情');p.knot=null;cele(s,{k:'knot',id:chat.id});count(s,'knots');gain(s,chat.id,3);chat.gained+=3;return line;}
 
 export function giveGift(s,id,giftId){
  const g=GIFTS[giftId];if(!g)throw Error('没有这件东西。');if(s.stats.treasury<g.cost)throw Error('国库不够了。');
@@ -122,7 +135,7 @@ export function applyEdict(s,text,{effects={},affection={},narration='',title=''
  const total=Object.values(bounded).reduce((a,b)=>a+Math.max(0,b),0);if(total>12)for(const k in bounded)if(bounded[k]>0)bounded[k]=Math.round(bounded[k]*12/total);
  const stats=applyStats(s,bounded),people={};
  for(const[cid,v]of Object.entries(affection||{}))if(PEOPLE[cid]&&present(s,cid)){const d=gain(s,cid,Math.max(-5,Math.min(5,Math.round(Number(v)||0))));if(d)people[cid]=d;}
- log(s,`下旨：${title||text.slice(0,24)}`,'旨');return {stats,people,text:narration};
+ log(s,`下旨：${title||text.slice(0,24)}`,'旨');count(s,'edicts');return {stats,people,text:narration};
 }
 export function goOuting(s){spend(s);const left=OUTINGS.map((o,i)=>i).filter(i=>!s.used.outings.includes(i));const pool=left.length?left:OUTINGS.map((o,i)=>i);const i=pool[Math.floor(rand(s)*pool.length)];s.used.outings.push(i);const o=OUTINGS[i];const stats=applyStats(s,o.effects);log(s,`微服：${o.title}`,'行');return {title:o.title,text:o.text+(o.note?'\n\n'+o.note:''),stats,people:{}};}
 export function rest(s){spend(s);const stats=applyStats(s,{health:8});log(s,'闭门休养了一日','行');return {title:'休养',text:'你推开折子，让苏培盛把门关上。睡了一个整觉，醒来时窗外的光正好。',stats,people:{}};}
@@ -144,7 +157,7 @@ export function crisisStatus(s,c){
  const allDone=c.scenes.every(id=>s.done[id]);
  return allDone&&(!c.goal||c.goal(s))?'solved':'open';
 }
-function settleCrises(s){s.crises=s.crises||{};for(const c of ALL_CRISES){if(s.crises[c.id]||before(s,c.start))continue;const allDone=c.scenes.every(id=>s.done[id]),ok=allDone&&(!c.goal||c.goal(s));const due=s.year===c.deadline[0]&&s.month===c.deadline[1];if(ok&&!c.goal)s.crises[c.id]='solved';else if(due){s.crises[c.id]=ok?'solved':'failed';log(s,`要务「${c.name}」${ok?'已了结':'没能办好'}`,'政');}}}
+function settleCrises(s){s.crises=s.crises||{};for(const c of ALL_CRISES){if(s.crises[c.id]||before(s,c.start))continue;const allDone=c.scenes.every(id=>s.done[id]),ok=allDone&&(!c.goal||c.goal(s));const due=s.year===c.deadline[0]&&s.month===c.deadline[1];if(ok&&!c.goal){s.crises[c.id]='solved';cele(s,{k:'crisis',name:c.name});}else if(due){s.crises[c.id]=ok?'solved':'failed';cele(s,{k:ok?'crisis':'crisisFail',name:c.name});log(s,`要务「${c.name}」${ok?'已了结':'没能办好'}`,'政');}}}
 export function endMonth(s){
  if(s.agenda.length)throw Error('本月还有要事没办。');
  const report={y:s.year,m:s.month,stats:{...s.delta.stats},people:{...s.delta.people}};
