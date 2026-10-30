@@ -323,3 +323,10 @@ input,textarea{min-width:0}
 .plan-page textarea,.plan-page select{display:block;box-sizing:border-box;width:100%;max-width:100%;min-width:0;min-height:44px;margin:8px 0 16px;padding:12px;border:1px solid var(--line);border-radius:8px;background:#fffaf0;color:var(--ink);font:inherit;font-size:16px;line-height:1.7}
 .plan-page textarea{resize:vertical;min-height:130px}.plan-page label{display:block;line-height:1.6}.plan-page>button{display:block;width:100%;margin:10px 0;min-height:44px}.plan-ideas{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.plan-ideas button{min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere;padding:9px 12px;text-align:left}.plan-page{overflow-wrap:anywhere}
 .plan-ideas button,.plan-page>button:not(.primary){background:var(--silk);color:var(--ink);border:1px solid var(--line);border-radius:8px}
+
+/* 0.39.2 手机：禁止缩放，输入框不撑出屏幕 */
+html,body{overflow-x:hidden;max-width:100%;touch-action:pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+input,textarea,select{font-size:16px!important;max-width:100%}
+.say{width:100%;min-width:0}
+.say input{min-width:0;flex:1 1 auto;width:auto}
+.say button{flex:0 0 auto;min-height:44px}

@@ -442,3 +442,11 @@ app.addEventListener('submit',e=>{e.preventDefault();if(!audienceOf().confirmed)
  else if(f.dataset.act==='api'){const d={url:f.url.value.trim(),model:f.model.value.trim(),key:f.key.value.trim()},rem=f.remember.checked;withBusy(async()=>{await AI.saveConnection(d,rem);toast('AI 已开启');});}});
 
 (async()=>{render();if(!audienceOf().confirmed)return;await AI.initAI();s=E.load();render();})();
+
+// iOS Safari 不认 user-scalable=no：拦下双指缩放和双击放大；输入框收起后把页面放回原位
+(()=>{const d=globalThis.document;if(!d?.addEventListener)return;
+ for(const ev of ['gesturestart','gesturechange','gestureend'])d.addEventListener(ev,e=>e.preventDefault(),{passive:false});
+ d.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault();},{passive:false});
+ let last=0;d.addEventListener('touchend',e=>{const now=Date.now();if(now-last<300&&!e.target?.closest?.('input,textarea,select,button'))e.preventDefault();last=now;},{passive:false});
+ d.addEventListener('focusout',e=>{if(e.target?.matches?.('input,textarea'))setTimeout(()=>{if(!d.activeElement?.matches?.('input,textarea'))globalThis.scrollTo?.(0,globalThis.scrollY||0);},50);});
+})();
