@@ -680,7 +680,7 @@ export const AGENDA2={
 export const CRISES2=[
  {id:'nian',vol:2,name:'年羹尧之祸',desc:'弹劾年羹尧的折子越来越多。上一世，你赐了他死。这一世，他的结局由你定。',start:[3,1],scenes:['V01','V02','V06'],deadline:[3,11],goal:s=>!!s.flags?.nian_safe||!!s.flags?.nian_away},
  {id:'eight',vol:2,name:'八爷党',desc:'廉亲王允禩在暗处结党，弹劾、拉拢、等你出错。朝局要稳在 55 以上。',start:[3,4],scenes:['V03','V05','V08'],deadline:[4,5],goal:s=>s.stats.court>=55},
- {id:'reform',vol:2,name:'摊丁入亩',desc:'人头税并进田赋，穷人不再藏孩子。新政推开后，民心要在 60 以上、国库不低于 470 万两。',start:[4,1],scenes:['V07'],deadline:[4,10],goal:s=>s.stats.people>=60&&s.stats.treasury>=470}
+ {id:'reform',vol:2,name:'摊丁入亩',desc:'人头税并进田赋，穷人不再藏孩子。新政进度须达100，民心要在 60 以上、国库不低于 470 万两。',start:[4,1],scenes:['V07'],deadline:[4,10],goal:s=>(s.policies?.land?.progress||0)>=100&&s.stats.people>=60&&s.stats.treasury>=470}
 ];
 export const ENDING_KINGDOM2=[
  {min:390,title:'雍正新政',text:'四年过去，新政推开了，国库满了，朝中再没有结党的声音。后世写起这几年，会说：这是一个勤勉得近乎苛刻的皇帝，也是一个，比人们以为的更温和的皇帝。'},

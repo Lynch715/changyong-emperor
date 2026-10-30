@@ -1,4 +1,4 @@
-import {authorOf} from './government.js';
+import {authorOf,POLICIES,policyHostValid} from './government.js';
 import {nightIdeas,REST_IDEAS,planAllowed,PLAN_NOTICE} from './plans.js';
 import {PORTRAIT_IDS,placeBackground,NIGHT_BG,portraitFile} from './art.js';
 import {audienceOf,confirmAge,setTenderness} from './audience.js';
@@ -92,7 +92,7 @@ function home(){
    ${later?`<div class="pc ghost"><b>还有 ${later} 人</b><span>会在往后的日子里出现</span></div>`:''}
   </section>
 
-  <h3 class="sec">局势 · <button data-act="go" data-to="provinces">地方 ›</button></h3><h3 class="sec">要务</h3>
+  <h3 class="sec">局势 · <button class="gov-link" data-act="go" data-to="provinces">地方 ›</button></h3><p>派系声势：${Object.entries(s.factions).map(([k,v])=>`${k} ${v}`).join(" · ")}</p><button class="gov-link" data-act="go" data-to="secrets">御览密折 · ${s.secrets.filter(m=>!m.done).length}</button>${s.month===12?'<button class="gov-link" data-act="go" data-to="assessment">腊月考绩 ›</button>':''}<p class="small">盛世还须：至少两项新政完成、十省平均吏治达到60且无省低于45、待办原折不超过六道。</p><h3 class="sec">要务</h3>
   <section class="crises">${E.ALL_CRISES.filter(c=>c.vol===(s.vol||1)).map(c=>{const st=E.crisisStatus(s,c);if(st==='later')return '';const done=c.scenes.filter(id=>s.done[id]).length;return `<div class="crisis ${st}"><b>${c.name}</b><em>${{open:'进行中',solved:'已了结',failed:'没办好'}[st]}</em><p>${esc(c.desc)}</p><div class="bar"><i style="width:${done/c.scenes.length*100}%"></i></div><small>${done}/${c.scenes.length} 步${c.goal&&st==='open'&&GOAL_TEXT[c.id]?` · ${GOAL_TEXT[c.id](s.stats)}`:''} · 期限 ${YEAR_NAME(c.deadline[0])}年${MONTHS[c.deadline[1]-1]}</small></div>`;}).join('')||'<p class="muted">眼下还没有。</p>'}</section>
  </main>
  ${nav()}`;
@@ -167,13 +167,16 @@ const PRESET_EDICTS=[
  {title:'开恩科',text:'今岁加开恩科，广纳寒门之士。',effects:{court:4,treasury:-3,people:1},narration:'恩科的消息传出去，各省的读书人都动了起来。考场里坐满了人，有白发的老秀才，也有十几岁的少年。放榜那天，有一半的新科进士出身寒门。'},
  {title:'赦免轻罪',text:'京畿牢狱中，轻罪者一律释放回家。',effects:{people:4,court:-2},narration:'几百个犯人走出了牢门，有的人在门口就跪下磕头。刑部的几位老臣连上了三道折子，说这样下去法度要乱。百姓却都说，新皇上是个心软的。'}
 ];
-function provincesView(){return `${header()}<main><button data-act="go" data-to="home">‹ 返回御案</button><h2>地方</h2><p>十省等权汇入民心与朝局，财赋影响月度国库进账。数值是游戏抽象，江南、陕甘、云贵按督辖区合列。</p>${Object.entries(s.provinces).map(([name,p])=>`<article class="crisis"><h3>${esc(name)} · ${esc(authorOf(s,name)?nm(authorOf(s,name)):'地方衙门')}</h3><p>民生 ${p.livelihood} · 吏治 ${p.integrity} · 财赋 ${p.revenue}</p>${p.reports.map(t=>`<p class="small">${esc(t)}</p>`).join('')||'<p class="muted">尚无回报。</p>'}</article>`).join('')}</main>`;}
-function memorialView(){const r=s.reviewSession;return `${header()}<main><button data-act="go" data-to="home">‹ 合上折匣</button><h2>折匣 · ${s.memorials.length} 道</h2><p>本时辰还可批 ${r?.left||0} 道；留中也算一道。合上再开用一个时辰。</p>${view.feedback?paras(view.feedback):''}${s.memorials.map(m=>`<article class="crisis"><h3>${esc(m.title)}</h3><small>${esc(m.author)} · ${esc(m.province)} · ${esc(m.type)}</small>${paras(m.body)}<div class="options">${E.memorialOptions(m).map(([id,label])=>`<button data-act="memorial" data-id="${m.uid}" data-choice="${id}" ${!r?.left||r.held.includes(m.uid)?'disabled':''}>${esc(label)}${id==='approve'?' · 国库十八万两':''}</button>`).join('')}</div>${AI.aiMode()!=='off'&&r?.left&&!r.held.includes(m.uid)?`<form data-act="memorial-write" data-id="${m.uid}"><label>亲笔批<textarea name="t" maxlength="200" required></textarea></label><button ${busy?'disabled':''}>${busy?'候回报……':'朱批'}</button></form>`:''}</article>`).join('')}</main>`;}
+function policiesHtml(){return `<section class="policies"><h3>新政</h3><p>先在人物页任命地方官，再选试点和主持人。启动或改派用一个时辰、十二万两；每月六万两，离任或缺银则暂停。火耗试河南，摊丁试直隶，改流限云贵；名单为空时，先任命该地官员。</p>${Object.entries(POLICIES).map(([id,c])=>{const p=s.policies[id];return `<article class="crisis"><b>${c.name} · ${p.progress}/100</b><p>${c.desc}</p><p>${p.host?nm(p.host)+' · '+p.pilot:'尚未指定主持人'} · ${p.progress>=100?'推广完成':p.progress>=35?'推广中':'试点中'}</p>${p.progress<100?`<form data-act="policy" data-id="${id}"><label>试点与主持人<select name="host">${Object.keys(s.provinces).flatMap(province=>Object.keys(s.appointments).filter(host=>policyHostValid(s,id,host,province)).map(host=>`<option value="${host}|${province}">${esc(province)} · ${nm(host)}</option>`)).join('')}</select></label><button ${!E.canAct(s)?'disabled':''}>${p.active?'改派主持人':'下旨推行'}</button></form>`:''}</article>`;}).join('')}</section>`;}
+function secretsView(){return `${header()}<main class="government"><button data-act="go" data-to="home">‹ 返回</button><h2>密折 · 御览</h2><p>此处情报尚待核实。留存与训示不占时辰，查办两个月后回报。</p>${s.secrets.map(m=>`<article class="crisis"><h3>${nm(m.author)} · ${esc(m.province)}</h3>${paras(m.body)}${m.done?`<p>已${{keep:'留存',warn:'朱批训示',investigate:'交查'}[m.done]}</p>`:[['keep','留存'],['warn','朱批训示'],['investigate','据此查办']].map(([choice,label])=>`<button data-act="secret" data-id="${m.uid}" data-choice="${choice}">${label}</button>`).join('')}</article>`).join('')||'<p>尚无密折。</p>'}</main>`;}
+function assessmentView(){return `${header()}<main class="government"><button data-act="go" data-to="home">‹ 返回</button><h2>腊月 · 京察大计</h2><p>京官京察、外官大计，在游戏中统一为每年腊月考绩。任内变化自任命或上次考绩计算，升降须有职缺。</p>${E.assessmentRows(s).map(r=>`<article class="crisis"><b>${nm(r.id)} · ${r.title}</b><p>能力 ${r.ability} · 忠诚 ${r.loyalty}</p><p>${esc(r.change)}</p>${r.done?'<p>本年已考</p>':`<button data-act="assess" data-id="${r.id}" data-decision="stay">留任</button>${E.assessmentOptions(s,r.id).map(o=>`<button data-act="assess" data-id="${r.id}" data-decision="${o.decision}" data-office="${o.office}" ${o.reason?'disabled':''}>${{promote:'升',demote:'降',dismiss:'罢'}[o.decision]} · ${o.title}${o.reason?'（'+esc(o.reason)+'）':''}</button>`).join('')}`}</article>`).join('')}</main>`;}
+function provincesView(){return `${header()}<main class="government"><button data-act="go" data-to="home">‹ 返回御案</button><h2>地方</h2><p>十省等权汇入民心与朝局，财赋影响月度国库进账。数值是游戏抽象，江南、陕甘、云贵按督辖区合列。</p>${Object.entries(s.provinces).map(([name,p])=>`<article class="crisis"><h3>${esc(name)} · ${esc(authorOf(s,name)?nm(authorOf(s,name)):'地方衙门')}</h3><p>民生 ${p.livelihood} · 吏治 ${p.integrity} · 财赋 ${p.revenue}</p>${p.reports.map(t=>`<p class="small">${esc(t)}</p>`).join('')||'<p class="muted">尚无回报。</p>'}</article>`).join('')}</main>`;}
+function memorialView(){const r=s.reviewSession;return `${header()}<main class="government"><button data-act="go" data-to="home">‹ 合上折匣</button><h2>折匣 · ${s.memorials.length} 道</h2><p>本时辰还可批 ${r?.left||0} 道；留中也算一道。合上再开用一个时辰。</p>${view.feedback?paras(view.feedback):''}${s.memorials.map(m=>`<article class="crisis"><h3>${esc(m.title)}</h3><small>${esc(m.author)} · ${esc(m.province)} · ${esc(m.type)}</small>${paras(m.body)}<div class="options">${E.memorialOptions(m).map(([id,label])=>`<button data-act="memorial" data-id="${m.uid}" data-choice="${id}" ${!r?.left||r.held.includes(m.uid)?'disabled':''}>${esc(label)}${id==='approve'?' · 国库十八万两':''}</button>`).join('')}</div>${AI.aiMode()!=='off'&&r?.left&&!r.held.includes(m.uid)?`<form data-act="memorial-write" data-id="${m.uid}"><label>亲笔批<textarea name="t" maxlength="200" required></textarea></label><button ${busy?'disabled':''}>${busy?'候回报……':'朱批'}</button></form>`:''}</article>`).join('')}</main>`;}
 function edictView(){
  const r=view.result,ai=AI.aiMode()!=='off';
  if(r)return `<div class="stage" style="--bg:url('${abs(BG.court)}')"><article class="paper"><h2>${esc(r.title||'旨意')}</h2><div class="choice">朱批：${esc(r.src)}</div>${fateLine(r.fate)}${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="done">好</button></article></div>`;
  return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><div class="stage-top"><button data-act="go" data-to="home">‹ 收起</button><span>养心殿御案</span></div><article class="paper">
-  <h2>亲笔下旨</h2>
+  <h2>亲笔下旨</h2>${policiesHtml()}
   <form class="transfer" data-act="transfer"><h4>拨银</h4><p>国库 ${moneyText(s.stats.treasury)} · 内帑 ${moneyText(s.stats.inner)}</p><p class="small">与下旨一样，用一个时辰。拨进内帑，朝局 −2；充入国库，民心 +2。</p><label>从哪里拨<select name="direction"><option value="toInner">国库 → 内帑</option><option value="toTreasury">内帑 → 国库</option></select></label><label>万两<input name="amount" type="number" min="0.01" step="0.01" value="10" required></label><button class="primary">拨银</button></form>
   ${ai?`<p class="muted">写下你想办的事，任何事都可以。它会怎样落地，有什么代价，由天下来回答。</p>
   <form class="edict" data-act="decree"><textarea name="t" maxlength="200" rows="4" placeholder="例如：在京城设十处粥厂，入冬前施粥三月。" ${busy?'disabled':''}></textarea><button class="primary" ${busy?'disabled':''}>${busy?'旨意正在传下去……':'用印'}</button></form>
@@ -219,7 +222,7 @@ function summaryView(){
 // ---------- 结局 ----------
 function endingView(){
  const vol=s.vol||1,v2=vol>=2,K=[ENDING_KINGDOM,ENDING_KINGDOM2,ENDING_KINGDOM3][vol-1];
- const e=E.ending(s),low=Math.min(treasuryIndex(s),...['people','court','palace','health'].map(k=>s.stats[k])),k=K.find((x,i)=>e.score>=x.min&&!(i===0&&low<40)&&!(i===1&&low<20))||K.at(-1);
+ const e=E.ending(s),low=Math.min(treasuryIndex(s),...['people','court','palace','health'].map(k=>s.stats[k])),k=K.find((x,i)=>e.score>=x.min&&!(i===0&&(low<40||!e.governmentReady))&&!(i===1&&low<20))||K.at(-1);
  const text=p=>{if(p.gone)return '年羹尧在狱中。他托人带出一句话：臣不怨皇上。只是这一句话，比怨更让你睡不着。';if(vol===3)return ENDING3[p.id][p.tier];if(v2)return ENDING2[p.id][p.tier];return p.tier===3?LOVER_ENDING[p.id]:ENDING_PEOPLE[p.id][Math.min(p.tier,2)];};
  const label=p=>p.gone?'狱中':p.tier===3?(p.id==='C05'?'知己':'相守'):stageOf(p.aff);
  return `<div class="stage" style="--bg:url('${abs(BG.court)}')"><article class="paper ending">
@@ -325,7 +328,7 @@ function celebration(){
  else if(c.k==='ach'){big=`${c.a.icon}`;small=`成就解锁 · ${c.a.title}<br><span>${esc(c.a.desc)}</span>`;cls='ach-pop';}
  return `<div class="cele ${cls}" data-act="cele">${img?`<img src="${img}" alt="">`:''}<div class="cele-box"><b>${big}</b><p>${small}</p><small>点一下继续</small></div></div>`;
 }
-const VIEWS={provinces:provincesView,memorials:memorialView,rest:restView,outings:outingsView,nanfeng:nanfengView,rebirth:rebirthView,gallery:galleryView,replay:replayView,title:titleView,home,scene:sceneView,pick:()=>pickPerson(view.kind),chat:chatView,gift:giftView,edict:edictView,result:resultView,night:nightView,summary:summaryView,ending:endingView,people:peopleView,log:logView,settings:settingsView};
+const VIEWS={secrets:secretsView,assessment:assessmentView,provinces:provincesView,memorials:memorialView,rest:restView,outings:outingsView,nanfeng:nanfengView,rebirth:rebirthView,gallery:galleryView,replay:replayView,title:titleView,home,scene:sceneView,pick:()=>pickPerson(view.kind),chat:chatView,gift:giftView,edict:edictView,result:resultView,night:nightView,summary:summaryView,ending:endingView,people:peopleView,log:logView,settings:settingsView};
 let lastVibration=null;
 function render(){if(!audienceOf().confirmed){app.innerHTML=ageView();return;}const c=s?.cele?.[0];if(c!==lastVibration){lastVibration=c;if(c&&['stage','lover'].includes(c.k)){try{globalThis.navigator?.vibrate?.(30);}catch{}}}app.innerHTML=(VIEWS[view.name]||home)()+(['home','summary','people','gallery','ending'].includes(view.name)&&!busy?celebration():'');const m=document.getElementById('msgs');if(m)m.scrollTop=m.scrollHeight;if(view.name==='chat'&&!busy)app.querySelector('.say input')?.focus();}
 function go(v){view=v;render();window.scrollTo(0,0);}
@@ -336,6 +339,8 @@ function learn(id,g,liked){s.known=s.known||{};const k=s.known[id]=s.known[id]&&
 const likedList=id=>Object.entries(s.known?.[id]||{}).filter(([,v])=>v).map(([g])=>g);
 
 const ACTS={
+ secret:el=>{try{E.judgeSecret(s,el.dataset.id,el.dataset.choice);save();render();}catch(e){toast(e.message);}},
+ assess:el=>{try{E.assessOfficial(s,el.dataset.id,el.dataset.decision,el.dataset.office);save();render();}catch(e){toast(e.message);}},
  'age-confirm':async()=>{try{confirmAge();await AI.initAI();s=E.load();go({name:'title'});}catch{toast('没有记住年龄确认，请检查浏览器是否允许保存。');}},
  'age-leave':()=>{view.left=true;render();},
  vol2:()=>{E.startVolume2(s);save();go({name:'home'});},
@@ -452,6 +457,7 @@ app.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el|
 app.addEventListener('change',e=>{if(e.target.dataset.pref==='tenderness'){try{setTenderness(e.target.checked);}catch(err){toast(err.message);render();}}});
 app.addEventListener('submit',e=>{e.preventDefault();if(!audienceOf().confirmed)return;const f=e.target,t=(f.t?.value||'').trim();if(f.dataset.act==='transfer'){try{const r=E.transferFunds(s,f.direction.value,f.amount.value);save();go({name:'result',result:r});}catch(e){toast(e.message);}}else if(f.dataset.act==='say')sayHandler(t);else if(f.dataset.act==='decree')decreeHandler(t);
  else if(f.dataset.act==='memorial-write')withBusy(async()=>{const fate=E.rollFate(s,'edict'),v=await AI.edictResult(s,t,CAST.filter(id=>E.present(s,id)),fate);if(!v)throw Error('朱批未发出，可重试。');const r=E.writeMemorial(s,f.dataset.id,t,{...v,fate});view.feedback=r.text;});
+ else if(f.dataset.act==='policy'){try{const [host,pilot]=f.host.value.split('|');E.launchPolicy(s,f.dataset.id,host,pilot);save();render();}catch(e){toast(e.message);}}
  else if(f.dataset.act==='api'){const d={url:f.url.value.trim(),model:f.model.value.trim(),key:f.key.value.trim()},rem=f.remember.checked;withBusy(async()=>{await AI.saveConnection(d,rem);toast('AI 已开启');});}});
 
 (async()=>{render();if(!audienceOf().confirmed)return;await AI.initAI();s=E.load();render();})();

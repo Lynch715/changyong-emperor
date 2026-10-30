@@ -91,6 +91,8 @@ export function startMonth(s){
  s.ap=AP_PER_MONTH;s.night=false;s.delta={stats:{},people:{}};s.chats=0;
  s.agenda=(ALL_AGENDA[monthKey(s)]||[]).filter(id=>!s.done[id]);s.bdayDone=[];
  G.regionalMonth(s,{rand,applyStats,funds});
+ G.secretMonth(s,{rand,applyStats,funds,gain});
+ for(const id of Object.keys(s.appointments))if(!s.tenureBaseline[id])G.snapshotTenure(s,id);
  // 年节：至少有两个人能陪时才过
  const fe=festivalOf(s.year,s.month);if(fe&&!s.done[festId(s.year,fe)]&&festivalPeople(s,true).length>=2)s.agenda.push(festId(s.year,fe));
  // 两三个月前的旨意，送回报来了
@@ -164,6 +166,7 @@ export function choose(s,id,optId){
  for(const cid of Object.keys(PEOPLE))if(present(s,cid)&&(sc.actor===cid))s.people[cid].met=true;
  const text=(opt.replyBy&&sc.dep&&opt.replyBy[s.done[sc.dep]])||opt.reply||'';
  if(sc.kind==='secondary'&&optId!=='wait'){const cid=sc.actor;s.secondaryDone[cid]=(s.secondaryDone[cid]||0)+1;}
+ G.policyStory(s,id,optId);
  s.done[id]=optId;s.agenda.shift();
  log(s,`${sc.title}：${opt.label}`,['relation','extension','romance','deep','deep5'].includes(sc.kind)?'情':sc.kind==='dilemma'?'难':sc.kind==='festival'?'节':'政');
  return {title:sc.title,actor:sc.actor,choice:opt.label,text,stats,people,knot:opt.slight||null};
@@ -308,13 +311,20 @@ export function queueSpecial(s,id){if(s.night)throw Error('今夜已经安排过
 // 任命先把所有人选与空位看清，再花时辰，失败不改存档。
 const rankChoice=choice=>choice==='huan'?[{id:'C09',office:'rank3'}]:choice==='mei'?[{id:'C10',office:'rank3'}]:choice==='both'?[{id:'C09',office:'rank3'},{id:'C10',office:'rank3'}]:[];
 function doAppointments(s,list){const people={},stats={},notes=[];const add=(id,n)=>{const d=gain(s,id,n);if(d)people[id]=(people[id]||0)+d;};const addStats=e=>{for(const[k,v]of Object.entries(applyStats(s,e)))stats[k]=(stats[k]||0)+v;};
- for(const {id,office}of list){const old=s.appointments[id],o=OFFICES[office],p=s.people[id];recordAppointment(s,id,office==='dismiss'?null:office,o?.title||'候旨');remember(s,id,'皇上将其由'+old.title+'调为'+titleOf(s,id));
+ for(const {id,office}of list){const old=s.appointments[id],o=OFFICES[office],p=s.people[id];recordAppointment(s,id,office==='dismiss'?null:office,o?.title||'候旨');G.snapshotTenure(s,id);G.factionChange(s,p.faction,office==='dismiss'?-4:3);if(office!=='dismiss'&&p.ability<6)addStats({court:-2});remember(s,id,'皇上将其由'+old.title+'调为'+titleOf(s,id));
   if(o?.kind==='妃嫔'){const prev=Number(old.office?.slice(4)),next=Number(office.slice(4));if(next>prev){add(id,8);addStats({palace:1});const so=social(s,id,false);for(const[k,v]of Object.entries(so.people))people[k]=(people[k]||0)+v;notes.push(...so.notes);}else{add(id,-10);p.knot={source:'appointment',text:'被降了位分'};addStats({palace:-1});}}
   else if(office==='dismiss'){add(id,-6);if(p.ability>=8)addStats({court:-3});p.loyalty=clamp(p.loyalty-5);}
   else{add(id,3);p.loyalty=clamp(p.loyalty+2);if(p.faction==='八爷党')addStats({court:2});if(o?.owner)add(o.owner,2);}
   log(s,PEOPLE[id].name+'：'+old.title+' → '+titleOf(s,id),'任');
  }return {title:'任命',text:'旨意传了下去。接旨的人俯身谢恩，新的差事，从今日开始。',stats,people,notes};}
 export function appointPerson(s,id,office){const list=validateAppointments(s,[{id,office}]);spend(s);return doAppointments(s,list);}
+
+export const assessmentRows=G.assessmentRows;
+export function launchPolicy(s,id,host,pilot){G.validatePolicy(s,id,host,pilot);spend(s);G.launchPolicy(s,id,host,pilot,{funds,log});}
+export function judgeSecret(s,uid,choice){G.decideSecret(s,uid,choice,{log});}
+const officeGrade=o=>o==='scholar'?3:['henan','zhejiang','shandong','guangdong'].includes(o)?1:2;
+export function assessmentOptions(s,id){return appointmentOptions(s,id).filter(o=>o.office==='dismiss'||OFFICES[o.office]?.kind==='官员').map(o=>({...o,decision:o.office==='dismiss'?'dismiss':officeGrade(o.office)>officeGrade(s.appointments[id].office)?'promote':officeGrade(o.office)<officeGrade(s.appointments[id].office)?'demote':'transfer'})).filter(o=>o.decision!=='transfer');}
+export function assessOfficial(s,id,decision,office){if(s.month!==12||!G.assessmentRows(s).some(r=>r.id===id)||s.assessments[s.year]?.[id])throw Error('此人眼下不在本年考绩名册。');let list=[];if(decision!=='stay'){const o=assessmentOptions(s,id).find(o=>o.office===office&&o.decision===decision&&!o.reason);if(!o)throw Error('升降须有合适职缺，先查定员。');list=validateAppointments(s,[{id,office}]);}s.assessments[s.year]??={};s.assessments[s.year][id]=decision;const r=list.length?doAppointments(s,list):{stats:{},people:{}};G.snapshotTenure(s,id);log(s,`${PEOPLE[id].name}腊月考绩：${{stay:'留任',promote:'升',demote:'降',dismiss:'罢'}[decision]}`,'政');return r;}
 
 // ---------- 月末 ----------
 export function crisisStatus(s,c){
@@ -329,6 +339,7 @@ export function endMonth(s){
  if(s.agenda.length)throw Error('本月还有要事没办。');
  const report={y:s.year,m:s.month,stats:{...s.delta.stats},people:{...s.delta.people}};
  G.backlog(s,applyStats);
+ G.policyMonthly(s,{rand,applyStats,funds});
  const provincialIncome=G.regionalMonthly(s,{applyStats,funds});
  const beforeDuties={...s.delta.stats};const duties=officeMonthly(s,rand(s)<.25);const {treasury:extraSilver=0,...extraStats}=duties.changes;for(const text of duties.notes)log(s,text,'任');
  const tick={...applyStats(s,extraStats),...applyStats(s,s.year>=5?{health:-2,palace:-1}:s.year>=3?{health:-1,court:-1,people:-1}:{health:-1}),...funds(s,{treasury:ECONOMY.income[(s.vol||1)-1]+extraSilver+provincialIncome,inner:ECONOMY.innerIncome})};for(const k of Object.keys(tick))tick[k]=silver((s.delta.stats[k]||0)-(beforeDuties[k]||0));report.income=tick;
@@ -372,7 +383,7 @@ export function ending(s){
  const sum=treasuryIndex(s)+['people','court','palace','health'].reduce((a,k)=>a+s.stats[k],0),solved=ALL_CRISES.filter(c=>c.vol===(s.vol||1)&&crisisStatus(s,c)==='solved').length;
  const score=sum+solved*15;
  const people=CORE.filter(id=>s.people[id].met).map(id=>{const p=s.people[id];return {id,aff:p.aff,lover:!!p.lover,gone:gone(s,id),tier:p.lover&&p.aff>=85?3:p.aff>=65?2:p.aff>=45?1:0};});
- return {score,solved,people};
+ return {score,solved,people,governmentReady:G.governanceReady(s)};
 }
 
 export function save(s,storage=globalThis.localStorage){try{storage.setItem(SAVE_KEY,JSON.stringify(s));return true;}catch{return false;}}
