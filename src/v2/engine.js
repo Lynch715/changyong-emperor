@@ -4,14 +4,19 @@ import {REWRITE} from './rewrite.js';
 import {ROMANCE} from './romance.js';
 import {MORE_PETITIONS,SMALL_EVENTS} from './events.js';
 import {SCENES2,AGENDA2,CRISES2,REPAIR2} from './vol2.js';
+import {SCENES3,AGENDA3,CRISES3,REPAIR3} from './vol3.js';
 import {VISITS} from './visits.js';
+import {BIRTH,BIRTH_SKIP,festivalOf,festId,festivalScene} from './festivals.js';
 import {SURPRISES,rivalsOf,friendsOf,JEALOUS,FRIEND_LINES} from './social.js';
 const POOL=[...PETITIONS,...MORE_PETITIONS,...SMALL_EVENTS];
 export const thirdOf=id=>'L'+id.slice(1);
 export const fourthOf=id=>'Y'+id.slice(1);
-const ALL_AGENDA={...AGENDA,...AGENDA2};
-export const ALL_CRISES=[...CRISES.map(c=>({vol:1,...c})),...CRISES2];
-const ALL_REPAIR={...REPAIR,...REPAIR2};
+export const fifthOf=id=>'Z'+id.slice(1);
+// 每卷最后一个月：二年、四年、六年腊月
+export const LAST_YEARS=[2,4,6];
+const ALL_AGENDA={...AGENDA,...AGENDA2,...AGENDA3};
+export const ALL_CRISES=[...CRISES.map(c=>({vol:1,...c})),...CRISES2,...CRISES3];
+const ALL_REPAIR={...REPAIR,...REPAIR2,...REPAIR3};
 import {PEOPLE,CORE,START_STATS,STAT_MAP,STATS,AGENDA,CRISES,GIFTS,OUTINGS,PETITIONS,stageOf,SEASON} from './data.js';
 
 // 用改写稿覆盖原稿的正文与选项文字
@@ -55,7 +60,8 @@ export function remember(s,id,text){if(!text)return;const p=s.people[id];p.memor
 export function secondReady(s,id,letter=false){const p=s.people[id];return p.first&&!p.second&&p.aff>=45&&!p.knot&&p.firstAt!==monthKey(s)&&present(s,id)&&(letter||!away(s,id));}
 export function thirdReady(s,id,letter=false){const p=s.people[id];return p.second&&!p.third&&p.aff>=65&&!p.knot&&p.secondAt!==monthKey(s)&&present(s,id)&&(letter||!away(s,id));}
 export function fourthReady(s,id,letter=false){const p=s.people[id];return s.year>=3&&p.third&&!p.fourth&&p.aff>=75&&!p.knot&&p.thirdAt!==monthKey(s)&&present(s,id)&&!gone(s,id)&&(letter||!away(s,id));}
-export const storyOf=(s,id)=>secondReady(s,id)?PEOPLE[id].second:thirdReady(s,id)?thirdOf(id):fourthReady(s,id)?fourthOf(id):null;
+export function fifthReady(s,id,letter=false){const p=s.people[id];return s.year>=5&&p.fourth&&!p.fifth&&p.aff>=80&&!p.knot&&p.fourthAt!==monthKey(s)&&present(s,id)&&!gone(s,id)&&(letter||!away(s,id));}
+export const storyOf=(s,id)=>secondReady(s,id)?PEOPLE[id].second:thirdReady(s,id)?thirdOf(id):fourthReady(s,id)?fourthOf(id):fifthReady(s,id)?fifthOf(id):null;
 export const hasStory=(s,id)=>!!storyOf(s,id);
 
 // ---------- 数值 ----------
@@ -72,13 +78,15 @@ export function log(s,text,kind='事'){s.log.push({y:s.year,m:s.month,kind,text}
 export function startMonth(s){
  s.weather=WEATHER[SEASON(s.month)][Math.floor(rand(s)*3)];
  s.ap=AP_PER_MONTH;s.night=false;s.delta={stats:{},people:{}};s.chats=0;
- s.agenda=(ALL_AGENDA[monthKey(s)]||[]).filter(id=>!s.done[id]);
+ s.agenda=(ALL_AGENDA[monthKey(s)]||[]).filter(id=>!s.done[id]);s.bdayDone=[];
+ // 年节：至少有两个人能陪时才过
+ const fe=festivalOf(s.year,s.month);if(fe&&!s.done[festId(s.year,fe)]&&festivalPeople(s,true).length>=2)s.agenda.push(festId(s.year,fe));
  // 两三个月前的旨意，送回报来了
  for(const e of s.edicts||[])if(e.due===idx(s.year,s.month)&&!s.done['FU'+e.n])s.agenda.push('FU'+e.n);
  // 人在外地的，第二、三幕以书信的形式在月初到来
- for(const id of CORE)if(away(s,id)&&!gone(s,id)){if(secondReady(s,id,true))s.agenda.push(PEOPLE[id].second);else if(thirdReady(s,id,true))s.agenda.push(thirdOf(id));}
+ for(const id of CORE)if(away(s,id)&&!gone(s,id)){if(secondReady(s,id,true))s.agenda.push(PEOPLE[id].second);else if(thirdReady(s,id,true))s.agenda.push(thirdOf(id));else if(fourthReady(s,id,true))s.agenda.push(fourthOf(id));else if(fifthReady(s,id,true))s.agenda.push(fifthOf(id));}
  // 要事少的月份，抽一件奏折或宫闱小事
- const last=s.month===12&&(s.year===2||s.year===4);
+ const last=s.month===12&&LAST_YEARS.includes(s.year);
  if(!last&&(s.agenda.length===0||(s.agenda.length===1&&rand(s)<0.5))){const left=POOL.filter(p=>!s.used.petitions.includes(p.id)&&(!p.months||p.months.includes(s.month))&&(!p.need||(present(s,p.need)&&s.people[p.need].met&&!away(s,p.need))));if(left.length){const p=left[Math.floor(rand(s)*left.length)];s.used.petitions.push(p.id);s.agenda.push(p.id);}}
  for(const id of CORE)if(present(s,id)&&!s.people[id].met&&!SCENES[PEOPLE[id].first]?.id)s.people[id].met=true;
  // 情分够了的人，有时会自己找上门来
@@ -94,7 +102,7 @@ let CUR=null;export function bind(s){CUR=s;return s;}
 function followFallback(s,id){const e=(s?.edicts||[]).find(x=>'FU'+x.n===id);if(!e)return null;const ago=Math.max(1,idx(s.year,s.month)-e.at);const neg=Object.values(e.effects||{}).some(v=>v<0);
  return {id,title:`「${e.title}」的回音`,kind:'edictfollow',actor:'C28',location:'养心殿',body:`${ago}个月前，你下了一道旨意：${e.text}\n\n如今，各地的回报陆续送到了。张廷玉把它们摞在案上，${neg?'说好的有，说难的也有。':'大多是好消息。'}\n\n“皇上，”他问，“这件事，往后怎么办？”`,
   options:[{id:'a',label:'嘉奖经办的官员，接着办',effects:{court:2,treasury:-2},reply:'经办的官员得了赏，干劲更足了。这道旨意，算是真正落了地。'},{id:'b',label:'派人下去看看实情',effects:{people:2,health:-1},reply:'派去的人跑了一个月，回来说：旨意确实落了地，只是有几处被下面的人打了折扣。你让他们一一改了。'},{id:'c',label:'不必再过问',effects:{},reply:'你没有再过问。这件事，就这样过去了。'}]};}
-export const scene=id=>SCENES[id]||ROMANCE[id]||SCENES2[id]||POOL.find(p=>p.id===id)||SURPRISES.find(p=>p.id===id)||(id?.startsWith('FU')?(CUR?.dyn?.[id]||followFallback(CUR,id)):null);
+export const scene=id=>SCENES[id]||ROMANCE[id]||SCENES2[id]||SCENES3[id]||POOL.find(p=>p.id===id)||SURPRISES.find(p=>p.id===id)||(id?.startsWith('FU')?(CUR?.dyn?.[id]||followFallback(CUR,id)):null)||(id?.startsWith('FE')?festivalScene(id,CUR?weatherOf(CUR):''):null);
 export function setDyn(s,id,sc){s.dyn=s.dyn||{};s.dyn[id]={...sc,id,kind:'edictfollow'};}
 // 白天做完事，有时会撞见一件小事
 export function rollSurprise(s){if(s.agenda.length||s.ended||rand(s)>=0.28)return null;s.used.surprises=s.used.surprises||[];
@@ -106,7 +114,15 @@ function social(s,id,heavy){const out={},notes=[];if(!id)return {people:out,note
  for(const f of friendsOf(id)){const p=s.people[f];if(!p?.met||!present(s,f)||p.knot)continue;const d=gain(s,f,1);if(d){out[f]=d;if(FRIEND_LINES[f]?.[id])notes.push(FRIEND_LINES[f][id]);}}
  return {people:out,notes:notes.length?[notes[Math.floor(rand(s)*notes.length)]]:[]};}
 
-export const optionsFor=(s,sc)=>sc.options.filter(o=>!o.need||s.flags?.[o.need]);
+// 年节能陪的人：见过、在宫里、不在外地。只列情分最深的三位（两情相悦的优先）
+export function festivalPeople(s,all=false){const ok=CORE.filter(id=>{const p=s.people[id];return p.met&&present(s,id)&&!away(s,id)&&!gone(s,id);});if(all)return ok;const w=id=>(s.people[id].lover?1000:0)+s.people[id].aff;return ok.sort((a,b)=>w(b)-w(a)).slice(0,3);}
+export const optionsFor=(s,sc)=>{if(sc.kind==='festival'){const ok=festivalPeople(s);const rank=o=>o.who?1+ok.indexOf(o.who):o.id==='all'?0:9;return sc.options.filter(o=>!o.who||ok.includes(o.who)).sort((a,b)=>rank(a)-rank(b)).map(o=>o.who?{...o,label:o.label.replace('{n}',PEOPLE[o.who].name)}:o);}return sc.options.filter(o=>!o.need||s.flags?.[o.need]);};
+// ---------- 生辰 ----------
+export const birthdayOf=(s,id)=>BIRTH[id]===s.month&&!!s.people[id]?.met&&present(s,id)&&!gone(s,id)&&!(BIRTH_SKIP[monthKey(s)]||[]).includes(id);
+export const birthdays=s=>CORE.filter(id=>birthdayOf(s,id));
+export const birthdayDone=(s,id)=>(s.bdayDone||[]).includes(id);
+// 那个月见了、赏了、陪了，就算记得；返回额外的情分
+function celebrate(s,id,extra){if(!birthdayOf(s,id)||birthdayDone(s,id))return null;s.bdayDone=[...(s.bdayDone||[]),id];const d=gain(s,id,extra);remember(s,id,'生辰那个月，你记得');log(s,`给${PEOPLE[id].name}过了生辰`,'情');count(s,'bdays');return d;}
 export const pendingScene=s=>s.agenda[0]||null;
 
 // 处理要事中的一个选项
@@ -120,16 +136,18 @@ export function choose(s,id,optId){
  const add=(cid,n)=>{const d=gain(s,cid,n);if(d)people[cid]=(people[cid]||0)+d;};
  if(['relation','extension'].includes(sc.kind)){const n={warm:6,develop:6,work:3,cooperate:3,distance:1,unsure:2}[optId]??3;const cid=sc.actor;s.people[cid].met=true;
   if(PEOPLE[cid].first===id){s.people[cid].first=true;s.people[cid].firstAt=monthKey(s);}if(PEOPLE[cid].second===id){s.people[cid].second=true;s.people[cid].secondAt=monthKey(s);}add(cid,n);}
- else if(sc.kind==='deep'){const cid=sc.actor,p=s.people[cid];p.fourth=true;add(cid,{stay:6,mid:3,hard:-3}[optId]??2);}
+ else if(sc.kind==='deep'||sc.kind==='deep5'){const cid=sc.actor,p=s.people[cid];if(sc.kind==='deep'){p.fourth=true;p.fourthAt=monthKey(s);}else{p.fifth=true;cele(s,{k:'fifth',id:cid});}add(cid,{stay:6,mid:3,hard:-3}[optId]??2);}
  else if(sc.kind==='romance'){const cid=sc.actor,p=s.people[cid];p.third=true;p.thirdAt=monthKey(s);if(optId==='confess'){p.lover=true;cele(s,{k:'lover',id:cid});remember(s,cid,cid==='C05'?'皇兄把那个很长的梦告诉了他':'两人说开了心意');}add(cid,{confess:8,slow:5,restrain:1}[optId]??3);}
   else if(sc.kind==='dilemma'){for(const[cid,b]of Object.entries(opt.bonds||{}))add(cid,(b.trust||0)*2);if(opt.slight){add(opt.slight,-5);s.people[opt.slight].knot={source:id,text:sc.title};remember(s,opt.slight,'你在「'+sc.title+'」里没有选她/他');}}
+ else if(sc.kind==='festival'){if(optId==='all'){for(const cid of festivalPeople(s,true))add(cid,1);}else if(opt.who){add(opt.who,5);remember(s,opt.who,'一起过了'+sc.title);for(const r of rivalsOf(opt.who)){const p=s.people[r];if(p?.met&&present(s,r)&&p.aff>=25)add(r,-2);}}count(s,'festivals');}
  else if(PEOPLE[sc.actor]&&!opt.bond)add(sc.actor,2);
+ if(sc.kind!=='festival'&&opt.bond?.[sc.actor]>0)celebrate(s,sc.actor,0);
  if(opt.bond)for(const[cid,n]of Object.entries(opt.bond))if(s.people[cid])add(cid,n);
  if(opt.flag){s.flags=s.flags||{};s.flags[opt.flag]=true;if(opt.flag==='nian_away')s.flags.away_C03=true;if(opt.flag==='nian_prison'){s.flags.away_C03=true;s.flags.gone_C03=true;}}
  for(const cid of Object.keys(PEOPLE))if(present(s,cid)&&(sc.actor===cid))s.people[cid].met=true;
  const text=(opt.replyBy&&sc.dep&&opt.replyBy[s.done[sc.dep]])||opt.reply||'';
  s.done[id]=optId;s.agenda.shift();
- log(s,`${sc.title}：${opt.label}`,['relation','extension','romance','deep'].includes(sc.kind)?'情':sc.kind==='dilemma'?'难':'政');
+ log(s,`${sc.title}：${opt.label}`,['relation','extension','romance','deep','deep5'].includes(sc.kind)?'情':sc.kind==='dilemma'?'难':sc.kind==='festival'?'节':'政');
  return {title:sc.title,actor:sc.actor,choice:opt.label,text,stats,people,knot:opt.slight||null};
 }
 
@@ -137,7 +155,7 @@ export function choose(s,id,optId){
 function spend(s){if(s.agenda.length)throw Error('先把本月要事办完。');if(s.ap<=0)throw Error('今日的时辰已经用完了。');s.ap--;}
 export function canAct(s){return !s.agenda.length&&s.ap>0&&!s.ended;}
 
-export function beginChat(s,id){if(!present(s,id))throw Error('还见不到这个人。');spend(s);s.people[id].met=true;s.chats++;if(id==='C04'&&!away(s,id)&&weatherOf(s)==='雨')gain(s,id,1);return {id,letter:away(s,id),gained:0,turns:0};}
+export function beginChat(s,id){if(!present(s,id))throw Error('还见不到这个人。');spend(s);s.people[id].met=true;s.chats++;if(id==='C04'&&!away(s,id)&&weatherOf(s)==='雨')gain(s,id,1);const bd=celebrate(s,id,2);return {id,letter:away(s,id),gained:0,turns:0,birthday:bd!==null};}
 // 一次召见最多加 8 点，单句 -5～+4
 export const CHAT_CAP=8;
 export function applyChat(s,chat,{affection=0,memory=''}={}){
@@ -154,9 +172,9 @@ export function repairKnot(s,chat){const p=s.people[chat.id];if(!p.knot)return n
 
 export function giveGift(s,id,giftId){
  const g=GIFTS[giftId];if(!g)throw Error('没有这件东西。');if(s.stats.treasury<g.cost)throw Error('国库不够了。');
- spend(s);const stats=applyStats(s,{treasury:-g.cost});const liked=PEOPLE[id].likes.includes(giftId),disliked=PEOPLE[id].dislikes.includes(giftId);s.gifted=s.gifted||{};const k=id+':'+giftId,times=s.gifted[k]||0;s.gifted[k]=times+1;const d=gain(s,id,disliked?-3:times?1:liked?6:2);s.people[id].met=true;
+ spend(s);const stats=applyStats(s,{treasury:-g.cost});const liked=PEOPLE[id].likes.includes(giftId),disliked=PEOPLE[id].dislikes.includes(giftId);s.gifted=s.gifted||{};const k=id+':'+giftId,times=s.gifted[k]||0;s.gifted[k]=times+1;let d=gain(s,id,disliked?-3:times?1:liked?6:2);s.people[id].met=true;const bd=celebrate(s,id,disliked?0:3);if(bd)d+=bd;
  const so=g.cost>=5?social(s,id,false):{people:{},notes:[]};
- log(s,`赏${PEOPLE[id].name}${g.name}`,'赏');return {liked,disliked,repeat:times>0,stats,people:{...(d?{[id]:d}:{}),...so.people},notes:so.notes,knot:!!s.people[id].knot};
+ log(s,`赏${PEOPLE[id].name}${g.name}`,'赏');return {liked,disliked,birthday:bd!==null,repeat:times>0,stats,people:{...(d?{[id]:d}:{}),...so.people},notes:so.notes,knot:!!s.people[id].knot};
 }
 // 旨意的后果由 AI 判断，这里只限幅
 export function applyEdict(s,text,{effects={},affection={},narration='',title=''}={}){
@@ -175,11 +193,11 @@ export function nightChoices(s){return CORE.filter(id=>present(s,id)&&!away(s,id
 export function spendNight(s,id,{affection=4,memory=''}={}){
  if(s.night)throw Error('今夜已经安排过了。');if(s.agenda.length)throw Error('先把本月要事办完。');s.night=true;
  if(!id){const stats=applyStats(s,{health:3});log(s,'独寝','夜');return {stats,people:{}};}
- const d=gain(s,id,Math.max(0,Math.min(4,Math.round(affection))));remember(s,id,memory);
- const heavy=s.lastNight===id;s.lastNight=id;const so=social(s,id,heavy);log(s,`夜里在${placeOf(s,id)}，陪着${PEOPLE[id].name}`,'夜');return {stats:{},people:{...(d?{[id]:d}:{}),...so.people},notes:so.notes};
+ let d=gain(s,id,Math.max(0,Math.min(4,Math.round(affection))));remember(s,id,memory);const bd=celebrate(s,id,2);if(bd)d+=bd;
+ const heavy=s.lastNight===id;s.lastNight=id;const so=social(s,id,heavy);log(s,`夜里在${placeOf(s,id)}，陪着${PEOPLE[id].name}`,'夜');return {stats:{},people:{...so.people,...(d?{[id]:d}:{})},notes:so.notes,birthday:bd!==null};
 }
 // 夜里遇到第二幕剧情时，作为要事插入
-export function queueSpecial(s,id){if(s.night)throw Error('今夜已经安排过了。');const sid=storyOf(s,id);if(!sid)throw Error('今夜没有新的剧情。');s.night=true;s.agenda.unshift(sid);return sid;}
+export function queueSpecial(s,id){if(s.night)throw Error('今夜已经安排过了。');const sid=storyOf(s,id);if(!sid)throw Error('今夜没有新的剧情。');s.night=true;celebrate(s,id,2);s.agenda.unshift(sid);return sid;}
 
 // ---------- 月末 ----------
 export function crisisStatus(s,c){
@@ -192,19 +210,41 @@ function settleCrises(s){s.crises=s.crises||{};for(const c of ALL_CRISES){if(s.c
 export function endMonth(s){
  if(s.agenda.length)throw Error('本月还有要事没办。');
  const report={y:s.year,m:s.month,stats:{...s.delta.stats},people:{...s.delta.people}};
- const tick=applyStats(s,s.year>=3?{treasury:3,health:-1,court:-1,people:-1}:{treasury:5,health:-1});report.income=tick;
+ const tick=applyStats(s,s.year>=5?{treasury:3,health:-2,palace:-1}:s.year>=3?{treasury:3,health:-1,court:-1,people:-1}:{treasury:5,health:-1});report.income=tick;
  for(const[k,v]of Object.entries(tick))report.stats[k]=(report.stats[k]||0)+v;
+ // 生辰那个月一次也没去的，情分掉 3
+ report.forgot=[];for(const id of birthdays(s)){const p=s.people[id];if(birthdayDone(s,id)||p.aff<25)continue;p.aff=clamp(p.aff-3);report.people[id]=(report.people[id]||0)-3;remember(s,id,'生辰那个月，你没有来');log(s,`${PEOPLE[id].name}的生辰，你没有去`,'情');report.forgot.push(id);}
  // 久不相见，情分会慢慢淡
- report.cooled=[];for(const id of CORE){const p=s.people[id];if(p.met&&!s.delta.people[id]&&p.aff>30&&present(s,id)&&!away(s,id)){p.aff=clamp(p.aff-(p.aff>=45?2:1));report.cooled.push(id);}}
+ report.cooled=[];for(const id of CORE){const p=s.people[id];if(p.met&&!s.delta.people[id]&&!report.forgot.includes(id)&&p.aff>30&&present(s,id)&&!away(s,id)){p.aff=clamp(p.aff-(p.aff>=45?2:1));report.cooled.push(id);}}
  settleCrises(s);
  report.crises=ALL_CRISES.filter(c=>c.vol===(s.vol||1)).map(c=>({id:c.id,name:c.name,status:crisisStatus(s,c)}));
- if(s.month===12&&(s.year===2||s.year===4)){s.ended=true;return report;}
+ if(s.month===12&&LAST_YEARS.includes(s.year)){s.ended=true;return report;}
  s.month++;if(s.month>12){s.month=1;s.year++;}
  startMonth(s);return report;
 }
 
 // 第一卷结束后接着玩第二卷：存档、情分、记忆全部延续
 export function startVolume2(s){if(!(s.ended&&s.year===2))throw Error('第一卷还没结束。');s.ended=false;s.vol=2;s.flags=s.flags||{};s.year=3;s.month=1;log(s,'第二卷：雍正三年','卷');startMonth(s);return s;}
+export function startVolume3(s){if(!(s.ended&&s.year===4))throw Error('第二卷还没结束。');s.ended=false;s.vol=3;s.flags=s.flags||{};s.year=5;s.month=1;log(s,'第三卷：雍正五年','卷');startMonth(s);return s;}
+
+// ---------- 再活一世 ----------
+export const BOONS={
+ love:{name:'旧情',desc:'上一世动了心的人（情分 65 以上），这一世开局情分 +12。'},
+ know:{name:'旧识',desc:'记得每个人喜欢什么、讨厌什么，赏赐不用再猜。'},
+ purse:{name:'旧账',desc:'记得哪里藏着银子：开局国库 +12，圣躬 +5。'}
+};
+// 上一世走到哪一卷都可以重来；动过心的人会“似曾相识”
+export const pastHearts=prev=>CORE.filter(id=>(prev?.people?.[id]?.aff||0)>=65);
+export function newGamePlus(prev,boon,seed=Date.now()%2147483647){
+ if(!prev?.ended)throw Error('这一世还没走完。');if(!BOONS[boon])throw Error('没有这样的记忆。');
+ const s=newGame(seed);s.life=(prev.life||1)+1;s.boon=boon;
+ const past=pastHearts(prev);s.past=Object.fromEntries(past.map(id=>[id,{lover:!!prev.people[id].lover}]));
+ for(const id of past)remember(s,id,prev.people[id].lover?'梦里见过皇上，醒来却想不起梦见了什么':'总觉得很久以前，见过皇上');
+ if(boon==='love')for(const id of past)s.people[id].aff=clamp(s.people[id].aff+12);
+ if(boon==='know')s.known=Object.fromEntries(CORE.map(id=>[id,{...Object.fromEntries(PEOPLE[id].likes.map(g=>[g,true])),...Object.fromEntries(PEOPLE[id].dislikes.map(g=>[g,false]))}]));
+ if(boon==='purse'){s.stats.treasury=clamp(s.stats.treasury+12);s.stats.health=clamp(s.stats.health+5);}
+ s.log=[];log(s,`第${s.life}世：带着「${BOONS[boon].name}」醒来`,'卷');return s;
+}
 export function ending(s){
  const sum=Object.values(s.stats).reduce((a,b)=>a+b,0),solved=ALL_CRISES.filter(c=>c.vol===(s.vol||1)&&crisisStatus(s,c)==='solved').length;
  const score=sum+solved*15;

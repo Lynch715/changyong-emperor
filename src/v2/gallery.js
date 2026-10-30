@@ -26,7 +26,14 @@ export const ACHIEVEMENTS=[
  {id:'xiang',icon:'王',title:'十三弟',desc:'逼允祥好好歇了半年',check:s=>s.done.V04==='rest'},
  {id:'end1',icon:'卷',title:'第一卷完',desc:'走完元年至二年',check:s=>s.ended&&s.year===2||s.vol===2},
  {id:'shouhe',icon:'守',title:'相守',desc:'与一人相守（两情相悦且情分 85）',check:s=>any(s,(p,id)=>p.lover&&p.aff>=85&&id!=='C05')},
- {id:'end2',icon:'史',title:'第二卷完',desc:'走完雍正四年',check:s=>s.ended&&s.vol===2}
+ {id:'end2',icon:'史',title:'第二卷完',desc:'走完雍正四年',check:s=>s.ended&&s.vol===2||s.vol>=3},
+ {id:'bday',icon:'寿',title:'记得',desc:'给五个人过了生辰',check:s=>(s.count?.bdays||0)>=5},
+ {id:'fest',icon:'灯',title:'佳节',desc:'和人一起过一个年节',check:s=>(s.count?.festivals||0)>=1},
+ {id:'fifth',icon:'玉',title:'一生',desc:'走完一个人的第五幕',check:s=>CORE.some(id=>s.people[id]?.fifth)},
+ {id:'council',icon:'值',title:'学会先睡',desc:'设一间值房，不再一个人批到天明',check:s=>s.done.W08==='council'},
+ {id:'end3',icon:'雪',title:'第三卷完',desc:'走完雍正六年',check:s=>s.ended&&s.vol===3},
+ {id:'life2',icon:'梦',title:'再活一世',desc:'带着记忆，从头再来',check:s=>(s.life||1)>=2},
+ {id:'life3',icon:'轮',title:'三生',desc:'第三次醒在雍正元年',check:s=>(s.life||1)>=3}
 ];
 export function loadGallery(storage=globalThis.localStorage){try{return JSON.parse(storage.getItem(GALLERY_KEY)||'null')||{ach:{},seen:{}};}catch{return {ach:{},seen:{}};}}
 // 每次存档后调用；返回新解锁的成就

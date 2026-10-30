@@ -4,8 +4,10 @@ import {PEOPLE,CORE,STATS,MONTHS,SEASON,CRISES,GIFTS,GIFT_LINES,TOPICS,TOPIC_LIN
 import * as AI from './ai.js';
 import {LOVER_ENDING} from './romance.js';
 import {ENDING_KINGDOM2,ENDING2} from './vol2.js';
+import {ENDING_KINGDOM3,ENDING3} from './vol3.js';
 import {ACHIEVEMENTS,loadGallery,updateGallery} from './gallery.js';
 import {rivalsOf,friendsOf} from './social.js';
+import {BIRTH,BIRTH_LINES} from './festivals.js';
 const bondName=id=>id==='C05'?'知己':'两情相悦';
 
 const app=document.getElementById('app');
@@ -37,7 +39,7 @@ function header(){
  if(!s)return '';
  const d=s.delta.stats;
  return `<header class="top">
-  <div class="date"><b>${dateText(s)}</b><span>${SEASON(s.month)} · ${E.weatherOf(s)}</span></div>
+  <div class="date"><b>${dateText(s)}</b><span>${s.life>1?`第${s.life}世 · `:''}${SEASON(s.month)} · ${E.weatherOf(s)}</span></div>
   <div class="stats">${STATS.map(x=>{const v=s.stats[x.id],dd=d[x.id]||0;return `<div class="stat ${v<30?'low':''}" title="${esc(x.hint)}"><span class="sn">${x.name}</span><span class="sv">${v}</span>${dd?`<span class="sd ${dd>0?'up':'down'}">${dd>0?'▲':'▼'}${Math.abs(dd)}</span>`:''}<i style="width:${v}%"></i></div>`;}).join('')}</div>
  </header>`;
 }
@@ -66,6 +68,7 @@ function home(){
  return `${header()}
  <main class="home">
   <div class="guide"><span>${guide()}</span>${apPips()}</div>
+  ${E.birthdays(s).map(id=>`<div class="visit bday ${E.birthdayDone(s,id)?'done':''}"><img src="${face(id)}" alt=""><div><small>生辰 · ${E.birthdayDone(s,id)?'你记得':'本月'}</small><b>${PEOPLE[id].name}的生辰</b><span>${E.birthdayDone(s,id)?'贺过了。':'召见、赏赐或夜里去看看，都算记得。整月不去，情分会掉。'}</span></div></div>`).join('')}
   ${(()=>{const v=E.visitOf(s);return v?`<button class="visit" data-act="visit"><img src="${face(v.id)}" alt=""><div><small>有人来了 · 不占时辰</small><b>${PEOPLE[v.id].name}来看你</b><span>${esc(v.title)}</span></div><em>迎进来 ›</em></button>`:'';})()}
   ${sc?`<button class="agenda" data-act="scene">
     <img src="${face(sc.actor)}" alt="" onerror="this.style.visibility='hidden'">
@@ -83,15 +86,16 @@ function home(){
   </section>
 
   <h3 class="sec">要务</h3>
-  <section class="crises">${E.ALL_CRISES.filter(c=>c.vol===(s.vol||1)).map(c=>{const st=E.crisisStatus(s,c);if(st==='later')return '';const done=c.scenes.filter(id=>s.done[id]).length;return `<div class="crisis ${st}"><b>${c.name}</b><em>${{open:'进行中',solved:'已了结',failed:'没办好'}[st]}</em><p>${esc(c.desc)}</p><div class="bar"><i style="width:${done/c.scenes.length*100}%"></i></div><small>${done}/${c.scenes.length} 步${c.goal&&st==='open'?` · 国库 ${s.stats.treasury}/50`:''} · 期限 ${YEAR_NAME(c.deadline[0])}年${MONTHS[c.deadline[1]-1]}</small></div>`;}).join('')||'<p class="muted">眼下还没有。</p>'}</section>
+  <section class="crises">${E.ALL_CRISES.filter(c=>c.vol===(s.vol||1)).map(c=>{const st=E.crisisStatus(s,c);if(st==='later')return '';const done=c.scenes.filter(id=>s.done[id]).length;return `<div class="crisis ${st}"><b>${c.name}</b><em>${{open:'进行中',solved:'已了结',failed:'没办好'}[st]}</em><p>${esc(c.desc)}</p><div class="bar"><i style="width:${done/c.scenes.length*100}%"></i></div><small>${done}/${c.scenes.length} 步${c.goal&&st==='open'&&GOAL_TEXT[c.id]?` · ${GOAL_TEXT[c.id](s.stats)}`:''} · 期限 ${YEAR_NAME(c.deadline[0])}年${MONTHS[c.deadline[1]-1]}</small></div>`;}).join('')||'<p class="muted">眼下还没有。</p>'}</section>
  </main>
  ${nav()}`;
 }
+const GOAL_TEXT={deficit:x=>`国库 ${x.treasury}/45`,eight:x=>`朝局 ${x.court}/55`,reform:x=>`民心 ${x.people}/60 · 国库 ${x.treasury}/35`,border:x=>`朝局 ${x.court}/50`,tusi:x=>`民心 ${x.people}/55`,body:x=>`圣躬 ${x.health}/45`};
 function personCard(id,act='person'){
  const p=s.people[id],st=stageOf(p.aff),next=STAGES.find(([n])=>n>p.aff);
  const lo=STAGES.filter(([n])=>p.aff>=n).at(-1)[0],hi=next?next[0]:100;
  const dd=s.delta.people[id]||0;
- const badge=p.knot?'<em class="knot">心结</em>':E.hasStory(s,id)?'<em class="ready">有话想说</em>':E.away(s,id)?'<em class="away">在外</em>':p.lover?`<em class="lover">${bondName(id)}</em>`:'';
+ const badge=p.knot?'<em class="knot">心结</em>':E.hasStory(s,id)?'<em class="ready">有话想说</em>':E.birthdayOf(s,id)&&!E.birthdayDone(s,id)?'<em class="ready">生辰</em>':E.away(s,id)?'<em class="away">在外</em>':p.lover?`<em class="lover">${bondName(id)}</em>`:'';
  return `<button class="pc" data-act="${act}" data-id="${id}"><img src="${face(id)}" alt="">
   <div><b>${PEOPLE[id].name}${badge}</b><span>${st} · ${p.aff}${dd?`<i class="${dd>0?'up':'down'}">${dd>0?'+':''}${dd}</i>`:''}</span><div class="bar"><i style="width:${(p.aff-lo)/(hi-lo)*100}%"></i></div></div></button>`;
 }
@@ -144,7 +148,7 @@ function chatView(){
 
 function giftView(){
  const id=view.id,p=PEOPLE[id],known=s.known?.[id]&&!Array.isArray(s.known[id])?s.known[id]:{};
- if(view.result){const r=view.result;return `<div class="stage" style="--bg:url('${abs(bgFor(E.placeOf(s,id)))}')"><img class="portrait" src="${portrait(id)}" alt=""><article class="paper"><h2>赏${p.name}</h2><div class="choice">${esc(GIFTS[r.gift].name)}${r.disliked?' · 不合心意':r.liked&&!r.repeat?' · 正合心意':r.repeat?' · 送过了':''}</div>${paras(r.text)}${chips(r.stats,r.people,r.knot?'<span class="chip knot">心结未解，情分没有涨</span>':'')}${notesHtml(r)}<button class="primary" data-act="done">好</button></article></div>`;}
+ if(view.result){const r=view.result;return `<div class="stage" style="--bg:url('${abs(bgFor(E.placeOf(s,id)))}')"><img class="portrait" src="${portrait(id)}" alt=""><article class="paper"><h2>赏${p.name}</h2><div class="choice">${esc(GIFTS[r.gift].name)}${r.disliked?' · 不合心意':r.liked&&!r.repeat?' · 正合心意':r.repeat?' · 送过了':''}${r.birthday?' · 生辰贺礼':''}</div>${paras(r.text)}${chips(r.stats,r.people,r.knot?'<span class="chip knot">心结未解，情分没有涨</span>':'')}${notesHtml(r)}<button class="primary" data-act="done">好</button></article></div>`;}
  return `${header()}<main class="pick"><div class="bar-title"><button data-act="gift">‹ 换人</button><b>赏${p.name}什么？</b></div>
  <section class="gifts">${Object.entries(GIFTS).map(([g,x])=>`<button data-act="give" data-g="${g}" ${s.stats.treasury<x.cost?'disabled':''}><b>${x.name}${known[g]===true?' <em>♥</em>':known[g]===false&&p.dislikes.includes(g)?' <em class="no">不喜欢</em>':''}</b><span>${x.cost?'国库 −'+x.cost:'不花钱'}</span></button>`).join('')}</section>
  <p class="muted center">送过一次，就知道${p.name}喜不喜欢了（♥）。</p></main>`;
@@ -192,25 +196,38 @@ function summaryView(){
  return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><article class="paper summary">
   <h2>${YEAR_NAME(r.y)}年${MONTHS[r.m-1]} · 月末</h2>
   <h4>这个月</h4>${chips(r.stats,r.people)||'<p class="muted">风平浪静。</p>'}
-  <p class="muted small">${s.year>=3?'每月国库进账 +3，圣躬 −1；八爷党与新政的阻力让朝局 −1、民心 −1。':'每月国库自然进账 +5，圣躬劳损 −1。'}${r.cooled.length?`<br>${r.cooled.map(nm).join('、')}这个月没见到你，情分淡了一点。`:''}</p>
+  <p class="muted small">${s.year>=5||r.y>=5?'每月国库进账 +3；年纪渐长、政务繁重，圣躬 −2，后宫 −1。':r.y>=3?'每月国库进账 +3，圣躬 −1；八爷党与新政的阻力让朝局 −1、民心 −1。':'每月国库自然进账 +5，圣躬劳损 −1。'}${r.cooled.length?`<br>${r.cooled.map(nm).join('、')}这个月没见到你，情分淡了一点。`:''}${r.forgot?.length?`<br>${r.forgot.map(nm).join('、')}的生辰，你没有去。情分 −3。`:''}</p>
   ${r.crises.filter(c=>c.status!=='later').map(c=>`<div class="crisis mini ${c.status}"><b>${c.name}</b><em>${{open:'进行中',solved:'已了结',failed:'没办好'}[c.status]}</em></div>`).join('')}
-  ${s.ended?`<button class="primary" data-act="ending">${s.vol===2?'四年过去了':'两年过去了'} ›</button>`:`<h4>下个月</h4><p>${dateText(s)}${next?`，有 ${next} 件要事。`:'，暂无要事。'}</p>${CORE.filter(id=>E.present(s,id)&&!s.people[id].met&&PEOPLE[id].from[0]===s.year&&PEOPLE[id].from[1]===s.month).map(id=>`<p class="new">新面孔：${PEOPLE[id].name}（${PEOPLE[id].title}）</p>`).join('')}<button class="primary" data-act="go" data-to="home">进入${MONTHS[s.month-1]} ›</button>`}
+  ${s.ended?`<button class="primary" data-act="ending">${['两年过去了','四年过去了','六年过去了'][(s.vol||1)-1]} ›</button>`:`<h4>下个月</h4><p>${dateText(s)}${next?`，有 ${next} 件要事。`:'，暂无要事。'}</p>${E.birthdays(s).length?`<p class="new">下个月是${E.birthdays(s).map(nm).join('、')}的生辰。</p>`:''}${CORE.filter(id=>E.present(s,id)&&!s.people[id].met&&PEOPLE[id].from[0]===s.year&&PEOPLE[id].from[1]===s.month).map(id=>`<p class="new">新面孔：${PEOPLE[id].name}（${PEOPLE[id].title}）</p>`).join('')}<button class="primary" data-act="go" data-to="home">进入${MONTHS[s.month-1]} ›</button>`}
  </article></div>`;
 }
 
 // ---------- 结局 ----------
 function endingView(){
- const v2=s.vol===2,K=v2?ENDING_KINGDOM2:ENDING_KINGDOM;
+ const vol=s.vol||1,v2=vol>=2,K=[ENDING_KINGDOM,ENDING_KINGDOM2,ENDING_KINGDOM3][vol-1];
  const e=E.ending(s),low=Math.min(...Object.values(s.stats)),k=K.find((x,i)=>e.score>=x.min&&!(i===0&&low<40)&&!(i===1&&low<20))||K.at(-1);
- const text=p=>{if(p.gone)return '年羹尧在狱中。他托人带出一句话：臣不怨皇上。只是这一句话，比怨更让你睡不着。';if(v2)return ENDING2[p.id][p.tier];return p.tier===3?LOVER_ENDING[p.id]:ENDING_PEOPLE[p.id][Math.min(p.tier,2)];};
+ const text=p=>{if(p.gone)return '年羹尧在狱中。他托人带出一句话：臣不怨皇上。只是这一句话，比怨更让你睡不着。';if(vol===3)return ENDING3[p.id][p.tier];if(v2)return ENDING2[p.id][p.tier];return p.tier===3?LOVER_ENDING[p.id]:ENDING_PEOPLE[p.id][Math.min(p.tier,2)];};
  const label=p=>p.gone?'狱中':p.tier===3?(p.id==='C05'?'知己':'相守'):stageOf(p.aff);
  return `<div class="stage" style="--bg:url('${abs(BG.court)}')"><article class="paper ending">
-  <small>雍正${v2?'四':'二'}年 · 岁末</small><h2>${k.title}</h2>${paras(k.text)}
+  <small>雍正${['二','四','六'][vol-1]}年 · 岁末</small><h2>${k.title}</h2>${paras(k.text)}
   <div class="chips">${STATS.map(x=>`<span class="chip">${x.name} ${s.stats[x.id]}</span>`).join('')}<span class="chip">了结要务 ${e.solved}/3</span></div>
   <h4>他们</h4>
   ${e.people.map(p=>`<div class="end-p"><img src="${face(p.id)}" alt=""><div><b>${PEOPLE[p.id].name} · ${label(p)}</b><p>${esc(text(p))}</p></div></div>`).join('')}
-  ${v2?`<p class="muted center">第二卷完。后面的故事，还在写。</p><button class="primary" data-act="new">从头再来</button>`
-   :`<p class="muted center">第一卷完。</p><button class="primary" data-act="vol2">进入第二卷：雍正三年 ›</button><p class="muted small center">存档、情分和他们记得的事，都会带过去。</p><button data-act="new-confirm" class="plain">从头再来</button>`}
+  ${vol===3?`<p class="muted center">第三卷完。后面的故事，还在写。</p><button class="primary" data-act="rebirth">再活一世 ›</button><p class="muted small center">带着一样记忆，回到雍正元年正月。</p><button data-act="new-confirm" class="plain">从头再来</button>`
+   :`<p class="muted center">第${vol===2?'二':'一'}卷完。</p><button class="primary" data-act="${vol===2?'vol3':'vol2'}">进入第${vol===2?'三卷：雍正五年':'二卷：雍正三年'} ›</button><p class="muted small center">存档、情分和他们记得的事，都会带过去。</p><button data-act="rebirth" class="plain">再活一世</button> <button data-act="new-confirm" class="plain">从头再来</button>`}
+ </article></div>`;
+}
+
+// ---------- 再活一世 ----------
+function rebirthView(){
+ const past=E.pastHearts(s);
+ return `<div class="stage" style="--bg:url('${abs('assets/exports/s11-v1/cover-display.webp')}')"><article class="paper rebirth">
+  <small>第${(s.life||1)+1}世</small><h2>再活一世</h2>
+  <p>你又一次醒在雍正元年的正月。这一回，你能带走一样东西。</p>
+  ${past.length?`<p class="muted small">这些人，会对你有一种说不清的似曾相识：</p><div class="past">${past.map(id=>`<span><img src="${face(id)}" alt="">${PEOPLE[id].name}${s.people[id].lover?' ♥':''}</span>`).join('')}</div>`:'<p class="muted small">上一世没有谁对你动过心。这一回，也许会不一样。</p>'}
+  <div class="options">${Object.entries(E.BOONS).map(([k,b])=>`<button data-act="boon" data-b="${k}"><b>${b.name}</b><br><span class="small">${b.desc}</span></button>`).join('')}</div>
+  <p class="muted small center">珍藏和成就都会留着。这一世的存档会被新的一世替换。</p>
+  <button class="plain" data-act="ending">再想想</button>
  </article></div>`;
 }
 
@@ -222,9 +239,9 @@ function peopleView(){
    <div class="stages">${STAGES.map(([n,t])=>`<span class="${st.aff>=n?'on':''}">${t}</span>`).join('')}</div>
    ${st.knot?`<p class="knot-line">心结：${esc(st.knot.text)}。召见时说开它。</p>`:''}
    ${st.lover?`<p class="ready-line">${bondName(id)}</p>`:''}
-   ${E.hasStory(s,id)?`<p class="ready-line">有话想对你说。${E.away(s,id)?'会有书信来。':'今夜去看看。'}</p>`:st.first&&!st.second&&st.aff<45?'<p class="muted small">情分到「相知」后，会有新的剧情。</p>':st.second&&!st.third&&st.aff<65?'<p class="muted small">情分到「倾心」后，还有一段剧情。</p>':st.third&&!st.fourth&&s.year>=3&&st.aff<75?'<p class="muted small">情分到 75，还会有一段剧情。</p>':''}
+   ${E.hasStory(s,id)?`<p class="ready-line">有话想对你说。${E.away(s,id)?'会有书信来。':'今夜去看看。'}</p>`:st.first&&!st.second&&st.aff<45?'<p class="muted small">情分到「相知」后，会有新的剧情。</p>':st.second&&!st.third&&st.aff<65?'<p class="muted small">情分到「倾心」后，还有一段剧情。</p>':st.third&&!st.fourth&&s.year>=3&&st.aff<75?'<p class="muted small">情分到 75，还会有一段剧情。</p>':st.fourth&&!st.fifth&&s.year>=5&&st.aff<80?'<p class="muted small">情分到 80，还有最后一段剧情。</p>':''}
    ${(()=>{const rel=[...rivalsOf(id).map(x=>`<span class="rel bad">与${PEOPLE[x].name}不和</span>`),...friendsOf(id).map(x=>`<span class="rel good">与${PEOPLE[x].name}亲近</span>`)];return rel.length?`<p class="rels">${rel.join('')}</p>`:'';})()}
-   <p class="muted small">喜欢：${known.length?known.map(g=>GIFTS[g].name).join('、'):'还不知道'}</p></div></div>
+   ${BIRTH[id]?`<p class="muted small">生辰：${MONTHS[BIRTH[id]-1]}</p>`:''}<p class="muted small">喜欢：${known.length?known.map(g=>GIFTS[g].name).join('、'):'还不知道'}</p></div></div>
   <h3 class="sec">${p.name}记得的事</h3>
   <ul class="mem">${st.memories.slice().reverse().map(m=>`<li><small>${YEAR_NAME(m.y)}年${MONTHS[m.m-1]}</small>${esc(m.text)}</li>`).join('')||'<li class="muted">还没有。</li>'}</ul></main>${nav()}`;}
  return `${header()}<main><h3 class="sec">人物</h3><section class="people">${CORE.filter(id=>E.present(s,id)&&s.people[id].met).map(id=>personCard(id)).join('')}</section></main>${nav()}`;
@@ -252,12 +269,12 @@ function titleView(){
   <h1>重生长雍<br>帝王赋</h1><p>雍正元年正月。你从死里醒来，那些后来再也挽回不了的人，此刻都还在。</p>
   ${has?'<button class="primary" data-act="continue">继续</button>':''}
   <button class="${has?'':'primary'}" data-act="${has?'new-confirm':'new'}">新开一局</button>
-  <p class="muted small">${has&&E.load()?.vol===2?'第二卷 · 三年至四年':'第一卷 · 元年至二年'} · 每卷约一小时 · AI ${AI.aiMode()==='off'?'未开启':'已开启'} · <a href="#" data-act="go" data-to="settings">设置</a></p>
-  <details class="how"><summary>怎么玩</summary><p>一个月是一回合。月初先处置要事；然后有三个时辰，可以召见、赏赐、下旨、微服或休养；入夜选一处去，或独寝。月末结算。</p><p>情分到「相知」，那个人会在夜里有话想说；到「倾心」，还有一次说破心意的机会。若你在两难里没站在谁那边，那人会有心结，要当面说开。</p><p>两年为一卷。第一卷结束后，存档和情分都能带进第二卷（雍正三年至四年）。</p></details>
+  <p class="muted small">${(()=>{const L=has&&E.load();return (L?.life>1?`第${L.life}世 · `:'')+['第一卷 · 元年至二年','第二卷 · 三年至四年','第三卷 · 五年至六年'][(L?.vol||1)-1];})()} · 每卷约一小时 · AI ${AI.aiMode()==='off'?'未开启':'已开启'} · <a href="#" data-act="go" data-to="settings">设置</a></p>
+  <details class="how"><summary>怎么玩</summary><p>一个月是一回合。月初先处置要事；然后有三个时辰，可以召见、赏赐、下旨、微服或休养；入夜选一处去，或独寝。月末结算。</p><p>情分到「相知」，那个人会在夜里有话想说；到「倾心」，还有一次说破心意的机会。若你在两难里没站在谁那边，那人会有心结，要当面说开。</p><p>两年为一卷，共三卷，存档和情分一路带下去。每月有人过生辰，年节可以选一个人陪着过。走完任何一卷，都可以带着一样记忆“再活一世”。</p></details>
  </div></div>`;
 }
 
-const KIND_NAME={main:'主线',relation:'情',extension:'情',romance:'心意',deep:'深情',dilemma:'两难',government:'政务',followup:'政务',side:'宫中'};
+const KIND_NAME={deep5:'深情',festival:'节',main:'主线',relation:'情',extension:'情',romance:'心意',deep:'深情',dilemma:'两难',government:'政务',followup:'政务',side:'宫中'};
 function galleryView(){
  const g=loadGallery(),n=Object.keys(g.ach||{}).length;
  const seen=Object.entries(g.seen||{}).map(([id,opt])=>({id,opt,sc:E.scene(id)})).filter(x=>x.sc&&x.sc.kind&&KIND_NAME[x.sc.kind]);
@@ -272,7 +289,7 @@ function replayView(){
  const sc=E.scene(view.id),opt=loadGallery().seen?.[view.id],o=sc.options.find(x=>x.id===opt);
  return `<div class="stage" style="--bg:url('${abs(bgFor(sc.location||sc.place||''))}')"><div class="stage-top"><button data-act="go" data-to="gallery">‹ 珍藏</button><span>回看</span></div>
   ${PEOPLE[sc.actor]||sc.actor?`<img class="portrait" src="${portrait(sc.actor)}" alt="">`:''}
-  <article class="paper"><h2>${esc(sc.title)}</h2>${paras(sc.body)}${o?`<div class="choice">那一回，你选择：${esc(o.label)}</div>${paras(o.reply||'')}`:''}
+  <article class="paper"><h2>${esc(sc.title)}</h2>${paras(sc.body)}${o?`<div class="choice">那一回，你选择：${esc(o.label.replace('{n}',nm(o.who)))}</div>${paras(o.reply||'')}`:''}
   <button class="primary" data-act="go" data-to="gallery">合上</button></article></div>`;
 }
 const STAGE_LINE={相识:'开始记得你了。',相知:'愿意跟你说心里话了。',倾心:'动心了。',相守:'这一世，不会再错过了。'};
@@ -281,13 +298,14 @@ function celebration(){
  let img='',big='',small='',cls='';
  if(c.k==='stage'){img=portrait(c.id);big=`${PEOPLE[c.id].name} · ${c.stage}`;small=(STAGE_LINE[c.stage]||'')+(E.hasStory(s,c.id)?`<br><span>今夜去找${PEOPLE[c.id].name}，会有新的剧情。</span>`:['相知','倾心'].includes(c.stage)?`<br><span>等名字旁出现「有话想说」，夜里去找${PEOPLE[c.id].name}。</span>`:'');cls='stage-up';}
  else if(c.k==='lover'){img=portrait(c.id);big=c.id==='C05'?'知己':'两情相悦';small=c.id==='C05'?'这一世，你多了一个知己。':`你和${PEOPLE[c.id].name}，说破了心意。`;cls='lover';}
+ else if(c.k==='fifth'){img=portrait(c.id);big=`${PEOPLE[c.id].name} · 第五幕`;small='这一段，你们一起走完了。';cls='lover';}
  else if(c.k==='knot'){img=portrait(c.id);big='心结解开了';small=`${PEOPLE[c.id].name}的情分又能涨了。`;}
  else if(c.k==='crisis'){big='要务了结';small=c.name;cls='gold';}
  else if(c.k==='crisisFail'){big='要务没办好';small=`${c.name}。不要紧，路还长。`;cls='sad';}
  else if(c.k==='ach'){big=`${c.a.icon}`;small=`成就解锁 · ${c.a.title}<br><span>${esc(c.a.desc)}</span>`;cls='ach-pop';}
  return `<div class="cele ${cls}" data-act="cele">${img?`<img src="${img}" alt="">`:''}<div class="cele-box"><b>${big}</b><p>${small}</p><small>点一下继续</small></div></div>`;
 }
-const VIEWS={gallery:galleryView,replay:replayView,title:titleView,home,scene:sceneView,pick:()=>pickPerson(view.kind),chat:chatView,gift:giftView,edict:edictView,result:resultView,night:nightView,summary:summaryView,ending:endingView,people:peopleView,log:logView,settings:settingsView};
+const VIEWS={rebirth:rebirthView,gallery:galleryView,replay:replayView,title:titleView,home,scene:sceneView,pick:()=>pickPerson(view.kind),chat:chatView,gift:giftView,edict:edictView,result:resultView,night:nightView,summary:summaryView,ending:endingView,people:peopleView,log:logView,settings:settingsView};
 let lastVibration=null;
 function render(){const c=s?.cele?.[0];if(c!==lastVibration){lastVibration=c;if(c&&['stage','lover'].includes(c.k)){try{globalThis.navigator?.vibrate?.(30);}catch{}}}app.innerHTML=(VIEWS[view.name]||home)()+(['home','summary','people','gallery','ending'].includes(view.name)&&!busy?celebration():'');const m=document.getElementById('msgs');if(m)m.scrollTop=m.scrollHeight;if(view.name==='chat'&&!busy)app.querySelector('.say input')?.focus();}
 function go(v){view=v;render();window.scrollTo(0,0);}
@@ -299,6 +317,9 @@ const likedList=id=>Object.entries(s.known?.[id]||{}).filter(([,v])=>v).map(([g]
 
 const ACTS={
  vol2:()=>{E.startVolume2(s);save();go({name:'home'});},
+ vol3:()=>{E.startVolume3(s);save();go({name:'home'});},
+ rebirth:()=>go({name:'rebirth'}),
+ boon:el=>{s=E.newGamePlus(s,el.dataset.b);save();toast(`第${s.life}世`);go({name:'home'});},
  go:el=>{const to=el.dataset.to;if(to==='home'&&s.ended&&!view.report)return go({name:'ending'});go({name:to});},
  title:()=>go({name:'title'}),
  new:()=>{s=E.newGame();save();go({name:'home'});},
@@ -318,7 +339,7 @@ const ACTS={
  person:el=>go({name:'people',id:el.dataset.id}),
  chat:()=>go({name:'pick',kind:'chat'}),
  gift:()=>go({name:'pick',kind:'gift'}),
- 'chat-with':el=>{const id=el.dataset.id;try{const c=E.beginChat(s,id);c.msgs=[{who:'npc',text:opener(id,c.letter)}];c.topics=[];save();go({name:'chat',chat:c});}catch(e){toast(e.message);}},
+ 'chat-with':el=>{const id=el.dataset.id;try{const c=E.beginChat(s,id);c.msgs=[{who:'npc',text:(c.birthday?`（今天是${PEOPLE[id].name}的生辰。）`:'')+opener(id,c.letter)}];c.topics=[];save();go({name:'chat',chat:c});if(c.birthday)toast(`记得${PEOPLE[id].name}的生辰`);}catch(e){toast(e.message);}},
  topic:el=>withBusy(async()=>{const c=view.chat,t=TOPICS.find(x=>x.id===el.dataset.t);c.topics.push(t.id);c.msgs.push({who:'player',text:t.label});
   let reply=null;if(AI.aiMode()!=='off'&&t.id!=='likes')reply=await AI.chatReply(s,c.id,c.msgs,{letter:c.letter});
   let liked=null;if(t.id==='likes'){liked=E.hintLike(s,c.id);if(liked)toast(`记下了：${PEOPLE[c.id].name}${s.known[c.id][liked]?'喜欢':'不喜欢'}${GIFTS[liked].name}`);}
@@ -330,7 +351,7 @@ const ACTS={
  'gift-to':el=>go({name:'gift',id:el.dataset.id}),
  give:el=>withBusy(async()=>{const id=view.id,g=el.dataset.g,r=E.giveGift(s,id,g);if(r.liked||r.disliked)learn(id,g,r.liked);
   let text=null;if(AI.aiMode()!=='off')text=await AI.giftReply(s,id,GIFTS[g].name,r.liked,r.disliked);
-  view.result={...r,gift:g,text:text||GIFT_LINES[id][r.disliked?'disliked':r.liked?'liked':'plain']};}),
+  view.result={...r,gift:g,text:text||(r.birthday&&!r.disliked?BIRTH_LINES[id].gift:GIFT_LINES[id][r.disliked?'disliked':r.liked?'liked':'plain'])};}),
  edict:()=>go({name:'edict'}),
  fill:el=>{const ta=app.querySelector('textarea');if(ta){ta.value=PRESET_EDICTS[el.dataset.i].text;ta.focus();}},
  preset:el=>{const e=PRESET_EDICTS[el.dataset.i];const r=E.applyEdict(s,e.text,{effects:e.effects,title:e.title,narration:e.narration});save();go({name:'edict',result:{...r,title:e.title,src:e.text}});},
@@ -345,7 +366,7 @@ const ACTS={
   if(id&&E.hasStory(s,id)){const sid=E.queueSpecial(s,id);save();return go({name:'scene',id:sid});}
   withBusy(async()=>{let v=null;if(id&&AI.aiMode()!=='off')v=await AI.nightScene(s,id,line);
    const lines=id?NIGHT_LINES[id]:null;const text=id?(v?.text||lines[(s.month+s.year)%lines.length]):'你让人都退下，一个人睡了。难得一夜无梦。';
-   const r=E.spendNight(s,id,{affection:v?v.affection:3,memory:v?.memory||''});view.result={...r,id,text};});
+   const r=E.spendNight(s,id,{affection:v?v.affection:3,memory:v?.memory||''});view.result={...r,id,text:!v&&r.birthday?BIRTH_LINES[id].night:text};});
  },
  'month-end':()=>monthEnd(),
  ending:()=>go({name:'ending'}),

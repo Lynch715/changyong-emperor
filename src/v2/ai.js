@@ -1,7 +1,7 @@
 import {weatherOf} from './engine.js';
 // AI 层：对话、旨意、夜话。AI 负责写和判断，引擎负责限幅。连不上时返回 null，界面改用固定文字。
 import {callModel} from './model.js';
-import {placeOf,titleOf} from './engine.js';
+import {placeOf,titleOf,birthdays} from './engine.js';
 import {rivalsOf} from './social.js';
 import {readConnectionSettings,connectionSettings,storeConnectionSettings} from '../ai-connection-settings.js';
 import {DEFAULT_AI} from '../ai-provider.js';
@@ -49,7 +49,7 @@ async function ask(system,user){
 const WORLD=`你在为清宫文字游戏《重生长雍帝王赋》写作。玩家扮演雍正皇帝：他在病榻上死去，又醒在雍正元年正月，记得前世的一切——年羹尧被赐死、年世兰撞墙、苏培盛守了他一辈子却没被好好看见、后宫里许多人的不得善终。这一世，他想把能挽回的都挽回。
 文风：白话、克制、有画面，像好的小说，不要堆砌辞藻，不要现代网络用语。人物说话符合身份与性格。不写露骨的性内容。`;
 const statLine=s=>STATS.map(x=>`${x.name}${s.stats[x.id]}`).join('，');
-export const dateLine=s=>`雍正${YEAR_NAME(s.year)}年${MONTHS[s.month-1]}。今日${weatherOf(s)}`+(s.flags?.nian_prison?'（年羹尧已被削爵下狱）':s.flags?.nian_away?'（年羹尧已被降为杭州将军）':s.flags?.nian_safe?'（年羹尧交出兵权，留京任职）':'');
+export const dateLine=s=>`雍正${YEAR_NAME(s.year)}年${MONTHS[s.month-1]}。今日${weatherOf(s)}`+(s.flags?.nian_prison?'（年羹尧已被削爵下狱）':s.flags?.nian_away?'（年羹尧已被降为杭州将军）':s.flags?.nian_safe?'（年羹尧交出兵权，留京任职）':'')+((s.month&&birthdays(s).length)?`。本月是${birthdays(s).map(id=>PEOPLE[id].name).join('、')}的生辰`:'');
 function relation(id,st){
  if(id==='C05')return st.lover?'你们是彼此最亲的兄弟与知己，皇兄曾把一个“很长的梦”告诉你。':'';
  if(st.lover)return '你们已经互相表明心意，私下是恋人：亲昵、信任，偶尔撒娇或吃醋，人前仍守着身份。';
@@ -61,7 +61,7 @@ function personBlock(s,id){
  const p=PEOPLE[id],st=s.people[id];
  const mem=st.memories.slice(-8).map(m=>`· ${m.text}`).join('\n')||'（还没有）';
  return `【${p.name}】${titleOf(s,id)}。${p.voice}
-与皇上的情分：${st.aff}/100（${stageOf(st.aff)}）。${relation(id,st)}${s.lastNight&&rivalsOf(id).includes(s.lastNight)?`皇上最近夜里去了${PEOPLE[s.lastNight].name}那里，你心里有点不是滋味（可以若有若无地带出来，别太刻薄）。`:''}${st.knot?`心里有个结：皇上在「${st.knot.text}」这件事上没有站在${p.name}这边，还没说开。`:''}
+与皇上的情分：${st.aff}/100（${stageOf(st.aff)}）。${relation(id,st)}${s.lastNight&&rivalsOf(id).includes(s.lastNight)?`皇上最近夜里去了${PEOPLE[s.lastNight].name}那里，你心里有点不是滋味（可以若有若无地带出来，别太刻薄）。`:''}${s.past?.[id]?'你对皇上有一种说不清的似曾相识，好像很久以前就认得他（不要点破，偶尔流露）。':''}${st.knot?`心里有个结：皇上在「${st.knot.text}」这件事上没有站在${p.name}这边，还没说开。`:''}
 ${p.name}记得的事：\n${mem}`;
 }
 const clampInt=(v,a,b)=>Math.max(a,Math.min(b,Math.round(Number(v)||0)));

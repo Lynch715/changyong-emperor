@@ -122,3 +122,75 @@ test('雪天微服、雨天见太医、闷热休养只有指定的小变化',()=
  const rain=make('雨');rain.year=2;rain.month=2;const before=rain.people.C04.aff;const c=E.beginChat(rain,'C04');assert.equal(rain.people.C04.aff,before+1);assert.equal(c.gained,0);
  const dry=make('晴');dry.year=2;dry.month=2;E.beginChat(dry,'C04');assert.equal(dry.people.C04.aff,before);
 });
+
+import {BIRTH,FESTIVALS} from '../src/v2/festivals.js';
+test('生辰：赏赐、召见、夜里都算记得；整月不去情分掉 3',()=>{
+ for(const id of CORE)assert.ok(BIRTH[id]>=1&&BIRTH[id]<=12,id);
+ const mk=()=>{const s=E.newGame(5);s.agenda=[];s.year=2;s.month=6;s.bdayDone=[];Object.assign(s.people.C07,{met:true,aff:40});return s;};
+ const a=mk();assert.deepEqual(E.birthdays(a),['C07']);const r=E.giveGift(a,'C07','silk');assert.equal(r.birthday,true);assert.equal(r.people.C07,9);assert.ok(E.birthdayDone(a,'C07'));
+ assert.equal(E.giveGift(a,'C07','flowers').birthday,false,'一个月只算一次');
+ const b=mk();const c=E.beginChat(b,'C07');assert.equal(c.birthday,true);assert.equal(b.people.C07.aff,42);
+ const n=mk();n.ap=0;E.spendNight(n,'C07',{affection:0});assert.equal(n.people.C07.aff,42);
+ const f=mk();f.ap=0;f.night=true;const rep=E.endMonth(f);assert.deepEqual(rep.forgot,['C07']);assert.equal(f.people.C07.aff,37);assert.ok(f.people.C07.memories.at(-1).text.includes('没有来'));
+ const k=E.newGame(1);k.year=4;k.month=8;for(const id of ['C08','C09'])k.people[id].met=true;assert.deepEqual(E.birthdays(k),[],'两场生辰那个月不另算');
+ const old=E.newGame(1);delete old.bdayDone;old.year=2;old.month=6;old.agenda=[];old.people.C07.met=true;assert.equal(E.beginChat(old,'C07').birthday,true);
+});
+test('年节：选人同过、家宴、独自，各有反馈',()=>{
+ const s=E.newGame(9);s.year=2;s.month=7;for(const id of ['C02','C06','C07','C09','C10'])Object.assign(s.people[id],{met:true,aff:50});s.people.C07.aff=70;s.people.C09.lover=true;s.people.C09.aff=55;
+ s.month=8;E.startMonth(s);const id=s.agenda.find(x=>x.startsWith('FE'));assert.equal(id,'FE2-zhongqiu');
+ const sc=E.scene(id),os=E.optionsFor(s,sc);assert.equal(os[0].id,'all');assert.equal(os.at(-1).id,'alone');
+ assert.equal(os.filter(o=>o.who).length,3);assert.equal(os.find(o=>o.who)?.who,'C09','两情相悦的排在前面');assert.ok(!os.some(o=>o.label.includes('{n}')));
+ s.agenda=[id];const before={...Object.fromEntries(CORE.map(c=>[c,s.people[c].aff]))};const r=E.choose(s,id,'pC07');
+ assert.equal(r.people.C07,5);assert.ok(r.people.C06<0&&r.people.C09<0&&r.people.C10<0,'不和的人吃味');assert.ok(r.text);
+ const s2=E.newGame(9);s2.year=2;s2.month=12;for(const c of ['C02','C07','C06'])s2.people[c].met=true;E.startMonth(s2);const fe=s2.agenda.find(x=>x.startsWith('FE'));s2.agenda=[fe];const r2=E.choose(s2,fe,'all');assert.ok(r2.stats.palace>0);assert.ok(Object.values(r2.people).every(v=>v>0)&&Object.keys(r2.people).length===3);
+ const y1=E.newGame(1);y1.month=7;for(const c of CORE)y1.people[c].met=true;y1.year=1;E.startMonth(y1);assert.ok(!y1.agenda.some(x=>x.startsWith('FE')),'元年七夕已有剧情');
+ y1.year=4;y1.month=12;E.startMonth(y1);assert.ok(!y1.agenda.some(x=>x.startsWith('FE')),'四年除夕已有剧情');
+ for(const f of FESTIVALS)for(const c of CORE)assert.ok(f.touch[c],f.key+c);
+});
+
+import {SCENES3,AGENDA3,REPAIR3,ENDING3} from '../src/v2/vol3.js';
+test('第三卷：场景齐全，六年走完，年羹尧的去留影响西北用兵',()=>{
+ for(const ids of Object.values(AGENDA3))for(const id of ids){const sc=E.scene(id);assert.ok(sc,id);for(const o of sc.options){for(const k of Object.keys(o.effects||{}))assert.ok(STATS.some(s=>s.id===k),id+k);if(o.slight)assert.ok(REPAIR3[id]?.[o.slight],id+' repair '+o.slight);for(const k of Object.keys({...o.bond,...o.bonds}))assert.ok(PEOPLE[k],id+k);}}
+ for(const id of CORE){const z=E.scene(E.fifthOf(id));assert.ok(z,id);assert.equal(z.actor,id);assert.deepEqual(z.options.map(o=>o.id),['stay','mid','hard']);assert.equal(ENDING3[id].length,4);}
+ const seen={};
+ for(const pick of ['keep','hangzhou','punish']){
+  const s=E.newGame(31);let n=0;
+  const play=()=>{while(s.agenda.length){const sc=E.scene(s.agenda[0]);const os=E.optionsFor(s,sc);const o=os.find(o=>o.id===pick)||os.find(o=>['warm','confess','stay','develop'].includes(o.id))||os[0];if(sc.id==='W07')seen[pick]=os.map(o=>o.id);E.choose(s,sc.id,o.id);}
+   if(s.ap&&E.present(s,'C07')){const c=E.beginChat(s,'C07');E.applyChat(s,c,{affection:4});E.applyChat(s,c,{affection:4});}
+   const sp=E.nightChoices(s).find(x=>x.special);if(sp){const sid=E.queueSpecial(s,sp.id);const sc=E.scene(sid);const os=E.optionsFor(s,sc);E.choose(s,sid,(os.find(o=>['warm','confess','stay'].includes(o.id))||os[0]).id);}else E.spendNight(s,E.nightChoices(s)[0]?.id||null);
+   E.endMonth(s);n++;};
+  while(!s.ended&&n<30)play();E.startVolume2(s);while(!s.ended&&n<60)play();
+  assert.throws(()=>E.startVolume2(s));E.startVolume3(s);assert.equal(s.year,5);assert.equal(s.vol,3);
+  while(!s.ended&&n<90)play();
+  assert.equal(n,72,pick);assert.ok(s.ended);for(const v of Object.values(s.stats))assert.ok(v>=0&&v<=100);
+  assert.ok(E.ending(s).solved<=3);
+ }
+ assert.ok(seen.keep.includes('nian')&&!seen.keep.includes('nianhz'));assert.ok(seen.hangzhou.includes('nianhz')&&!seen.hangzhou.includes('nian'));assert.ok(!seen.punish.some(x=>x.startsWith('nian')));
+ const s=E.newGame(2);s.year=5;s.month=3;s.agenda=[];Object.assign(s.people.C02,{met:true,first:true,second:true,third:true,fourth:true,aff:82});assert.equal(E.storyOf(s,'C02'),'Z02');
+ s.people.C02.fourthAt='5-3';assert.equal(E.storyOf(s,'C02'),null,'第四幕当月不接第五幕');
+});
+test('再活一世：三种记忆各有效果，似曾相识的人记得',()=>{
+ const prev=E.newGame(4);prev.ended=true;prev.vol=3;Object.assign(prev.people.C07,{aff:90,lover:true});prev.people.C02.aff=70;prev.people.C06.aff=40;
+ assert.throws(()=>E.newGamePlus(E.newGame(1),'love'));assert.throws(()=>E.newGamePlus(prev,'gold'));
+ const a=E.newGamePlus(prev,'love',5);const base=E.newGame(5);
+ assert.equal(a.life,2);assert.equal(a.year,1);assert.equal(a.month,1);assert.ok(!a.ended);
+ assert.equal(a.people.C07.aff,base.people.C07.aff+12);assert.equal(a.people.C02.aff,base.people.C02.aff+12);assert.equal(a.people.C06.aff,base.people.C06.aff);
+ assert.ok(a.people.C07.memories.some(m=>m.text.includes('梦里')));assert.deepEqual(Object.keys(a.past).sort(),['C02','C07']);
+ const k=E.newGamePlus(prev,'know',5);for(const id of CORE){for(const g of PEOPLE[id].likes)assert.equal(k.known[id][g],true);for(const g of PEOPLE[id].dislikes)assert.equal(k.known[id][g],false);}
+ const p=E.newGamePlus(prev,'purse',5);assert.equal(p.stats.treasury,base.stats.treasury+12);assert.equal(p.stats.health,base.stats.health+5);
+ const third=E.newGamePlus({...p,ended:true},'love',6);assert.equal(third.life,3);
+ const mem={d:{},getItem(k){return this.d[k]??null},setItem(k,v){this.d[k]=v}};assert.ok(updateGallery(third,mem).some(x=>x.id==='life3'));
+});
+
+test('专心对一个人，六年能走完五幕并相守',()=>{
+ const s=E.newGame(13);let n=0;
+ const play=()=>{while(s.agenda.length){const sc=E.scene(s.agenda[0]);const os=E.optionsFor(s,sc);const o=os.find(o=>o.who==='C02')||os.find(o=>['warm','confess','develop','stay','both'].includes(o.id))||os[0];E.choose(s,sc.id,o.id);}
+  for(let i=0;i<2&&s.ap;i++){const c=E.beginChat(s,'C02');if(s.people.C02.knot)E.repairKnot(s,c);E.applyChat(s,c,{affection:4});E.applyChat(s,c,{affection:4});}
+  if(s.ap)E.rest(s);
+  const sp=E.nightChoices(s).find(x=>x.id==='C02');
+  if(sp?.special){const sid=E.queueSpecial(s,'C02');const os=E.optionsFor(s,E.scene(sid));E.choose(s,sid,(os.find(o=>['confess','warm','stay'].includes(o.id))||os[0]).id);}else E.spendNight(s,'C02',{affection:3});
+  E.endMonth(s);n++;};
+ while(!s.ended)play();E.startVolume2(s);while(!s.ended)play();E.startVolume3(s);while(!s.ended)play();
+ const p=s.people.C02;assert.equal(n,72);assert.ok(p.fourth&&p.fifth&&p.lover,'苏培盛五幕走完');assert.equal(E.ending(s).people.find(x=>x.id==='C02').tier,3);
+ assert.ok((s.count.bdays||0)>=5,'每年二月都记得苏培盛的生辰');assert.ok(s.count.festivals>=10);
+});
