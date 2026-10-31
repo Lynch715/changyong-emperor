@@ -1,6 +1,6 @@
 import {childrenContext,childById,childAge} from './family.js';
 import {isChildId} from './audience.js';
-import {planAllowed,childPlanAllowed,restCost} from './plans.js';
+import {planAllowed,filterChildSentences,restCost} from './plans.js';
 import {tendernessGuide,quietRefusal,KIN} from './audience.js';
 import {OFFICES} from './appointments.js';
 import {treasuryIndex} from './economy.js';
@@ -43,8 +43,10 @@ export async function saveConnection(form,remember,storage=globalThis.localStora
 let sessionByok=null;
 export function setAIOff(off,storage=globalThis.localStorage){try{off?storage.setItem(OFF_KEY,'1'):storage.removeItem(OFF_KEY);}catch{}}
 
-async function ask(system,user,maxTokens=900,state=null){
- const checked=value=>{if(!childPlanAllowed(JSON.stringify(value),null,state)){lastError='皇嗣只写亲情与学习，已改用固定文字。';return null;}lastError='';return value;};
+async function ask(system,user,maxTokens=900,state=null,actor=null){
+ // 逐个文本字段按句过滤，不把 reply、memory 等字段串成一个大段落。
+ const clean=value=>typeof value==='string'?filterChildSentences(value,actor,state):Array.isArray(value)?value.map(clean):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,clean(item)])):value;
+ const checked=value=>{lastError='';return clean(value);};
  system+='\n皇嗣一律按未成年人保护，永远不得写其亲密、恋爱或性内容。生育只写固定家庭事实，不写露骨内容，不自行新增怀孕、出生或改变本人意愿。';
  if(mode==='off')return null;
  try{
@@ -97,7 +99,7 @@ ${personBlock(s,id)}
 5. mood：两到四个字，${p.name}此刻的心情。
 ${fate?'6. '+fateGuide(fate,'person',p.name)+'\n':''}只输出 JSON：{"reply":"...","affection":0,"mood":"...","memory":""}`;
  const user=history.filter(h=>h.who!=='sys').slice(-10).map(h=>(h.who==='player'?'皇上：':p.name+'：')+h.text).join('\n');
- const v=await ask(system,user,900,s);if(!v)return null;
+ const v=await ask(system,user,900,s,id);if(!v)return null;
  const reply=str(v.reply,300);if(!reply)return null;
  return {reply,affection:clampInt(v.affection,-5,5),mood:str(v.mood,8),memory:str(v.memory,40)};
 }
@@ -107,7 +109,7 @@ export async function giftReply(s,id,giftName,liked,disliked=false){
  if(isChildId(id)||childById(s,id))return null;
  const p=PEOPLE[id];
  const system=`${WORLD}\n你只扮演${p.name}。\n${personBlock(s,id)}\n皇上刚赏了${p.name}一件东西：${giftName}。${disliked?p.name+'讨厌这个，收下时不高兴。':liked?p.name+'正喜欢这个。':'这不算'+p.name+'最想要的，但也是心意。'}\n写${p.name}收到时的反应，50到110字，有动作有一句话。只输出 JSON：{"reply":"..."}`;
- const v=await ask(system,'请写。',900,s);return str(v?.reply,260)||null;
+ const v=await ask(system,'请写。',900,s,id);return str(v?.reply,260)||null;
 }
 
 // 下旨：玩家自由写旨意，AI 推演后果
@@ -144,7 +146,7 @@ ${personBlock(s,id)}
 写今夜的一小段，${line?'200到600':'120到220'}字，第二人称“你”。要有一个具体的小细节（一样东西、一句话、一个动作），贴合${p.name}的性格和你们眼下的情分，${s.people[id].lover?(id==='C05'?'兄弟知己之间的亲近与默契':'恋人之间的温存与亲昵，可以有拥抱、依偎、牵手这样的细节'):s.people[id].aff>=65?'情意已经很明显，只差一句话没说破':s.people[id].aff<45?'还有些拘谨，彼此在试探':'已经可以说些心里话'}。点到为止，不写露骨内容。${line?'皇上今夜的安排是：“'+line.slice(0,300)+'”。尽量照安排推演，人物仍有自己的意愿，不合边界的部分改为日常照顾。':''}
 ${fate?fateGuide(fate,'person',p.name)+'\n':''}${fate&&!fate.free&&fate.tier<=1?'今夜婉拒，改为喝茶或照顾起居，不发生亲密行为。\n':''}affection：今夜让情分增加多少，0 到 5。memory：今夜值得${p.name}记住的一件事，不超过30字。
 health：圣躬变化，-2到3，通宵劳累会伤身，早睡或泡汤可以略有恢复。只输出 JSON：{"text":"...","affection":3,"health":0,"memory":""}`;
- const v=await ask(system,'请写今夜。',line?1800:900,s);if(!v){lastError='';return null;}
+ const v=await ask(system,'请写今夜。',line?1800:900,s,id);if(!v){lastError='';return null;}
  const text=str(v?.text,600);if(quietRefusal(text)){lastError='';return null;}
  return {text,affection:clampInt(v.affection,0,5),health:line?clampInt(v.health,-2,3):0,memory:str(v.memory,40)};
 }
@@ -159,7 +161,7 @@ export async function restScene(s,plan,{companion=null,fate=null}={}){
 皇上想这样歇一日：“${plan}”。${companion?`作陪的是${PEOPLE[companion].name}。${personBlock(s,companion)}${tendernessGuide(s,companion,'rest',{fate})}`:'独自休息。'}
 尽量照安排写，第二人称，200到400字。${outcome}不增加额外人物，不擅自任命或改变朝政。inner是内帑花费，0到3万两；这次粗估${restCost(plan)}万两，不可写入国库支出。memory是作陪的人记得的一件事，30字以内。
 只输出JSON：{"text":"...","health":8,"inner":0,"memory":""}`;
- const v=await ask(system,'请写这一天。',1400,s),text=str(v?.text,800);if(!v||quietRefusal(text)){lastError='';return null;}
+ const v=await ask(system,'请写这一天。',1400,s,companion),text=str(v?.text,800);if(!v||quietRefusal(text)){lastError='';return null;}
  return {text,health:clampInt(v.health,4,10),inner:Number.isFinite(Number(v.inner))?Math.max(0,Math.min(3,Number(v.inner))):restCost(plan),memory:str(v.memory,40)};
 }
 
@@ -168,7 +170,7 @@ export async function sceneEcho(s,id,sceneTitle,choice,replyText){
  if(isChildId(id)||childById(s,id))return null;
  const p=PEOPLE[id];if(!p)return null;
  const system=`${WORLD}\n你只扮演${p.name}。\n${personBlock(s,id)}\n刚刚在「${sceneTitle}」里，皇上的选择是：${choice}。结果：${replyText.slice(0,300)}\n写${p.name}事后对皇上说的一句话（可带一个动作），30到80字，不要重复上面的结果。只输出 JSON：{"reply":"..."}`;
- const v=await ask(system,'请写。',900,s);return str(v?.reply,200)||null;
+ const v=await ask(system,'请写。',900,s,id);return str(v?.reply,200)||null;
 }
 export {NAMES};
 
