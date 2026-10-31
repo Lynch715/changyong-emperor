@@ -1,0 +1,1681 @@
+{
+  "economyVersion": 1,
+  "version": 1,
+  "vol": 1,
+  "freedom": 2,
+  "flags": {},
+  "seed": 2140469504,
+  "crises": {},
+  "year": 1,
+  "month": 1,
+  "ap": 0,
+  "stats": {
+    "treasury": 770,
+    "inner": 50,
+    "people": 55,
+    "court": 55,
+    "palace": 45,
+    "health": 69
+  },
+  "people": {
+    "C02": {
+      "aff": 30,
+      "met": false,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 9,
+      "loyalty": 95,
+      "faction": "中立"
+    },
+    "C07": {
+      "aff": 30,
+      "met": false,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 75,
+      "faction": "中立"
+    },
+    "C06": {
+      "aff": 25,
+      "met": false,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 9,
+      "loyalty": 65,
+      "faction": "中立"
+    },
+    "C08": {
+      "aff": 15,
+      "met": false,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 7,
+      "loyalty": 60,
+      "faction": "中立"
+    },
+    "C09": {
+      "aff": 15,
+      "met": false,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 9,
+      "loyalty": 65,
+      "faction": "中立"
+    },
+    "C10": {
+      "aff": 15,
+      "met": false,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 9,
+      "loyalty": 75,
+      "faction": "中立"
+    },
+    "C04": {
+      "aff": 15,
+      "met": false,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 9,
+      "loyalty": 90,
+      "faction": "中立"
+    },
+    "C05": {
+      "aff": 20,
+      "met": false,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 85,
+      "faction": "中立"
+    },
+    "C03": {
+      "aff": 25,
+      "met": false,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 10,
+      "loyalty": 65,
+      "faction": "新政"
+    },
+    "N01": {
+      "aff": 12,
+      "met": false,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 7,
+      "loyalty": 50,
+      "faction": "中立"
+    },
+    "N02": {
+      "aff": 12,
+      "met": false,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 50,
+      "faction": "中立"
+    },
+    "C11": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 7,
+      "loyalty": 70,
+      "faction": "中立"
+    },
+    "C12": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 65,
+      "faction": "中立"
+    },
+    "C13": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 5,
+      "loyalty": 60,
+      "faction": "中立"
+    },
+    "C14": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 50,
+      "faction": "中立"
+    },
+    "C15": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 6,
+      "loyalty": 65,
+      "faction": "中立"
+    },
+    "C16": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 5,
+      "loyalty": 55,
+      "faction": "中立"
+    },
+    "C17": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 9,
+      "loyalty": 75,
+      "faction": "中立"
+    },
+    "C18": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 6,
+      "loyalty": 55,
+      "faction": "中立"
+    },
+    "C19": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 7,
+      "loyalty": 75,
+      "faction": "中立"
+    },
+    "C20": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 6,
+      "loyalty": 60,
+      "faction": "中立"
+    },
+    "C21": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 70,
+      "faction": "中立"
+    },
+    "C22": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 7,
+      "loyalty": 70,
+      "faction": "中立"
+    },
+    "C24": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 9,
+      "loyalty": 35,
+      "faction": "八爷党"
+    },
+    "C25": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 7,
+      "loyalty": 30,
+      "faction": "八爷党"
+    },
+    "C26": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 10,
+      "loyalty": 95,
+      "faction": "新政"
+    },
+    "C27": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 45,
+      "faction": "中立"
+    },
+    "C28": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 9,
+      "loyalty": 90,
+      "faction": "新政"
+    },
+    "C29": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 9,
+      "loyalty": 85,
+      "faction": "新政"
+    },
+    "C30": {
+      "aff": 23,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [
+        {
+          "y": 1,
+          "m": 1,
+          "text": "皇上将其由地方重臣调为河南巡抚"
+        }
+      ],
+      "ability": 9,
+      "loyalty": 87,
+      "faction": "新政"
+    },
+    "C31": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 90,
+      "faction": "新政"
+    },
+    "C32": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 9,
+      "loyalty": 85,
+      "faction": "新政"
+    },
+    "C37": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 80,
+      "faction": "中立"
+    },
+    "C38": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 75,
+      "faction": "中立"
+    },
+    "C39": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 85,
+      "faction": "新政"
+    },
+    "C40": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 7,
+      "loyalty": 65,
+      "faction": "中立"
+    },
+    "C41": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 7,
+      "loyalty": 70,
+      "faction": "中立"
+    },
+    "C42": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 40,
+      "faction": "八爷党"
+    },
+    "C43": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 80,
+      "faction": "中立"
+    },
+    "C44": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 8,
+      "loyalty": 85,
+      "faction": "中立"
+    },
+    "C45": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 6,
+      "loyalty": 70,
+      "faction": "中立"
+    },
+    "C46": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 7,
+      "loyalty": 70,
+      "faction": "中立"
+    },
+    "C47": {
+      "aff": 20,
+      "met": true,
+      "knot": null,
+      "first": false,
+      "second": false,
+      "third": false,
+      "lover": false,
+      "firstAt": null,
+      "secondAt": null,
+      "memories": [],
+      "ability": 6,
+      "loyalty": 70,
+      "faction": "中立"
+    }
+  },
+  "agenda": [],
+  "done": {},
+  "log": [
+    {
+      "y": 1,
+      "m": 1,
+      "kind": "任",
+      "text": "田文镜：地方重臣 → 河南巡抚"
+    },
+    {
+      "y": 1,
+      "m": 1,
+      "kind": "政",
+      "text": "田文镜主持火耗归公与养廉银，于河南试点"
+    },
+    {
+      "y": 1,
+      "m": 1,
+      "kind": "政",
+      "text": "河南·旧河工：准"
+    }
+  ],
+  "delta": {
+    "stats": {
+      "treasury": -30,
+      "health": -1
+    },
+    "people": {
+      "C30": 3
+    }
+  },
+  "night": false,
+  "ended": false,
+  "used": {
+    "petitions": [],
+    "outings": []
+  },
+  "chats": 0,
+  "travel": {
+    "used": {}
+  },
+  "inventory": [],
+  "nanfeng": {
+    "seen": false,
+    "visit": null
+  },
+  "freed": {},
+  "clues": [],
+  "secondaryDone": {},
+  "appointments": {
+    "C02": {
+      "office": "chief",
+      "title": "御前总管",
+      "since": 1
+    },
+    "C07": {
+      "office": "rank4",
+      "title": "翊坤宫华妃",
+      "since": 1
+    },
+    "C06": {
+      "office": "rank7",
+      "title": "中宫皇后",
+      "since": 1
+    },
+    "C08": {
+      "office": "rank0",
+      "title": "答应",
+      "since": 1
+    },
+    "C09": {
+      "office": "rank1",
+      "title": "莞常在",
+      "since": 1
+    },
+    "C10": {
+      "office": "rank2",
+      "title": "惠贵人",
+      "since": 1
+    },
+    "C04": {
+      "office": null,
+      "title": "太医",
+      "since": 1
+    },
+    "C05": {
+      "office": null,
+      "title": "果郡王",
+      "since": 1
+    },
+    "C03": {
+      "office": null,
+      "title": "抚远大将军",
+      "since": 1
+    },
+    "N01": {
+      "office": null,
+      "title": "南风馆棋师",
+      "since": 1
+    },
+    "N02": {
+      "office": null,
+      "title": "南风馆乐师",
+      "since": 1
+    },
+    "C11": {
+      "office": "rank4",
+      "title": "敬妃",
+      "since": 1
+    },
+    "C12": {
+      "office": "rank4",
+      "title": "端妃",
+      "since": 1
+    },
+    "C13": {
+      "office": "rank4",
+      "title": "齐妃",
+      "since": 1
+    },
+    "C14": {
+      "office": "rank2",
+      "title": "曹贵人",
+      "since": 1
+    },
+    "C15": {
+      "office": "rank2",
+      "title": "欣贵人",
+      "since": 1
+    },
+    "C16": {
+      "office": "rank2",
+      "title": "富察贵人",
+      "since": 1
+    },
+    "C17": {
+      "office": null,
+      "title": "碎玉轩掌事宫女",
+      "since": 1
+    },
+    "C18": {
+      "office": null,
+      "title": "碎玉轩宫女",
+      "since": 1
+    },
+    "C19": {
+      "office": null,
+      "title": "翊坤宫掌事宫女",
+      "since": 1
+    },
+    "C20": {
+      "office": null,
+      "title": "延禧宫宫女",
+      "since": 1
+    },
+    "C21": {
+      "office": null,
+      "title": "皇太后",
+      "since": 1
+    },
+    "C22": {
+      "office": null,
+      "title": "太医",
+      "since": 1
+    },
+    "C24": {
+      "office": null,
+      "title": "廉亲王",
+      "since": 1
+    },
+    "C25": {
+      "office": null,
+      "title": "贝子",
+      "since": 1
+    },
+    "C26": {
+      "office": null,
+      "title": "怡亲王",
+      "since": 1
+    },
+    "C27": {
+      "office": "bujun",
+      "title": "步军统领",
+      "since": 1
+    },
+    "C28": {
+      "office": "hubu",
+      "title": "户部尚书",
+      "since": 1
+    },
+    "C29": {
+      "office": null,
+      "title": "地方重臣",
+      "since": 1
+    },
+    "C30": {
+      "office": "henan",
+      "title": "河南巡抚",
+      "since": 1
+    },
+    "C31": {
+      "office": null,
+      "title": "地方官",
+      "since": 1
+    },
+    "C32": {
+      "office": null,
+      "title": "四川提督",
+      "since": 1
+    },
+    "C37": {
+      "office": null,
+      "title": "户部侍郎",
+      "since": 1
+    },
+    "C38": {
+      "office": "scholar",
+      "title": "大学士",
+      "since": 1
+    },
+    "C39": {
+      "office": null,
+      "title": "朝中重臣",
+      "since": 1
+    },
+    "C40": {
+      "office": null,
+      "title": "驻防将领",
+      "since": 1
+    },
+    "C41": {
+      "office": null,
+      "title": "驻防将领",
+      "since": 1
+    },
+    "C42": {
+      "office": null,
+      "title": "十四阿哥",
+      "since": 1
+    },
+    "C43": {
+      "office": null,
+      "title": "庄亲王",
+      "since": 1
+    },
+    "C44": {
+      "office": "deputy",
+      "title": "副总管",
+      "since": 1
+    },
+    "C45": {
+      "office": "yangxin",
+      "title": "御前首领太监",
+      "since": 1
+    },
+    "C46": {
+      "office": "rank3",
+      "title": "裕嫔",
+      "since": 1
+    },
+    "C47": {
+      "office": "rank3",
+      "title": "懋嫔",
+      "since": 1
+    }
+  },
+  "appointmentHistory": {
+    "C02": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "御前总管",
+        "source": "原有职司"
+      }
+    ],
+    "C07": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "翊坤宫华妃",
+        "source": "原有职司"
+      }
+    ],
+    "C06": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "中宫皇后",
+        "source": "原有职司"
+      }
+    ],
+    "C08": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "答应",
+        "source": "原有职司"
+      }
+    ],
+    "C09": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "莞常在",
+        "source": "原有职司"
+      }
+    ],
+    "C10": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "惠贵人",
+        "source": "原有职司"
+      }
+    ],
+    "C04": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "太医",
+        "source": "原有职司"
+      }
+    ],
+    "C05": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "果郡王",
+        "source": "原有职司"
+      }
+    ],
+    "C03": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "抚远大将军",
+        "source": "原有职司"
+      }
+    ],
+    "N01": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "南风馆棋师",
+        "source": "原有职司"
+      }
+    ],
+    "N02": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "南风馆乐师",
+        "source": "原有职司"
+      }
+    ],
+    "C11": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "敬妃",
+        "source": "原有职司"
+      }
+    ],
+    "C12": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "端妃",
+        "source": "原有职司"
+      }
+    ],
+    "C13": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "齐妃",
+        "source": "原有职司"
+      }
+    ],
+    "C14": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "曹贵人",
+        "source": "原有职司"
+      }
+    ],
+    "C15": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "欣贵人",
+        "source": "原有职司"
+      }
+    ],
+    "C16": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "富察贵人",
+        "source": "原有职司"
+      }
+    ],
+    "C17": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "碎玉轩掌事宫女",
+        "source": "原有职司"
+      }
+    ],
+    "C18": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "碎玉轩宫女",
+        "source": "原有职司"
+      }
+    ],
+    "C19": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "翊坤宫掌事宫女",
+        "source": "原有职司"
+      }
+    ],
+    "C20": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "延禧宫宫女",
+        "source": "原有职司"
+      }
+    ],
+    "C21": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "皇太后",
+        "source": "原有职司"
+      }
+    ],
+    "C22": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "太医",
+        "source": "原有职司"
+      }
+    ],
+    "C24": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "廉亲王",
+        "source": "原有职司"
+      }
+    ],
+    "C25": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "贝子",
+        "source": "原有职司"
+      }
+    ],
+    "C26": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "怡亲王",
+        "source": "原有职司"
+      }
+    ],
+    "C27": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "步军统领",
+        "source": "原有职司"
+      }
+    ],
+    "C28": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "户部尚书",
+        "source": "原有职司"
+      }
+    ],
+    "C29": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "地方重臣",
+        "source": "原有职司"
+      }
+    ],
+    "C30": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "地方重臣",
+        "source": "原有职司"
+      },
+      {
+        "year": 1,
+        "month": 1,
+        "from": "地方重臣",
+        "to": "河南巡抚",
+        "source": "任命"
+      }
+    ],
+    "C31": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "地方官",
+        "source": "原有职司"
+      }
+    ],
+    "C32": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "四川提督",
+        "source": "原有职司"
+      }
+    ],
+    "C37": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "户部侍郎",
+        "source": "原有职司"
+      }
+    ],
+    "C38": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "大学士",
+        "source": "原有职司"
+      }
+    ],
+    "C39": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "朝中重臣",
+        "source": "原有职司"
+      }
+    ],
+    "C40": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "驻防将领",
+        "source": "原有职司"
+      }
+    ],
+    "C41": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "驻防将领",
+        "source": "原有职司"
+      }
+    ],
+    "C42": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "十四阿哥",
+        "source": "原有职司"
+      }
+    ],
+    "C43": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "庄亲王",
+        "source": "原有职司"
+      }
+    ],
+    "C44": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "副总管",
+        "source": "原有职司"
+      }
+    ],
+    "C45": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "御前首领太监",
+        "source": "原有职司"
+      }
+    ],
+    "C46": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "裕嫔",
+        "source": "原有职司"
+      }
+    ],
+    "C47": [
+      {
+        "year": 1,
+        "month": 1,
+        "from": "",
+        "to": "懋嫔",
+        "source": "原有职司"
+      }
+    ]
+  },
+  "officeMonths": {
+    "C30": 0
+  },
+  "memorials": [
+    {
+      "province": "河南",
+      "type": "回报",
+      "title": "旧回报",
+      "body": "旧回报：前次朱批已经办妥。",
+      "result": true,
+      "uid": "mem8",
+      "author": "田文镜",
+      "at": 1
+    }
+  ],
+  "memorialUsed": [
+    "M7-6",
+    "M2-5",
+    "M5-6",
+    "M5-5",
+    "M1-0"
+  ],
+  "followups": [
+    {
+      "at": 2,
+      "id": "disaster",
+      "data": {
+        "uid": "mem6"
+      }
+    },
+    {
+      "at": 4,
+      "id": "decision",
+      "data": {
+        "province": "河南",
+        "title": "旧河工",
+        "type": "河工",
+        "choice": "approve",
+        "authorId": "C30",
+        "funding": 18,
+        "source": "准"
+      }
+    }
+  ],
+  "govSerial": 8,
+  "govNotes": [],
+  "provinces": {
+    "直隶": {
+      "livelihood": 55,
+      "integrity": 50,
+      "revenue": 55,
+      "reports": []
+    },
+    "山东": {
+      "livelihood": 55,
+      "integrity": 50,
+      "revenue": 55,
+      "reports": []
+    },
+    "河南": {
+      "livelihood": 55,
+      "integrity": 50,
+      "revenue": 55,
+      "reports": []
+    },
+    "江南": {
+      "livelihood": 55,
+      "integrity": 50,
+      "revenue": 55,
+      "reports": []
+    },
+    "浙江": {
+      "livelihood": 55,
+      "integrity": 50,
+      "revenue": 55,
+      "reports": []
+    },
+    "湖广": {
+      "livelihood": 55,
+      "integrity": 50,
+      "revenue": 55,
+      "reports": []
+    },
+    "四川": {
+      "livelihood": 55,
+      "integrity": 50,
+      "revenue": 55,
+      "reports": []
+    },
+    "陕甘": {
+      "livelihood": 55,
+      "integrity": 50,
+      "revenue": 55,
+      "reports": []
+    },
+    "云贵": {
+      "livelihood": 55,
+      "integrity": 50,
+      "revenue": 55,
+      "reports": []
+    },
+    "广东": {
+      "livelihood": 55,
+      "integrity": 50,
+      "revenue": 55,
+      "reports": []
+    }
+  },
+  "regionCarry": {
+    "people": 0,
+    "court": 0
+  },
+  "policies": {
+    "huohao": {
+      "progress": 42,
+      "active": true,
+      "host": "C30",
+      "pilot": "河南"
+    },
+    "land": {
+      "progress": 0,
+      "active": false,
+      "host": null,
+      "pilot": "直隶"
+    },
+    "service": {
+      "progress": 0,
+      "active": false,
+      "host": null,
+      "pilot": "浙江"
+    },
+    "tusi": {
+      "progress": 0,
+      "active": false,
+      "host": null,
+      "pilot": "云贵"
+    }
+  },
+  "factions": {
+    "八爷党": 35,
+    "新政": 31,
+    "中立": 40
+  },
+  "secrets": [],
+  "assessments": {},
+  "tenureBaseline": {
+    "C02": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C07": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C06": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C08": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C09": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C10": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C04": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C05": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C03": {
+      "at": 1,
+      "provinces": {}
+    },
+    "N01": {
+      "at": 1,
+      "provinces": {}
+    },
+    "N02": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C11": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C12": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C13": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C14": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C15": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C16": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C17": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C18": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C19": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C20": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C21": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C22": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C24": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C25": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C26": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C27": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C28": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C29": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C30": {
+      "at": 1,
+      "provinces": {
+        "河南": {
+          "livelihood": 55,
+          "integrity": 50,
+          "revenue": 55,
+          "reports": []
+        }
+      }
+    },
+    "C31": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C32": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C37": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C38": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C39": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C40": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C41": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C42": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C43": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C44": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C45": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C46": {
+      "at": 1,
+      "provinces": {}
+    },
+    "C47": {
+      "at": 1,
+      "provinces": {}
+    }
+  },
+  "memorialAt": 1,
+  "reviewSession": {
+    "at": 1,
+    "left": 2,
+    "held": []
+  },
+  "ledger": {
+    "treasury": {
+      "in": 0,
+      "out": 30
+    },
+    "inner": {
+      "in": 0,
+      "out": 0
+    }
+  },
+  "weather": "晴",
+  "bdayDone": [],
+  "regionalAt": 1,
+  "visit": null
+}

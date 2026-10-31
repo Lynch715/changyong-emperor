@@ -1,7 +1,7 @@
 import {SECONDARIES,CORE_DETAILS} from './roster.js';
 import {PERFORMERS} from './outings.js';
 // 新版数据：人物、月历、赏赐、出巡、空月奏折、无 AI 时的回退文字与结局。
-export const ECONOMY={startTreasury:800,startInner:50,point:10,legacyScale:800/60,fullTreasury:6000,income:[52,62,75],innerIncome:4,outingCost:0.08,banquetCost:1.5,privatePoint:.1,deficitGoal:600,reformGoal:470};
+export const ECONOMY={startTreasury:800,startInner:50,point:10,legacyScale:800/60,fullTreasury:6000,income:[52,62,75],publicOutgo:[20,26,32],innerIncome:4,outingCost:0.08,banquetCost:1.5,privatePoint:.1,deficitGoal:600,reformGoal:470};
 export const PRIVATE_SCENES=new Set(['M03','M06','M08','M11','M12','K10','K14','K17','W09','W10','Q15','Q16','H02','H10','Q06']);
 export const STATS=[
  {id:'treasury',name:'国库',hint:'户部银库，赈灾、河工与军费从这里出'},

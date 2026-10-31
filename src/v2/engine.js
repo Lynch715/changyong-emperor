@@ -268,10 +268,10 @@ export function transferFunds(s,direction,amount){
  const stats={...funds(s,{[from]:-amount,[to]:amount}),...applyStats(s,direction==='toInner'?{court:-2}:{people:2})};
  log(s,direction==='toInner'?'从户部拨银进内务府':'从内务府拨银充国库','银');return {title:'拨银',text:direction==='toInner'?'户部把银子送进了内务府。第二天，言官的折子也跟着到了。':'内务府的银车出了宫门。户部的人接了银，先去补了欠下的赈粮。',stats,people:{}};
 }
-// 批折：朝局 +3，圣躬 −2；设了值房之后只伤 1 点
-const REVIEWS=['你把积压的折子一本本看完。有一本说某县修桥，银子报了三遍，你朱批：查。','山东巡抚报了今年的雨水，字写得工整，事也办得明白。你在折尾批了一句：好，照此办。','两道折子说的是同一件事，口径却对不上。你把两本并排摆着看了半个时辰，批了四个字：据实再奏。','有个知县在折子里絮絮叨叨讲了半页县里的庄稼。你本想批“知道了”，想了想，改成：朕都看了，你辛苦。'];
 export function review(s){return G.beginReview(s,spend);}
 export const memorialOptions=G.memorialOptions;
+export const memorialCost=G.memorialCost;
+export function archiveReports(s){return G.archiveReports(s);}
 export function judgeMemorial(s,uid,choice){return G.decideMemorial(s,uid,choice,{funds,applyStats,log});}
 // 亲笔批复复用下旨限幅与骰面，只消耗折匣已付的时辰。
 export function writeMemorial(s,uid,text,result){const m=G.checkReview(s,uid);if(!String(text).trim())throw Error('请写下朱批。');const prior=s.ap;s.ap=1;let r;try{r=applyEdict(s,`就${m.province}「${m.title}」朱批：${text}`,result);}finally{s.ap=prior;}s.reviewSession.left--;s.memorials=s.memorials.filter(x=>x.uid!==uid);return {...r,title:m.title,text:result.narration};}
@@ -341,8 +341,13 @@ export function endMonth(s){
  G.backlog(s,applyStats);
  G.policyMonthly(s,{rand,applyStats,funds});
  const provincialIncome=G.regionalMonthly(s,{applyStats,funds});
+ applyStats(s,{people:G.sentimentAdjustment(s)});
  const beforeDuties={...s.delta.stats};const duties=officeMonthly(s,rand(s)<.25);const {treasury:extraSilver=0,...extraStats}=duties.changes;for(const text of duties.notes)log(s,text,'任');
- const tick={...applyStats(s,extraStats),...applyStats(s,s.year>=5?{health:-2,palace:-1}:s.year>=3?{health:-1,court:-1,people:-1}:{health:-1}),...funds(s,{treasury:ECONOMY.income[(s.vol||1)-1]+extraSilver+provincialIncome,inner:ECONOMY.innerIncome})};for(const k of Object.keys(tick))tick[k]=silver((s.delta.stats[k]||0)-(beforeDuties[k]||0));report.income=tick;
+ extraStats.court=G.courtAdjustment(s,extraStats.court||0);
+ const receipts=funds(s,{treasury:ECONOMY.income[(s.vol||1)-1]+extraSilver+provincialIncome,inner:ECONOMY.innerIncome});
+ const publicOutgo=ECONOMY.publicOutgo[(s.vol||1)-1],publicDue=publicOutgo+(s.publicArrears||0),publicPaid=Math.min(publicDue,s.stats.treasury);const payments=funds(s,{treasury:-publicPaid});s.publicArrears=silver(publicDue-publicPaid);report.publicOutgo=publicPaid;report.publicArrears=s.publicArrears;
+ if(s.publicArrears){applyStats(s,{court:-1});s.govNotes.push(`常态军政支出不足，拖欠公项${s.publicArrears}万两，朝局减一；后续进账先补欠。`);}
+ const tick={...receipts,...payments,...applyStats(s,extraStats),...applyStats(s,s.year>=5?{health:-2,palace:-1}:s.year>=3?{health:-1,court:-1}:{health:-1})};for(const k of Object.keys(tick))tick[k]=silver((s.delta.stats[k]||0)-(beforeDuties[k]||0));report.income=tick;
  for(const[k,v]of Object.entries(tick))report.stats[k]=(report.stats[k]||0)+v;
  // 生辰那个月一次也没去的，情分掉 3
  report.forgot=[];for(const id of birthdays(s)){const p=s.people[id];if(birthdayDone(s,id)||p.aff<25)continue;p.aff=clamp(p.aff-3);report.people[id]=(report.people[id]||0)-3;remember(s,id,'生辰那个月，你没有来');log(s,`${PEOPLE[id].name}的生辰，你没有去`,'情');report.forgot.push(id);}

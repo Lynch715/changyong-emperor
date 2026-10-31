@@ -27,7 +27,7 @@ export function recordAppointment(s,id,office,title,source='任命'){const prev=
 export function appointmentOptions(s,id){const kind=officeKind(id,s);if(!kind)return [];const keys=Object.keys(OFFICES).filter(k=>OFFICES[k].kind===kind);if(kind!=='妃嫔'&&s.appointments[id]?.office)keys.push('dismiss');return keys.map(office=>{let reason='';try{validateAppointments(s,[{id,office}]);}catch(e){reason=e.message;}return {office,title:office==='dismiss'?'免去现职':OFFICES[office].title,reason};});}
 export function officeMonthly(s,risk=false){const changes={},notes=[];for(const [id,a]of Object.entries(s.appointments)){const o=OFFICES[a.office];if(!o||o.kind!=='官员')continue;const p=s.people[id];s.officeMonths[id]=(s.officeMonths[id]||0)+1;const add=(k,v)=>{changes[k]=(changes[k]||0)+v;};
  if(['zhili','liangjiang','chuanshan','yungui','henan','zhejiang','shandong','huguang','guangdong'].includes(a.office))continue;
- if(o.effect==='treasury')add('treasury',Math.round((p.ability*p.loyalty/100*1.8-4)*100)/100);else add(o.effect,(p.ability>=7?1:0)+(p.loyalty>=70?1:-1));
+ if(o.effect==='treasury')add('treasury',Math.round(((p.ability*p.loyalty/100*1.8-4)*.25)*100)/100);else add(o.effect,(p.ability>=7?1:0)+(p.loyalty>=70?1:-1));
  if(risk&&p.faction==='八爷党'&&s.officeMonths[id]>=3){add('court',-3);notes.push(PEOPLE[id].name+'的旧交又递来了请托，几道折子在朝堂上争了起来。');}}
  return {changes,notes};}
 // 调到地方的官员以书信往来；调回京职后，不再沿用旧外任地点。
