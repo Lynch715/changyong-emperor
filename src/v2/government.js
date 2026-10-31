@@ -28,16 +28,19 @@ export function authorOf(s,province){const offices={直隶:'zhili',江南:'liang
 export function addMemorial(s,p){const author=authorOf(s,p.province);const m={...p,uid:'mem'+(++s.govSerial),author:author?PEOPLE[author].name:(p.province+'巡抚'),at:monthIndex(s)};if(m.disaster)s.memorials.unshift(m);else s.memorials.push(m);return m;}
 // 核实只查案情；需支出的工程、赈务查明之后仍须另批经费。
 export const needsFunding=m=>['河工','赈灾','边务','文教','民情'].includes(m.type);
-export const memorialCost=(m,choice)=>choice==='inspect'?2:choice==='approve'?({河工:18,赈灾:18,边务:18,文教:12,民情:8,钱粮:6,吏治:6,刑名:4}[m.type]||6):0;
+export const RECOVERABLE_TITLES=new Set(['库银亏空','火耗私派','漕粮短解','盐课拖欠','清丈隐田','知县侵渔','胥吏勒索','驿站扰民']);
+export const recoverable=m=>RECOVERABLE_TITLES.has(m.title);
+export const memorialCost=(m,choice)=>choice==='inspect'?2:choice==='approve'?({河工:18,赈灾:18,边务:18,文教:10,民情:6,钱粮:3,吏治:3,刑名:2}[m.type]||6):0;
 export function archiveReports(s){initGovernment(s);const reports=s.memorials.filter(m=>m.result);s.govReports.push(...reports);s.memorials=s.memorials.filter(m=>!m.result);return reports.length;}
 
-export function memorialMonth(s,rng){initGovernment(s);const now=monthIndex(s);if(s.memorialAt===now)return;s.memorialAt=now;s.reviewSession=null;s.govNotes=[];
+export function memorialMonth(s,rng){initGovernment(s);const now=monthIndex(s);if(s.memorialAt===now)return;s.memorialAt=now;s.reviewSession=null;s.govNotes=[];archiveReports(s);
  for(const f of s.followups.filter(f=>f.at<=now&&f.id==='department')){addMemorial(s,{...f.data,disasterKey:f.data.disasterKey||f.data.uid,department:true,body:f.data.body+'\n前次朱批“交部议”，户部会同有关衙门核过清册，建议先勘实情、分批给银；请皇上再裁。'});s.govNotes.push('前次朱批交部议：'+f.data.title+'，部议已回。');}
  s.followups=s.followups.filter(f=>!(f.at<=now&&f.id==='department'));
- const n=3+Math.floor(rng(s)*3);for(let i=0;i<n;i++){if(s.memorialUsed.length>=MEMORIAL_POOL.length)s.memorialUsed=[];const eligible=MEMORIAL_POOL.filter(p=>!s.memorialUsed.includes(p.id)&&(!p.months||p.months.includes(s.month)));if(!eligible.length){addMemorial(s,{id:`B${now}-${i}`,type:'民情',province:PROVINCE_NAMES[(now+i)%10],title:'地方月报·'+now+'-'+i,body:'臣谨奏：本月应季旧案已逐件呈览，尚有民户补报口粮与春耕借种的情形。州县正在按里甲核验，暂未发现大户冒领，但偏远村落尚未走访。臣拟先将现有查册送部存核，余户续查续报，不敢以一时平静视作全省无事，伏乞皇上垂察。',special:'覆核里甲清册',result:true});continue;}const p=eligible[Math.floor(rng(s)*eligible.length)];s.memorialUsed.push(p.id);addMemorial(s,p);}}
-export function beginReview(s,spend){initGovernment(s);if(!s.memorials.length)throw Error('折匣里没有未批奏折。');spend(s);s.reviewSession={at:monthIndex(s),left:s.done?.W08==='council'?5:3,held:[]};return {title:'折匣',text:'展开奏折，逐道朱批。',stats:{},people:{}};}
+ const n=2+Math.floor(rng(s)*2);for(let i=0;i<n;i++){if(s.memorialUsed.length>=MEMORIAL_POOL.length)s.memorialUsed=[];const eligible=MEMORIAL_POOL.filter(p=>!s.memorialUsed.includes(p.id)&&(!p.months||p.months.includes(s.month)));if(!eligible.length){addMemorial(s,{id:`B${now}-${i}`,type:'民情',province:PROVINCE_NAMES[(now+i)%10],title:'地方月报·'+now+'-'+i,body:'臣谨奏：本月应季旧案已逐件呈览，尚有民户补报口粮与春耕借种的情形。州县正在按里甲核验，暂未发现大户冒领，但偏远村落尚未走访。臣拟先将现有查册送部存核，余户续查续报，不敢以一时平静视作全省无事，伏乞皇上垂察。',special:'覆核里甲清册',result:true});continue;}const p=eligible[Math.floor(rng(s)*eligible.length)];s.memorialUsed.push(p.id);addMemorial(s,p);}archiveReports(s);}
+export const memorialCounts=s=>({pending:s.memorials.filter(m=>!m.result&&!m.inspectionPending).length,waiting:s.memorials.filter(m=>m.inspectionPending).length});
+export function beginReview(s,spend){initGovernment(s);if(!s.memorials.length)throw Error('折匣里没有未批奏折。');spend(s);s.reviewSession={at:monthIndex(s),left:s.done?.W08==='council'?10:6,held:[]};return {title:'折匣',text:'展开奏折，逐道朱批。',stats:{},people:{}};}
 export function checkReview(s,uid){const r=s.reviewSession,m=s.memorials.find(m=>m.uid===uid);if(!m||!r||r.at!==monthIndex(s)||r.left<=0||s.night||r.held.includes(uid))throw Error('这一时辰不能再批这道折子。');return m;}
-export function memorialOptions(m){if(m.result)return [['ack','阅，知道了']];return [['approve','准'],['reject','驳'],...(!m.department?[['department','交部议']]:[]),['hold','留中'],...(!m.inspectionPending&&!m.inspected?[['inspect',needsFunding(m)?'先核实案情（仍须另批经费）':m.special||'派员核实']]:[])];}
+export function memorialOptions(m){if(m.result)return [['ack','阅，知道了']];return [['approve',recoverable(m)?'核清并追缴':'准'],['reject','驳'],...(!m.department?[['department','交部议']]:[]),['hold','留中'],...(!m.inspectionPending&&!m.inspected?[['inspect',needsFunding(m)?'先核实案情（仍须另批经费）':m.special||'派员核实']]:[])];}
 export function decideMemorial(s,uid,choice,api){const m=checkReview(s,uid);if(!memorialOptions(m).some(([id])=>id===choice))throw Error('没有这道朱批。');const cost=memorialCost(m,choice);if(s.stats.treasury<cost)throw Error(`国库不足${cost}万两，宜先缓办或交部议。`);
  s.reviewSession.left--;if(choice==='hold'){s.reviewSession.held.push(uid);return {title:m.title,text:'朱批留中，原折仍留在折匣。',stats:{},people:{}};}
  const pending=choice==='inspect'&&needsFunding(m);if(pending){m.inspectionPending=true;s.reviewSession.held.push(uid);}else s.memorials=s.memorials.filter(x=>x.uid!==uid);
@@ -45,7 +48,7 @@ export function decideMemorial(s,uid,choice,api){const m=checkReview(s,uid);if(!
  const stats={...api.funds(s,{treasury:-cost}),...api.applyStats(s,['approve','inspect'].includes(choice)?{health:-1}:{})};
  scheduleDecision(s,m,choice);api.log(s,`${m.province}·${m.title}：${memorialOptions({...m,inspectionPending:false,inspected:false}).find(x=>x[0]===choice)?.[1]||'阅'}`,'政');return {title:m.title,text:choice==='department'?'交有关部臣核议，下月带原折复奏。灾情不会因此停止发展。':pending?'已派员查勘，费用二万两；核实后仍须另批经费。灾情不能以核代赈。':choice==='approve'?`已批经费${cost}万两，经办衙门须据实回奏。`:'朱批已发，后续据实回奏。',stats,people:{},memorial:m,choice};}
 
-export function backlog(s,applyStats){const n=s.memorials.length;if(n>6){s.govNotes.push(`折子堆了：尚有${n}道未批。`);applyStats(s,{court:-1,...(n>10?{health:-1}:{})});}}
+export function backlog(s,applyStats){const n=s.memorials.filter(m=>!m.result&&!m.inspectionPending).length;if(n>6){s.govNotes.push(`折子堆了：尚有${n}道未批。`);applyStats(s,{court:-1,...(n>10?{health:-1}:{})});}}
 
 export const OFFICE_PROVINCES={zhili:['直隶'],liangjiang:['江南'],chuanshan:['四川','陕甘'],yungui:['云贵'],henan:['河南'],zhejiang:['浙江'],shandong:['山东'],huguang:['湖广'],guangdong:['广东']};
 const clamp=n=>Math.min(100,Math.max(0,n));
@@ -54,7 +57,7 @@ export function regionChange(s,name,changes,api){const p=s.provinces[name];if(!p
  // 十省等权；小数变化累积，避免每月四舍五入吞掉地方变化。
  for(const [national,key]of [['people','livelihood'],['court','integrity']]){s.regionCarry[national]+=(p[key]-old[key])/10;const d=Math.trunc(Number(s.regionCarry[national].toFixed(6)));if(d){api.applyStats(s,{[national]:d});s.regionCarry[national]-=d;}}}
 export function provinceIncome(s){return Math.round(Object.values(s.provinces).reduce((n,p)=>n+(p.revenue-55)*.09,0)*100)/100;}
-export function scheduleDecision(s,m,choice){if(['department','hold'].includes(choice)||m.result)return;const delay=m.type==='河工'?3:2;s.followups.push({at:monthIndex(s)+delay,id:'decision',data:{ruleVersion:2,requestUid:m.uid,needsFunding:needsFunding(m),province:m.province,title:m.title,type:m.type,choice,authorId:authorOf(s,m.province),funding:choice==='approve'?18:0,source:choice==='approve'?'准':choice==='reject'?'驳':'派员核实'}});}
+export function scheduleDecision(s,m,choice){if(['department','hold'].includes(choice)||m.result)return;const delay=m.type==='河工'?3:2;s.followups.push({at:monthIndex(s)+delay,id:'decision',data:{ruleVersion:3,recoverable:recoverable(m),requestUid:m.uid,needsFunding:needsFunding(m),province:m.province,title:m.title,type:m.type,choice,authorId:authorOf(s,m.province),funding:choice==='approve'?18:0,source:choice==='approve'?'准':choice==='reject'?'驳':'派员核实'}});}
 function report(s,data,text){const body=`前次朱批“${data.source}”，所办${data.title}一事，今据实回奏：${text}`;s.govNotes.push(body);s.provinces[data.province].reports.unshift(body);s.provinces[data.province].reports=s.provinces[data.province].reports.slice(0,3);s.govReports.push({title:data.title+'·回报',province:data.province,type:'回报',body,result:true,at:monthIndex(s)});if(s.govReports.length>120)s.govReports.shift();}
 function resolveDecision(s,d,api){
  const p=s.provinces[d.province],officer=d.authorId&&s.appointments[d.authorId]?.office&&OFFICE_PROVINCES[s.appointments[d.authorId].office]?.includes(d.province)?s.people[d.authorId]:null,competence=officer?officer.ability*officer.loyalty/100:4;
@@ -63,8 +66,9 @@ function resolveDecision(s,d,api){
  if(d.choice==='reject'){regionChange(s,d.province,d.type==='赈灾'?{livelihood:-5}:d.needsFunding?{livelihood:-1}:{integrity:-1},api);report(s,d,d.type==='赈灾'?'赈项未开，流民请求补救。':'原案未办，地方继续按旧章维持。');return;}
  if(d.choice==='inspect'&&d.needsFunding){const m=s.memorials.find(m=>m.uid===d.requestUid);if(!m)return;m.inspectionPending=false;m.inspected=true;m.body+='\n前次朱批先核实：经费清册已核，请另裁是否拨银。';report(s,d,'勘报已核清；尚未拨银执行，不能算工程或赈务已成。');return;}
  const chance=Math.min(.92,.35+competence*.035+p.integrity*.002+(d.choice==='approve'?.18:0)),ok=api.rand(s)<chance;
+ let recovered=0;if(ok&&d.ruleVersion>=3&&d.recoverable&&d.choice==='approve'){recovered=d.type==='钱粮'?12:10;api.funds(s,{treasury:recovered});}
  const effects=d.choice==='inspect'?(ok?{integrity:2,revenue:1}:{integrity:-1}):(ok?{livelihood:d.needsFunding?4:2,integrity:2,revenue:2}:{livelihood:-2,integrity:-1,revenue:-1});regionChange(s,d.province,effects,api);
- report(s,d,ok?(d.choice==='inspect'?'账证已经查明，责成整顿；未凭核查发放工程与赈款。':d.type==='河工'?'汛期堤岸稳固，拨银按册销核。':'经费已落实，地方办理见效。'):(d.type==='河工'?'工程遇险，须补救并追查经办。':'经办未达预期，须重新料理。'));
+ report(s,d,recovered?`已核清旧欠并追缴，${recovered}万两已实际解入国库。`:ok?(d.choice==='inspect'?'账证已经查明，责成整顿；未凭核查发放工程与赈款。':d.type==='河工'?'汛期堤岸稳固，拨银按册销核。':'经费已落实，地方办理见效。'):(d.type==='河工'?'工程遇险，须补救并追查经办。':'经办未达预期，须重新料理。'));
 }
 
 export function regionalMonth(s,api){initGovernment(s);const now=monthIndex(s);if(s.regionalAt===now)return;s.regionalAt=now;

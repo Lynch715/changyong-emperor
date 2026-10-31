@@ -1,3 +1,4 @@
+import * as Fiscal from './fiscal.js';
 import * as F from './family.js';
 import * as G from './government.js';
 import * as M from './major-events.js';
@@ -45,7 +46,7 @@ export const weatherOf=s=>WEATHER[SEASON(s.month)].includes(s.weather)?s.weather
 export function newGame(seed=Date.now()%2147483647){
  const s={economyVersion:1,version:F.SAVE_VERSION,vol:1,freedom:2,flags:{},seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
  for(const id of CAST)s.people[id]={aff:PEOPLE[id].start,met:false,knot:null,first:false,second:false,third:false,lover:false,firstAt:null,secondAt:null,memories:[]};
- G.initGovernment(initAppointments(initTravel(s)));M.initMajorEvents(s);F.initFamily(s);bind(s);startMonth(s);return s;
+ G.initGovernment(initAppointments(initTravel(s)));M.initMajorEvents(s);F.initFamily(s);Fiscal.initFiscal(s);bind(s);startMonth(s);return s;
 }
 
 // ---------- 人物 ----------
@@ -92,6 +93,7 @@ export function startMonth(s){
  s.weather=WEATHER[SEASON(s.month)][Math.floor(rand(s)*3)];
  s.ap=AP_PER_MONTH;s.night=false;s.delta={stats:{},people:{}};s.chats=0;
  s.agenda=(ALL_AGENDA[monthKey(s)]||[]).filter(id=>!s.done[id]);s.bdayDone=[];
+ Fiscal.openFiscalMonth(s,log);
  G.regionalMonth(s,{rand,applyStats,funds});
  G.secretMonth(s,{rand,applyStats,funds,gain});
  for(const id of Object.keys(s.appointments))if(!s.tenureBaseline[id])G.snapshotTenure(s,id);
@@ -280,8 +282,11 @@ export function transferFunds(s,direction,amount){
  const stats={...funds(s,{[from]:-amount,[to]:amount}),...applyStats(s,direction==='toInner'?{court:-2}:{people:2})};
  log(s,direction==='toInner'?'从户部拨银进内务府':'从内务府拨银充国库','银');return {title:'拨银',text:direction==='toInner'?'户部把银子送进了内务府。第二天，言官的折子也跟着到了。':'内务府的银车出了宫门。户部的人接了银，先去补了欠下的赈粮。',stats,people:{}};
 }
+export const investFiscal=(s,id)=>Fiscal.invest(s,id,spend,log);
+export const collectFiscal=s=>Fiscal.collect(s,spend,log);
 export function review(s){return G.beginReview(s,spend);}
 export const memorialOptions=G.memorialOptions;
+export const memorialCounts=G.memorialCounts;
 export const memorialCost=G.memorialCost;
 export function archiveReports(s){return G.archiveReports(s);}
 export function judgeMemorial(s,uid,choice){return G.decideMemorial(s,uid,choice,{funds,applyStats,log});}
@@ -368,12 +373,14 @@ export function endMonth(s){
  if(s.agenda.length)throw Error('本月还有要事没办。');
  const report={y:s.year,m:s.month,stats:{...s.delta.stats},people:{...s.delta.people}};
  G.backlog(s,applyStats);
- G.policyMonthly(s,{rand,applyStats,funds});
+ const policyBefore=s.stats.treasury;G.policyMonthly(s,{rand,applyStats,funds});const policySpent=silver(policyBefore-s.stats.treasury);
  const provincialIncome=G.regionalMonthly(s,{applyStats,funds});
  applyStats(s,{people:G.sentimentAdjustment(s)});
  const beforeDuties={...s.delta.stats};const duties=officeMonthly(s,rand(s)<.25);const {treasury:extraSilver=0,...extraStats}=duties.changes;for(const text of duties.notes)log(s,text,'任');
  extraStats.court=G.courtAdjustment(s,extraStats.court||0);
- const receipts=funds(s,{treasury:ECONOMY.income[(s.vol||1)-1]+extraSilver+provincialIncome,inner:ECONOMY.innerIncome});
+ const projectIncome=Fiscal.dueProjectReceipts(s);
+ const receipts=funds(s,{treasury:ECONOMY.income[(s.vol||1)-1]+extraSilver+provincialIncome+projectIncome,inner:ECONOMY.innerIncome});s.fiscal.settledAt=idx(s.year,s.month);
+ report.fiscal={base:ECONOMY.income[(s.vol||1)-1],office:extraSilver,province:provincialIncome,projects:projectIncome,policySpent};
  const publicOutgo=ECONOMY.publicOutgo[(s.vol||1)-1],publicDue=publicOutgo+(s.publicArrears||0),publicPaid=Math.min(publicDue,s.stats.treasury);const payments=funds(s,{treasury:-publicPaid});s.publicArrears=silver(publicDue-publicPaid);report.publicOutgo=publicPaid;report.publicArrears=s.publicArrears;
  if(s.publicArrears){applyStats(s,{court:-1});s.govNotes.push(`常态军政支出不足，拖欠公项${s.publicArrears}万两，朝局减一；后续进账先补欠。`);}
  const aging=s.year>=5?{health:-2,palace:-1}:s.year>=3?{health:-1,...(s.month%3===0?{court:-1}:{})}:{health:-1};
@@ -385,6 +392,7 @@ export function endMonth(s){
  report.cooled=[];for(const id of CORE){const p=s.people[id];if(p.met&&!s.delta.people[id]&&!report.forgot.includes(id)&&p.aff>30&&present(s,id)&&!away(s,id)){p.aff=clamp(p.aff-(p.aff>=45?2:1));report.cooled.push(id);}}
  report.govNotes=[...s.govNotes];report.stats={...s.delta.stats};
  report.ledger=structuredClone(s.ledger);report.balances={treasury:s.stats.treasury,inner:s.stats.inner};
+ s.fiscal.lastReport={year:s.year,month:s.month,...report.fiscal,ledger:structuredClone(report.ledger.treasury),balance:s.stats.treasury,publicOutgo:report.publicOutgo};
  settleCrises(s);
  report.crises=ALL_CRISES.filter(c=>c.vol===(s.vol||1)).map(c=>({id:c.id,name:c.name,status:crisisStatus(s,c)}));
  if(s.month===12&&LAST_YEARS.includes(s.year)){s.ended=true;return report;}
@@ -422,4 +430,4 @@ export function ending(s){
 }
 
 export function save(s,storage=globalThis.localStorage){try{storage.setItem(SAVE_KEY,JSON.stringify(s));return true;}catch{return false;}}
-export function load(storage=globalThis.localStorage){try{const s=JSON.parse(storage.getItem(SAVE_KEY)||'null');return [1,F.SAVE_VERSION].includes(s?.version)?bind(F.initFamily(M.initMajorEvents(G.initGovernment(initAppointments(initTravel(initEconomy(s))))))):null;}catch{return null;}}
+export function load(storage=globalThis.localStorage){try{const s=JSON.parse(storage.getItem(SAVE_KEY)||'null');return [1,F.SAVE_VERSION].includes(s?.version)?bind(Fiscal.initFiscal(F.initFamily(M.initMajorEvents(G.initGovernment(initAppointments(initTravel(initEconomy(s)))))))):null;}catch{return null;}}
