@@ -12,7 +12,7 @@ export const initMajorEvents=s=>{
  return s;
 };
 const makeId=(e,step)=>`ME${e.n}_${step}`;
-const canStart=s=>!s.majorEvent&&s.majorEventAt!==idx(s)&&s.majorEventReports.length<120;
+const canStart=s=>!s.majorEvent&&s.majorEventAt!==idx(s);
 export function scheduleMajorEvent(s,rng,chance=.27){
  initMajorEvents(s);
  if(s.majorEvent){const e=s.majorEvent;if(e.nextAt<=idx(s)){e.step++;e.nextAt=null;return makeId(e,e.step);}return null;}

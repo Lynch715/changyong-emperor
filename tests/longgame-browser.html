@@ -1,0 +1,8 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>0.44 三十年隔离验收</title><style>body{font:18px serif;max-width:850px;margin:2rem auto;padding:1rem;background:#efe4cc}button,a{display:block;padding:1rem;margin:1rem 0}pre{white-space:pre-wrap}</style><h1>0.44 三十年隔离验收</h1><p>仅供独立localhost端口验收。阶段样本来自元年新档逐月模拟，不读取玩家在线存档。</p><button data-sample="six">六年岁末回顾</button><button data-sample="seven">七年新故事与延期</button><button data-sample="thirty">三十年岁末回顾</button><button data-sample="open">三十一年无限续玩</button><button id="restore">恢复测试端口原状态</button><a href="/">打开正式游戏</a><pre id="out"></pre><script type="module">
+import * as E from '/src/v2/engine.js';import {confirmAge,AUDIENCE_KEY} from '/src/v2/audience.js';
+const backupKey='longgame-044-original',keys=[E.SAVE_KEY,'changyong-v2-ai-off',AUDIENCE_KEY];
+if(!sessionStorage.getItem(backupKey))sessionStorage.setItem(backupKey,JSON.stringify(keys.map(key=>[key,localStorage.getItem(key)])));
+const out=document.querySelector('#out');
+for(const b of document.querySelectorAll('[data-sample]'))b.onclick=async()=>{try{const s=await fetch('/output/longgame-qa/'+b.dataset.sample+'.json').then(r=>r.json());E.save(s);confirmAge();localStorage.setItem('changyong-v2-ai-off','1');out.textContent=`已载入${s.year}-${s.month}，国库${s.stats.treasury}，阶段${E.campaignInfo(s).title}，待办${s.agenda.length}。`;}catch(e){out.textContent=e.stack;}};
+document.querySelector('#restore').onclick=()=>{const original=new Map(JSON.parse(sessionStorage.getItem(backupKey)));for(const key of keys){const value=original.get(key)??null;value===null?localStorage.removeItem(key):localStorage.setItem(key,value);}out.textContent='已恢复测试端口原状态。';};
+</script></html>

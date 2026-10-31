@@ -62,7 +62,7 @@ const WORLD=`你在为清宫文字游戏《重生长雍帝王赋》写作。玩�
 文风：白话、克制、有画面，像好的小说，不要堆砌辞藻，不要现代网络用语。人物说话符合身份与性格。只有后文另有说明放开时，才直白描写亲密；否则不写露骨的性内容。亲密情节只限明确成年、非亲属、双方自由自愿。拒绝、迟疑或不适都应受到尊重，权势和赏赐不能代替同意。未成年、亲属之间、胁迫、药物影响或无法清醒表达意愿时，不写亲密行为，转为日常照顾。一档自由度也不改变这些边界。
 君臣礼法（必须遵守）：玩家是皇帝。妃嫔、太监、太医、大臣、亲王，在皇帝面前都守着尊卑。心里不情愿、委屈、生气时，用婉拒、推辞、告罪、沉默、低头不语、红了眼眶、找个由头告退来表达；大臣不赞同时跪下进谏，先说“臣斗胆”“请皇上三思”，语气恭顺。绝不当面斥责、讥讽、顶撞、命令或教训皇帝，不用“你”直呼皇帝，不反问逼问皇帝。即便是恋人、兄弟，也只是撒娇、使一点小性子、说句俏皮话，点到为止，礼数不失。只有醉后、重病、生死关头才偶尔失态，事后要惶恐请罪。`;
 export const statLine=s=>`国库${s.stats.treasury}万两（充盈度${treasuryIndex(s)}/100），内帑${s.stats.inner}万两，`+STATS.filter(x=>!['inner','treasury'].includes(x.id)).map(x=>`${x.name}${s.stats[x.id]}/100`).join('，');
-export const dateLine=s=>childrenContext(s)+`雍正${YEAR_NAME(s.year)}年${MONTHS[s.month-1]}。今日${weatherOf(s)}`+(s.appointments?.C03?.office?'（年羹尧现任'+titleOf(s,'C03')+'）':s.flags?.nian_prison?'（年羹尧已被削爵下狱）':s.flags?.nian_away?'（年羹尧已被降为杭州将军）':s.flags?.nian_safe?'（年羹尧交出兵权，留京任职）':'')+((s.month&&birthdays(s).length)?`。本月是${birthdays(s).map(id=>PEOPLE[id].name).join('、')}的生辰`:'');
+export const dateLine=s=>childrenContext(s)+`这是架空改命时间线，人物身份与存亡以存档为准，不因年份自行判定死亡或继位；所有皇嗣永久按未成年人保护。雍正${YEAR_NAME(s.year)}年${MONTHS[s.month-1]}。今日${weatherOf(s)}`+(s.appointments?.C03?.office?'（年羹尧现任'+titleOf(s,'C03')+'）':s.flags?.nian_prison?'（年羹尧已被削爵下狱）':s.flags?.nian_away?'（年羹尧已被降为杭州将军）':s.flags?.nian_safe?'（年羹尧交出兵权，留京任职）':'')+((s.month&&birthdays(s).length)?`。本月是${birthdays(s).map(id=>PEOPLE[id].name).join('、')}的生辰`:'');
 function relation(id,st){
  if(KIN.has(id))return '皇上与对方是亲属，只写家人之间的信任与日常照顾，不写恋爱情意。';
  if(PEOPLE[id].secondary)return '只写故人之间的信任与君臣之礼，不把情分写成恋爱。';

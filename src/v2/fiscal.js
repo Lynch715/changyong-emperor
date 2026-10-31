@@ -30,3 +30,6 @@ export function openFiscalMonth(s,log){
 }
 export const dueProjectReceipts=s=>s.fiscal?.settledAt===fiscalMonth(s)?0:projectReceipts(s);
 export function forecast(s){const vol=(s.vol||1)-1,province=silver(Object.values(s.provinces||{}).reduce((n,p)=>n+(p.revenue-55)*.09,0));const policy=Object.entries(s.policies||{}).reduce((n,[id,p])=>n+(p.progress>=100?1:p.active?6:0),0);return {base:ECONOMY.income[vol],province,projects:projectReceipts(s),publicOutgo:ECONOMY.publicOutgo[vol],policy,arrears:s.publicArrears||0};}
+
+// 后期可选择把积银用于地方，无硬性削财，也不改变旧档现金。
+export function publicWorksInfo(s){const now=fiscalMonth(s);let reason='';if(s.year<7)reason='七年起可安排地方修缮';else if(s.fiscal?.lastWorksAt!=null&&now-s.fiscal.lastWorksAt<3)reason='每三个月最多修缮一省';else if(s.stats.treasury<60)reason='国库不足六十万两';return {cost:60,reason,provinces:Object.keys(s.provinces||{})};}

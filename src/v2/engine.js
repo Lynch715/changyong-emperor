@@ -1,3 +1,5 @@
+import * as T from './timeline.js';
+import {longScene} from './long-stories.js';
 import * as Fiscal from './fiscal.js';
 import * as F from './family.js';
 import * as G from './government.js';
@@ -23,8 +25,11 @@ const POOL=[...PETITIONS,...MORE_PETITIONS,...SMALL_EVENTS];
 export const thirdOf=id=>'L'+id.slice(1);
 export const fourthOf=id=>'Y'+id.slice(1);
 export const fifthOf=id=>'Z'+id.slice(1);
-// 每卷最后一个月：二年、四年、六年腊月
-export const LAST_YEARS=[2,4,6];
+// 阶段回顾不会清档，三十年后仍可继续。
+export const LAST_YEARS=T.CHECKPOINTS;
+export const initCampaign=T.initCampaign;
+export const campaignInfo=T.campaignInfo;
+export const canContinueCampaign=s=>!!s.ended&&s.year>=6&&LAST_YEARS.includes(s.year);
 const ALL_AGENDA={...AGENDA,...AGENDA2,...AGENDA3};
 export const ALL_CRISES=[...CRISES.map(c=>({vol:1,...c})),...CRISES2,...CRISES3];
 const ALL_REPAIR={...REPAIR,...REPAIR2,...REPAIR3};
@@ -46,7 +51,7 @@ export const weatherOf=s=>WEATHER[SEASON(s.month)].includes(s.weather)?s.weather
 export function newGame(seed=Date.now()%2147483647){
  const s={economyVersion:1,version:F.SAVE_VERSION,vol:1,freedom:2,flags:{},seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
  for(const id of CAST)s.people[id]={aff:PEOPLE[id].start,met:false,knot:null,first:false,second:false,third:false,lover:false,firstAt:null,secondAt:null,memories:[]};
- G.initGovernment(initAppointments(initTravel(s)));M.initMajorEvents(s);F.initFamily(s);Fiscal.initFiscal(s);bind(s);startMonth(s);return s;
+ G.initGovernment(initAppointments(initTravel(s)));M.initMajorEvents(s);F.initFamily(s);Fiscal.initFiscal(s);T.initCampaign(s,true);bind(s);startMonth(s);return s;
 }
 
 // ---------- 人物 ----------
@@ -71,8 +76,9 @@ const count=(s,k)=>{s.count=s.count||{};s.count[k]=(s.count[k]||0)+1;};
 export function remember(s,id,text){if(!text)return;const p=s.people[id];p.memories.push({y:s.year,m:s.month,text:String(text).slice(0,60)});if(p.memories.length>12)p.memories.shift();}
 export function secondReady(s,id,letter=false){const p=s.people[id];return p.first&&!p.second&&p.aff>=45&&!p.knot&&p.firstAt!==monthKey(s)&&present(s,id)&&(letter||!away(s,id));}
 export function thirdReady(s,id,letter=false){const p=s.people[id];return p.second&&!p.third&&p.aff>=65&&!p.knot&&p.secondAt!==monthKey(s)&&present(s,id)&&(letter||!away(s,id));}
-export function fourthReady(s,id,letter=false){const p=s.people[id];return s.year>=3&&p.third&&!p.fourth&&p.aff>=75&&!p.knot&&p.thirdAt!==monthKey(s)&&present(s,id)&&!gone(s,id)&&(letter||!away(s,id));}
-export function fifthReady(s,id,letter=false){const p=s.people[id];return s.year>=5&&p.fourth&&!p.fifth&&p.aff>=80&&!p.knot&&p.fourthAt!==monthKey(s)&&present(s,id)&&!gone(s,id)&&(letter||!away(s,id));}
+const relationGap=(s,value)=>!value||idx(s.year,s.month)-T.serial(value.split('-').map(Number))>=3;
+export function fourthReady(s,id,letter=false){const p=s.people[id];return relationGap(s,p.thirdAt)&&s.year>=3&&p.third&&!p.fourth&&p.aff>=75&&!p.knot&&p.thirdAt!==monthKey(s)&&present(s,id)&&!gone(s,id)&&(letter||!away(s,id));}
+export function fifthReady(s,id,letter=false){const p=s.people[id];return relationGap(s,p.fourthAt)&&s.year>=5&&p.fourth&&!p.fifth&&p.aff>=80&&!p.knot&&p.fourthAt!==monthKey(s)&&present(s,id)&&!gone(s,id)&&(letter||!away(s,id));}
 export const storyOf=(s,id)=>PEOPLE[id].secondary?null:secondReady(s,id)?PEOPLE[id].second:thirdReady(s,id)?thirdOf(id):fourthReady(s,id)?fourthOf(id):fifthReady(s,id)?fifthOf(id):null;
 export const hasStory=(s,id)=>!!storyOf(s,id);
 
@@ -88,11 +94,12 @@ export function log(s,text,kind='事'){s.log.push({y:s.year,m:s.month,kind,text}
 
 // ---------- 月 ----------
 export function startMonth(s){
+ T.initCampaign(s);bind(s);
  G.memorialMonth(s,rand);
  s.ledger=emptyLedger();
  s.weather=WEATHER[SEASON(s.month)][Math.floor(rand(s)*3)];
  s.ap=AP_PER_MONTH;s.night=false;s.delta={stats:{},people:{}};s.chats=0;
- s.agenda=(ALL_AGENDA[monthKey(s)]||[]).filter(id=>!s.done[id]);s.bdayDone=[];
+ s.agenda=(ALL_AGENDA[monthKey(s)]||[]).filter(id=>!s.done[id]&&!T.FLEX_IDS.has(id));s.bdayDone=[];
  Fiscal.openFiscalMonth(s,log);
  G.regionalMonth(s,{rand,applyStats,funds});
  G.secretMonth(s,{rand,applyStats,funds,gain});
@@ -102,14 +109,14 @@ export function startMonth(s){
  // 两三个月前的旨意，送回报来了
  for(const e of s.edicts||[])if(e.due===idx(s.year,s.month)&&!s.done['FU'+e.n])s.agenda.push('FU'+e.n);
  // 人在外地的，第二、三幕以书信的形式在月初到来
- for(const id of CORE)if(away(s,id)&&!gone(s,id)){if(secondReady(s,id,true))s.agenda.push(PEOPLE[id].second);else if(thirdReady(s,id,true))s.agenda.push(thirdOf(id));else if(fourthReady(s,id,true))s.agenda.push(fourthOf(id));else if(fifthReady(s,id,true))s.agenda.push(fifthOf(id));}
+ for(const id of CORE)if(!s.agenda.length&&away(s,id)&&!gone(s,id)){if(secondReady(s,id,true))s.agenda.push(PEOPLE[id].second);else if(thirdReady(s,id,true))s.agenda.push(thirdOf(id));else if(fourthReady(s,id,true))s.agenda.push(fourthOf(id));else if(fifthReady(s,id,true))s.agenda.push(fifthOf(id));}
  // 要事少的月份，抽一件奏折或宫闱小事
  const last=s.month===12&&LAST_YEARS.includes(s.year);
- const soleScene=s.agenda.length===1?scene(s.agenda[0]):null;
- const mayStartMajor=!!s.majorEvent||!(s.year===6&&s.month>=7)&&(s.agenda.length===0||s.agenda.length===1&&!soleScene?.disaster);
+ const mayStartMajor=!!s.majorEvent||!(LAST_YEARS.includes(s.year)&&s.month>=7)&&!s.agenda.length&&!T.candidates(s,scene,sc=>flexEligible(s,sc)).length;
  const majorId=mayStartMajor?M.scheduleMajorEvent(s,rand,s.agenda.length===0 ? .27 : .35):null;
  if(majorId)s.agenda.unshift(majorId);
- if(!majorId&&!last&&(s.agenda.length===0||(s.agenda.length===1&&rand(s)<0.5))){const left=SMALL_EVENTS.filter(p=>!s.used.petitions.includes(p.id)&&(!p.months||p.months.includes(s.month))&&(!p.need||(present(s,p.need)&&s.people[p.need].met&&!away(s,p.need))));if(left.length){const p=left[Math.floor(rand(s)*left.length)];s.used.petitions.push(p.id);s.agenda.push(p.id);}}
+ T.scheduleFlexible(s,scene,sc=>flexEligible(s,sc));
+ if(!majorId&&!last&&s.agenda.length===0){const left=SMALL_EVENTS.filter(p=>!s.used.petitions.includes(p.id)&&(!p.months||p.months.includes(s.month))&&(!p.need||(present(s,p.need)&&s.people[p.need].met&&!away(s,p.need))));if(left.length){const p=left[Math.floor(rand(s)*left.length)];s.used.petitions.push(p.id);s.agenda.push(p.id);}}
  for(const id of CORE)if(present(s,id)&&!s.people[id].met&&!SCENES[PEOPLE[id].first]?.id)s.people[id].met=true;
  F.month(s,familyAPI);
  // 情分够了的人，有时会自己找上门来
@@ -125,8 +132,12 @@ let CUR=null;export function bind(s){CUR=s;return s;}
 function followFallback(s,id){const e=(s?.edicts||[]).find(x=>'FU'+x.n===id);if(!e)return null;const ago=Math.max(1,idx(s.year,s.month)-e.at);const neg=Object.values(e.effects||{}).some(v=>v<0);
  return {id,title:`「${e.title}」的回音`,kind:'edictfollow',actor:'C28',location:'养心殿',body:`${ago}个月前，你下了一道旨意：${e.text}\n\n如今，各地的回报陆续送到了。张廷玉把它们摞在案上，${neg?'说好的有，说难的也有。':'大多是好消息。'}\n\n“皇上，”他问，“这件事，往后怎么办？”`,
   options:[{id:'a',label:'嘉奖经办的官员，接着办',effects:{court:2,treasury:-2},reply:'经办的官员得了赏，干劲更足了。这道旨意，算是真正落了地。'},{id:'b',label:'派人下去看看实情',effects:{people:2,health:-1},reply:'派去的人跑了一个月，回来说：旨意确实落了地，只是有几处被下面的人打了折扣。你让他们一一改了。'},{id:'c',label:'不必再过问',effects:{},reply:'你没有再过问。这件事，就这样过去了。'}]};}
-const baseScene=id=>CUR?.dyn?.[id]||M.majorScene(CUR,id)||SCENES[id]||ROMANCE[id]||SCENES2[id]||SCENES3[id]||POOL.find(p=>p.id===id)||SURPRISES.find(p=>p.id===id)||(id?.startsWith('FU')?(CUR?.dyn?.[id]||followFallback(CUR,id)):null)||(id?.startsWith('FE')?festivalScene(id,CUR?weatherOf(CUR):''):null);
+const baseScene=id=>CUR?.dyn?.[id]||longScene(CUR,id)||M.majorScene(CUR,id)||SCENES[id]||ROMANCE[id]||SCENES2[id]||SCENES3[id]||POOL.find(p=>p.id===id)||SURPRISES.find(p=>p.id===id)||(id?.startsWith('FU')?(CUR?.dyn?.[id]||followFallback(CUR,id)):null)||(id?.startsWith('FE')?festivalScene(id,CUR?weatherOf(CUR):''):null);
 export const scene=id=>{const sc=baseScene(id);return id==='Y10'?F.y10Scene(CUR,sc):sc;};
+function flexEligible(s,sc){if(!sc)return false;if(!sc.actor||!PEOPLE[sc.actor])return true;if(gone(s,sc.actor))return false;if(sc.kind==='longStory')return true;return present(s,sc.actor)&&(!sc.id.startsWith('K')||s.people[sc.actor]?.met);}
+export const canDeferScene=(s,id)=>T.canDefer(s,id);
+export const deferScene=(s,id)=>T.defer(s,id,scene,log);
+export const upcomingStories=s=>T.upcoming(s,scene,sc=>flexEligible(s,sc));
 export function setDyn(s,id,sc){s.dyn=s.dyn||{};s.dyn[id]={...sc,id,kind:sc.kind||'edictfollow'};}
 // 白天做完事，有时会撞见一件小事
 export function rollSurprise(s){if(s.agenda.length||s.ended||rand(s)>=0.28)return null;s.used.surprises=s.used.surprises||[];
@@ -153,6 +164,7 @@ export const pendingScene=s=>s.agenda[0]||null;
 export function choose(s,id,optId){
  if(s.agenda[0]!==id)throw Error('先处理眼前这件事。');
  const sc=scene(id),opt=optionsFor(s,sc).find(o=>o.id===optId);if(!opt)throw Error('没有这个选项。');
+ if(sc.kind==='longStory'){for(const k of ['treasury','inner']){const cost=-(opt.effects?.[k]||0)*(k==='treasury'?ECONOMY.point:1);if(cost>0&&s.stats[k]<cost)throw Error(k==='treasury'?'国库不足，请选不花银的安排。':'内帑不足，请选不花银的安排。');}}
  if(sc.kind==='family'){const result=F.resolve(s,sc,opt,familyAPI);s.done[id]=optId;s.agenda.shift();return result;}
  if(sc.kind==='majorEvent'){const result=M.applyMajorChoice(s,id,optId,{funds,applyStats,log});s.done[id]=optId;s.agenda.shift();return {title:result.title,choice:opt.label,text:result.text,stats:result.stats,people:{}};}
  if(sc.disaster&&optId==='relief'&&s.stats.treasury<25)throw Error('国库不足二十五万两。');
@@ -284,6 +296,7 @@ export function transferFunds(s,direction,amount){
 }
 export const investFiscal=(s,id)=>Fiscal.invest(s,id,spend,log);
 export const collectFiscal=s=>Fiscal.collect(s,spend,log);
+export function publicWorks(s,province){const info=Fiscal.publicWorksInfo(s);if(info.reason)throw Error(info.reason+'。');if(!info.provinces.includes(province))throw Error('请选择已有省份。');spend(s);const stats=funds(s,{treasury:-info.cost});s.fiscal.lastWorksAt=T.at(s);G.regionChange(s,province,{livelihood:4,integrity:2},{applyStats});log(s,`${province}地方修缮：实付60万两，修补仓渠与学舍，民生加四、吏治加二。`,'政');return {title:'地方修缮',text:`${province}已领到修缮银六十万两，用于仓渠与学舍；地方民生+4、吏治+2（上限100）。用一个时辰，每三个月最多安排一省。`,stats,people:{}};}
 export function review(s){return G.beginReview(s,spend);}
 export const memorialOptions=G.memorialOptions;
 export const memorialCounts=G.memorialCounts;
@@ -365,7 +378,7 @@ export const changeChildArt=F.setChildArt;
 export const teachChild=(s,id,kind)=>F.study(s,id,kind,familyAPI);
 export function stopHuanyi(s){if(s.flags.stop_huanyi)throw Error('欢宜香已经停用。');if(!s.people.C07.met||away(s,'C07')||gone(s,'C07'))throw Error('眼下见不到年世兰。');spend(s);s.flags.stop_huanyi=true;log(s,'封存欢宜香，向年世兰说明并请太医调养。','家');return {title:'停用欢宜香',text:'你让人封存旧香，把疑虑向年世兰说清，再请太医院核验。停香不等于保证有孕；往后的日子仍由她自己选择。',stats:{},people:{}};}
 export const childBirthdays=s=>(s.children||[]).filter(c=>birthdayOf(s,c.id));
-export function continueFamily(s){if(!s.ended||s.year!==6)throw Error('请先走完第三卷。');s.ended=false;s.familyContinuation=true;s.year=7;s.month=1;log(s,'继续宫中岁月：皇嗣成长与日常沿月历继续。','家');startMonth(s);return s;}
+export function continueFamily(s){if(!canContinueCampaign(s))throw Error('请先完成本阶段的岁末回顾。');s.ended=false;s.familyContinuation=true;s.year++;s.month=1;s.vol=3;log(s,`接续${T.campaignInfo(s).title}，存档与众人的记忆一并保留。`,'卷');startMonth(s);return s;}
 
 export function endMonth(s){
  if(s.pendingBirth||s.familyArt?.required)throw Error('先完成孩子的取名与立绘选择。');
@@ -383,7 +396,7 @@ export function endMonth(s){
  report.fiscal={base:ECONOMY.income[(s.vol||1)-1],office:extraSilver,province:provincialIncome,projects:projectIncome,policySpent};
  const publicOutgo=ECONOMY.publicOutgo[(s.vol||1)-1],publicDue=publicOutgo+(s.publicArrears||0),publicPaid=Math.min(publicDue,s.stats.treasury);const payments=funds(s,{treasury:-publicPaid});s.publicArrears=silver(publicDue-publicPaid);report.publicOutgo=publicPaid;report.publicArrears=s.publicArrears;
  if(s.publicArrears){applyStats(s,{court:-1});s.govNotes.push(`常态军政支出不足，拖欠公项${s.publicArrears}万两，朝局减一；后续进账先补欠。`);}
- const aging=s.year>=5?{health:-2,palace:-1}:s.year>=3?{health:-1,...(s.month%3===0?{court:-1}:{})}:{health:-1};
+ const aging=s.year>=7?{health:-1,...(s.month%6===0?{palace:-1}:{})}:s.year>=5?{health:-2,palace:-1}:s.year>=3?{health:-1,...(s.month%3===0?{court:-1}:{})}:{health:-1};
  const tick={...receipts,...payments,...applyStats(s,extraStats),...applyStats(s,aging)};for(const k of Object.keys(tick))tick[k]=silver((s.delta.stats[k]||0)-(beforeDuties[k]||0));report.income=tick;
  for(const[k,v]of Object.entries(tick))report.stats[k]=(report.stats[k]||0)+v;
  // 生辰那个月一次也没去的，情分掉 3
@@ -430,4 +443,4 @@ export function ending(s){
 }
 
 export function save(s,storage=globalThis.localStorage){try{storage.setItem(SAVE_KEY,JSON.stringify(s));return true;}catch{return false;}}
-export function load(storage=globalThis.localStorage){try{const s=JSON.parse(storage.getItem(SAVE_KEY)||'null');return [1,F.SAVE_VERSION].includes(s?.version)?bind(Fiscal.initFiscal(F.initFamily(M.initMajorEvents(G.initGovernment(initAppointments(initTravel(initEconomy(s)))))))):null;}catch{return null;}}
+export function load(storage=globalThis.localStorage){try{const s=JSON.parse(storage.getItem(SAVE_KEY)||'null');return [1,F.SAVE_VERSION].includes(s?.version)?bind(T.initCampaign(Fiscal.initFiscal(F.initFamily(M.initMajorEvents(G.initGovernment(initAppointments(initTravel(initEconomy(s))))))))):null;}catch{return null;}}
