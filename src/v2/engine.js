@@ -1,3 +1,4 @@
+import * as F from './family.js';
 import * as G from './government.js';
 import * as M from './major-events.js';
 import {planAllowed,PLAN_NOTICE,restCost} from './plans.js';
@@ -42,9 +43,9 @@ export const WEATHER={春:['晴','雨','风'],夏:['晴','雨','闷热'],秋:['�
 export const weatherOf=s=>WEATHER[SEASON(s.month)].includes(s.weather)?s.weather:WEATHER[SEASON(s.month)][0];
 
 export function newGame(seed=Date.now()%2147483647){
- const s={economyVersion:1,version:1,vol:1,freedom:2,flags:{},seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
+ const s={economyVersion:1,version:F.SAVE_VERSION,vol:1,freedom:2,flags:{},seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
  for(const id of CAST)s.people[id]={aff:PEOPLE[id].start,met:false,knot:null,first:false,second:false,third:false,lover:false,firstAt:null,secondAt:null,memories:[]};
- G.initGovernment(initAppointments(initTravel(s)));M.initMajorEvents(s);bind(s);startMonth(s);return s;
+ G.initGovernment(initAppointments(initTravel(s)));M.initMajorEvents(s);F.initFamily(s);bind(s);startMonth(s);return s;
 }
 
 // ---------- 人物 ----------
@@ -108,6 +109,7 @@ export function startMonth(s){
  if(majorId)s.agenda.unshift(majorId);
  if(!majorId&&!last&&(s.agenda.length===0||(s.agenda.length===1&&rand(s)<0.5))){const left=SMALL_EVENTS.filter(p=>!s.used.petitions.includes(p.id)&&(!p.months||p.months.includes(s.month))&&(!p.need||(present(s,p.need)&&s.people[p.need].met&&!away(s,p.need))));if(left.length){const p=left[Math.floor(rand(s)*left.length)];s.used.petitions.push(p.id);s.agenda.push(p.id);}}
  for(const id of CORE)if(present(s,id)&&!s.people[id].met&&!SCENES[PEOPLE[id].first]?.id)s.people[id].met=true;
+ F.month(s,familyAPI);
  // 情分够了的人，有时会自己找上门来
  s.visit=null;
  const cand=CORE.filter(id=>{const p=s.people[id];return p.met&&p.aff>=40&&!p.knot&&present(s,id)&&!away(s,id)&&s.lastVisit?.[id]!==monthKey(s)&&!(s.visitedAt?.[id]>=idx(s.year,s.month)-2);});
@@ -121,7 +123,8 @@ let CUR=null;export function bind(s){CUR=s;return s;}
 function followFallback(s,id){const e=(s?.edicts||[]).find(x=>'FU'+x.n===id);if(!e)return null;const ago=Math.max(1,idx(s.year,s.month)-e.at);const neg=Object.values(e.effects||{}).some(v=>v<0);
  return {id,title:`「${e.title}」的回音`,kind:'edictfollow',actor:'C28',location:'养心殿',body:`${ago}个月前，你下了一道旨意：${e.text}\n\n如今，各地的回报陆续送到了。张廷玉把它们摞在案上，${neg?'说好的有，说难的也有。':'大多是好消息。'}\n\n“皇上，”他问，“这件事，往后怎么办？”`,
   options:[{id:'a',label:'嘉奖经办的官员，接着办',effects:{court:2,treasury:-2},reply:'经办的官员得了赏，干劲更足了。这道旨意，算是真正落了地。'},{id:'b',label:'派人下去看看实情',effects:{people:2,health:-1},reply:'派去的人跑了一个月，回来说：旨意确实落了地，只是有几处被下面的人打了折扣。你让他们一一改了。'},{id:'c',label:'不必再过问',effects:{},reply:'你没有再过问。这件事，就这样过去了。'}]};}
-export const scene=id=>CUR?.dyn?.[id]||M.majorScene(CUR,id)||SCENES[id]||ROMANCE[id]||SCENES2[id]||SCENES3[id]||POOL.find(p=>p.id===id)||SURPRISES.find(p=>p.id===id)||(id?.startsWith('FU')?(CUR?.dyn?.[id]||followFallback(CUR,id)):null)||(id?.startsWith('FE')?festivalScene(id,CUR?weatherOf(CUR):''):null);
+const baseScene=id=>CUR?.dyn?.[id]||M.majorScene(CUR,id)||SCENES[id]||ROMANCE[id]||SCENES2[id]||SCENES3[id]||POOL.find(p=>p.id===id)||SURPRISES.find(p=>p.id===id)||(id?.startsWith('FU')?(CUR?.dyn?.[id]||followFallback(CUR,id)):null)||(id?.startsWith('FE')?festivalScene(id,CUR?weatherOf(CUR):''):null);
+export const scene=id=>{const sc=baseScene(id);return id==='Y10'?F.y10Scene(CUR,sc):sc;};
 export function setDyn(s,id,sc){s.dyn=s.dyn||{};s.dyn[id]={...sc,id,kind:sc.kind||'edictfollow'};}
 // 白天做完事，有时会撞见一件小事
 export function rollSurprise(s){if(s.agenda.length||s.ended||rand(s)>=0.28)return null;s.used.surprises=s.used.surprises||[];
@@ -137,7 +140,7 @@ function social(s,id,heavy){const out={},notes=[];if(!id)return {people:out,note
 export function festivalPeople(s,all=false){const ok=CORE.filter(id=>{const p=s.people[id];return p.met&&present(s,id)&&!away(s,id)&&!gone(s,id);});if(all)return ok;const w=id=>(s.people[id].lover?1000:0)+s.people[id].aff;return ok.sort((a,b)=>w(b)-w(a)).slice(0,3);}
 export const optionsFor=(s,sc)=>{if(sc.id==='K15'){const valid=sc.options.filter(o=>{try{validateAppointments(s,rankChoice(o.id));return rankChoice(o.id).every(x=>Number(s.appointments[x.id]?.office?.slice(4))<3);}catch{return false;}});return [...valid,{id:'later',label:'先缓一缓，等空出位子再议',effects:{},reply:'你把名帖暂时留下，吩咐内务府先理清各宫的位分。'}];}if(sc.kind==='festival'){const ok=festivalPeople(s);const rank=o=>o.who?1+ok.indexOf(o.who):o.id==='all'?0:9;return sc.options.filter(o=>!o.who||ok.includes(o.who)).sort((a,b)=>rank(a)-rank(b)).map(o=>o.who?{...o,label:o.label.replace('{n}',PEOPLE[o.who].name)}:o);}return sc.options.filter(o=>!o.need||s.flags?.[o.need]);};
 // ---------- 生辰 ----------
-export const birthdayOf=(s,id)=>(BIRTH[id]||PEOPLE[id]?.birth)===s.month&&!!s.people[id]?.met&&present(s,id)&&!gone(s,id)&&!(BIRTH_SKIP[monthKey(s)]||[]).includes(id);
+export const birthdayOf=(s,id)=>F.childById(s,id)?F.now(s)>F.serial(F.childById(s,id).born)&&F.serial(F.childById(s,id).born)%12===F.now(s)%12:(BIRTH[id]||PEOPLE[id]?.birth)===s.month&&!!s.people[id]?.met&&present(s,id)&&!gone(s,id)&&!(BIRTH_SKIP[monthKey(s)]||[]).includes(id);
 export const birthdays=s=>CAST.filter(id=>birthdayOf(s,id));
 export const birthdayDone=(s,id)=>(s.bdayDone||[]).includes(id);
 // 那个月见了、赏了、陪了，就算记得；返回额外的情分
@@ -148,6 +151,7 @@ export const pendingScene=s=>s.agenda[0]||null;
 export function choose(s,id,optId){
  if(s.agenda[0]!==id)throw Error('先处理眼前这件事。');
  const sc=scene(id),opt=optionsFor(s,sc).find(o=>o.id===optId);if(!opt)throw Error('没有这个选项。');
+ if(sc.kind==='family'){const result=F.resolve(s,sc,opt,familyAPI);s.done[id]=optId;s.agenda.shift();return result;}
  if(sc.kind==='majorEvent'){const result=M.applyMajorChoice(s,id,optId,{funds,applyStats,log});s.done[id]=optId;s.agenda.shift();return {title:result.title,choice:opt.label,text:result.text,stats:result.stats,people:{}};}
  if(sc.disaster&&optId==='relief'&&s.stats.treasury<25)throw Error('国库不足二十五万两。');
  G.resolveDisaster(s,sc,optId,{applyStats,funds});
@@ -164,14 +168,16 @@ export function choose(s,id,optId){
  else if(sc.kind==='deep'||sc.kind==='deep5'){const cid=sc.actor,p=s.people[cid];if(sc.kind==='deep'){p.fourth=true;p.fourthAt=monthKey(s);}else{p.fifth=true;cele(s,{k:'fifth',id:cid});}add(cid,{stay:6,mid:3,hard:-3}[optId]??2);}
  else if(sc.kind==='romance'){const cid=sc.actor,p=s.people[cid];p.third=true;p.thirdAt=monthKey(s);if(optId==='confess'){p.lover=true;cele(s,{k:'lover',id:cid});remember(s,cid,cid==='C05'?'皇兄把那个很长的梦告诉了他':'两人说开了心意');}add(cid,{confess:8,slow:5,restrain:1}[optId]??3);}
   else if(sc.kind==='dilemma'){for(const[cid,b]of Object.entries(opt.bonds||{}))add(cid,(b.trust||0)*2);if(opt.slight){add(opt.slight,-5);s.people[opt.slight].knot={source:id,text:sc.title};remember(s,opt.slight,'你在「'+sc.title+'」里没有选她/他');}}
- else if(sc.kind==='festival'){if(optId==='all'){for(const cid of festivalPeople(s,true))add(cid,1);}else if(opt.who){add(opt.who,5);remember(s,opt.who,'一起过了'+sc.title);for(const r of rivalsOf(opt.who)){const p=s.people[r];if(p?.met&&present(s,r)&&p.aff>=25)add(r,-2);}}count(s,'festivals');}
+ else if(sc.kind==='festival'){if(optId==='all'){for(const cid of festivalPeople(s,true))add(cid,1);}else if(opt.who){add(opt.who,5);remember(s,opt.who,'一起过了'+sc.title);for(const r of rivalsOf(opt.who)){const p=s.people[r];if(p?.met&&present(s,r)&&p.aff>=25)add(r,-2);}}if(optId==='all')for(const c of s.children||[])c.notes.push(`${monthKey(s)}：与家人一起过${sc.title}`);count(s,'festivals');}
  else if(PEOPLE[sc.actor]&&!opt.bond)add(sc.actor,2);
  if(sc.kind!=='festival'&&opt.bond?.[sc.actor]>0)celebrate(s,sc.actor,0);
  if(opt.bond)for(const[cid,n]of Object.entries(opt.bond))if(s.people[cid])add(cid,n);
  if(opt.flag){s.flags=s.flags||{};s.flags[opt.flag]=true;if(opt.flag==='nian_away')s.flags.away_C03=true;if(opt.flag==='nian_prison'){s.flags.away_C03=true;s.flags.gone_C03=true;}if(['nian_away','nian_prison','nian_safe'].includes(opt.flag))recordAppointment(s,'C03',null,opt.flag==='nian_prison'?'削爵在狱':opt.flag==='nian_away'?'杭州将军':'领侍卫内大臣','剧情');}
  for(const cid of Object.keys(PEOPLE))if(present(s,cid)&&(sc.actor===cid))s.people[cid].met=true;
- const text=(opt.replyBy&&sc.dep&&opt.replyBy[s.done[sc.dep]])||opt.reply||'';
+ let text=(opt.replyBy&&sc.dep&&opt.replyBy[s.done[sc.dep]])||opt.reply||'';
+ if(sc.kind==='festival'&&optId==='all'&&s.children?.length)text+='\n\n'+s.children.map(c=>`${c.name}（${F.childAge(s,c)}岁）也随家人来过节，席间添了些笑声。`).join('');
  if(sc.kind==='secondary'&&optId!=='wait'){const cid=sc.actor;s.secondaryDone[cid]=(s.secondaryDone[cid]||0)+1;}
+ F.afterStory(s,id,optId);
  G.policyStory(s,id,optId);
  s.done[id]=optId;s.agenda.shift();
  log(s,`${sc.title}：${opt.label}`,['relation','extension','romance','deep','deep5'].includes(sc.kind)?'情':sc.kind==='dilemma'?'难':sc.kind==='festival'?'节':'政');
@@ -179,8 +185,8 @@ export function choose(s,id,optId){
 }
 
 // ---------- 白天的行动 ----------
-function spend(s){if(s.ended)throw Error('这一卷已走完。');if(s.nanfeng?.visit&&!s.nanfeng.visit.done)throw Error('先把馆里的茶喝完。');if(s.agenda.length)throw Error('先把本月要事办完。');if(s.ap<=0)throw Error('今日的时辰已经用完了。');s.ap--;}
-export function canAct(s){return !s.agenda.length&&s.ap>0&&!s.ended&&!(s.nanfeng?.visit&&!s.nanfeng.visit.done);}
+function spend(s){if(s.pendingBirth||s.familyArt?.required)throw Error('先完成孩子的取名与立绘选择。');if(s.ended)throw Error('这一卷已走完。');if(s.nanfeng?.visit&&!s.nanfeng.visit.done)throw Error('先把馆里的茶喝完。');if(s.agenda.length)throw Error('先把本月要事办完。');if(s.ap<=0)throw Error('今日的时辰已经用完了。');s.ap--;}
+export function canAct(s){return !s.pendingBirth&&!s.familyArt?.required&&!s.agenda.length&&s.ap>0&&!s.ended&&!(s.nanfeng?.visit&&!s.nanfeng.visit.done);}
 
 export function beginChat(s,id){if(PEOPLE[id]?.secondary&&!s.people[id]?.met)throw Error('还没见过这个人。');if(!present(s,id))throw Error('还见不到这个人。');spend(s);s.people[id].met=true;s.chats++;if(id==='C04'&&!away(s,id)&&weatherOf(s)==='雨')gain(s,id,1);const bd=celebrate(s,id,2);return {id,letter:away(s,id),gained:0,turns:0,birthday:bd!==null};}
 // 一次召见最多加 8 点，单句 -5～+4
@@ -303,16 +309,18 @@ export function plannedRest(s,plan,{text='',health=8,inner,memory='',companion=n
 // ---------- 夜 ----------
 export const stayOf=s=>s.nanfeng?.stay?.at===monthKey(s)?s.nanfeng.stay.id:null;
 // 召入宫的人也能夜里去看；在南风馆留宿的那一夜只陪那一位
-export function nightChoices(s){const stay=stayOf(s);if(stay)return [{id:stay,special:null,knot:!!s.people[stay].knot}];return [...CORE,...Object.keys(s.inPalace||{})].filter(id=>present(s,id)&&!away(s,id)&&s.people[id].met).map(id=>({id,special:storyOf(s,id),knot:!!s.people[id].knot}));}
+export function nightChoices(s){const stay=stayOf(s);if(stay)return [{id:stay,special:null,knot:!!s.people[stay].knot}];return [...new Set([...CORE,...Object.keys(s.inPalace||{}),...F.mothers.filter(id=>PEOPLE[id]?.secondary&&s.people[id]?.aff>=65)])].filter(id=>present(s,id)&&!away(s,id)&&!gone(s,id)&&s.people[id].met).map(id=>({id,special:storyOf(s,id),knot:!!s.people[id].knot}));}
 export function spendNight(s,id,{affection=4,health=0,memory='',fate=null}={}){
+ familyReady(s);
  if(id&&!nightChoices(s).some(p=>p.id===id))throw Error('今夜去不了这里。');
  if(s.nanfeng?.visit&&!s.nanfeng.visit.done)throw Error('先把馆里的茶喝完。');if(s.night)throw Error('今夜已经安排过了。');if(s.agenda.length)throw Error('先把本月要事办完。');s.night=true;
  if(!id){const stats=applyStats(s,{health:3});log(s,'独寝','夜');return {stats,people:{}};}
+ const mayConceive=F.chance(s,id)>0&&(!fate||fate.free||fate.tier>1);if(mayConceive)F.tryConceive(s,id,familyAPI);
  let d=gain(s,id,Math.max(0,Math.min(4,fateClamp(Math.round(finite(affection,3)),fate&&{...fate,kind:'night'}))));remember(s,id,memory);const bd=celebrate(s,id,2);if(bd)d+=bd;
- const heavy=s.lastNight===id;s.lastNight=id;const so=social(s,id,heavy);log(s,`夜里在${placeOf(s,id)}，陪着${PEOPLE[id].name}`,'夜');const stats=applyStats(s,{health:fate&&!fate.free&&fate.tier<=1?0:Math.max(-2,Math.min(3,Math.round(finite(health,0))))});return {stats,people:{...so.people,...(d?{[id]:d}:{})},notes:so.notes,birthday:bd!==null};
+ const heavy=s.lastNight===id;s.lastNight=id;const so=social(s,id,heavy);if(mayConceive)so.notes.push('今夜起居已记下。是否有喜，须等一至两个月后由太医复诊，眼下不作结论。');log(s,`夜里在${placeOf(s,id)}，陪着${PEOPLE[id].name}`,'夜');const stats=applyStats(s,{health:fate&&!fate.free&&fate.tier<=1?0:Math.max(-2,Math.min(3,Math.round(finite(health,0))))});return {stats,people:{...so.people,...(d?{[id]:d}:{})},notes:so.notes,birthday:bd!==null};
 }
 // 夜里遇到第二幕剧情时，作为要事插入
-export function queueSpecial(s,id){if(s.night)throw Error('今夜已经安排过了。');const sid=storyOf(s,id);if(!sid)throw Error('今夜没有新的剧情。');s.night=true;celebrate(s,id,2);s.agenda.unshift(sid);return sid;}
+export function queueSpecial(s,id){if(s.night)throw Error('今夜已经安排过了。');const sid=storyOf(s,id);if(!sid)throw Error('今夜没有新的剧情。');s.night=true;celebrate(s,id,2);s.agenda.unshift(sid);if(sid==='Y10'&&!s.pregnancy.C10)s.pregnancy.C10={start:monthKey(s),due:F.key(F.now(s)+10),care:0,risk:0,known:false,fake:true};F.tryConceive(s,id,familyAPI);return sid;}
 
 // 任命先把所有人选与空位看清，再花时辰，失败不改存档。
 const rankChoice=choice=>choice==='huan'?[{id:'C09',office:'rank3'}]:choice==='mei'?[{id:'C10',office:'rank3'}]:choice==='both'?[{id:'C09',office:'rank3'},{id:'C10',office:'rank3'}]:[];
@@ -340,7 +348,22 @@ export function crisisStatus(s,c){
  return allDone&&(!c.goal||c.goal(s))?'solved':'open';
 }
 function settleCrises(s){s.crises=s.crises||{};for(const c of ALL_CRISES){if(s.crises[c.id]||before(s,c.start))continue;const allDone=c.scenes.every(id=>s.done[id]),ok=allDone&&(!c.goal||c.goal(s));const due=s.year===c.deadline[0]&&s.month===c.deadline[1];if(ok&&!c.goal){s.crises[c.id]='solved';cele(s,{k:'crisis',name:c.name});}else if(due){s.crises[c.id]=ok?'solved':'failed';cele(s,{k:ok?'crisis':'crisisFail',name:c.name});log(s,`要务「${c.name}」${ok?'已了结':'没能办好'}`,'政');}}}
+// 家庭行动共用原有资源、日志、庆贺和随机数。
+function familyReady(s){if(s.pendingBirth||s.familyArt?.required)throw Error('先完成孩子的取名与立绘选择。');if(s.ended)throw Error('请先接续下一卷或继续宫中岁月。');if(s.night)throw Error('今夜已经过了，请下个月再安排。');if(s.agenda.length)throw Error('先把本月要事办完。');if(s.nanfeng?.visit&&!s.nanfeng.visit.done)throw Error('先把馆里的茶喝完。');}
+const familyAPI={rand,log,gain,cele,applyStats,spend,away,gone,ready:familyReady};
+export const discussWish=(s,id,wish)=>F.discuss(s,id,wish,familyAPI);
+export const pregnancyCare=(s,id,pay=false)=>F.care(s,id,pay,familyAPI);
+export const pregnancyTonic=(s,id)=>F.tonic(s,id,familyAPI);
+export const nameChild=F.setBirthName;
+export const completeBirth=(s,art)=>F.finishBirth(s,art,familyAPI);
+export const changeChildArt=F.setChildArt;
+export const teachChild=(s,id,kind)=>F.study(s,id,kind,familyAPI);
+export function stopHuanyi(s){if(s.flags.stop_huanyi)throw Error('欢宜香已经停用。');if(!s.people.C07.met||away(s,'C07')||gone(s,'C07'))throw Error('眼下见不到年世兰。');spend(s);s.flags.stop_huanyi=true;log(s,'封存欢宜香，向年世兰说明并请太医调养。','家');return {title:'停用欢宜香',text:'你让人封存旧香，把疑虑向年世兰说清，再请太医院核验。停香不等于保证有孕；往后的日子仍由她自己选择。',stats:{},people:{}};}
+export const childBirthdays=s=>(s.children||[]).filter(c=>birthdayOf(s,c.id));
+export function continueFamily(s){if(!s.ended||s.year!==6)throw Error('请先走完第三卷。');s.ended=false;s.familyContinuation=true;s.year=7;s.month=1;log(s,'继续宫中岁月：皇嗣成长与日常沿月历继续。','家');startMonth(s);return s;}
+
 export function endMonth(s){
+ if(s.pendingBirth||s.familyArt?.required)throw Error('先完成孩子的取名与立绘选择。');
  if(s.nanfeng?.visit&&!s.nanfeng.visit.done)throw Error('先把馆里的茶喝完。');
  if(s.agenda.length)throw Error('本月还有要事没办。');
  const report={y:s.year,m:s.month,stats:{...s.delta.stats},people:{...s.delta.people}};
@@ -399,4 +422,4 @@ export function ending(s){
 }
 
 export function save(s,storage=globalThis.localStorage){try{storage.setItem(SAVE_KEY,JSON.stringify(s));return true;}catch{return false;}}
-export function load(storage=globalThis.localStorage){try{const s=JSON.parse(storage.getItem(SAVE_KEY)||'null');return s?.version===1?bind(M.initMajorEvents(G.initGovernment(initAppointments(initTravel(initEconomy(s)))))):null;}catch{return null;}}
+export function load(storage=globalThis.localStorage){try{const s=JSON.parse(storage.getItem(SAVE_KEY)||'null');return [1,F.SAVE_VERSION].includes(s?.version)?bind(F.initFamily(M.initMajorEvents(G.initGovernment(initAppointments(initTravel(initEconomy(s))))))):null;}catch{return null;}}

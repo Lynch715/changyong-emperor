@@ -1,0 +1,511 @@
+{
+  "release": "0.43.0",
+  "style": "清宫工笔，暖色绢本质感，合龄日常服饰",
+  "exportPolicy": "cwebp: retain full image and alpha, preserve aspect ratio; mobile height 640, lossless thumb height 200",
+  "assets": [
+    {
+      "id": "k_infant_01",
+      "stage": "infant",
+      "sex": "男",
+      "source": "assets/kid_infant_01.png",
+      "nativeDimensions": [
+        1086,
+        1448
+      ],
+      "sourceSha256": "59f87835fb42d70e640d82b043c523917e5676e45c1a948b2744726ab8c39b59",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "Use case: historical-scene. Asset: a single finished character illustration for a Qing palace family game, infant boy 01. Create ONE newborn Chinese baby boy sleeping peacefully inside a soft apricot-yellow swaddle, with small embroidered clouds and a round soft infant cap, completely clothed. Keep authentic newborn proportions: large round head, tiny cheeks, eyes gently closed, no mature features. Show the complete wrapped baby from head to feet, no adult holding him. Fine meticulous Qing court gongbi painting, graceful delicate ink contours, softly layered mineral pigments, natural ivory and warm silk colors, restrained embroidered fabric detail, softly modelled face. The look should harmonize with realistic but delicately painted full-body Qing palace character cutouts, not cartoon or glossy 3D. Center the single baby vertically in a portrait 3:4 canvas with generous clear space around the entire swaddle. Transparent background, no scenery, no decorative frame, no label, no writing, no watermark. Respectful everyday infant clothing only. The finished image must be a real character painting, not a placeholder or a symbol.",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_infant_01-mobile.webp",
+          "bytes": 49184,
+          "sha256": "0e3cb0f4d54ca494eb7dfe91b6cb6ad175a4e106105265477d0eceb4fe501fa2",
+          "dimensions": [
+            480,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_infant_01-thumb.webp",
+          "bytes": 22316,
+          "sha256": "acbe42627cbb570028c4bbe7a601310a60daba7052aae8706e4703ac13ff54c8",
+          "dimensions": [
+            150,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k_infant_02",
+      "stage": "infant",
+      "sex": "男",
+      "source": "assets/kid_infant_02.png",
+      "nativeDimensions": [
+        1086,
+        1448
+      ],
+      "sourceSha256": "ca2138f819c7b982b9b0e454510253e0a339a48597b00153f899a49f1b7a6dc3",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "Use case: historical-scene. Asset: ONE finished character illustration for a Qing palace family game. Subject: A Chinese newborn baby boy at one month of age, quietly awake with curious round eyes, wrapped completely in a sky-blue swaddle with ivory piping and little silver cloud embroidery, soft matching round infant cap. Small rounded infant cheeks and a natural expression. Style: meticulous traditional Qing court gongbi painting with fine graceful ink contours, softly layered mineral pigments, warm ivory and silk fabric colors, restrained embroidered textile detail, softly modelled natural face. Harmonize with realistic yet delicately painted full-body Qing palace game character cutouts; not a cartoon, anime, glossy 3D render, or photograph. Composition: centered single complete subject on a vertical 3:4 portrait canvas, generous transparent margin around the whole figure; do not cut off cap, hands, sleeves, swaddle or shoes. Show the entire wrapped baby from head to the rounded end of the swaddle, infant proportions, no adult holding the baby. Transparent background, no scenery, no decorative frame, no other people, no label, no writing, no watermark. Modest clothing fully covers the body. This is a respectful nonsexual family-game portrait. Deliver a real finished character painting, never a placeholder or a symbol.",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_infant_02-mobile.webp",
+          "bytes": 52628,
+          "sha256": "80b892f2f12fe3e607a29b4847e876d5e7ad4e76c650ccaab51173b9b4764846",
+          "dimensions": [
+            480,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_infant_02-thumb.webp",
+          "bytes": 22222,
+          "sha256": "5977c159a9ca6d2c98e36046d16c785550db218ee97356fc9446473e80184dac",
+          "dimensions": [
+            150,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k_infant_03",
+      "stage": "infant",
+      "sex": "男",
+      "source": "assets/kid_infant_03.png",
+      "nativeDimensions": [
+        1086,
+        1448
+      ],
+      "sourceSha256": "d92131f21ca694f1dd07836183cb71214a1aad2d5938c7042f891828ad247e4e",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "Use case: historical-scene. Asset: ONE finished character illustration for a Qing palace family game. Subject: A Chinese newborn baby boy sleeping with his face turned gently to the side, completely wrapped in a muted vermilion-red swaddle with small gold circular flower embroidery, cream inner cloth, a very simple soft red infant cap. Peaceful natural infant face. Style: meticulous traditional Qing court gongbi painting with fine graceful ink contours, softly layered mineral pigments, warm ivory and silk fabric colors, restrained embroidered textile detail, softly modelled natural face. Harmonize with realistic yet delicately painted full-body Qing palace game character cutouts; not a cartoon, anime, glossy 3D render, or photograph. Composition: centered single complete subject on a vertical 3:4 portrait canvas, generous transparent margin around the whole figure; do not cut off cap, hands, sleeves, swaddle or shoes. Show the entire wrapped baby from head to the rounded end of the swaddle, infant proportions, no adult holding the baby. Transparent background, no scenery, no decorative frame, no other people, no label, no writing, no watermark. Modest clothing fully covers the body. This is a respectful nonsexual family-game portrait. Deliver a real finished character painting, never a placeholder or a symbol.",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_infant_03-mobile.webp",
+          "bytes": 59694,
+          "sha256": "f4551cff5d34aef73ec3f01e79c9daaab0ba1b74115a101b98b3198b336999f1",
+          "dimensions": [
+            480,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_infant_03-thumb.webp",
+          "bytes": 26084,
+          "sha256": "cb34f792beb8ea32447d04db77440b81ea37f609384f756522944f82bd56f455",
+          "dimensions": [
+            150,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k_infant_04",
+      "stage": "infant",
+      "sex": "女",
+      "source": "assets/kid_infant_04.png",
+      "nativeDimensions": [
+        1086,
+        1448
+      ],
+      "sourceSha256": "a9c5a9f45c922982321b232df218681854c70799d4f041b9329729bb9d84d2d6",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "Use case: historical-scene. Asset: ONE finished character illustration for a Qing palace family game. Subject: A Chinese newborn baby girl at one month of age, peacefully awake, completely wrapped in a pale bean-green swaddle with subtle peach blossom embroidery, matching soft embroidered infant bonnet, ivory edging. Natural chubby infant cheeks, no makeup. Style: meticulous traditional Qing court gongbi painting with fine graceful ink contours, softly layered mineral pigments, warm ivory and silk fabric colors, restrained embroidered textile detail, softly modelled natural face. Harmonize with realistic yet delicately painted full-body Qing palace game character cutouts; not a cartoon, anime, glossy 3D render, or photograph. Composition: centered single complete subject on a vertical 3:4 portrait canvas, generous transparent margin around the whole figure; do not cut off cap, hands, sleeves, swaddle or shoes. Show the entire wrapped baby from head to the rounded end of the swaddle, infant proportions, no adult holding the baby. Transparent background, no scenery, no decorative frame, no other people, no label, no writing, no watermark. Modest clothing fully covers the body. This is a respectful nonsexual family-game portrait. Deliver a real finished character painting, never a placeholder or a symbol.",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_infant_04-mobile.webp",
+          "bytes": 62324,
+          "sha256": "db501afadffe9bcbd44ff1a8d5bb5233ed0cc483fd6387250db7fcf785360ceb",
+          "dimensions": [
+            480,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_infant_04-thumb.webp",
+          "bytes": 25948,
+          "sha256": "5b416b6ff71621ecfeaef77d68fd7fab324eafc8712e730890855483b1c95843",
+          "dimensions": [
+            150,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k_infant_05",
+      "stage": "infant",
+      "sex": "女",
+      "source": "assets/kid_infant_05.png",
+      "nativeDimensions": [
+        1086,
+        1448
+      ],
+      "sourceSha256": "88a98facf98c30081d2ee16126ec6f9db74b29f6370173c5321a3150b97cc5b1",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "Use case: historical-scene. Asset: ONE finished character illustration for a Qing palace family game. Subject: A Chinese newborn baby girl sleeping, completely wrapped in a dusty lotus-pink swaddle with moon-white borders and delicate small white blossoms, a plain soft cream infant bonnet. Small natural infant features, no makeup or ornate jewelry. Style: meticulous traditional Qing court gongbi painting with fine graceful ink contours, softly layered mineral pigments, warm ivory and silk fabric colors, restrained embroidered textile detail, softly modelled natural face. Harmonize with realistic yet delicately painted full-body Qing palace game character cutouts; not a cartoon, anime, glossy 3D render, or photograph. Composition: centered single complete subject on a vertical 3:4 portrait canvas, generous transparent margin around the whole figure; do not cut off cap, hands, sleeves, swaddle or shoes. Show the entire wrapped baby from head to the rounded end of the swaddle, infant proportions, no adult holding the baby. Transparent background, no scenery, no decorative frame, no other people, no label, no writing, no watermark. Modest clothing fully covers the body. This is a respectful nonsexual family-game portrait. Deliver a real finished character painting, never a placeholder or a symbol.",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_infant_05-mobile.webp",
+          "bytes": 49130,
+          "sha256": "fe107ca507dfec94ee05944ab705b7ef124434f2db8083cd8dd3a60c5772ec70",
+          "dimensions": [
+            480,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_infant_05-thumb.webp",
+          "bytes": 22028,
+          "sha256": "ac4d92193fd2d36a7a16951382906d1d47a72894345b377d2850e07561d4b5d2",
+          "dimensions": [
+            150,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k_infant_06",
+      "stage": "infant",
+      "sex": "女",
+      "source": "assets/kid_infant_06.png",
+      "nativeDimensions": [
+        1086,
+        1448
+      ],
+      "sourceSha256": "2d6fd79097b7b5b3917704c6ede61114c6ec4bec379d3c11694cb026f4f64fa0",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "Use case: historical-scene. Asset: ONE finished character illustration for a Qing palace family game. Subject: A Chinese newborn baby girl at one month of age, a tiny peaceful smile with open eyes, completely wrapped in a soft goose-yellow swaddle embroidered with small auspicious flowers, cream soft cap and pale green tie. Tiny natural infant proportions and no makeup. Style: meticulous traditional Qing court gongbi painting with fine graceful ink contours, softly layered mineral pigments, warm ivory and silk fabric colors, restrained embroidered textile detail, softly modelled natural face. Harmonize with realistic yet delicately painted full-body Qing palace game character cutouts; not a cartoon, anime, glossy 3D render, or photograph. Composition: centered single complete subject on a vertical 3:4 portrait canvas, generous transparent margin around the whole figure; do not cut off cap, hands, sleeves, swaddle or shoes. Show the entire wrapped baby from head to the rounded end of the swaddle, infant proportions, no adult holding the baby. Transparent background, no scenery, no decorative frame, no other people, no label, no writing, no watermark. Modest clothing fully covers the body. This is a respectful nonsexual family-game portrait. Deliver a real finished character painting, never a placeholder or a symbol.",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_infant_06-mobile.webp",
+          "bytes": 62286,
+          "sha256": "c1dbb6a9cc57b061c2a78d1f63a665dff4ea85fd27cb69fd919f54760f9736f2",
+          "dimensions": [
+            480,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_infant_06-thumb.webp",
+          "bytes": 27590,
+          "sha256": "bf45692d88b58886274229c1ef8089523aea8f779c4d0a3719bf362c8d7d5929",
+          "dimensions": [
+            150,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k_youth_01",
+      "stage": "youth",
+      "sex": "男",
+      "source": "assets/kid_youth_01.png",
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "sourceSha256": "fc05d043dfce5f361b02b84c9d5d3a5b29c2c42b5124e1640cacd3abed351153",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "儿童历史绘本角色立绘。十岁清代小皇子，青色长袍、布鞋、素色圆帽和发辫，站着双手捧书认真阅读。人物是自然的十岁儿童，圆润童颜，朴素、端庄的日常衣着。清宫工笔绘画，精细柔和的线描，暖色绢本的柔雅色调，丝绸衣料细小暗纹，细腻而自然的人物面部。与清宫文字游戏中的工笔人物立绘风格统一。单人完整全身，从头饰到鞋子均完整，画面居中，四周留透明空白。透明背景，不画文字、不加边框、不加水印。只画人物及其读书或学习所用的小物件。",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_youth_01-mobile.webp",
+          "bytes": 54130,
+          "sha256": "e7d1e54c1d035e885436e1afa8045af16407c71f929219a056963005ce9cae4e",
+          "dimensions": [
+            427,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_youth_01-thumb.webp",
+          "bytes": 19966,
+          "sha256": "4dd9ab1d018eac5c85144973bbc9479d258454167788d9663aed7e34a7066b7d",
+          "dimensions": [
+            134,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k_youth_02",
+      "stage": "youth",
+      "sex": "男",
+      "source": "assets/kid_youth_02.png",
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "sourceSha256": "7c82dfcfcfa0e4302a9b67cec7989a88b68fee0a03632e54e0d1ac3a39ee553c",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "儿童历史绘本角色立绘。十岁清代小皇子，靛蓝色宽松骑射练习长衣、长裤和靴子，素色圆帽和发辫，站姿，一手扶着未上弦的小练习弓，没有箭，神情专注。人物是自然的十岁儿童，圆润童颜，朴素、端庄的日常衣着。清宫工笔绘画，精细柔和的线描，暖色绢本的柔雅色调，丝绸衣料细小暗纹，细腻而自然的人物面部。与清宫文字游戏中的工笔人物立绘风格统一。单人完整全身，从头饰到鞋子均完整，画面居中，四周留透明空白。透明背景，不画文字、不加边框、不加水印。只画人物及其读书或学习所用的小物件。",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_youth_02-mobile.webp",
+          "bytes": 51796,
+          "sha256": "6ae22955c461f7392c4bbae78b4c82eb636badba66b80cd4f37659769769af46",
+          "dimensions": [
+            427,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_youth_02-thumb.webp",
+          "bytes": 19680,
+          "sha256": "bb43a7405b0ef7aead630377f0783e447e479d4a2083cc0f8fa5ccb137da72a6",
+          "dimensions": [
+            134,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k_youth_03",
+      "stage": "youth",
+      "sex": "男",
+      "source": "assets/kid_youth_03.png",
+      "nativeDimensions": [
+        1086,
+        1448
+      ],
+      "sourceSha256": "51ec82ea9ddfc4d83b0f90864fc9809d7535c81b9c9bdea0500fa20dc24487ef",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "Use case: historical-scene. Asset: ONE finished character illustration for a Qing palace family game. Subject: A Chinese Qing prince, clearly a TEN-YEAR-OLD BOY with round child cheeks, wearing a loose bamboo-green long everyday robe over trousers and black cloth shoes, simple Manchu child hairstyle and plain soft cap. He stands holding a small writing board and a calligraphy brush, as if practicing a character, thoughtful calm expression. No readable lettering on the board. Full body including shoes, no adult features. Style: meticulous traditional Qing court gongbi painting with fine graceful ink contours, softly layered mineral pigments, warm ivory and silk fabric colors, restrained embroidered textile detail, softly modelled natural face. Harmonize with realistic yet delicately painted full-body Qing palace game character cutouts; not a cartoon, anime, glossy 3D render, or photograph. Composition: centered single complete subject on a vertical 3:4 portrait canvas, generous transparent margin around the whole figure; do not cut off cap, hands, sleeves, swaddle or shoes. Keep the child obviously age ten, age-appropriate everyday clothes and posture, no exaggerated adult hairstyle or formal imperial crown. Transparent background, no scenery, no decorative frame, no other people, no label, no writing, no watermark. Modest clothing fully covers the body. This is a respectful nonsexual family-game portrait. Deliver a real finished character painting, never a placeholder or a symbol.",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_youth_03-mobile.webp",
+          "bytes": 41842,
+          "sha256": "ac0d6150f3dd803a29a9591336aa17faee4eb773f76a6bc8e7099bb4df5a2d7c",
+          "dimensions": [
+            480,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_youth_03-thumb.webp",
+          "bytes": 17190,
+          "sha256": "4d4eea6798a04cc66846fce45ff04e7bfcab7948881209d8ac50c151233f5cd5",
+          "dimensions": [
+            150,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k_youth_04",
+      "stage": "youth",
+      "sex": "男",
+      "source": "assets/kid_youth_04.png",
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "sourceSha256": "9987aae15ae629b4733bfcd3954a0d1855c3e2f33ad7b20b1bca571fca693ce2",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "儿童历史绘本角色立绘。十岁清代小皇子，月白长袍、浅蓝衣缘、布鞋和素色圆帽，手托放着黑白棋子的木盘，另一只手拿一颗白子思考。人物是自然的十岁儿童，圆润童颜，朴素、端庄的日常衣着。清宫工笔绘画，精细柔和的线描，暖色绢本的柔雅色调，丝绸衣料细小暗纹，细腻而自然的人物面部。与清宫文字游戏中的工笔人物立绘风格统一。单人完整全身，从头饰到鞋子均完整，画面居中，四周留透明空白。透明背景，不画文字、不加边框、不加水印。只画人物及其读书或学习所用的小物件。",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_youth_04-mobile.webp",
+          "bytes": 46976,
+          "sha256": "2578c36451a583533e7455f63089e9384d5bcf94a8082c4a781aa614c8c4e4cd",
+          "dimensions": [
+            427,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_youth_04-thumb.webp",
+          "bytes": 18588,
+          "sha256": "6e3f4fcd0bf8baadb8337f684e168f7f80cae17db4c5df227723b54dd20d2698",
+          "dimensions": [
+            134,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k_youth_05",
+      "stage": "youth",
+      "sex": "女",
+      "source": "assets/kid_youth_05.png",
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "sourceSha256": "227f1ce9bd6280c5e17e3652ce7c20ddb0c15a6a4b4aad09c87545abcef965c4",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "儿童历史绘本角色立绘。十岁清代小公主，浅杏色宽松长衣、长裙、平底绣鞋，小发髻和朴素发辫，站着双手捧一本线装书认真阅读。人物是自然的十岁儿童，圆润童颜，朴素、端庄的日常衣着。清宫工笔绘画，精细柔和的线描，暖色绢本的柔雅色调，丝绸衣料细小暗纹，细腻而自然的人物面部。与清宫文字游戏中的工笔人物立绘风格统一。单人完整全身，从头饰到鞋子均完整，画面居中，四周留透明空白。透明背景，不画文字、不加边框、不加水印。只画人物及其读书或学习所用的小物件。",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_youth_05-mobile.webp",
+          "bytes": 52926,
+          "sha256": "9250db98031df6e7a744ee4375219911961f2cd1a426d3a9f4d19b499bf5e0bf",
+          "dimensions": [
+            427,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_youth_05-thumb.webp",
+          "bytes": 20146,
+          "sha256": "5904835984cfdb7a52b5d0f9cd8242034a59fd8428f747dda8c447171a553c85",
+          "dimensions": [
+            134,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k_youth_06",
+      "stage": "youth",
+      "sex": "女",
+      "source": "assets/kid_youth_06.png",
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "sourceSha256": "69e28357f3cc0a1ca8505f7bd7cf9ebad837b6210826ba9de6edc0d246b0c885",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "儿童历史绘本角色立绘。十岁清代小公主，淡青色宽松长衣、长裙、平底绣鞋，朴素儿童发辫和小丝带，端坐小木凳，双手在低木案的古琴上习曲，包含完整琴案和鞋子。人物是自然的十岁儿童，圆润童颜，朴素、端庄的日常衣着。清宫工笔绘画，精细柔和的线描，暖色绢本的柔雅色调，丝绸衣料细小暗纹，细腻而自然的人物面部。与清宫文字游戏中的工笔人物立绘风格统一。单人完整全身，从头饰到鞋子均完整，画面居中，四周留透明空白。透明背景，不画文字、不加边框、不加水印。只画人物及其读书或学习所用的小物件。",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_youth_06-mobile.webp",
+          "bytes": 73934,
+          "sha256": "5e4103de6988fb26cc68859c40798c203a4015a3c38d67ae4e9dbd679e102b47",
+          "dimensions": [
+            427,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_youth_06-thumb.webp",
+          "bytes": 26114,
+          "sha256": "4f40ac81d9e81ca1b904389fe41105d13e9faa0f3e8d37aedb64d26e67cfb89f",
+          "dimensions": [
+            134,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k_youth_07",
+      "stage": "youth",
+      "sex": "女",
+      "source": "assets/kid_youth_07.png",
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "sourceSha256": "799ee976451e37514ca9353cf5f319927832496db31afa5bf27b6c363a490357",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "儿童历史绘本角色立绘。十岁清代小公主，藕荷色宽松长款骑装、长裤、小靴，朴素的练习发辫，一手扶着未上弦的小练习弓，没有箭，站姿，神情专注。人物是自然的十岁儿童，圆润童颜，朴素、端庄的日常衣着。清宫工笔绘画，精细柔和的线描，暖色绢本的柔雅色调，丝绸衣料细小暗纹，细腻而自然的人物面部。与清宫文字游戏中的工笔人物立绘风格统一。单人完整全身，从头饰到鞋子均完整，画面居中，四周留透明空白。透明背景，不画文字、不加边框、不加水印。只画人物及其读书或学习所用的小物件。",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_youth_07-mobile.webp",
+          "bytes": 61468,
+          "sha256": "50d1330a581c34aca35f617694f26daaa6814e562a9f51f4833fafc44a4d25c9",
+          "dimensions": [
+            427,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_youth_07-thumb.webp",
+          "bytes": 21308,
+          "sha256": "1cae4d19f64519cf357820eb3efd32e7b71225158342cc4ffac0476406ba46d2",
+          "dimensions": [
+            134,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k_youth_08",
+      "stage": "youth",
+      "sex": "女",
+      "source": "assets/kid_youth_08.png",
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "sourceSha256": "45e747e59f6c5c6c19cb2f02ca876917cae5265c732e5a17e7df5246c407185e",
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "prompt": "儿童历史绘本角色立绘。十岁清代小公主，湖绿色宽松长衣、长裙、平底绣鞋，朴素儿童发髻和发辫，站着拿小画板与毛笔，画板上是一枝梅花，安静地习画。人物是自然的十岁儿童，圆润童颜，朴素、端庄的日常衣着。清宫工笔绘画，精细柔和的线描，暖色绢本的柔雅色调，丝绸衣料细小暗纹，细腻而自然的人物面部。与清宫文字游戏中的工笔人物立绘风格统一。单人完整全身，从头饰到鞋子均完整，画面居中，四周留透明空白。透明背景，不画文字、不加边框、不加水印。只画人物及其读书或学习所用的小物件。",
+      "exports": [
+        {
+          "role": "mobile",
+          "path": "assets/exports/s11-v1/kid_youth_08-mobile.webp",
+          "bytes": 58928,
+          "sha256": "e8363cc9621676f486dd99d52e2c5571296a517dd41036628deb567e44d54611",
+          "dimensions": [
+            427,
+            640
+          ]
+        },
+        {
+          "role": "thumb",
+          "path": "assets/exports/s11-v1/kid_youth_08-thumb.webp",
+          "bytes": 22294,
+          "sha256": "170fe0c6baf88458f093a48cb572db57aad6acc7f541d04daf66a3b04b995b9c",
+          "dimensions": [
+            134,
+            200
+          ]
+        }
+      ]
+    }
+  ]
+}

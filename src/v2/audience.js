@@ -8,8 +8,9 @@ export function setTenderness(on,storage=globalThis.localStorage){if(!audienceOf
 export const KIN=new Set(['C05','C21','C24','C25','C26','C42','C43']);
 // 能写亲密的人：恋爱主线、后宫妃嫔、南风馆两位。宗室兄弟、太后、大臣、其余太监宫女一律不在内
 export const INTIMATE=new Set(['C02','C03','C04','C06','C07','C08','C09','C10','N01','N02']);
-export const intimateEligible=id=>!KIN.has(id)&&(INTIMATE.has(id)||SECONDARIES[id]?.category==='妃嫔');
-export const canBeTender=(s,id)=>!!s.people[id]&&PEOPLE[id]?.adult===true&&intimateEligible(id)&&!s.people[id].knot&&s.people[id].aff>=65;
+export const isChildId=id=>/^K\d+$/.test(String(id));
+export const intimateEligible=id=>!isChildId(id)&&!KIN.has(id)&&(INTIMATE.has(id)||SECONDARIES[id]?.category==='妃嫔');
+export const canBeTender=(s,id)=>!!s.people[id]&&!(s.children||[]).some(c=>c.id===id)&&PEOPLE[id]?.adult===true&&intimateEligible(id)&&!s.people[id].knot&&s.people[id].aff>=65;
 export function tendernessGuide(s,id,kind,{letter=false,fate=null,storage=globalThis.localStorage}={}){
  if(!['night','private-chat','rest'].includes(kind)||letter||!audienceOf(storage).tenderness||!canBeTender(s,id)||(fate&&!fate.free&&fate.tier<=1))return '';
  return '\n成人描写：这是成人向作品，玩家已确认年满十八岁。两人私下亲密时，可以直白、具体地描写亲吻、爱抚、身体与性爱，不必用含蓄、省略或转场回避；按皇上的安排和两人的情分来写，着重人物的情绪、反应与回应，写出各自的性格。称呼与礼数照旧，情愿出于情分，不出于畏惧。硬性边界：两人都是成年人，不写稚气的外貌或言行；对方要有明确的意愿与回应，不写强迫、胁迫、药物、趁醉或性暴力；只写两人私下，不写旁人观看。';
