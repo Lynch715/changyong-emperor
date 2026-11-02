@@ -68,3 +68,22 @@ test('A5 所有静态及动态资源引用均存在，发布资源小于90MB且�
   const published = await readdir(path.join(root, '_site/assets/exports/s11-v1'));
   assert.ok(!published.some(name => /-full\.|\.jpg$/.test(name)));
 });
+
+test('A6 .nojekyll 无删除权限仍清理其他产物并允许覆盖；其他权限错误照常报错', async () => {
+  const {preparePages} = await import('../scripts/prepare-pages.mjs');
+  const removed = [];
+  let calls = 0, created = '';
+  await preparePages('/fixture/_site', {
+    rm: async file => {
+      if (++calls === 1) throw Object.assign(Error('locked'), {code: 'EPERM', path: file + '/.nojekyll'});
+      removed.push(file);
+    },
+    readdir: async () => ['.nojekyll', 'assets', 'stale.js'],
+    mkdir: async file => {created = file;},
+  });
+  assert.deepEqual(removed, ['/fixture/_site/assets', '/fixture/_site/stale.js']);
+  assert.equal(created, '/fixture/_site/src');
+  await assert.rejects(preparePages('/fixture', {
+    rm: async () => {throw Object.assign(Error('locked'), {code: 'EPERM', path: '/fixture/assets'});},
+  }), /locked/);
+});

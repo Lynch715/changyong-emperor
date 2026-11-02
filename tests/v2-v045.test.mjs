@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {filterChildSentences, childPlanAllowed} from '../src/v2/plans.js';
 import * as E from '../src/v2/engine.js';
 
 // 经由真实读档入口恢复旧字段，并核对玩家的进度、钱和人物均保留。
@@ -80,4 +81,20 @@ test('A5 原图移出后旧档人物与孩子立绘编号继续保留', () => {
   assert.deepEqual(s.children, []);
   assert.equal(s.inventory[0].name, '旧藏');
   assert.equal(s.people.C02.aff, 30);
+});
+
+test('A6 临时脚本六例纳入皇嗣过滤回归，旧档孩子记录保留', () => {
+  const s = oldSave(s => {s.children = [{id: 'K01', name: '弘昀', sex: '男', born: '2-3'}];});
+  const allowed = [
+    '孩子睡了，甄嬛依偎在你肩头。',
+    '弘昀在隔间睡着。她与你云雨一番，情欲渐浓。',
+    '皇子就在屏风后。你为她宽衣。',
+    '你抱起弘昀亲了亲他的额头。',
+    '她拥抱着孩子，轻声哄睡。',
+  ];
+  for (const text of allowed) assert.equal(filterChildSentences(text, 'C09', s), text);
+  const forbidden = '弘昀长大后要做谁的恋人呢。';
+  assert.equal(filterChildSentences(forbidden, 'C09', s), '');
+  assert.equal(childPlanAllowed(forbidden, 'C09', s), false);
+  assert.equal(s.children[0].name, '弘昀');
 });
