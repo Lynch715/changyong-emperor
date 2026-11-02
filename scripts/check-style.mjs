@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 
 const root = path.resolve(import.meta.dirname, '..');
 const legacy = JSON.parse(readFileSync(path.join(root, 'scripts/legacy-style.json'), 'utf8')).files;
+// 只认逐字相同的旧长行，避免改动后的代码借用旧豁免。
 const digest = line => createHash('sha256').update(line).digest('hex');
 
 // 只豁免升级前逐字未改的旧长行，任何新行或改过的行都必须在160字符内。

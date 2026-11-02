@@ -6,6 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 export const SEEDS = [45000, 45097, 45194];
+// 模拟输出保留两位小数，游戏中的原始计算不受影响。
 const round = n => Math.round(n * 100) / 100;
 
 // 记录本轮实际办过的全部要事，节庆占比不把被跳过的可选卡算进去。

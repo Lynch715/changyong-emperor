@@ -600,6 +600,7 @@ function settingsView() {
   </main>${s ? nav() : ''}`;
 }
 
+// 密钥保存方式就近说明，读出的已存配置只用于填表。
 function apiConnectionForm() {
   const c = AI.savedConnection();
   return `<form class="card api" data-act="api"><b>使用自己的 API</b>
@@ -612,6 +613,7 @@ function apiConnectionForm() {
     <button ${busy ? 'disabled' : ''}>${busy ? '正在测试……' : '测试并启用'}</button></form>`;
 }
 
+// 设置页列出原有三档自由度及当前选择。
 function freedomSettings() {
   const levels = [1, 2, 3].map(l => `<button data-act="freedom" data-l="${l}" class="${E.freedomOf(s) === l ? 'on' : ''}">
     <b>${l} 档 · ${FREEDOM[l].name}</b><span>${FREEDOM[l].desc}</span></button>`).join('');
