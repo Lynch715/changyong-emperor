@@ -15,8 +15,7 @@ import {PLACES,NANFENG_FIRST,MINOR_STORIES,DESTINATIONS,SUMMON_ROLES} from './ou
 import {silver,treasuryIndex,initEconomy,emptyLedger,funds} from './economy.js';
 export {treasuryIndex} from './economy.js';
 // 新版引擎：一月一回合。月初处理要事，白天三个行动，夜里留一人，月末结算。
-import {SCENES as RAW,REPAIR} from './content.js';
-import {REWRITE} from './rewrite.js';
+import {SCENES,REPAIR} from './content.js';
 import {ROMANCE} from './romance.js';
 import {MORE_PETITIONS,SMALL_EVENTS} from './events.js';
 import {SCENES2,AGENDA2,CRISES2,REPAIR2} from './vol2.js';
@@ -39,8 +38,6 @@ export const ALL_CRISES=[...CRISES.map(c=>({vol:1,...c})),...CRISES2,...CRISES3]
 const ALL_REPAIR={...REPAIR,...REPAIR2,...REPAIR3};
 import {PEOPLE,CORE,START_STATS,STAT_MAP,STATS,AGENDA,CRISES,GIFTS,OUTINGS,PETITIONS,stageOf,SEASON,ECONOMY,CAST,PRIVATE_SCENES} from './data.js';
 
-// 用改写稿覆盖原稿的正文与选项文字
-const SCENES=Object.fromEntries(Object.entries(RAW).map(([id,sc])=>{const w=REWRITE[id];if(!w)return [id,sc];return [id,{...sc,title:w.title||sc.title,body:w.body||sc.body,dep:w.dep,options:sc.options.map(o=>({...o,...(w.options?.[o.id]||{})}))}];}));
 export const SAVE_KEY='changyong-v2-save';
 export const AP_PER_MONTH=3;
 const clamp=(n,a=0,b=100)=>Math.max(a,Math.min(b,Math.round(n)));

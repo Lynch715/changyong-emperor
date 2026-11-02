@@ -550,3 +550,23 @@ test('E2 两个存档交替读取动态场景不串档，旧存档load仍保留�
   assert.equal(reloaded.done.kept, 'old-choice');
   assert.equal(E.scene('M01').title, E.scene(first, 'M01').title, '一版静态兼容入口保留');
 });
+
+test('E3 合并后全部正文与选项逐字保持，旧档已选分支与动态原文仍可重读', async () => {
+  const {createHash} = await import('node:crypto');
+  const {readFile} = await import('node:fs/promises');
+  const {SCENES, REPAIR} = await import('../src/v2/content.js');
+  const snapshot = JSON.parse(await readFile(new URL('./fixtures/v045-scenes.json', import.meta.url), 'utf8'));
+  const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+  assert.deepEqual(Object.keys(SCENES), Object.keys(snapshot.scenes));
+  for (const [id, sc] of Object.entries(SCENES)) assert.equal(digest(sc), snapshot.scenes[id], id);
+  assert.equal(digest(REPAIR), snapshot.repair);
+  const s = oldSave(s => {
+    s.done.M01 = 'call';
+    s.done['R02-01'] = 'tea';
+    s.dyn = {oldStory: {id: 'oldStory', body: '旧档保存的原句', options: []}};
+  });
+  assert.equal(E.scene(s, 'M01').options.find(o => o.id === s.done.M01).reply,
+    SCENES.M01.options.find(o => o.id === 'call').reply);
+  assert.equal(E.scene(s, 'R02-01').title, '留茶夜谈');
+  assert.equal(E.scene(s, 'oldStory').body, '旧档保存的原句');
+});

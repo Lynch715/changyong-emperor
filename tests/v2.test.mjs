@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as E from '../src/v2/engine.js';
 import {PEOPLE,AGENDA,CORE,STAT_MAP,STATS,ECONOMY} from '../src/v2/data.js';
-import {REWRITE} from '../src/v2/rewrite.js';
 import {SCENES} from '../src/v2/content.js';
 
 test('月历里的每一幕都存在，选项数值都能换算', () => {
@@ -20,8 +19,12 @@ test('月历里的每一幕都存在，选项数值都能换算', () => {
     assert.ok(E.scene(null, PEOPLE[id].second), id);
   }
 });
-test('改写稿只覆盖已有的场景与选项', ()=>{
- for(const[id,w]of Object.entries(REWRITE)){assert.ok(SCENES[id],id);for(const k of Object.keys(w.options||{}))assert.ok(SCENES[id].options.some(o=>o.id===k),id+' '+k);}
+test('每幕只有一份正文，编号与选项编号完整且不重复', () => {
+  for (const [id, sc] of Object.entries(SCENES)) {
+    assert.equal(sc.id, id);
+    assert.ok(sc.body);
+    assert.equal(new Set(sc.options.map(o => o.id)).size, sc.options.length, id);
+  }
 });
 test('两年能完整走完，有结局', () => {
   const s = E.newGame(7);
