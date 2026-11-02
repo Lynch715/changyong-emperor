@@ -17,7 +17,7 @@ import * as AI from './ai.js';
 import {LOVER_ENDING} from './romance.js';
 import {ENDING_KINGDOM2,ENDING2} from './vol2.js';
 import {ENDING_KINGDOM3,ENDING3} from './vol3.js';
-import {ACHIEVEMENTS,loadGallery,updateGallery} from './gallery.js';
+import {ACHIEVEMENTS,loadGallery,updateGallery,takeAchievement} from './gallery.js';
 import {rivalsOf,friendsOf} from './social.js';
 import {BIRTH,BIRTH_LINES} from './festivals.js';
 import {FREEDOM,fateText} from './fate.js';
@@ -29,6 +29,7 @@ const app=document.getElementById('app');
 let s=null;            // 存档
 let view={name:'title'};
 let busy=false;
+let activeAchievement = null;
 const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const paras=t=>String(t||'').split(/\n{1,}/).filter(Boolean).map(p=>`<p>${esc(p)}</p>`).join('');
 const statValue=(k,n)=>['treasury','inner'].includes(k)?moneyText(n):n;
@@ -486,22 +487,83 @@ function replayView(){
   <button class="primary" data-act="go" data-to="gallery">合上</button></article></div>`;
 }
 const STAGE_LINE={相识:'开始记得你了。',相知:'愿意跟你说心里话了。',倾心:'动心了。',相守:'这一世，不会再错过了。'};
-function celebration(){
- const c=s?.cele?.[0];if(!c)return '';
- let img='',big='',small='',cls='';
- if(c.k==='birth'){const child=F.childById(s,c.child);if(!child)return '';img=KID_ART[child.art[F.childStage(s,child)]]?.mobile||'';big=`宫中添喜 · ${esc(child.name)}`;small=`${esc(nm(child.mother))}诞下${child.sex==='男'?'皇子':'公主'}，已记入起居注。`;cls='gold';}
- else if(c.k==='stage'){img=PEOPLE[c.id].secondary?'':portrait(c.id);big=`${PEOPLE[c.id].name} · ${c.stage}`;small=(PEOPLE[c.id].secondary?'愿意把心里话告诉你了。':STAGE_LINE[c.stage]||'')+(E.hasStory(s,c.id)?`<br><span>今夜去找${PEOPLE[c.id].name}，会有新的剧情。</span>`:['相知','倾心'].includes(c.stage)?`<br><span>等名字旁出现「有话想说」，夜里去找${PEOPLE[c.id].name}。</span>`:'');cls='stage-up';}
- else if(c.k==='lover'){img=PEOPLE[c.id].secondary?'':portrait(c.id);big=c.id==='C05'?'知己':'两情相悦';small=c.id==='C05'?'这一世，你多了一个知己。':`你和${PEOPLE[c.id].name}，说破了心意。`;cls='lover';}
- else if(c.k==='fifth'){img=PEOPLE[c.id].secondary?'':portrait(c.id);big=`${PEOPLE[c.id].name} · 第五幕`;small='这一段，你们一起走完了。';cls='lover';}
- else if(c.k==='knot'){img=PEOPLE[c.id].secondary?'':portrait(c.id);big='心结解开了';small=`${PEOPLE[c.id].name}的情分又能涨了。`;}
- else if(c.k==='crisis'){big='要务了结';small=c.name;cls='gold';}
- else if(c.k==='crisisFail'){big='要务没办好';small=`${c.name}。不要紧，路还长。`;cls='sad';}
- else if(c.k==='ach'){big=`${c.a.icon}`;small=`成就解锁 · ${c.a.title}<br><span>${esc(c.a.desc)}</span>`;cls='ach-pop';}
- return `<div class="cele ${cls}" data-act="cele">${img?`<img src="${img}" alt="">`:''}<div class="cele-box"><b>${big}</b><p>${small}</p><small>点一下继续</small></div></div>`;
+// 当前页保留正在看的成就，存档中的待弹队列已经在显示时扣除。
+function celebration() {
+  if (activeAchievement?.save !== s) activeAchievement = null;
+  let event = activeAchievement?.event || s?.cele?.[0];
+  if (!event) return '';
+  if (event.k === 'ach' && !activeAchievement) {
+    event = takeAchievement(s, E.save);
+    activeAchievement = {save: s, event};
+  }
+  let img = '', big = '', small = '', cls = '';
+  if (event.k === 'birth') {
+    const child = F.childById(s, event.child);
+    if (!child) return '';
+    img = KID_ART[child.art[F.childStage(s, child)]]?.mobile || '';
+    big = `宫中添喜 · ${esc(child.name)}`;
+    small = `${esc(nm(child.mother))}诞下${child.sex === '男' ? '皇子' : '公主'}，已记入起居注。`;
+    cls = 'gold';
+  } else if (event.k === 'stage') {
+    const person = PEOPLE[event.id];
+    img = person.secondary ? '' : portrait(event.id);
+    big = `${person.name} · ${event.stage}`;
+    small = person.secondary ? '愿意把心里话告诉你了。' : STAGE_LINE[event.stage] || '';
+    if (E.hasStory(s, event.id)) small += `<br><span>今夜去找${person.name}，会有新的剧情。</span>`;
+    else if (['相知', '倾心'].includes(event.stage)) {
+      small += `<br><span>等名字旁出现「有话想说」，夜里去找${person.name}。</span>`;
+    }
+    cls = 'stage-up';
+  } else if (event.k === 'lover') {
+    img = PEOPLE[event.id].secondary ? '' : portrait(event.id);
+    big = event.id === 'C05' ? '知己' : '两情相悦';
+    small = event.id === 'C05' ? '这一世，你多了一个知己。' : `你和${PEOPLE[event.id].name}，说破了心意。`;
+    cls = 'lover';
+  } else if (event.k === 'fifth') {
+    img = PEOPLE[event.id].secondary ? '' : portrait(event.id);
+    big = `${PEOPLE[event.id].name} · 第五幕`;
+    small = '这一段，你们一起走完了。';
+    cls = 'lover';
+  } else if (event.k === 'knot') {
+    img = PEOPLE[event.id].secondary ? '' : portrait(event.id);
+    big = '心结解开了';
+    small = `${PEOPLE[event.id].name}的情分又能涨了。`;
+  } else if (event.k === 'crisis') {
+    big = '要务了结';
+    small = event.name;
+    cls = 'gold';
+  } else if (event.k === 'crisisFail') {
+    big = '要务没办好';
+    small = `${event.name}。不要紧，路还长。`;
+    cls = 'sad';
+  } else if (event.k === 'ach') {
+    big = `${event.a.icon}`;
+    small = `成就解锁 · ${event.a.title}<br><span>${esc(event.a.desc)}</span>`;
+    cls = 'ach-pop';
+  }
+  return `<div class="cele ${cls}" data-act="cele">${img ? `<img src="${img}" alt="">` : ''}
+    <div class="cele-box"><b>${big}</b><p>${small}</p><small>点一下继续</small></div></div>`;
 }
 const VIEWS={finance:financeView,secrets:secretsView,assessment:assessmentView,provinces:provincesView,memorials:memorialView,rest:restView,outings:outingsView,nanfeng:nanfengView,rebirth:rebirthView,gallery:galleryView,replay:replayView,title:titleView,home,scene:sceneView,pick:()=>pickPerson(view.kind),chat:chatView,gift:giftView,edict:edictView,result:resultView,night:nightView,summary:summaryView,ending:endingView,people:peopleView,log:logView,settings:settingsView};
 let lastVibration=null;
-function render(){if(!audienceOf().confirmed){app.innerHTML=ageView();return;}const c=s?.cele?.[0];if(c!==lastVibration){lastVibration=c;if(c&&['stage','lover'].includes(c.k)){try{globalThis.navigator?.vibrate?.(30);}catch{}}}app.innerHTML=(s?.pendingBirth||s?.familyArt?familyWizard():(VIEWS[view.name]||home)())+(!s?.pendingBirth&&!s?.familyArt&&['home','summary','people','gallery','ending'].includes(view.name)&&!busy?celebration():'');const m=document.getElementById('msgs');if(m)m.scrollTop=m.scrollHeight;if(view.name==='chat'&&!busy)app.querySelector('.say input')?.focus();}
+// 先收取已显示的成就再画页面，刷新时就不会重新弹出。
+function render() {
+  if (!audienceOf().confirmed) {app.innerHTML = ageView(); return;}
+  const family = s?.pendingBirth || s?.familyArt;
+  const showCelebration = !family && ['home', 'summary', 'people', 'gallery', 'ending'].includes(view.name) && !busy;
+  const overlay = showCelebration ? celebration() : '';
+  const event = activeAchievement?.save === s ? activeAchievement.event : s?.cele?.[0];
+  if (event !== lastVibration) {
+    lastVibration = event;
+    if (event && ['stage', 'lover'].includes(event.k)) {
+      try {globalThis.navigator?.vibrate?.(30);} catch {}
+    }
+  }
+  app.innerHTML = (family ? familyWizard() : (VIEWS[view.name] || home)()) + overlay;
+  const messages = document.getElementById('msgs');
+  if (messages) messages.scrollTop = messages.scrollHeight;
+  if (view.name === 'chat' && !busy) app.querySelector('.say input')?.focus();
+}
 function go(v){view=v;render();window.scrollTo(0,0);}
 
 // ---------- 动作 ----------
@@ -599,7 +661,12 @@ const ACTS={
  travel:el=>{try{const r=E.goOuting(s,el.dataset.id);save();go({name:'result',result:{...r,bg:placeBackground(el.dataset.id,s.month)}});}catch(e){toast(e.message);}},
  company:el=>{try{const r=E.nanfengCompany(s,el.dataset.id);save();go({name:'result',result:{...r,bg:placeBackground('nanfeng-interior',s.month)}});}catch(e){toast(e.message);}},
  visit:()=>{const r=E.acceptVisit(s);save();go({name:'result',result:{...r,bg:bgFor(E.placeOf(s,r.id))}});},
- cele:()=>{s.cele.shift();E.save(s);render();},
+ cele: () => {
+  if (activeAchievement?.save === s) activeAchievement = null;
+  else s.cele.shift();
+  E.save(s);
+  render();
+ },
  replay:el=>go({name:'replay',id:el.dataset.id}),
  rest:()=>go({name:'rest'}),
  'rest-default':()=>{const r=E.rest(s);save();go({name:'result',result:{...r,bg:BG.desk}});},

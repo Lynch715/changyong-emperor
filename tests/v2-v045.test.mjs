@@ -195,3 +195,28 @@ test('B4 旧档取消入夜不消耗时辰，不处理可选事项也可正常�
   assert.equal(s.month, 2);
   assert.equal(s.done['opening-relief'], undefined);
 });
+
+test('B5 旧档成就一显示便持久移除，刷新不重弹且其他庆贺仍保留', async () => {
+  const {takeAchievement, updateGallery, GALLERY_KEY} = await import('../src/v2/gallery.js');
+  const achievement = {id: 'tea', title: '一盏茶', icon: '茶', desc: '旧成就'};
+  const s = oldSave(s => {
+    s.done.M02 = 'tea';
+    s.cele = [
+      {k: 'ach', a: achievement}, {k: 'stage', id: 'C02', stage: '相知'}, {k: 'ach', a: achievement},
+    ];
+  });
+  const values = new Map();
+  const storage = {getItem: key => values.get(key) || null, setItem: (key, value) => values.set(key, value)};
+  const before = structuredClone(s);
+  let saves = 0;
+  const event = takeAchievement(s, state => {saves++; E.save(state, storage);}, storage);
+  assert.equal(event.a.id, 'tea');
+  assert.equal(saves, 1, '显示时即存档，无需等待点击关闭');
+  assert.deepEqual(s.cele, [{k: 'stage', id: 'C02', stage: '相知'}]);
+  const reloaded = E.load(storage);
+  assert.deepEqual(reloaded.cele, s.cele);
+  for (const key of ['stats', 'people', 'done', 'agenda', 'seed', 'ap']) assert.deepEqual(reloaded[key], before[key]);
+  assert.ok(JSON.parse(storage.getItem(GALLERY_KEY)).ach.tea);
+  assert.ok(!updateGallery(reloaded, storage).some(a => a.id === 'tea'), '旧队列带来的成就也不再次入队');
+  assert.equal(takeAchievement(reloaded, () => assert.fail('非成就不得提前收取'), storage), null);
+});

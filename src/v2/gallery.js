@@ -45,3 +45,16 @@ export function updateGallery(s,storage=globalThis.localStorage){
  try{storage.setItem(GALLERY_KEY,JSON.stringify(g));}catch{}
  return fresh;
 }
+
+// 成就开始显示就移出待弹队列并存档，同一旧成就的重复条目一起收掉。
+export function takeAchievement(s, persist, storage = globalThis.localStorage) {
+  const event = s.cele?.[0];
+  if (event?.k !== 'ach') return null;
+  s.cele = s.cele.filter(item => item.k !== 'ach' || item.a.id !== event.a.id);
+  const gallery = loadGallery(storage);
+  gallery.ach ??= {};
+  gallery.ach[event.a.id] ??= Date.now();
+  try {storage.setItem(GALLERY_KEY, JSON.stringify(gallery));} catch {}
+  persist(s);
+  return event;
+}
