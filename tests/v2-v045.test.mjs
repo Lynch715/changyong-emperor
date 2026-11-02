@@ -155,3 +155,19 @@ test('B1 旧正月待办不删改，已经过正月的旧档不补发可选旨�
   assert.throws(() => E.openingEdict(later), /过了/);
   assert.equal(JSON.stringify(later), before);
 });
+
+test('B2 旧档首页仅显示已知收支预估，查看不改账；元年未办过的零值项目隐藏', async () => {
+  const {budgetDisplay} = await import('../src/v2/presentation.js');
+  const s = oldSave();
+  const before = JSON.stringify(s), display = budgetDisplay(s);
+  assert.equal(display.income, s.ledger.treasury.in);
+  assert.equal(display.outgo, s.ledger.treasury.out);
+  assert.equal(display.expected, 844.75);
+  assert.equal(display.showProjects, false);
+  assert.equal(display.showPolicy, false);
+  assert.equal(JSON.stringify(s), before);
+  s.fiscal.projects.salt.pending = {level: 1, due: 2};
+  s.policies.huohao.active = true;
+  assert.equal(budgetDisplay(s).showProjects, true);
+  assert.equal(budgetDisplay(s).showPolicy, true);
+});

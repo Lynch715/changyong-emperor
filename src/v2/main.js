@@ -1,4 +1,5 @@
 import * as Fiscal from './fiscal.js';
+import {budgetDisplay} from './presentation.js';
 import * as F from './family.js';
 import {KID_ART} from './art.js';
 import {authorOf,POLICIES,policyHostValid} from './government.js';
@@ -78,7 +79,6 @@ function home() {
     <div class="guide"><span>${guide()}</span>${apPips()}</div>
     ${s.nanfeng?.visit && !s.nanfeng.visit.done ?
       '<button class="night-btn" data-act="go" data-to="nanfeng">回到南风馆，把这盏茶喝完 ›</button>' : ''}
-    ${birthdayCards()}${campaignCard()}${budgetCard()}${familyStatus()}${visitCard()}
     ${agendaCard(sc)}${openingCard()}${homeActions(sc)}
     <button class="night-btn ${!sc && (s.ap === 0 || s.night) ? 'glow' : ''}"
       data-act="night" ${sc ? 'disabled' : ''}>
@@ -89,7 +89,10 @@ function home() {
       ${people.map(id => personCard(id)).join('')}
       ${later ? `<div class="pc ghost"><b>还有 ${later} 人</b><span>会在往后的日子里出现</span></div>` : ''}
     </section>
-    ${courtOverview()}${crisisCards()}
+    ${budgetLine()}${birthdayCards()}${familyStatus()}${visitCard()}
+    <details class="court-details"><summary>朝局详情 ›</summary>
+      ${courtOverview()}${crisisCards()}${campaignCard()}
+    </details>
   </main>${nav()}`;
 }
 
@@ -253,7 +256,27 @@ const PRESET_EDICTS=[
 function policiesHtml(){return `<section class="policies"><h3>新政</h3><p>先在人物页任命地方官，再选试点和主持人。启动或改派用一个时辰、十二万两；每月六万两推进，离任或缺银则暂停；完成后每项每月一万两维持，按季改善地方。火耗试河南，摊丁试直隶，改流限云贵；名单为空时，先任命该地官员。</p>${Object.entries(POLICIES).map(([id,c])=>{const p=s.policies[id];return `<article class="crisis"><b>${c.name} · ${p.progress}/100</b><p>${c.desc}</p><p>${p.host?nm(p.host)+' · '+p.pilot:'尚未指定主持人'} · ${p.progress>=100?'推广完成':p.progress>=35?'推广中':'试点中'}</p>${p.progress<100?`<form data-act="policy" data-id="${id}"><label>试点与主持人<select name="host">${Object.keys(s.provinces).flatMap(province=>Object.keys(s.appointments).filter(host=>policyHostValid(s,id,host,province)).map(host=>`<option value="${host}|${province}">${esc(province)} · ${nm(host)}</option>`)).join('')}</select></label><button ${!E.canAct(s)?'disabled':''}>${p.active?'改派主持人':'下旨推行'}</button></form>`:''}</article>`;}).join('')}</section>`;}
 function secretsView(){return `${header()}<main class="government"><button data-act="go" data-to="home">‹ 返回</button><h2>密折 · 御览</h2><p>此处情报尚待核实。留存与训示不占时辰，查办两个月后回报。</p>${s.secrets.map(m=>`<article class="crisis"><h3>${nm(m.author)} · ${esc(m.province)}</h3>${paras(m.body)}${m.done?`<p>已${{keep:'留存',warn:'朱批训示',investigate:'交查'}[m.done]}</p>`:[['keep','留存'],['warn','朱批训示'],['investigate','据此查办']].map(([choice,label])=>`<button data-act="secret" data-id="${m.uid}" data-choice="${choice}">${label}</button>`).join('')}</article>`).join('')||'<p>尚无密折。</p>'}</main>`;}
 function assessmentView(){return `${header()}<main class="government"><button data-act="go" data-to="home">‹ 返回</button><h2>腊月 · 京察大计</h2><p>京官京察、外官大计，在游戏中统一为每年腊月考绩。任内变化自任命或上次考绩计算，升降须有职缺。</p>${E.assessmentRows(s).map(r=>`<article class="crisis"><b>${nm(r.id)} · ${r.title}</b><p>能力 ${r.ability} · 忠诚 ${r.loyalty}</p><p>${esc(r.change)}</p>${r.done?'<p>本年已考</p>':`<button data-act="assess" data-id="${r.id}" data-decision="stay">留任</button>${E.assessmentOptions(s,r.id).map(o=>`<button data-act="assess" data-id="${r.id}" data-decision="${o.decision}" data-office="${o.office}" ${o.reason?'disabled':''}>${{promote:'升',demote:'降',dismiss:'罢'}[o.decision]} · ${o.title}${o.reason?'（'+esc(o.reason)+'）':''}</button>`).join('')}`}</article>`).join('')}</main>`;}
-function budgetCard(){const f=Fiscal.forecast(s),count=E.memorialCounts(s);return `<section class="budget-card"><div><b>户部银账</b><button data-act="go" data-to="finance">理财与收支 ›</button></div><p>本月已入 ${moneyText(s.ledger.treasury.in)} · 已出 ${moneyText(s.ledger.treasury.out)}</p><p>月底常例 ${moneyText(f.base)} · 地方浮动 ${f.province>=0?'+':'−'}${moneyText(Math.abs(f.province))} · 经营进项 ${moneyText(f.projects)}</p><p class="small">月底军政 ${moneyText(f.publicOutgo)}；新政预留最多 ${moneyText(f.policy)}${f.arrears?`；旧欠 ${moneyText(f.arrears)}`:''}。官职浮动另计，未批折子与临时用度尚未扣除。${count.waiting?`另有 ${count.waiting} 道已交查勘，不算未批积压。`:''}</p></section>`;}
+// 首页银账压成一句话，点击后查看完整账目。
+function budgetLine() {
+  const f = budgetDisplay(s);
+  return `<button class="budget-line" data-act="go" data-to="finance">
+    本月进 ${moneyText(f.income)} · 出 ${moneyText(f.outgo)} · 月底预计 ${moneyText(f.expected)}
+  </button>`;
+}
+
+// 明细只在理财页展开，开局未办过的零值经营和新政不占篇幅。
+function budgetCard() {
+  const f = budgetDisplay(s), count = E.memorialCounts(s);
+  return `<section class="budget-card"><div><b>户部银账</b>
+    <button data-act="go" data-to="finance">理财与收支 ›</button></div>
+    <p>本月已入 ${moneyText(f.income)} · 已出 ${moneyText(f.outgo)}</p>
+    <p>月底常例 ${moneyText(f.base)} · 地方浮动 ${f.province >= 0 ? '+' : '−'}${moneyText(Math.abs(f.province))}
+      ${f.showProjects ? ` · 经营进项 ${moneyText(f.projects)}` : ''}</p>
+    <p class="small">月底军政 ${moneyText(f.publicOutgo)}
+      ${f.showPolicy ? `；新政预留最多 ${moneyText(f.policy)}` : ''}${f.arrears ? `；旧欠 ${moneyText(f.arrears)}` : ''}。
+      官职浮动另计，未批折子与临时用度尚未扣除。
+      ${count.waiting ? `另有 ${count.waiting} 道已交查勘，不算未批积压。` : ''}</p></section>`;
+}
 function financeView(){const f=Fiscal.forecast(s),collection=Fiscal.collectionInfo(s),last=s.fiscal.lastReport,can=E.canAct(s)&&!s.night;return `${header()}<main class="finance-page"><div class="bar-title"><button data-act="go" data-to="home">‹ 返回御案</button><b>户部理财</b></div>${budgetCard()}<p>查看不占时辰。理财安排各用一个时辰；先办完月初要事，再安排人手。银子实际解到才入库，不向百姓临时加派。</p><h3 class="sec">稳定进项</h3><p class="muted small">两项经营各有三级，每月最多安排一项，下个月办妥后按月解库。</p>${Fiscal.projectOptions(s).map(o=>`<article class="fiscal-project"><h3>${esc(o.name)} · ${o.level}/3 级</h3><p>${esc(o.description)}</p><p>当前每月 ${moneyText(o.monthly)}${o.pending?`；正在办理第 ${o.pending.level} 级，下月见效`:o.level<3?`；办妥后每月 ${moneyText(o.nextMonthly)}`:'；已完成整顿'}</p><button data-act="fiscal-invest" data-id="${o.id}" ${!can||o.reason?'disabled':''}>${o.reason?esc(o.reason):`${o.level?'继续整顿':'着手办理'} · 国库 ${moneyText(o.cost)} · 1 时辰`}</button></article>`).join('')}<h3 class="sec">催解旧欠</h3><article class="fiscal-project"><p>这批账面旧欠尚有 ${moneyText(collection.pool)}。每三个月最多催解一次，实际到账后扣减欠额，不能反复领取。</p><p>${s.fiscal.collectionPending?`已经催解 ${moneyText(s.fiscal.collectionPending.amount)}，待下月到账。`:`本次可核定 ${moneyText(collection.amount)}，下月解库。`}</p><button data-act="fiscal-collect" ${!can||collection.reason?'disabled':''}>${collection.reason?esc(collection.reason):'催解一批 · 不另花银 · 1 时辰'}</button></article>${publicWorksCard(can)}<h3 class="sec">上月银账</h3>${last?`<article class="fiscal-project"><h4>${YEAR_NAME(last.year)}年${MONTHS[last.month-1]}</h4><p>常例税银 ${moneyText(last.base)} · 地方浮动 ${last.province>=0?'+':'−'}${moneyText(Math.abs(last.province))} · 户部任职浮动 ${last.office>=0?'+':'−'}${moneyText(Math.abs(last.office))} · 理财进项 ${moneyText(last.projects)}</p><p>新政实付 ${moneyText(last.policySpent)} · 军政及补欠 ${moneyText(last.publicOutgo)}</p><p>全月总入 ${moneyText(last.ledger.in)} · 总出 ${moneyText(last.ledger.out)} · 结余 ${moneyText(last.balance)}</p><p class="small">总入、总出还包括当月剧情、朱批、追缴到账和理财立项，以上常例不可重复相加。</p></article>`:'<p>尚未结算过一个月。到月末会列出实际收支。</p>'}</main>${nav()}`;}
 function publicWorksCard(can){if(s.year<7)return '';const info=Fiscal.publicWorksInfo(s);return `<h3 class="sec">地方修缮</h3><article class="fiscal-project public-works"><p>修缮一省仓渠与学舍：国库 ${moneyText(info.cost)}，用一个时辰，每三个月最多安排一次。当地民生 +4、吏治 +2。</p><p class="small">这是可选公共投入，按实际拨银入账。</p><label>修缮省份<select aria-label="修缮省份" ${!can||info.reason?'disabled':''}>${info.provinces.map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join('')}</select></label><button data-act="fiscal-works" ${!can||info.reason?'disabled':''}>${info.reason?esc(info.reason):'拨银修缮 · 1 时辰'}</button></article>`;}
 function provincesView(){return `${header()}<main class="government"><button data-act="go" data-to="home">‹ 返回御案</button><h2>地方</h2><p>十省等权汇入民心与朝局，财赋影响月度国库进账。数值是游戏抽象，江南、陕甘、云贵按督辖区合列。</p>${Object.entries(s.provinces).map(([name,p])=>`<article class="crisis"><h3>${esc(name)} · ${esc(authorOf(s,name)?nm(authorOf(s,name)):'地方衙门')}</h3><p>民生 ${p.livelihood} · 吏治 ${p.integrity} · 财赋 ${p.revenue}</p>${p.reports.map(t=>`<p class="small">${esc(t)}</p>`).join('')||'<p class="muted">尚无回报。</p>'}</article>`).join('')}</main>`;}

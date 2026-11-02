@@ -365,3 +365,30 @@ input,textarea,select{font-size:16px!important;max-width:100%}
  background: var(--silk);
  color: var(--ink);
 }
+
+/* 御案先给行动留位置，详细朝局由玩家自行展开。 */
+.home > .agenda { margin-top: 10px; }
+.home > .opening-card { padding: 9px 12px; }
+.home > .opening-card h3 { font-size: 16px; }
+.home > .opening-card p { margin: 4px 0; line-height: 1.5; }
+.budget-line {
+ width: 100%;
+ margin: 14px 0 10px;
+ padding: 8px 0;
+ border: 0;
+ border-bottom: 1px solid var(--desk-line);
+ background: transparent;
+ color: #bdc9ce;
+ font-size: 12px;
+ text-align: left;
+ line-height: 1.6;
+}
+.court-details { margin-top: 16px; }
+.court-details > summary {
+ min-height: 44px;
+ display: flex;
+ align-items: center;
+ cursor: pointer;
+ color: var(--gold-soft);
+ border-bottom: 1px solid var(--desk-line);
+}
