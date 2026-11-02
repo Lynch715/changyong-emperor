@@ -1,4 +1,5 @@
 import * as Fiscal from './fiscal.js';
+import {askConfirmation} from './dialogs.js';
 import {budgetDisplay, affectionChange} from './presentation.js';
 import * as F from './family.js';
 import {KID_ART} from './art.js';
@@ -544,7 +545,18 @@ const ACTS={
  },
  title:()=>go({name:'title'}),
  new:()=>{s=E.newGame();save();go({name:'home'});},
- 'new-confirm':()=>{if(confirm('重新开始会覆盖现在的存档。确定吗？')){s=E.newGame();save();go({name:'home'});}},
+ 'new-confirm': async () => {
+  const accepted = await askConfirmation({
+    title: '重新开始这一局？',
+    text: '重新开始会覆盖现在的存档。',
+    cancel: '保留现在的存档',
+    accept: '重新开始',
+  });
+  if (!accepted) return;
+  s = E.newGame();
+  save();
+  go({name: 'home'});
+ },
  continue:()=>{s=E.load();go({name:s?.ended?'ending':'home'});},
  scene:()=>openScene(E.pendingScene(s)),
  pick:async el=>{
@@ -597,7 +609,22 @@ const ACTS={
  review:()=>{try{E.review(s);save();go({name:'memorials'});}catch(e){toast(e.message);}},
  memorial:el=>{try{const r=E.judgeMemorial(s,el.dataset.id,el.dataset.choice);view.feedback=r.text;save();render();}catch(e){toast(e.message);}},
  done:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});afterAction();},
- night:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});if(s.agenda.length)return toast('先把要事办完。');if(s.night)return monthEnd();if(E.stayOf(s))return go({name:'night',id:E.stayOf(s)});if(s.ap>0&&!confirm(`还有 ${s.ap} 个时辰没用。确定入夜吗？`))return;go({name:'night'});},
+ night: async () => {
+  if (s.nanfeng?.visit && !s.nanfeng.visit.done) return go({name: 'nanfeng'});
+  if (s.agenda.length) return toast('先把要事办完。');
+  if (s.night) return monthEnd();
+  if (E.stayOf(s)) return go({name: 'night', id: E.stayOf(s)});
+  if (s.ap > 0) {
+    const accepted = await askConfirmation({
+      title: '现在入夜？',
+      text: `还有 ${s.ap} 个时辰没用。确定入夜吗？`,
+      cancel: '再忙一会儿',
+      accept: '入夜',
+    });
+    if (!accepted) return;
+  }
+  go({name: 'night'});
+ },
  'night-select':el=>go({name:'night',id:el.dataset.id||null}),
  'night-go':el=>{if(s.night&&!s.agenda.length)return monthEnd();const id=el.dataset.id||null,line=AI.aiMode()==='off'?'':(document.getElementById('nightPlan')?.value||'').trim();
   if(!planAllowed(line,id,s))return toast(PLAN_NOTICE);view.draft=line;

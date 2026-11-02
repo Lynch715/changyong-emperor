@@ -182,3 +182,16 @@ test('B3 旧档情分和本月涨跌分别显示，读档后数字不重算', as
   assert.equal(s.people.C02.aff, 34);
   assert.equal(s.delta.people.C02, 4);
 });
+
+test('B4 旧档取消入夜不消耗时辰，不处理可选事项也可正常独寝结束本月', () => {
+  const s = oldSave(s => {s.done.M01 = 'call'; s.agenda = [];});
+  const before = JSON.stringify(s);
+  assert.ok(E.canAct(s));
+  assert.equal(JSON.stringify(s), before, '打开和取消确认框不调用引擎或改存档');
+  E.spendNight(s, null);
+  assert.equal(s.night, true);
+  const report = E.endMonth(s);
+  assert.equal(report.m, 1);
+  assert.equal(s.month, 2);
+  assert.equal(s.done['opening-relief'], undefined);
+});

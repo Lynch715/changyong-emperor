@@ -392,3 +392,30 @@ input,textarea,select{font-size:16px!important;max-width:100%}
  color: var(--gold-soft);
  border-bottom: 1px solid var(--desk-line);
 }
+
+/* 页面内确认框与御案配色一致，浏览器原生弹窗不再挡住游戏。 */
+dialog#modal[open] {
+ display: block;
+ width: min(420px, calc(100% - 32px));
+ max-height: 80dvh;
+ overflow-y: auto;
+ padding: 22px 18px;
+ border: 1px solid var(--gold);
+ border-radius: 12px;
+ background: var(--silk);
+ color: var(--ink);
+ box-shadow: 0 10px 40px #0008;
+}
+dialog#modal::backdrop { background: #07111dcc; }
+#modal h2 { margin: 0 0 12px; font-size: 22px; }
+#modal p { margin: 0 0 20px; line-height: 1.7; }
+.dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dialog-actions button {
+ min-height: 44px;
+ padding: 9px 10px;
+ border: 1px solid var(--line);
+ border-radius: 7px;
+ background: transparent;
+ color: var(--ink);
+}
+.dialog-actions .primary { background: var(--desk); color: var(--gold-soft); border-color: var(--desk); }
