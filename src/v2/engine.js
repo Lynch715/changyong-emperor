@@ -1,4 +1,8 @@
 import * as T from './timeline.js';
+import {issueOpeningDecree} from './opening.js';
+export {openingDecree} from './opening.js';
+// 正月可选旨意不占时辰，实际收支仍记入同一本银账。
+export const openingEdict = s => issueOpeningDecree(s, {applyStats, log});
 import {longScene} from './long-stories.js';
 import * as Fiscal from './fiscal.js';
 import * as F from './family.js';

@@ -346,3 +346,22 @@ input,textarea,select{font-size:16px!important;max-width:100%}
 
 /* 长篇进度与待续故事沿用御案卡片，收起时不挤占行动区。 */
 .campaign-card{margin:12px 0;padding:12px 14px;border:1px solid var(--desk-line);border-radius:10px;background:var(--desk-soft);color:var(--silk);line-height:1.7}.campaign-card>b{color:var(--gold-soft)}.campaign-card p{font-size:13px;margin:5px 0;overflow-wrap:anywhere}.campaign-card summary{min-height:44px;display:flex;align-items:center;cursor:pointer;color:var(--gold-soft)}.story-preview{border-top:1px solid var(--desk-line);padding:9px 0}.story-preview b,.story-preview span{display:block;overflow-wrap:anywhere}.story-preview b{font-size:14px}.story-preview span{font-size:12px;color:#bdc9ce}.story-defer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}.story-defer button{min-height:44px;padding:10px 14px;max-width:100%;white-space:normal;line-height:1.6;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--ink)}.story-defer p{line-height:1.7;color:var(--ink-soft)}.public-works label{display:block;font-size:14px}.public-works select{display:block;width:100%;min-height:44px;margin:8px 0 12px;padding:8px;box-sizing:border-box;background:var(--silk);color:var(--ink);font-size:16px}@media(max-width:480px){.campaign-card{padding:10px 12px}.story-defer button{width:100%}}
+
+/* 正月可选旨意与必做要事分开显示。 */
+.opening-card {
+ margin-top: 12px;
+ padding: 12px 14px;
+ border: 1px solid var(--gold);
+ border-radius: 10px;
+ background: rgba(200, 163, 90, .12);
+}
+.opening-card small { color: var(--gold-soft); }
+.opening-card h3 { margin: 6px 0; font-size: 17px; }
+.opening-card p { margin: 6px 0; font-size: 13px; line-height: 1.6; }
+.opening-card button {
+ padding: 7px 16px;
+ border: 1px solid var(--gold);
+ border-radius: 6px;
+ background: var(--silk);
+ color: var(--ink);
+}

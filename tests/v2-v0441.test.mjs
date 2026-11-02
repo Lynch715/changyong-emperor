@@ -8,37 +8,60 @@ import {runLongJourney,settleLongAgenda} from '../scripts/v044-balance.mjs';
 const firstIds=CORE.map(id=>PEOPLE[id].first);
 const storageOf=s=>({getItem:()=>JSON.stringify(s),setItem:()=>assert.fail('读档不得写回')});
 
-test('0.44.1 首幕在相关主线之后当月接上，既有事项仍先处理且不重复排入',()=>{
- const s=E.newGame(441);
- assert.deepEqual(s.agenda,['M01','M02']);
- E.choose(s,'M01',E.optionsFor(s,E.scene('M01'))[0].id);
- assert.equal(s.people.C02.first,false,'前事未办完，不提前首幕');
- E.choose(s,'M02',E.optionsFor(s,E.scene('M02'))[0].id);
- assert.deepEqual(s.agenda,['R02-01']);
- assert.equal(T.scheduleIntroduction(s,E.scene,()=>true),null);
- E.choose(s,'R02-01','warm');
- assert.equal(s.people.C02.firstAt,'1-1');
- assert.equal(E.storyOf(s,'C02'),null,'同月不连播第二幕');
+test('0.44.1 首幕在相关主线之后当月接上，既有事项仍先处理且不重复排入', () => {
+  const s = E.newGame(441);
+  assert.deepEqual(s.agenda, ['M01']);
+  E.choose(s, 'M01', E.optionsFor(s, E.scene('M01'))[0].id);
+  assert.equal(s.people.C02.first, false, '正月先自由行动，茶叙移到二月');
+  assert.ok(E.canAct(s));
+  E.spendNight(s, null);
+  E.endMonth(s);
+  assert.deepEqual(s.agenda, ['R02-01']);
+  assert.equal(
+    T.scheduleIntroduction(s, E.scene, () => true),
+    null,
+  );
+  E.choose(s, 'R02-01', 'warm');
+  assert.equal(s.people.C02.firstAt, '1-2');
+  assert.equal(E.storyOf(s, 'C02'), null, '同月不连播第二幕');
 
- s.month=11;s.done.M06='quiet';s.agenda=['urgent-fixture','birth-fixture'];
- T.scheduleFlexible(s,E.scene,()=>true);
- assert.deepEqual(s.agenda,['urgent-fixture','birth-fixture','XR09-01']);
- assert.equal(T.scheduleIntroduction(s,E.scene,()=>true),null,'同月不再加入第二位');
- s.agenda=['XR09-01'];E.choose(s,'XR09-01','develop');T.scheduleFlexible(s,E.scene,()=>true);
- assert.ok(!s.agenda.some(id=>firstIds.includes(id)),'首幕办完后重新调度，也不能同月再加一位');
+  s.month = 11;
+  s.done.M06 = 'quiet';
+  s.agenda = ['urgent-fixture', 'birth-fixture'];
+  T.scheduleFlexible(s, E.scene, () => true);
+  assert.deepEqual(s.agenda, ['urgent-fixture', 'birth-fixture', 'XR09-01']);
+  assert.equal(
+    T.scheduleIntroduction(s, E.scene, () => true),
+    null,
+    '同月不再加入第二位',
+  );
+  s.agenda = ['XR09-01'];
+  E.choose(s, 'XR09-01', 'develop');
+  T.scheduleFlexible(s, E.scene, () => true);
+  assert.ok(!s.agenda.some((id) => firstIds.includes(id)), '首幕办完后重新调度，也不能同月再加一位');
 });
-
-test('0.44.1 主动暂缓首幕后，当月不因再次调度而拉回；次月可接在年节后',()=>{
- const s=E.newGame(442);settleLongAgenda(s);
- s.month=10;E.startMonth(s);settleUntil(s,'XR09-01');
- assert.equal(s.agenda[0],'XR09-01');E.deferScene(s,'XR09-01');
- assert.equal(T.scheduleIntroduction(s,E.scene,()=>true,'M06'),null);
- assert.ok(!s.agenda.includes('XR09-01'));
- s.month=11;s.agenda=['festival-fixture'];T.scheduleFlexible(s,E.scene,()=>true);
- assert.deepEqual(s.agenda,['festival-fixture','XR09-01']);
- assert.equal(s.campaign.deferred['XR09-01'].count,1);
+test('0.44.1 主动暂缓首幕后，当月不因再次调度而拉回；次月可接在年节后', () => {
+  const s = E.newGame(442);
+  settleLongAgenda(s);
+  s.month = 2;
+  E.startMonth(s);
+  settleLongAgenda(s);
+  s.month = 10;
+  E.startMonth(s);
+  settleUntil(s, 'XR09-01');
+  assert.equal(s.agenda[0], 'XR09-01');
+  E.deferScene(s, 'XR09-01');
+  assert.equal(
+    T.scheduleIntroduction(s, E.scene, () => true, 'M06'),
+    null,
+  );
+  assert.ok(!s.agenda.includes('XR09-01'));
+  s.month = 11;
+  s.agenda = ['festival-fixture'];
+  T.scheduleFlexible(s, E.scene, () => true);
+  assert.deepEqual(s.agenda, ['festival-fixture', 'XR09-01']);
+  assert.equal(s.campaign.deferred['XR09-01'].count, 1);
 });
-
 function settleUntil(s,target){
  for(let n=0;s.agenda[0]!==target&&s.agenda.length&&n<20;n++){
   const id=s.agenda[0];E.choose(s,id,E.optionsFor(s,E.scene(id))[0].id);

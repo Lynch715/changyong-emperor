@@ -98,3 +98,60 @@ test('A6 临时脚本六例纳入皇嗣过滤回归，旧档孩子记录保留',
   assert.equal(childPlanAllowed(forbidden, 'C09', s), false);
   assert.equal(s.children[0].name, '弘昀');
 });
+
+test('B1 正月只办惊梦即可自由行动，可选赈济不耗时辰且报告有两类变化', () => {
+  const s = E.newGame(451);
+  assert.deepEqual(s.agenda, ['M01']);
+  assert.throws(() => E.openingEdict(s), /惊梦/);
+  E.choose(s, 'M01', 'call');
+  assert.ok(E.canAct(s));
+  assert.deepEqual(s.agenda, []);
+  const before = structuredClone(s.stats), ap = s.ap;
+  const result = E.openingEdict(s);
+  assert.equal(s.ap, ap);
+  assert.deepEqual(result.stats, {treasury: -10, people: 3});
+  assert.equal(s.stats.treasury, before.treasury - 10);
+  assert.equal(s.stats.people, before.people + 3);
+  assert.equal(E.openingDecree(s), null);
+  assert.throws(() => E.openingEdict(s), /办过/);
+  E.spendNight(s, null);
+  const report = E.endMonth(s);
+  assert.ok(report.stats.people >= 3);
+  assert.ok(report.ledger.treasury.out >= 10);
+  assert.ok(Object.values(report.stats).filter(v => v !== 0).length >= 2);
+  assert.ok(s.agenda.includes('R02-01'));
+  assert.ok(!s.agenda.includes('M02'));
+  assert.equal(E.scene('R02-01').title, '留茶夜谈');
+});
+
+test('B1 不办可选朝政也能结束正月，不罚不顺延；两条路线的二月进度一致', () => {
+  const play = issue => {
+    const s = E.newGame(452);
+    E.choose(s, 'M01', 'call');
+    if (issue) E.openingEdict(s);
+    E.spendNight(s, null);
+    const report = E.endMonth(s);
+    return {s, report};
+  };
+  const skipped = play(false), issued = play(true);
+  assert.equal(skipped.s.month, 2);
+  assert.equal(E.openingDecree(skipped.s), null);
+  assert.equal(skipped.s.done['opening-relief'], undefined);
+  assert.deepEqual(skipped.s.agenda, issued.s.agenda);
+  assert.deepEqual(skipped.s.people, issued.s.people);
+  assert.equal(skipped.s.stats.people + 3, issued.s.stats.people);
+  assert.equal(skipped.s.stats.treasury - 10, issued.s.stats.treasury);
+  assert.equal(skipped.report.ledger.treasury.out + 10, issued.report.ledger.treasury.out);
+});
+
+test('B1 旧正月待办不删改，已经过正月的旧档不补发可选旨意', () => {
+  const january = oldSave(s => {s.agenda = ['M02', 'R02-01']; s.done.M01 = 'call';});
+  E.choose(january, 'M02', 'tea');
+  E.choose(january, 'R02-01', 'warm');
+  assert.equal(january.people.C02.first, true);
+  const later = oldSave(s => {s.year = 3; s.month = 1; s.agenda = [];});
+  assert.equal(E.openingDecree(later), null);
+  const before = JSON.stringify(later);
+  assert.throws(() => E.openingEdict(later), /过了/);
+  assert.equal(JSON.stringify(later), before);
+});

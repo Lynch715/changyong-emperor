@@ -62,6 +62,15 @@ test('第二卷：场景齐全，存档延续，四年走完', ()=>{
  for(const pick of ['keep','hangzhou','punish']){
   const s=E.newGame(21);let n=0;
   const play=()=>{while(s.agenda.length){const sc=E.scene(s.agenda[0]);const os=E.optionsFor(s,sc);const o=os.find(o=>o.id===pick)||os.find(o=>['warm','confess','stay','develop'].includes(o.id))||os[0];E.choose(s,sc.id,o.id);}
+   // 开局剧情减负会改变随机路线，长程测试仍须完成真实皇嗣向导。
+   if(s.pendingBirth){
+    E.nameChild(s,'长宁'+String.fromCharCode(0x4e00+s.children.length));
+    E.completeBirth(s,s.pendingBirth.sex==='男'?'k_infant_01':'k_infant_04');
+   }
+   if(s.familyArt?.required){
+    const child=s.children.find(c=>c.id===s.familyArt.child);
+    E.changeChildArt(s,child.id,child.sex==='男'?'k_youth_01':'k_youth_05');
+   }
    if(s.ap&&E.present(s,'C07')){const c=E.beginChat(s,'C07');E.applyChat(s,c,{affection:4});E.applyChat(s,c,{affection:4});}
    const sp=E.nightChoices(s).find(x=>x.special);if(sp){const sid=E.queueSpecial(s,sp.id);const sc=E.scene(sid);const os=E.optionsFor(s,sc);E.choose(s,sid,(os.find(o=>['warm','confess','stay'].includes(o.id))||os[0]).id);}else E.spendNight(s,E.nightChoices(s)[0]?.id||null);
    E.endMonth(s);n++;};
@@ -149,25 +158,95 @@ test('年节：选人同过、家宴、独自，各有反馈',()=>{
 });
 
 import {SCENES3,AGENDA3,REPAIR3,ENDING3} from '../src/v2/vol3.js';
-test('第三卷：场景齐全，六年走完，年羹尧的去留影响西北用兵',()=>{
- for(const ids of Object.values(AGENDA3))for(const id of ids){const sc=E.scene(id);assert.ok(sc,id);for(const o of sc.options){for(const k of Object.keys(o.effects||{}))assert.ok(STATS.some(s=>s.id===k),id+k);if(o.slight)assert.ok(REPAIR3[id]?.[o.slight],id+' repair '+o.slight);for(const k of Object.keys({...o.bond,...o.bonds}))assert.ok(PEOPLE[k],id+k);}}
- for(const id of CORE){const z=E.scene(E.fifthOf(id));assert.ok(z,id);assert.equal(z.actor,id);assert.deepEqual(z.options.map(o=>o.id),['stay','mid','hard']);assert.equal(ENDING3[id].length,4);}
- const seen={};
- for(const pick of ['keep','hangzhou','punish']){
-  const s=E.newGame(31);let n=0;
-  const play=()=>{while(s.agenda.length){const sc=E.scene(s.agenda[0]);const os=E.optionsFor(s,sc);const o=os.find(o=>o.id===pick)||os.find(o=>['warm','confess','stay','develop'].includes(o.id))||os[0];if(sc.id==='W07')seen[pick]=os.map(o=>o.id);E.choose(s,sc.id,o.id);}
-   if(s.ap&&E.present(s,'C07')){const c=E.beginChat(s,'C07');E.applyChat(s,c,{affection:4});E.applyChat(s,c,{affection:4});}
-   const sp=E.nightChoices(s).find(x=>x.special);if(sp){const sid=E.queueSpecial(s,sp.id);const sc=E.scene(sid);const os=E.optionsFor(s,sc);E.choose(s,sid,(os.find(o=>['warm','confess','stay'].includes(o.id))||os[0]).id);}else E.spendNight(s,E.nightChoices(s)[0]?.id||null);
-   E.endMonth(s);n++;};
-  while(!s.ended&&n<30)play();E.startVolume2(s);while(!s.ended&&n<60)play();
-  assert.throws(()=>E.startVolume2(s));E.startVolume3(s);assert.equal(s.year,5);assert.equal(s.vol,3);
-  while(!s.ended&&n<90)play();
-  assert.equal(n,72,pick);assert.ok(s.ended);for(const[k,v]of Object.entries(s.stats))assert.ok(v>=0&&(['treasury','inner'].includes(k)||v<=100));
-  assert.ok(E.ending(s).solved<=3);
- }
- assert.ok(seen.keep.includes('nian')&&!seen.keep.includes('nianhz'));assert.ok(seen.hangzhou.includes('nianhz')&&!seen.hangzhou.includes('nian'));assert.ok(!seen.punish.some(x=>x.startsWith('nian')));
- const s=E.newGame(2);s.year=5;s.month=3;s.agenda=[];Object.assign(s.people.C02,{met:true,first:true,second:true,third:true,fourth:true,aff:82});assert.equal(E.storyOf(s,'C02'),'Z02');
- s.people.C02.fourthAt='5-3';assert.equal(E.storyOf(s,'C02'),null,'第四幕当月不接第五幕');
+test('第三卷：场景齐全，六年走完，年羹尧的去留影响西北用兵', () => {
+  for (const ids of Object.values(AGENDA3))
+    for (const id of ids) {
+      const sc = E.scene(id);
+      assert.ok(sc, id);
+      for (const o of sc.options) {
+        for (const k of Object.keys(o.effects || {}))
+          assert.ok(
+            STATS.some((s) => s.id === k),
+            id + k,
+          );
+        if (o.slight) assert.ok(REPAIR3[id]?.[o.slight], id + ' repair ' + o.slight);
+        for (const k of Object.keys({ ...o.bond, ...o.bonds })) assert.ok(PEOPLE[k], id + k);
+      }
+    }
+  for (const id of CORE) {
+    const z = E.scene(E.fifthOf(id));
+    assert.ok(z, id);
+    assert.equal(z.actor, id);
+    assert.deepEqual(
+      z.options.map((o) => o.id),
+      ['stay', 'mid', 'hard'],
+    );
+    assert.equal(ENDING3[id].length, 4);
+  }
+  const seen = {};
+  for (const pick of ['keep', 'hangzhou', 'punish']) {
+    const s = E.newGame(31);
+    let n = 0;
+    const play = () => {
+      while (s.agenda.length) {
+        const sc = E.scene(s.agenda[0]);
+        const os = E.optionsFor(s, sc);
+        const o =
+          os.find((o) => o.id === pick) ||
+          os.find((o) => ['warm', 'confess', 'stay', 'develop'].includes(o.id)) ||
+          os[0];
+        if (sc.id === 'W07') seen[pick] = os.map((o) => o.id);
+        E.choose(s, sc.id, o.id);
+      }
+      // 开局剧情减负会改变随机路线，长程测试仍须完成真实皇嗣向导。
+      if (s.pendingBirth) {
+        E.nameChild(s, '长宁' + String.fromCharCode(0x4e00 + s.children.length));
+        E.completeBirth(s, s.pendingBirth.sex === '男' ? 'k_infant_01' : 'k_infant_04');
+      }
+      if (s.familyArt?.required) {
+        const child = s.children.find((c) => c.id === s.familyArt.child);
+        E.changeChildArt(s, child.id, child.sex === '男' ? 'k_youth_01' : 'k_youth_05');
+      }
+      if (s.ap && E.present(s, 'C07')) {
+        const c = E.beginChat(s, 'C07');
+        E.applyChat(s, c, { affection: 4 });
+        E.applyChat(s, c, { affection: 4 });
+      }
+      const sp = E.nightChoices(s).find((x) => x.special);
+      if (sp) {
+        const sid = E.queueSpecial(s, sp.id);
+        const sc = E.scene(sid);
+        const os = E.optionsFor(s, sc);
+        E.choose(s, sid, (os.find((o) => ['warm', 'confess', 'stay'].includes(o.id)) || os[0]).id);
+      } else E.spendNight(s, E.nightChoices(s)[0]?.id || null);
+      E.endMonth(s);
+      n++;
+    };
+    while (!s.ended && n < 30) play();
+    E.startVolume2(s);
+    while (!s.ended && n < 60) play();
+    assert.throws(() => E.startVolume2(s));
+    E.startVolume3(s);
+    assert.equal(s.year, 5);
+    assert.equal(s.vol, 3);
+    while (!s.ended && n < 90) play();
+    assert.equal(n, 72, pick);
+    assert.ok(s.ended);
+    for (const [k, v] of Object.entries(s.stats))
+      assert.ok(v >= 0 && (['treasury', 'inner'].includes(k) || v <= 100));
+    assert.ok(E.ending(s).solved <= 3);
+  }
+  assert.ok(seen.keep.includes('nian') && !seen.keep.includes('nianhz'));
+  assert.ok(seen.hangzhou.includes('nianhz') && !seen.hangzhou.includes('nian'));
+  assert.ok(!seen.punish.some((x) => x.startsWith('nian')));
+  const s = E.newGame(2);
+  s.year = 5;
+  s.month = 3;
+  s.agenda = [];
+  Object.assign(s.people.C02, { met: true, first: true, second: true, third: true, fourth: true, aff: 82 });
+  assert.equal(E.storyOf(s, 'C02'), 'Z02');
+  s.people.C02.fourthAt = '5-3';
+  assert.equal(E.storyOf(s, 'C02'), null, '第四幕当月不接第五幕');
 });
 test('再活一世：三种记忆各有效果，似曾相识的人记得',()=>{
  const prev=E.newGame(4);prev.ended=true;prev.vol=3;Object.assign(prev.people.C07,{aff:90,lover:true});prev.people.C02.aff=70;prev.people.C06.aff=40;

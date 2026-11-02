@@ -69,39 +69,111 @@ function guide(){
 }
 
 // ---------- 首页：本月 ----------
-function home(){
- const pending=E.pendingScene(s),sc=pending&&E.scene(pending);
- const acts=[['chat','召见'],['gift','赏赐'],['edict','下旨'],['review',`批折 · ${E.memorialCounts(s).pending}`],['outing','微服'],['rest','休养']];
- // 身边的人开局就都摆出来；没见过的标“未见”，召入宫的人也在内
- const ppl=[...CORE.filter(id=>E.present(s,id)&&!E.gone?.(s,id)),...Object.keys(s.inPalace||{})];
- const later=CORE.filter(id=>!E.present(s,id)||!s.people[id].met).length;
- return `${header()}
- <main class="home">
-  <div class="guide"><span>${guide()}</span>${apPips()}</div>${s.nanfeng?.visit&&!s.nanfeng.visit.done?'<button class="night-btn" data-act="go" data-to="nanfeng">回到南风馆，把这盏茶喝完 ›</button>':''}
-  ${E.birthdays(s).map(id=>`<div class="visit bday ${E.birthdayDone(s,id)?'done':''}">${avatar(id)}<div><small>生辰 · ${E.birthdayDone(s,id)?'你记得':'本月'}</small><b>${PEOPLE[id].name}的生辰</b><span>${E.birthdayDone(s,id)?'贺过了。':'召见、赏赐或夜里去看看，都算记得。整月不去，情分会掉。'}</span></div></div>`).join('')}
-  ${campaignCard()}
-  ${budgetCard()}
-  ${familyStatus()}
-  ${(()=>{const v=E.visitOf(s);return v?`<button class="visit" data-act="visit"><img src="${face(v.id)}" alt=""><div><small>有人来了 · 不占时辰</small><b>${PEOPLE[v.id].name}来看你</b><span>${esc(v.title)}</span></div><em>迎进来 ›</em></button>`:'';})()}
-  ${sc?`<button class="agenda" data-act="scene">
+// 首页沿用现有卡片；可选旨意始终放在行动按钮上方。
+function home() {
+  const pending = E.pendingScene(s), sc = pending && E.scene(pending);
+  const people = [...CORE.filter(id => E.present(s, id) && !E.gone(s, id)), ...Object.keys(s.inPalace || {})];
+  const later = CORE.filter(id => !E.present(s, id) || !s.people[id].met).length;
+  return `${header()}<main class="home">
+    <div class="guide"><span>${guide()}</span>${apPips()}</div>
+    ${s.nanfeng?.visit && !s.nanfeng.visit.done ?
+      '<button class="night-btn" data-act="go" data-to="nanfeng">回到南风馆，把这盏茶喝完 ›</button>' : ''}
+    ${birthdayCards()}${campaignCard()}${budgetCard()}${familyStatus()}${visitCard()}
+    ${agendaCard(sc)}${openingCard()}${homeActions(sc)}
+    <button class="night-btn ${!sc && (s.ap === 0 || s.night) ? 'glow' : ''}"
+      data-act="night" ${sc ? 'disabled' : ''}>
+      ${s.night ? '结束这个月 ›<span>今夜已经过了</span>' :
+        `入夜 ›<span>${s.ap > 0 && !sc ? `还剩 ${s.ap} 个时辰` : '选一处去，或独寝'}</span>`}
+    </button>
+    <h3 class="sec">身边的人</h3><section class="people">
+      ${people.map(id => personCard(id)).join('')}
+      ${later ? `<div class="pc ghost"><b>还有 ${later} 人</b><span>会在往后的日子里出现</span></div>` : ''}
+    </section>
+    ${courtOverview()}${crisisCards()}
+  </main>${nav()}`;
+}
+
+// 本月要事仍是独立卡片，只有必做事项会锁住日间行动。
+function agendaCard(sc) {
+  if (!sc) return '';
+  const place = sc.location || sc.place;
+  return `<button class="agenda" data-act="scene">
     <img src="${face(sc.actor)}" alt="" onerror="this.style.visibility='hidden'">
-    <div><small>本月要事 · ${s.agenda.length} 件</small><b>${esc(sc.title)}</b><span>${esc(nm(sc.actor)||'')}${sc.location||sc.place?' · '+esc(sc.location||sc.place):''}</span></div>
-    <em>处置 ›</em></button>`:''}
-  <section class="acts ${sc?'locked':''}">
-   ${acts.map(([id,t])=>`<button data-act="${id}" ${!E.canAct(s)||(id==='review'&&!E.memorialCounts(s).pending)||(id==='gift'&&s.stats.inner<.01)||(id==='outing'&&s.stats.inner<ECONOMY.outingCost)?'disabled':''}><b>${t}${((id==='gift'&&s.stats.inner<.01)||(id==='outing'&&s.stats.inner<ECONOMY.outingCost))?' · 内帑不足':''}</b></button>`).join('')}
-  </section>
-  <button class="night-btn ${!sc&&(s.ap===0||s.night)?'glow':''}" data-act="night" ${sc?'disabled':''}>${s.night?'结束这个月 ›<span>今夜已经过了</span>':`入夜 ›<span>${s.ap>0&&!sc?`还剩 ${s.ap} 个时辰`:'选一处去，或独寝'}</span>`}</button>
+    <div><small>本月要事 · ${s.agenda.length} 件</small><b>${esc(sc.title)}</b>
+      <span>${esc(nm(sc.actor))}${place ? ' · ' + esc(place) : ''}</span></div><em>处置 ›</em>
+  </button>`;
+}
 
-  <h3 class="sec">身边的人</h3>
-  <section class="people">
-   ${ppl.map(id=>personCard(id)).join('')}
-   ${later?`<div class="pc ghost"><b>还有 ${later} 人</b><span>会在往后的日子里出现</span></div>`:''}
-  </section>
+// 六个行动统一判断是否能办，浏览本身不扣除资源。
+function homeActions(sc) {
+  const acts = [
+    ['chat', '召见'], ['gift', '赏赐'], ['edict', '下旨'],
+    ['review', `批折 · ${E.memorialCounts(s).pending}`], ['outing', '微服'], ['rest', '休养'],
+  ];
+  return `<section class="acts ${sc ? 'locked' : ''}">${acts.map(([id, text]) => {
+    const poor = id === 'gift' && s.stats.inner < .01 || id === 'outing' && s.stats.inner < ECONOMY.outingCost;
+    const disabled = !E.canAct(s) || id === 'review' && !E.memorialCounts(s).pending || poor;
+    return `<button data-act="${id}" ${disabled ? 'disabled' : ''}>
+      <b>${text}${poor ? ' · 内帑不足' : ''}</b></button>`;
+  }).join('')}</section>`;
+}
 
-  <h3 class="sec">局势 · <button class="gov-link" data-act="go" data-to="provinces">地方 ›</button></h3><button class="gov-link" data-act="go" data-to="memorials">奏报与已收回报 ›</button><p>派系声势：${Object.entries(s.factions).map(([k,v])=>`${k} ${v}`).join(" · ")}</p><button class="gov-link" data-act="go" data-to="secrets">御览密折 · ${s.secrets.filter(m=>!m.done).length}</button>${s.month===12?'<button class="gov-link" data-act="go" data-to="assessment">腊月考绩 ›</button>':''}<p class="small">盛世还须：至少两项新政完成、十省平均吏治达到60且无省低于45、待办原折不超过六道。</p><h3 class="sec">要务</h3>
-  <section class="crises">${E.ALL_CRISES.filter(c=>c.vol===(s.vol||1)).map(c=>{const st=E.crisisStatus(s,c);if(st==='later')return '';const done=c.scenes.filter(id=>s.done[id]).length;return `<div class="crisis ${st}"><b>${c.name}</b><em>${{open:'进行中',solved:'已了结',failed:'没办好'}[st]}</em><p>${esc(c.desc)}</p><div class="bar"><i style="width:${done/c.scenes.length*100}%"></i></div><small>${done}/${c.scenes.length} 步${c.goal&&st==='open'&&GOAL_TEXT[c.id]?` · ${GOAL_TEXT[c.id](s.stats)}`:''} · 期限 ${YEAR_NAME(c.deadline[0])}年${MONTHS[c.deadline[1]-1]}</small></div>`;}).join('')||'<p class="muted">眼下还没有。</p>'}</section>
- </main>
- ${nav()}`;
+// 生辰提醒不改变原来的庆生入口与效果。
+function birthdayCards() {
+  return E.birthdays(s).map(id => {
+    const done = E.birthdayDone(s, id);
+    return `<div class="visit bday ${done ? 'done' : ''}">${avatar(id)}<div>
+      <small>生辰 · ${done ? '你记得' : '本月'}</small><b>${PEOPLE[id].name}的生辰</b>
+      <span>${done ? '贺过了。' : '召见、赏赐或夜里去看看，都算记得。整月不去，情分会掉。'}</span>
+    </div></div>`;
+  }).join('');
+}
+
+// 来访卡仍可免费迎进来，保持人物原有的文字。
+function visitCard() {
+  const visit = E.visitOf(s);
+  if (!visit) return '';
+  return `<button class="visit" data-act="visit"><img src="${face(visit.id)}" alt=""><div>
+    <small>有人来了 · 不占时辰</small><b>${PEOPLE[visit.id].name}来看你</b>
+    <span>${esc(visit.title)}</span></div><em>迎进来 ›</em></button>`;
+}
+
+// 朝局的各个查看入口共用一段展示，不改变实际政务。
+function courtOverview() {
+  return `<h3 class="sec">局势 · <button class="gov-link" data-act="go" data-to="provinces">地方 ›</button></h3>
+    <button class="gov-link" data-act="go" data-to="memorials">奏报与已收回报 ›</button>
+    <p>派系声势：${Object.entries(s.factions).map(([name, value]) => `${name} ${value}`).join(' · ')}</p>
+    <button class="gov-link" data-act="go" data-to="secrets">御览密折 · ${s.secrets.filter(m => !m.done).length}</button>
+    ${s.month === 12 ? '<button class="gov-link" data-act="go" data-to="assessment">腊月考绩 ›</button>' : ''}
+    <p class="small">盛世还须：至少两项新政完成、十省平均吏治达到60且无省低于45、待办原折不超过六道。</p>`;
+}
+
+// 要务卡仍按原有步骤和期限显示进展。
+function crisisCards() {
+  const cards = E.ALL_CRISES.filter(crisis => crisis.vol === (s.vol || 1)).map(crisis => {
+    const status = E.crisisStatus(s, crisis);
+    if (status === 'later') return '';
+    const done = crisis.scenes.filter(id => s.done[id]).length;
+    const goal = crisis.goal && status === 'open' && GOAL_TEXT[crisis.id] ?
+      ` · ${GOAL_TEXT[crisis.id](s.stats)}` : '';
+    const label = {open: '进行中', solved: '已了结', failed: '没办好'}[status];
+    return `<div class="crisis ${status}"><b>${crisis.name}</b><em>${label}</em><p>${esc(crisis.desc)}</p>
+      <div class="bar"><i style="width:${done / crisis.scenes.length * 100}%"></i></div>
+      <small>${done}/${crisis.scenes.length} 步${goal} ·
+        期限 ${YEAR_NAME(crisis.deadline[0])}年${MONTHS[crisis.deadline[1] - 1]}</small></div>`;
+  }).join('');
+  return `<h3 class="sec">要务</h3><section class="crises">${cards || '<p class="muted">眼下还没有。</p>'}</section>`;
+}
+
+// 正月可选的小事醒目显示，是否办理由玩家决定。
+function openingCard() {
+  const decree = E.openingDecree(s);
+  if (!decree) return '';
+  return `<section class="opening-card">
+    <small>正月可选 · 不占时辰</small><h3>${esc(decree.title)}</h3>
+    <p>${esc(decree.text)}</p><p>国库 −10 万两 · 民心 +3</p>
+    <button data-act="opening-edict" ${!s.done.M01 || s.agenda.length || s.stats.treasury < 10 ? 'disabled' : ''}>
+      拨银赈济</button></section>`;
 }
 function campaignCard(){
  const c=E.campaignInfo(s),upcoming=E.upcomingStories(s);
@@ -405,6 +477,7 @@ function learn(id,g,liked){s.known=s.known||{};const k=s.known[id]=s.known[id]&&
 const likedList=id=>Object.entries(s.known?.[id]||{}).filter(([,v])=>v).map(([g])=>g);
 
 const ACTS={
+ 'opening-edict': () => familyResult(() => E.openingEdict(s)),
  'fiscal-invest':el=>familyResult(()=>E.investFiscal(s,el.dataset.id)),
  'fiscal-collect':()=>familyResult(()=>E.collectFiscal(s)),
  'fiscal-works':el=>familyResult(()=>E.publicWorks(s,el.closest('.public-works').querySelector('select').value)),
