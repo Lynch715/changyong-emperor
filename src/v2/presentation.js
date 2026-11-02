@@ -16,3 +16,8 @@ export function budgetDisplay(s) {
     showPolicy: s.year > 1 || fiscal.policy !== 0 || policies.some(p => p.active || p.progress > 0),
   };
 }
+
+// 情分变化写清是本月的变化，不让它贴着总数像一道算式。
+export function affectionChange(delta) {
+  return delta ? `（本月 ${delta > 0 ? '+' : ''}${delta}）` : '';
+}

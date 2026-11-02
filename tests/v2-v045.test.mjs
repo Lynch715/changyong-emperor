@@ -171,3 +171,14 @@ test('B2 旧档首页仅显示已知收支预估，查看不改账；元年未�
   assert.equal(budgetDisplay(s).showProjects, true);
   assert.equal(budgetDisplay(s).showPolicy, true);
 });
+
+test('B3 旧档情分和本月涨跌分别显示，读档后数字不重算', async () => {
+  const {affectionChange} = await import('../src/v2/presentation.js');
+  const s = oldSave(s => {s.people.C02.aff = 34; s.delta.people.C02 = 4;});
+  assert.equal(`${E.affectionStage(s, 'C02')} · ${s.people.C02.aff}${affectionChange(s.delta.people.C02)}`,
+    '相识 · 34（本月 +4）');
+  assert.equal(affectionChange(-3), '（本月 -3）');
+  assert.equal(affectionChange(0), '');
+  assert.equal(s.people.C02.aff, 34);
+  assert.equal(s.delta.people.C02, 4);
+});

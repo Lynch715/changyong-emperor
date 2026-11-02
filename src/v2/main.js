@@ -1,5 +1,5 @@
 import * as Fiscal from './fiscal.js';
-import {budgetDisplay} from './presentation.js';
+import {budgetDisplay, affectionChange} from './presentation.js';
 import * as F from './family.js';
 import {KID_ART} from './art.js';
 import {authorOf,POLICIES,policyHostValid} from './government.js';
@@ -184,13 +184,22 @@ function campaignCard(){
  return `<section class="campaign-card"><b>${esc(c.title)}</b><p>${c.continuing?'三十年主线已回顾，宫中岁月仍可沿月历继续。':'三十年主线 · 岁时照常，人物与宫廷故事择月展开。'}</p><details><summary>待续故事 · ${upcoming.length} 件</summary><p class="small">普通事宜可暂缓，急灾、军情和岁时照常呈报。故事按先后和人物处境展开，已做过的选择不会重来。</p>${upcoming.slice(0,8).map(x=>`<div class="story-preview"><b>${esc(x.title)}</b><span>${esc(x.status)} · ${esc(when(x.earliest))}起${x.latest?`，建议在${esc(when(x.latest))}前处理；逾期优先呈报且不能再暂缓`:''}</span></div>`).join('')||'<p class="small">眼下没有待续事宜，仍可安排日常。</p>'}${upcoming.length>8?'<p class="small">其余故事会随岁月和前事逐渐展开。</p>':''}</details></section>`;
 }
 const GOAL_TEXT={deficit:x=>`国库 ${moneyText(x.treasury)}/600 万两`,eight:x=>`朝局 ${x.court}/55`,reform:x=>`民心 ${x.people}/60 · 国库 ${moneyText(x.treasury)}/470 万两`,border:x=>`朝局 ${x.court}/50`,tusi:x=>`民心 ${x.people}/55`,body:x=>`圣躬 ${x.health}/45`};
-function personCard(id,act='person'){
- const p=s.people[id],st=E.affectionStage(s,id),next=STAGES.find(([n])=>n>p.aff);
- const lo=STAGES.filter(([n])=>p.aff>=n).at(-1)[0],hi=next?next[0]:100;
- const dd=s.delta.people[id]||0;
- const badge=p.knot?'<em class="knot">心结</em>':E.hasStory(s,id)?'<em class="ready">有话想说</em>':E.birthdayOf(s,id)&&!E.birthdayDone(s,id)?'<em class="ready">生辰</em>':E.away(s,id)?'<em class="away">在外</em>':p.lover?`<em class="lover">${bondName(id)}</em>`:'';
- return `<button class="pc" data-act="${act}" data-id="${id}">${avatar(id)}
-  <div><b>${PEOPLE[id].name}${p.met?badge:'<em class="no">未见</em>'}</b><span>${st} · ${p.aff}${dd?`<i class="${dd>0?'up':'down'}">${dd>0?'+':''}${dd}</i>`:''}</span><div class="bar"><i style="width:${(p.aff-lo)/(hi-lo)*100}%"></i></div></div></button>`;
+// 人物卡分别显示现有情分和本月变化，颜色沿用原有的涨跌配色。
+function personCard(id, act = 'person') {
+  const p = s.people[id], stage = E.affectionStage(s, id), next = STAGES.find(([n]) => n > p.aff);
+  const lo = STAGES.filter(([n]) => p.aff >= n).at(-1)[0], hi = next ? next[0] : 100;
+  const delta = s.delta.people[id] || 0;
+  let badge = '';
+  if (p.knot) badge = '<em class="knot">心结</em>';
+  else if (E.hasStory(s, id)) badge = '<em class="ready">有话想说</em>';
+  else if (E.birthdayOf(s, id) && !E.birthdayDone(s, id)) badge = '<em class="ready">生辰</em>';
+  else if (E.away(s, id)) badge = '<em class="away">在外</em>';
+  else if (p.lover) badge = `<em class="lover">${bondName(id)}</em>`;
+  return `<button class="pc" data-act="${act}" data-id="${id}">${avatar(id)}
+    <div><b>${PEOPLE[id].name}${p.met ? badge : '<em class="no">未见</em>'}</b>
+      <span>${stage} · ${p.aff}${delta ? `<i class="${delta > 0 ? 'up' : 'down'}">${affectionChange(delta)}</i>` : ''}</span>
+      <div class="bar"><i style="width:${(p.aff - lo) / (hi - lo) * 100}%"></i></div>
+    </div></button>`;
 }
 function nav(){return `<nav class="bottom"><button data-act="go" data-to="home" class="${view.name==='home'?'on':''}">本月</button><button data-act="go" data-to="people" class="${view.name==='people'?'on':''}">人物</button><button data-act="go" data-to="gallery" class="${['gallery','replay'].includes(view.name)?'on':''}">珍藏</button><button data-act="go" data-to="log" class="${view.name==='log'?'on':''}">起居注</button><button data-act="go" data-to="settings" class="${view.name==='settings'?'on':''}">设置</button></nav>`;}
 
