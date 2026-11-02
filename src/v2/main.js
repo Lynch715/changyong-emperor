@@ -194,7 +194,8 @@ function memorialView() {
     <h2>折匣 · ${counts.pending} 道待批</h2>
     <p>另有 ${counts.waiting} 道正在查勘，原折保留，等勘报回来再裁。</p>
     <p>急灾已置前。核实只查清册，工程赈务仍须拨银；急灾不能以核代赈。
-    办结回报自动收存，不挤占时辰。一时辰通常可批六道；设值房后可批十道。
+    办结回报自动收存，不挤占时辰。
+    一个时辰可批 ${E.reviewLimit({})} 道（设值房后 ${E.reviewLimit({done: {W08: 'council'}})} 道）。
     钱粮清欠准奏后，查实追缴的银子另有到账回报。</p>
     ${s.memorials.some(m => m.result) ? '<button data-act="archive-reports">收存待阅回报（不占时辰）</button>' : ''}
     <details><summary>已收回报 · ${s.govReports.length}</summary>

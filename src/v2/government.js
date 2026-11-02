@@ -38,12 +38,15 @@ export function memorialMonth(s,rng){initGovernment(s);const now=monthIndex(s);i
  s.followups=s.followups.filter(f=>!(f.at<=now&&f.id==='department'));
  const n=2+Math.floor(rng(s)*2);for(let i=0;i<n;i++){if(s.memorialUsed.length>=MEMORIAL_POOL.length)s.memorialUsed=[];const eligible=MEMORIAL_POOL.filter(p=>!s.memorialUsed.includes(p.id)&&(!p.months||p.months.includes(s.month)));if(!eligible.length){addMemorial(s,{id:`B${now}-${i}`,type:'民情',province:PROVINCE_NAMES[(now+i)%10],title:'地方月报·'+now+'-'+i,body:'臣谨奏：本月应季旧案已逐件呈览，尚有民户补报口粮与春耕借种的情形。州县正在按里甲核验，暂未发现大户冒领，但偏远村落尚未走访。臣拟先将现有查册送部存核，余户续查续报，不敢以一时平静视作全省无事，伏乞皇上垂察。',special:'覆核里甲清册',result:true});continue;}const p=eligible[Math.floor(rng(s)*eligible.length)];s.memorialUsed.push(p.id);addMemorial(s,p);}archiveReports(s);}
 export const memorialCounts=s=>({pending:s.memorials.filter(m=>!m.result&&!m.inspectionPending).length,waiting:s.memorials.filter(m=>m.inspectionPending).length});
+// 批折额度在规则说明和实际扣除中共用。
+export const reviewLimit = s => s.done?.W08 === 'council' ? 10 : 6;
+
 // 打开折匣只浏览，已付过的同一时辰继续使用。
 export function beginReview(s) {
   initGovernment(s);
   const r = s.reviewSession;
   if (!r || r.at !== monthIndex(s) || r.left <= 0) {
-    s.reviewSession = {at: monthIndex(s), left: s.done?.W08 === 'council' ? 10 : 6, held: [], charged: false};
+    s.reviewSession = {at: monthIndex(s), left: reviewLimit(s), held: [], charged: false};
   }
   return {title: '折匣', text: '展开奏折，逐道朱批。', stats: {}, people: {}};
 }

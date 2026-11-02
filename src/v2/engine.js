@@ -312,6 +312,7 @@ export function publicWorks(s,province){const info=Fiscal.publicWorksInfo(s);if(
 export function review(s) {
   return G.beginReview(s);
 }
+export const reviewLimit = G.reviewLimit;
 export const memorialOptions=G.memorialOptions;
 export const memorialCounts=G.memorialCounts;
 export const memorialCost=G.memorialCost;

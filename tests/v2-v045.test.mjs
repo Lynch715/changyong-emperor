@@ -54,3 +54,15 @@ test('A2 已付过时辰的旧批折档继续用，不重复扣；无时辰也�
   assert.throws(() => E.judgeMemorial(s, s.memorials[1].uid, 'reject'), /时辰/);
   assert.equal(s.reviewSession.left, 6);
 });
+
+test('A3 旧档普通和值房批折额度分别为六道与十道', () => {
+  for (const council of [false, true]) {
+    const s = oldSave(s => {
+      s.agenda = [];
+      if (council) s.done.W08 = 'council';
+    });
+    E.review(s);
+    assert.equal(s.reviewSession.left, E.reviewLimit(s));
+    assert.equal(E.reviewLimit(s), council ? 10 : 6);
+  }
+});
