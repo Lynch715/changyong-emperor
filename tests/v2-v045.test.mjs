@@ -66,3 +66,11 @@ test('A3 旧档普通和值房批折额度分别为六道与十道', () => {
     assert.equal(E.reviewLimit(s), council ? 10 : 6);
   }
 });
+
+test('A4 构建版本参数不改变旧档版本与进度，仍能继续月初剧情', () => {
+  const s = oldSave();
+  const id = E.pendingScene(s);
+  const sc = E.scene(id);
+  E.choose(s, id, E.optionsFor(s, sc)[0].id);
+  assert.ok(s.done[id]);
+});
