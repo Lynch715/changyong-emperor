@@ -570,3 +570,20 @@ test('E3 合并后全部正文与选项逐字保持，旧档已选分支与动�
   assert.equal(E.scene(s, 'R02-01').title, '留茶夜谈');
   assert.equal(E.scene(s, 'oldStory').body, '旧档保存的原句');
 });
+
+test('E4 当前说明与历史记录分开，旧档原有日志和已选剧情照常恢复', async () => {
+  const {readFile} = await import('node:fs/promises');
+  const readme = await readFile(new URL('../README.md', import.meta.url), 'utf8');
+  const history = await readFile(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
+  assert.ok(readme.includes('[历代改动记录](CHANGELOG.md)'));
+  assert.equal(readme.match(/^## /gm).length, 3);
+  assert.ok(!/^## 0\.(?:2|3|4)\d\./m.test(readme));
+  assert.ok(history.includes('## 0.44.1 改动：人物故事集中前移'));
+  assert.ok(history.includes('## 0.25.0 改动'));
+  const s = oldSave(s => {
+    s.done.M01 = 'call';
+    s.log = [{y: 1, m: 1, kind: '情', text: '旧档里的原记录'}];
+  });
+  assert.deepEqual(s.log, [{y: 1, m: 1, kind: '情', text: '旧档里的原记录'}]);
+  assert.equal(s.done.M01, 'call');
+});
