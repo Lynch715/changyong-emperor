@@ -1,6 +1,6 @@
 import * as Fiscal from './fiscal.js';
 import {askConfirmation} from './dialogs.js';
-import {budgetDisplay, affectionChange} from './presentation.js';
+import {budgetDisplay, affectionChange, monthIncomeText, treasuryExpenseText} from './presentation.js';
 import * as F from './family.js';
 import {KID_ART} from './art.js';
 import {authorOf,POLICIES,policyHostValid} from './government.js';
@@ -341,7 +341,15 @@ function outingsView(){return `${header()}<main><div class="bar-title"><button d
 function nanfengView(){return `${header()}<main class="nanfeng-hall" style="--place-bg:url('${abs(placeBackground('nanfeng-interior',s.month))}')"><h3 class="sec">南风馆 · 灯下</h3><p>今夜不问姓名，只听一曲，或下一局棋。</p><section class="places">${[['N02','听雨汐弹琵琶、唱曲'],['N01','和花妍下棋、说话'],['tea','只喝茶听曲']].filter(([id])=>!s.freed[id]).map(([id,label])=>`<button data-act="company" data-id="${id}">${label}</button>`).join('')}${['N02','N01'].filter(id=>!s.freed[id]&&s.people[id].aff>=36&&!s.night).map(id=>`<button data-act="nanfeng-stay" data-id="${id}">留宿，今夜陪${nm(id)}（内帑 1 万两）</button>`).join('')}</section><p class="muted small">入馆的银子已付过。坐定后，这一回便结束。</p></main>`;}
 
 // ---------- 白天的小结果（微服、休养） ----------
-function resultView(){const r=view.result;return `<div class="stage" style="--bg:url('${abs(r.bg||BG.garden)}')">${r.id?`<img class="portrait" src="${portrait(r.id)}" alt="">`:''}<article class="paper"><h2>${esc(r.title)}</h2>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="done">好</button></article></div>`;}
+// 免费可选事项办完直接回御案，不触发普通行动结束后的随机插曲。
+function resultView() {
+  const r = view.result;
+  return `<div class="stage" style="--bg:url('${abs(r.bg || BG.garden)}')">
+    ${r.id ? `<img class="portrait" src="${portrait(r.id)}" alt="">` : ''}
+    <article class="paper"><h2>${esc(r.title)}</h2>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats, r.people)}
+      <button class="primary" data-act="${r.optional ? 'go' : 'done'}" data-to="home">好</button>
+    </article></div>`;
+}
 
 // ---------- 夜 ----------
 const ideasHtml=(ideas,target)=>`<div class="plan-ideas">${ideas.map((t,i)=>`<button data-act="plan-idea" data-target="${target}" data-i="${i}">${esc(t)}</button>`).join('')}</div>`;
@@ -359,16 +367,33 @@ function nightView(){
 }
 
 // ---------- 月末 ----------
-function summaryView(){
- const r=view.report;
- const next=s.ended?0:s.agenda.length;
- return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><article class="paper summary">
-  <h2>${YEAR_NAME(r.y)}年${MONTHS[r.m-1]} · 月末</h2>
-  ${(r.govNotes||[]).map(n=>`<p>${esc(n)}</p>`).join('')}${r.publicOutgo!=null?`<p class="small">军政及补欠实付 ${moneyText(r.publicOutgo)}，已列入国库支出。${r.publicArrears?`尚欠 ${moneyText(r.publicArrears)}，下月优先补欠。`:''}</p>`:''}<h4>这个月</h4>${r.fiscal?`<p class="small">月底入账：常例 ${moneyText(r.fiscal.base)} · 地方浮动 ${r.fiscal.province>=0?'+':'−'}${moneyText(Math.abs(r.fiscal.province))} · 户部浮动 ${r.fiscal.office>=0?'+':'−'}${moneyText(Math.abs(r.fiscal.office))} · 理财 ${moneyText(r.fiscal.projects)}；新政实付 ${moneyText(r.fiscal.policySpent)}。</p>`:''}${chips(r.stats,r.people)||'<p class="muted">风平浪静。</p>'}
-  <p class="muted small">${['treasury','inner'].map(k=>`${statName(k)}：进 ${moneyText(r.ledger[k].in)}，出 ${moneyText(r.ledger[k].out)}，余 ${moneyText(r.balances[k])}`).join('<br>')}<br>${r.cooled.length?`<br>${r.cooled.map(nm).join('、')}这个月没见到你，情分淡了一点。`:''}${r.forgot?.length?`<br>${r.forgot.map(nm).join('、')}的生辰，你没有去。情分 −3。`:''}</p>
-  ${r.crises.filter(c=>c.status!=='later').map(c=>`<div class="crisis mini ${c.status}"><b>${c.name}</b><em>${{open:'进行中',solved:'已了结',failed:'没办好'}[c.status]}</em></div>`).join('')}
-  ${s.ended?`<button class="primary" data-act="ending">${s.year>=30?'三十年回顾':`${YEAR_NAME(s.year)}年岁末 · 阶段回顾`} ›</button>`:`<h4>下个月</h4><p>${dateText(s)}${next?`，有 ${next} 件要事。`:'，暂无要事。'}</p>${E.birthdays(s).length?`<p class="new">下个月是${E.birthdays(s).map(nm).join('、')}的生辰。</p>`:''}${CORE.filter(id=>E.present(s,id)&&!s.people[id].met&&PEOPLE[id].from[0]===s.year&&PEOPLE[id].from[1]===s.month).map(id=>`<p class="new">新面孔：${PEOPLE[id].name}（${PEOPLE[id].title}）</p>`).join('')}<button class="primary" data-act="go" data-to="home">进入${MONTHS[s.month-1]} ›</button>`}
- </article></div>`;
+// 月报只列实际收支与变化，国库支出下面紧跟能够对账的用途。
+function summaryView() {
+  const r = view.report, next = s.ended ? 0 : s.agenda.length;
+  return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><article class="paper summary">
+    <h2>${YEAR_NAME(r.y)}年${MONTHS[r.m - 1]} · 月末</h2>
+    ${(r.govNotes || []).map(note => `<p>${esc(note)}</p>`).join('')}
+    ${r.publicArrears ? `<p class="small">军政尚欠 ${moneyText(r.publicArrears)}，下月进账后优先补欠。</p>` : ''}
+    <h4>这个月</h4>${monthIncomeText(r) ? `<p class="small">${esc(monthIncomeText(r))}</p>` : ''}
+    ${chips(r.stats, r.people) || '<p class="muted">风平浪静。</p>'}
+    <p class="muted small">国库：进 ${moneyText(r.ledger.treasury.in)}，出 ${moneyText(r.ledger.treasury.out)}，
+      余 ${moneyText(r.balances.treasury)}</p>
+    ${treasuryExpenseText(r) ? `<p class="expense-detail">${esc(treasuryExpenseText(r))}</p>` : ''}
+    <p class="muted small">内帑：进 ${moneyText(r.ledger.inner.in)}，出 ${moneyText(r.ledger.inner.out)}，
+      余 ${moneyText(r.balances.inner)}</p>
+    ${r.cooled.length ? `<p class="muted small">${r.cooled.map(nm).join('、')}这个月没见到你，情分淡了一点。</p>` : ''}
+    ${r.forgot?.length ? `<p class="muted small">${r.forgot.map(nm).join('、')}的生辰，你没有去。情分 −3。</p>` : ''}
+    ${r.crises.filter(crisis => crisis.status !== 'later').map(crisis => `<div class="crisis mini ${crisis.status}">
+      <b>${crisis.name}</b><em>${{open: '进行中', solved: '已了结', failed: '没办好'}[crisis.status]}</em></div>`).join('')}
+    ${s.ended ? `<button class="primary" data-act="ending">
+      ${s.year >= 30 ? '三十年回顾' : `${YEAR_NAME(s.year)}年岁末 · 阶段回顾`} ›</button>` : `
+      <h4>下个月</h4><p>${dateText(s)}${next ? `，有 ${next} 件要事。` : '，暂无要事。'}</p>
+      ${E.birthdays(s).length ? `<p class="new">下个月是${E.birthdays(s).map(nm).join('、')}的生辰。</p>` : ''}
+      ${CORE.filter(id => E.present(s, id) && !s.people[id].met && PEOPLE[id].from[0] === s.year &&
+        PEOPLE[id].from[1] === s.month).map(id =>
+        `<p class="new">新面孔：${PEOPLE[id].name}（${PEOPLE[id].title}）</p>`).join('')}
+      <button class="primary" data-act="go" data-to="home">进入${MONTHS[s.month - 1]} ›</button>`}
+  </article></div>`;
 }
 
 // ---------- 结局 ----------

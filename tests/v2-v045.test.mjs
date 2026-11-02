@@ -282,3 +282,46 @@ test('D3 新边务七题只分配边省，旧折的省份与已经发出的朱�
     assert.ok(['陕甘', '云贵', '四川'].includes(fresh.province));
   }
 });
+
+test('D4 月报不出现零值或未开启的入账项目，正月支出用途与总数对上', async () => {
+  const {monthIncomeText, treasuryExpenseText} = await import('../src/v2/presentation.js');
+  const s = E.newGame(454);
+  E.choose(s, 'M01', 'call');
+  E.openingEdict(s);
+  E.spendNight(s, null);
+  const report = E.endMonth(s);
+  assert.equal(report.ledger.treasury.out, 30);
+  assert.deepEqual(report.expenses, {赈济: 10, 军政: 20});
+  assert.match(treasuryExpenseText(report), /赈济 10/);
+  assert.match(treasuryExpenseText(report), /军政 20/);
+  const text = monthIncomeText({fiscal: {
+    base: 52, province: 0, office: 0, projects: 0, policySpent: 0, unlocked: {projects: false, policy: false},
+  }});
+  assert.equal(text, '月底入账：常例 52 万两。');
+  for (const label of ['地方浮动', '户部浮动', '理财', '新政实付', '0 万两']) assert.ok(!text.includes(label));
+  assert.equal(monthIncomeText({fiscal: {base: 0, projects: 10, unlocked: {projects: false}}}), '');
+});
+
+test('D4 旧档本月已花的钱只标未分项，余额与旧账均保留，新增支出可继续记账', async () => {
+  const {treasuryExpenseText} = await import('../src/v2/presentation.js');
+  const s = oldSave(s => {delete s.expenseUses; s.agenda = []; s.ledger.treasury.out = 7;});
+  assert.deepEqual(s.expenseUses, {});
+  assert.equal(s.stats.treasury, 812.75);
+  E.spendNight(s, null);
+  const report = E.endMonth(s);
+  assert.equal(report.ledger.treasury.out, 27);
+  assert.equal(treasuryExpenseText(report), '支出去向（万两）：军政 20 · 旧账未分项 7。');
+});
+
+test('D4 免费朝政结果返回御案不再抽随机插曲，仍不占时辰或要事位', async () => {
+  const {readFile} = await import('node:fs/promises');
+  const s = E.newGame(4540);
+  E.choose(s, 'M01', 'call');
+  const result = E.openingEdict(s);
+  assert.equal(result.optional, true);
+  assert.equal(s.ap, 3);
+  assert.deepEqual(s.agenda, []);
+  const source = await readFile(new URL('../src/v2/main.js', import.meta.url), 'utf8');
+  const view = source.slice(source.indexOf('function resultView('), source.indexOf('function nightView('));
+  assert.ok(view.includes("r.optional ? 'go' : 'done'"));
+});

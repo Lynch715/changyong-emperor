@@ -143,7 +143,7 @@ export function decideMemorial(s, uid, choice, api) {
   } else s.memorials = s.memorials.filter((x) => x.uid !== uid);
   if (choice === 'department') s.followups.push({ at: monthIndex(s) + 1, id: 'department', data: m });
   const stats = {
-    ...api.funds(s, { treasury: -cost }),
+    ...api.funds(s, { treasury: -cost }, choice === 'inspect' ? '查核' : m.type === '赈灾' ? '赈济' : m.type),
     ...api.applyStats(s, ['approve', 'inspect'].includes(choice) ? { health: -1 } : {}),
   };
   scheduleDecision(s, m, choice);
@@ -334,15 +334,74 @@ export function regionalMonthly(s,api){for(const [name,p]of Object.entries(s.pro
 export function sentimentAdjustment(s){const mean=Object.values(s.provinces).reduce((n,p)=>n+p.livelihood,0)/10;return Math.abs(mean-s.stats.people)>8?Math.sign(mean-s.stats.people):0;}
 export function courtAdjustment(s,officeSupport=0){const mean=Object.values(s.provinces).reduce((n,p)=>n+p.integrity,0)/10;const target=clamp(50+(mean-50)*.75+Math.min(8,Math.max(-8,officeSupport*2)));return Math.abs(target-s.stats.court)>=5?Math.sign(target-s.stats.court):0;}
 
-export function resolveDisaster(s,sc,choice,api){if(!sc.disaster)return;if(choice==='relief'){api.funds(s,{treasury:-25});regionChange(s,sc.disaster,{livelihood:5},api);}else regionChange(s,sc.disaster,{livelihood:-3,integrity:-1},api);}
-
+export function resolveDisaster(s, sc, choice, api) {
+  if (!sc.disaster) return;
+  if (choice === 'relief') {
+    api.funds(s, { treasury: -25 }, '赈济');
+    regionChange(s, sc.disaster, { livelihood: 5 }, api);
+  } else regionChange(s, sc.disaster, { livelihood: -3, integrity: -1 }, api);
+}
 export const POLICIES={huohao:{name:'火耗归公与养廉银',pilot:'河南',host:'C30',desc:'参考山西、河南试点，先核火耗、再定养廉，逐步推广。'},land:{name:'摊丁入亩',pilot:'直隶',host:'C31',desc:'先试点，再将丁银并入田赋。'},service:{name:'士民一体当差',pilot:'浙江',host:'C31',desc:'士绅也须承担差役，阻力较大。'},tusi:{name:'改土归流',pilot:'云贵',host:'C29',desc:'先抚后改，设流官承接地方事务。'}};
 export function initPolicies(s){s.policies??={};for(const id of Object.keys(POLICIES))s.policies[id]??={progress:id==='tusi'?(s.done?.W03==='force'?30:s.done?.W03==='slow'?15:0):id==='land'&&s.done?.V07?10:0,active:false,host:null,pilot:POLICIES[id].pilot};s.factions??={'八爷党':s.done?.V08?10:35,'新政':25,'中立':40};s.secrets??=[];s.assessments??={};s.tenureBaseline??={};}
 export function factionChange(s,faction,n){const k=faction==='新政'?'新政':faction==='八爷党'?'八爷党':'中立';s.factions[k]=clamp(s.factions[k]+n);}
 export function policyHostValid(s,id,host,pilot){const a=s.appointments[host];return !!({huohao:['河南'],land:['直隶'],service:['直隶','河南','浙江','江南'],tusi:['云贵']}[id]?.includes(pilot))&&!!s.people[host]&&!s.flags?.['gone_'+host]&&!!a?.office&&!!OFFICE_PROVINCES[a.office]?.includes(pilot);}
 export function validatePolicy(s,id,host,pilot){if(!POLICIES[id]||!s.provinces[pilot]||!policyHostValid(s,id,host,pilot))throw Error('须选在试点省任职的地方官主持。');if(s.policies[id].progress>=100)throw Error('这项新政已完成。');if(s.stats.treasury<12)throw Error('试点需国库十二万两。');}
-export function launchPolicy(s,id,host,pilot,api){const p=s.policies[id];Object.assign(p,{active:true,host,pilot});api.funds(s,{treasury:-12});factionChange(s,'新政',3);api.log(s,`${PEOPLE[host].name}主持${POLICIES[id].name}，于${pilot}试点`,'政');}
-export function policyMonthly(s,api){for(const [id,p]of Object.entries(s.policies)){if(p.progress>=100){if(s.stats.treasury<1){s.govNotes.push(POLICIES[id].name+'维持经费不足，本月收益暂停。');continue;}api.funds(s,{treasury:-1});if(s.month%3===0)for(const [name,province]of Object.entries(s.provinces)){const key=id==='land'||id==='huohao'?'revenue':'livelihood';if(province[key]<75)regionChange(s,name,{[key]:1},api);}continue;}if(!p.active)continue;if(!policyHostValid(s,id,p.host,p.pilot)){s.govNotes.push(POLICIES[id].name+'主持人已离任，进度暂停，须重新委任。');continue;}if(s.stats.treasury<6){s.govNotes.push(POLICIES[id].name+'经费不足，进度暂停。');continue;}api.funds(s,{treasury:-6});const officer=s.people[p.host],province=s.provinces[p.pilot];const resistance=api.rand(s)<(id==='service'?.4:.22);const gain=Math.max(1,Math.round(officer.ability*.3+province.integrity*.025+(p.host===POLICIES[id].host?2:0)+(officer.loyalty-60)/20));p.progress=clamp(p.progress+(resistance?-2:gain));if(resistance){regionChange(s,p.pilot,{integrity:-2},api);s.govNotes.push(POLICIES[id].name+'受阻：士绅抗议，言官参劾主持人，进度退二。');factionChange(s,'八爷党',2);}else{regionChange(s,p.pilot,{revenue:1},api);factionChange(s,'新政',1);}if(p.progress>=100)s.govNotes.push(POLICIES[id].name+'推广完成，今后各省每月受益。');}}
+export function launchPolicy(s, id, host, pilot, api) {
+  const p = s.policies[id];
+  Object.assign(p, { active: true, host, pilot });
+  api.funds(s, { treasury: -12 }, '新政');
+  factionChange(s, '新政', 3);
+  api.log(s, `${PEOPLE[host].name}主持${POLICIES[id].name}，于${pilot}试点`, '政');
+}
+export function policyMonthly(s, api) {
+  for (const [id, p] of Object.entries(s.policies)) {
+    if (p.progress >= 100) {
+      if (s.stats.treasury < 1) {
+        s.govNotes.push(POLICIES[id].name + '维持经费不足，本月收益暂停。');
+        continue;
+      }
+      api.funds(s, { treasury: -1 }, '新政');
+      if (s.month % 3 === 0)
+        for (const [name, province] of Object.entries(s.provinces)) {
+          const key = id === 'land' || id === 'huohao' ? 'revenue' : 'livelihood';
+          if (province[key] < 75) regionChange(s, name, { [key]: 1 }, api);
+        }
+      continue;
+    }
+    if (!p.active) continue;
+    if (!policyHostValid(s, id, p.host, p.pilot)) {
+      s.govNotes.push(POLICIES[id].name + '主持人已离任，进度暂停，须重新委任。');
+      continue;
+    }
+    if (s.stats.treasury < 6) {
+      s.govNotes.push(POLICIES[id].name + '经费不足，进度暂停。');
+      continue;
+    }
+    api.funds(s, { treasury: -6 }, '新政');
+    const officer = s.people[p.host],
+      province = s.provinces[p.pilot];
+    const resistance = api.rand(s) < (id === 'service' ? 0.4 : 0.22);
+    const gain = Math.max(
+      1,
+      Math.round(
+        officer.ability * 0.3 +
+          province.integrity * 0.025 +
+          (p.host === POLICIES[id].host ? 2 : 0) +
+          (officer.loyalty - 60) / 20,
+      ),
+    );
+    p.progress = clamp(p.progress + (resistance ? -2 : gain));
+    if (resistance) {
+      regionChange(s, p.pilot, { integrity: -2 }, api);
+      s.govNotes.push(POLICIES[id].name + '受阻：士绅抗议，言官参劾主持人，进度退二。');
+      factionChange(s, '八爷党', 2);
+    } else {
+      regionChange(s, p.pilot, { revenue: 1 }, api);
+      factionChange(s, '新政', 1);
+    }
+    if (p.progress >= 100) s.govNotes.push(POLICIES[id].name + '推广完成，今后各省每月受益。');
+  }
+}
 export function policyStory(s,id,choice){if(id==='W03'){const p=s.policies.tusi;p.progress=Math.max(p.progress,choice==='force'?30:choice==='slow'?15:0);}if(id==='V07')s.policies.land.progress=Math.max(s.policies.land.progress,10);if(id==='V08'){s.factions['八爷党']=choice==='spare'?20:8;}}
 export function secretMonth(s,api){const now=monthIndex(s);for(const f of s.followups.filter(f=>f.at<=now&&f.id==='secret')){const d=f.data,success=api.rand(s)<d.chance;const text=`前次朱批“据此查办”：${d.province}${d.topic}，${success?'已查实，责成整顿。':'查无实据，告密者须自省，被查者心生芥蒂。'}`;if(success){api.applyStats(s,{court:s.stats.court<70?1:0});regionChange(s,d.province,{integrity:2},api);factionChange(s,'新政',2);}else{s.people[d.author].loyalty=clamp(s.people[d.author].loyalty-6);if(d.target)api.gain(s,d.target,-5);}s.govNotes.push(text);s.provinces[d.province].reports.unshift(text);s.provinces[d.province].reports=s.provinces[d.province].reports.slice(0,3);}
  s.followups=s.followups.filter(f=>!(f.at<=now&&f.id==='secret'));

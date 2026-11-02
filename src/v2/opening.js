@@ -17,10 +17,11 @@ export function issueOpeningDecree(s, {applyStats, log}) {
   if (!openingDecree(s)) throw Error('这道旨意已经办过，或已过了本月。');
   if (!s.done.M01 || s.agenda.length) throw Error('先把养心惊梦办完。');
   if (s.stats.treasury < 10) throw Error('国库不足十万两。');
-  const stats = applyStats(s, OPENING_DECREE.effects);
+  const stats = applyStats(s, OPENING_DECREE.effects, 1, '赈济');
   s.done[OPENING_DECREE.id] = 'approve';
   log(s, '拨银十万两赈济京畿寒户，民心加三。', '政');
   return {
+    optional: true,
     title: OPENING_DECREE.title,
     text: '你落笔准了赈银。户部当日拨出十万两，粥厂添了粮，排队的寒户终于喝上热粥。',
     stats,
