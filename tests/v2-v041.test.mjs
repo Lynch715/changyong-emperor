@@ -3,7 +3,27 @@ import assert from 'node:assert/strict';
 import * as E from '../src/v2/engine.js';
 import * as G from '../src/v2/government.js';
 const ready=()=>{const s=E.newGame(41);s.agenda=[];return s;};
-test('折匣每月2—3道，八类56题、正文长度、季节过滤及整池无重抽',()=>{assert.equal(G.MEMORIAL_POOL.length,56);assert.equal(new Set(G.MEMORIAL_POOL.map(x=>x.type)).size,8);for(const p of G.MEMORIAL_POOL)assert.ok(p.body.length>=80&&p.body.length<=150);const s=ready(),seen=new Set();for(let i=0;i<12;i++){for(const p of s.memorials.filter(m=>!m.disaster)){assert.ok(!seen.has(p.id));seen.add(p.id);assert.ok(!p.months||p.months.includes(s.month));}assert.ok(s.memorials.filter(m=>!m.disaster).length>=2&&s.memorials.filter(m=>!m.disaster).length<=3);s.memorials=[];s.month++;G.memorialMonth(s,E.rand);}});
+test('折匣每月2—3道，八类56题、正文长度、季节过滤及整池无重抽', () => {
+  assert.equal(G.MEMORIAL_POOL.length, 56);
+  assert.equal(new Set(G.MEMORIAL_POOL.map((x) => x.type)).size, 8);
+  for (const p of G.MEMORIAL_POOL) assert.ok(p.body.length > 0 && p.body.length <= 60);
+  const s = ready(),
+    seen = new Set();
+  for (let i = 0; i < 12; i++) {
+    for (const p of s.memorials.filter((m) => !m.disaster)) {
+      assert.ok(!seen.has(p.id));
+      seen.add(p.id);
+      assert.ok(!p.months || p.months.includes(s.month));
+    }
+    assert.ok(
+      s.memorials.filter((m) => !m.disaster).length >= 2 &&
+        s.memorials.filter((m) => !m.disaster).length <= 3,
+    );
+    s.memorials = [];
+    s.month++;
+    G.memorialMonth(s, E.rand);
+  }
+});
 test('六道限额、留中防重复、交部议下月带原折回来及积压',()=>{const s=ready();s.memorials=[];for(let i=0;i<8;i++)G.addMemorial(s,{title:'待裁'+i,province:'河南',type:'民情'});E.review(s);const id=s.memorials[0].uid;E.judgeMemorial(s,id,'hold');assert.throws(()=>E.judgeMemorial(s,id,'hold'));const p=s.memorials[1];E.judgeMemorial(s,p.uid,'department');for(let i=0;i<4;i++)E.judgeMemorial(s,s.memorials.find(m=>m.uid!==id).uid,'reject');assert.equal(s.reviewSession.left,0);assert.throws(()=>E.judgeMemorial(s,s.memorials.find(m=>m.uid!==id).uid,'reject'));s.month++;G.memorialMonth(s,E.rand);assert.ok(s.memorials.some(m=>m.department&&m.body.includes('前次朱批')));s.memorials=Array.from({length:11},()=>({}));const c=s.stats.court,h=s.stats.health;G.backlog(s,E.applyStats);assert.equal(s.stats.court,c-1);assert.equal(s.stats.health,h-1);});
 test('旧档补齐政务字段，亲笔朱批沿用限幅，不再花时辰', () => {
   const s = ready();

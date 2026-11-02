@@ -313,7 +313,7 @@ function memorialView() {
     ${s.memorials.map(m => {
       const allowed = r?.left && !r.held.includes(m.uid) && !s.night && (r.charged || E.canAct(s));
       return `<article class="crisis"><h3>${esc(m.title)}</h3>
-        <small>${esc(m.author)} · ${esc(m.province)} · ${esc(m.type)}</small>${paras(m.body)}
+        <small>${esc(m.author)} · ${esc(m.province)} · ${esc(m.type)}</small>${paras(E.memorialBody(m))}
         ${m.inspectionPending ? '<p class="small">正在查勘，未批执行经费。急灾仍须先行赈救。</p>' :
           m.inspected ? '<p class="small">勘报已回，执行经费待裁。</p>' : ''}
         <div class="options">${E.memorialOptions(m).map(([id, label]) => {

@@ -220,3 +220,34 @@ test('B5 旧档成就一显示便持久移除，刷新不重弹且其他庆贺�
   assert.ok(!updateGallery(reloaded, storage).some(a => a.id === 'tea'), '旧队列带来的成就也不再次入队');
   assert.equal(takeAchievement(reloaded, () => assert.fail('非成就不得提前收取'), storage), null);
 });
+
+test('D1 56道短折均为两句且不超过60字，任意两折无相同的16字套话', async () => {
+  const {MEMORIAL_POOL} = await import('../src/v2/government.js');
+  const seen = new Set();
+  for (const m of MEMORIAL_POOL) {
+    assert.ok(m.body.length <= 60, m.title);
+    assert.equal(m.body.split('。').filter(Boolean).length, 2, m.title);
+    for (let i = 0; i <= m.body.length - 16; i++) {
+      const part = m.body.slice(i, i + 16);
+      assert.ok(!seen.has(part), part);
+      seen.add(part);
+    }
+  }
+});
+
+test('D1 旧折原文保留，阅读时用短正文，查核细节随原办理结果回来', async () => {
+  const G = await import('../src/v2/government.js');
+  const originalBody = '旧正文不改写。' + '臣已令属员封存原册。'.repeat(10);
+  const s = oldSave(s => {
+    s.agenda = [];
+    s.memorials = [{...G.MEMORIAL_POOL[0], uid: 'old-mem', body: originalBody}];
+  });
+  assert.equal(s.memorials[0].body, originalBody);
+  assert.ok(E.memorialBody(s.memorials[0]).length <= 80);
+  E.review(s);
+  E.judgeMemorial(s, 'old-mem', 'inspect');
+  s.month += 3;
+  G.regionalMonth(s, {rand: () => 1, applyStats: E.applyStats});
+  assert.match(s.govReports.at(-1).body, /埋桩护脚/);
+  assert.ok(E.memorialBody(s.memorials[0]).length <= 80);
+});
