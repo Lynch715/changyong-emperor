@@ -37,8 +37,8 @@ export function memorialBody(m) {
   const original = MEMORIAL_POOL.find(p => p.id === m.id || p.title === m.title);
   let body = original?.body || (m.disaster ?
     `${m.province}灾情损了口粮与田地。请速拨赈银，查户给粮，勿再拖延。` : m.body || '地方有事待裁。请皇上批示。');
-  if (m.department) body += '前次朱批交部议，现请再裁。';
-  if (m.inspected) body += '查核已回，经费仍须另裁。';
+  if (m.department && !body.includes('前次朱批交部议')) body += '前次朱批交部议，现请再裁。';
+  if (m.inspected && !body.includes('经费仍须另裁')) body += '查核已回，经费仍须另裁。';
   return body;
 }
 export function initGovernment(s){s.memorials??=[];s.memorialUsed??=[];s.followups??=[];s.govSerial??=0;s.govNotes??=[];s.govReports??=[];initProvinces(s);initPolicies(s);return s;}
@@ -48,7 +48,10 @@ export function addMemorial(s,p){const author=authorOf(s,p.province);const m={..
 export const needsFunding=m=>['河工','赈灾','边务','文教','民情'].includes(m.type);
 export const RECOVERABLE_TITLES=new Set(['库银亏空','火耗私派','漕粮短解','盐课拖欠','清丈隐田','知县侵渔','胥吏勒索','驿站扰民']);
 export const recoverable=m=>RECOVERABLE_TITLES.has(m.title);
-export const memorialCost=(m,choice)=>choice==='inspect'?2:choice==='approve'?({河工:18,赈灾:18,边务:18,文教:10,民情:6,钱粮:3,吏治:3,刑名:2}[m.type]||6):0;
+// 普通折子沿用原价，大笔公共拨款使用折内明确写出的金额。
+export const memorialCost = (m, choice) => choice === 'inspect' ? 2 : choice === 'approve' ?
+  m.cost ?? ({河工: 18, 赈灾: 18, 边务: 18, 文教: 10, 民情: 6, 钱粮: 3, 吏治: 3, 刑名: 2}[m.type] || 6) : 0;
+
 export function archiveReports(s){initGovernment(s);const reports=s.memorials.filter(m=>m.result);s.govReports.push(...reports);s.memorials=s.memorials.filter(m=>!m.result);return reports.length;}
 
 export function memorialMonth(s, rng) {
@@ -90,6 +93,14 @@ export function memorialMonth(s, rng) {
     const p = eligible[Math.floor(rng(s) * eligible.length)];
     s.memorialUsed.push(p.id);
     addMemorial(s, p);
+  }
+  if (s.month % 3 === 0 && s.stats.treasury > 1500) {
+    const types = ['河工', '赈灾', '边务'], type = types[Math.floor(s.month / 3 - 1) % types.length];
+    const province = type === '边务' ? '陕甘' : '河南';
+    addMemorial(s, {
+      id: `public-${now}`, type, province, title: `积银请拨${type === '河工' ? '修河' : type === '赈灾' ? '赈济' : '边务'}`,
+      cost: 120, body: `国库积银已过一千五百万两，地方仍有${type}待办。请拨一百二十万两，按册办理并回奏。`,
+    });
   }
   archiveReports(s);
 }

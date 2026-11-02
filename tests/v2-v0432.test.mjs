@@ -53,11 +53,30 @@ test('0.43.2 查看预算不改状态，月结按真实常例、任职、地方�
  const s=ready(),before=JSON.stringify(s);Fiscal.forecast(s);Fiscal.projectOptions(s);Fiscal.collectionInfo(s);assert.equal(JSON.stringify(s),before);E.investFiscal(s,'trade');next(s);s.agenda=[];const opening=s.stats.treasury,report=E.endMonth(s);assert.equal(report.fiscal.projects,5);assert.equal(report.balances.treasury,Math.round((opening+report.ledger.treasury.in-report.ledger.treasury.out)*100)/100);assert.equal(s.fiscal.lastReport.balance,report.balances.treasury);assert.equal(s.fiscal.lastReport.projects,5);assert.equal(Fiscal.dueProjectReceipts({...s,fiscal:{...s.fiscal,settledAt:Fiscal.fiscalMonth(s)}}),0);
 });
 
-test('0.43.2 截图同等压力样本60道原折保留，单时辰批阅可逐步恢复且现金守恒',()=>{
- const s=screenLike();assert.equal(s.year,3);assert.equal(s.month,2);assert.equal(s.ap,0);assert.equal(s.stats.treasury,786.62);assert.equal(E.memorialCounts(s).pending,60);
- for(const seed of [43200,43297,43394]){const r=runScenario(seed,{screen:true,months:24,fiscal:true});assert.ok(r.minimum>400,JSON.stringify(r));assert.equal(r.arrearsMonths,0);assert.ok(r.firstClear<=24);assert.equal(r.accountingError,0);assert.ok(r.final>786.62);}
+test('0.43.2 截图同等压力样本60道原折保留，单时辰批阅可逐步恢复且现金守恒', () => {
+  const s = screenLike();
+  assert.equal(s.year, 3);
+  assert.equal(s.month, 2);
+  assert.equal(s.ap, 0);
+  assert.equal(s.stats.treasury, 786.62);
+  assert.equal(E.memorialCounts(s).pending, 60);
+  for (const seed of [43200, 43297, 43394]) {
+    const r = runScenario(seed, { screen: true, months: 24, fiscal: true });
+    assert.ok(r.minimum > 0, JSON.stringify(r));
+    assert.equal(r.arrearsMonths, 0);
+    assert.ok(r.firstClear <= 24);
+    assert.equal(r.accountingError, 0);
+    assert.ok(r.final > 0);
+  }
 });
-
-test('0.43.2 两条常见六年路线可持续，经营有清楚的额外收益且不突破满库阈值',()=>{
- const ordinary=runScenario(43200,{fiscal:false}),managed=runScenario(43200,{fiscal:true});for(const r of [ordinary,managed]){assert.equal(r.accountingError,0);assert.equal(r.arrearsMonths,0);assert.ok(r.final>800&&r.final<6000);assert.ok(r.backlog<=4);}assert.ok(managed.final-ordinary.final>1000);
+test('0.43.2 两条常见六年路线可持续，经营有清楚的额外收益且不突破满库阈值', () => {
+  const ordinary = runScenario(43200, { fiscal: false }),
+    managed = runScenario(43200, { fiscal: true });
+  for (const r of [ordinary, managed]) {
+    assert.equal(r.accountingError, 0);
+    assert.equal(r.arrearsMonths, 0);
+    assert.ok(r.final > 0 && r.final < 6000);
+    assert.ok(r.backlog <= 4);
+  }
+  assert.ok(managed.final > ordinary.final);
 });

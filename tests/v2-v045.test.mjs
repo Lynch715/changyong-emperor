@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {filterChildSentences, childPlanAllowed} from '../src/v2/plans.js';
 import * as E from '../src/v2/engine.js';
+import {ECONOMY} from '../src/v2/data.js';
 
 // 经由真实读档入口恢复旧字段，并核对玩家的进度、钱和人物均保留。
 function oldSave(edit = () => {}) {
@@ -162,7 +163,7 @@ test('B2 旧档首页仅显示已知收支预估，查看不改账；元年未�
   const before = JSON.stringify(s), display = budgetDisplay(s);
   assert.equal(display.income, s.ledger.treasury.in);
   assert.equal(display.outgo, s.ledger.treasury.out);
-  assert.equal(display.expected, 844.75);
+  assert.equal(display.expected, 812.75 + ECONOMY.income[0] - ECONOMY.publicOutgo[0]);
   assert.equal(display.showProjects, false);
   assert.equal(display.showPolicy, false);
   assert.equal(JSON.stringify(s), before);
@@ -290,10 +291,10 @@ test('D4 月报不出现零值或未开启的入账项目，正月支出用途�
   E.openingEdict(s);
   E.spendNight(s, null);
   const report = E.endMonth(s);
-  assert.equal(report.ledger.treasury.out, 30);
-  assert.deepEqual(report.expenses, {赈济: 10, 军政: 20});
+  assert.equal(report.ledger.treasury.out, 10 + ECONOMY.publicOutgo[0]);
+  assert.deepEqual(report.expenses, {赈济: 10, 军政: ECONOMY.publicOutgo[0]});
   assert.match(treasuryExpenseText(report), /赈济 10/);
-  assert.match(treasuryExpenseText(report), /军政 20/);
+  assert.ok(treasuryExpenseText(report).includes('军政 ' + ECONOMY.publicOutgo[0]));
   const text = monthIncomeText({fiscal: {
     base: 52, province: 0, office: 0, projects: 0, policySpent: 0, unlocked: {projects: false, policy: false},
   }});
@@ -309,8 +310,8 @@ test('D4 旧档本月已花的钱只标未分项，余额与旧账均保留，�
   assert.equal(s.stats.treasury, 812.75);
   E.spendNight(s, null);
   const report = E.endMonth(s);
-  assert.equal(report.ledger.treasury.out, 27);
-  assert.equal(treasuryExpenseText(report), '支出去向（万两）：军政 20 · 旧账未分项 7。');
+  assert.equal(report.ledger.treasury.out, 7 + ECONOMY.publicOutgo[0]);
+  assert.equal(treasuryExpenseText(report), `支出去向（万两）：军政 ${ECONOMY.publicOutgo[0]} · 旧账未分项 7。`);
 });
 
 test('D4 免费朝政结果返回御案不再抽随机插曲，仍不占时辰或要事位', async () => {
@@ -324,4 +325,36 @@ test('D4 免费朝政结果返回御案不再抽随机插曲，仍不占时辰�
   const source = await readFile(new URL('../src/v2/main.js', import.meta.url), 'utf8');
   const view = source.slice(source.indexOf('function resultView('), source.indexOf('function nightView('));
   assert.ok(view.includes("r.optional ? 'go' : 'done'"));
+});
+
+test('C1 旧档不补发积银折，下个季度才呈报；准奏实付120万并按旧回报流程见效', async () => {
+  const G = await import('../src/v2/government.js');
+  const s = oldSave(s => {s.month = 3; s.stats.treasury = 1601; s.agenda = [];});
+  assert.ok(!s.memorials.some(m => m.cost === 120));
+  G.memorialMonth(s, () => .5);
+  const request = s.memorials.find(m => m.cost === 120);
+  assert.ok(request);
+  const count = s.memorials.length;
+  G.memorialMonth(s, () => .5);
+  assert.equal(s.memorials.length, count);
+  const cash = s.stats.treasury;
+  E.review(s);
+  E.judgeMemorial(s, request.uid, 'approve');
+  assert.equal(s.stats.treasury, cash - 120);
+  assert.equal(s.expenseUses.河工, 120);
+  s.month += 3;
+  G.regionalMonth(s, {rand: () => 0, applyStats: E.applyStats});
+  assert.ok(s.govReports.some(report => report.body.includes('积银请拨修河')));
+  assert.ok(s.provinces.河南.livelihood > 55);
+});
+
+test('C1 三组真实被动六年路线达到600至1500万两，积极理财仍比各自被动路线高', async () => {
+  const {SEEDS, runBalance} = await import('../scripts/v045-balance.mjs');
+  const {runLongJourney} = await import('../scripts/v044-balance.mjs');
+  for (const seed of SEEDS) {
+    const passive = runBalance(seed), active = runLongJourney(seed, {months: 72}).metrics;
+    assert.ok(passive.final.treasury >= 600 && passive.final.treasury <= 1500, JSON.stringify(passive.final));
+    assert.ok(active.final > passive.final.treasury);
+    assert.equal(active.accountingError, 0);
+  }
 });

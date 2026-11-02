@@ -11,9 +11,25 @@ test('0.38 两本银账与小额银子显示，读旧档只换算一次',()=>{co
  delete s.economyVersion;delete s.stats.inner;delete s.ledger;s.stats.treasury=60;const old=reload(s);assert.equal(old.stats.treasury,800);assert.equal(old.stats.inner,50);assert.equal(reload(old).stats.treasury,800);assert.doesNotThrow(()=>finishMonth(old));});
 test('0.38 剧情银子按点数换算，送礼走内帑，失败不花时辰',()=>{const s=ready();assert.equal(E.applyStats(s,{treasury:-3}).treasury,-3*ECONOMY.point);const before=s.stats.treasury,inner=s.stats.inner;E.giveGift(s,'C02','tea');assert.equal(s.stats.treasury,before);assert.equal(s.stats.inner,inner-GIFTS.tea.innerCost);s.stats.inner=0;const ap=s.ap;assert.throws(()=>E.giveGift(s,'C02','tea'),/内帑不足/);assert.throws(()=>E.goOuting(s),/内帑不足/);assert.equal(s.ap,ap);});
 test('0.38 双向拨银守恒，占一个时辰并影响朝局或民心',()=>{const s=ready();const total=s.stats.treasury+s.stats.inner;E.transferFunds(s,'toInner',10);assert.equal(s.stats.court,53);assert.equal(s.stats.inner,60);E.transferFunds(s,'toTreasury',5);assert.equal(s.stats.people,57);assert.equal(s.stats.treasury+s.stats.inner,total);assert.equal(s.ap,1);assert.throws(()=>E.transferFunds(s,'toInner',1e8));assert.equal(s.ap,1);});
-test('0.38 月结逐笔记进出，内帑 AI 变化限幅且大凶没有收益',()=>{const s=ready();E.applyEdict(s,'宫里添置',{inner:100});assert.equal(s.stats.inner,70);E.applyEdict(s,'宫里添置',{inner:100,fate:{tier:0}});assert.equal(s.stats.inner,70);const r=finishMonth(s);assert.equal(r.ledger.inner.in,24);assert.equal(r.balances.inner,74);assert.equal(r.ledger.treasury.in-r.publicOutgo,r.income.treasury);});
+test('0.38 月结逐笔记进出，内帑 AI 变化限幅且大凶没有收益', () => {
+  const s = ready();
+  E.applyEdict(s, '宫里添置', { inner: 100 });
+  assert.equal(s.stats.inner, 70);
+  E.applyEdict(s, '宫里添置', { inner: 100, fate: { tier: 0 } });
+  assert.equal(s.stats.inner, 70);
+  const r = finishMonth(s);
+  assert.equal(r.ledger.inner.in, 24);
+  assert.equal(r.balances.inner, 74);
+  assert.equal(Math.round((r.ledger.treasury.in - r.publicOutgo) * 100) / 100, r.income.treasury);
+});
 test('0.38 家宴走内帑，国库不再付宫宴钱',()=>{const s=ready();s.year=2;s.month=8;s.people.C02.met=true;s.people.C07.met=true;E.startMonth(s);s.agenda=['FE2-zhongqiu'];const before=s.stats.treasury;E.choose(s,'FE2-zhongqiu','all');assert.equal(s.stats.treasury,before);assert.equal(s.stats.inner,50-ECONOMY.banquetCost);});
-test('0.38 固定经营策略自动玩满72月，国库存银落在目标区间',()=>{const {state,curve}=replay();assert.equal(curve.length,6);assert.equal(state.year,6);assert.ok(state.ended);assert.ok(state.stats.treasury>=1500&&state.stats.treasury<=3500,JSON.stringify(curve));});
+test('0.38 固定经营策略自动玩满72月，国库存银落在目标区间', () => {
+  const { state, curve } = replay();
+  assert.equal(curve.length, 6);
+  assert.equal(state.year, 6);
+  assert.ok(state.ended);
+  assert.ok(state.stats.treasury >= 600 && state.stats.treasury <= 1500, JSON.stringify(curve));
+});
 import {PLACES,PERFORMERS,DESTINATIONS} from '../src/v2/outings.js';
 test('0.38 九处微服都扣内帑记日志，三段抽完才重开一轮',()=>{assert.equal(Object.keys(PLACES).length,9);for(const id of Object.keys(PLACES)){const s=ready();s.freedom=1;const seen=[];for(let i=0;i<4;i++){s.ap=3;const before=s.stats.inner,r=E.goOuting(s,id);assert.equal(Math.round((before-s.stats.inner)*100),Math.round(PLACES[id].cost*100));assert.ok(s.log.at(-1).text.includes(PLACES[id].name));seen.push(s.travel.used[Object.keys(s.travel.used)[0]].at(-1));if(id==='nanfeng')E.nanfengCompany(s,'tea');}assert.equal(new Set(seen.slice(0,3)).size,3);assert.equal(s.ap,2);}});
 test('0.38 冬日冰嬉、夏日荷花、正月白云观庙会与故人偶遇',()=>{const s=ready();s.month=12;assert.match(E.goOuting(s,'shicha').text,/冰/);s.ap=3;s.month=5;assert.match(E.goOuting(s,'shicha').text,/荷/);s.ap=3;s.month=1;assert.match(E.goOuting(s,'baiyun').text,/庙会|石猴/);s.year=2;s.month=4;s.ap=3;s.people.C05.met=true;assert.equal(E.goOuting(s,'shicha').people.C05,2);});
