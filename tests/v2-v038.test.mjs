@@ -53,5 +53,22 @@ test('0.38 AI 任命先检查整批，非法或超员没有任何局部变更',(
 test('0.38 嫔位剧情读真实定员，满位可暂缓，年羹尧的剧情去向写入历史',()=>{const s=ready();s.year=5;s.month=8;for(const id of ['C11','C12','C13']){s.ap=3;E.appointPerson(s,id,'rank3');}assert.equal(Object.values(s.appointments).filter(x=>x.office==='rank3').length,5);s.agenda=['K15'];assert.ok(!E.optionsFor(s,E.scene('K15')).some(o=>o.id==='both'));E.choose(s,'K15','huan');assert.equal(E.titleOf(s,'C09'),'嫔');s.agenda=['K15'];assert.deepEqual(E.optionsFor(s,E.scene('K15')).map(o=>o.id),['later']);assert.doesNotThrow(()=>E.choose(s,'K15','later'));
  for(const [opt,title]of [['hangzhou','杭州将军'],['punish','削爵在狱'],['keep','领侍卫内大臣']]){const n=ready();n.year=3;n.agenda=['V06'];E.choose(n,'V06',opt);assert.equal(E.titleOf(n,'C03'),title);assert.equal(n.appointmentHistory.C03.at(-1).source,'剧情');}});
 test('0.38 完整0.37结构旧档补齐全部新字段，读档不写回源存档且走完一月',()=>{const s=E.newGame(7);const keep=['version','vol','freedom','flags','seed','crises','year','month','ap','stats','people','agenda','done','log','delta','night','ended','used','chats','weather','bdayDone','visit'];for(const k of Object.keys(s))if(!keep.includes(k))delete s[k];s.stats={treasury:60,people:55,court:55,palace:45,health:70};s.people=Object.fromEntries(CORE.map(id=>{const p=s.people[id];delete p.ability;delete p.loyalty;delete p.faction;return [id,p];}));const raw=JSON.stringify(s),storage={getItem:()=>raw,setItem:()=>{throw Error('读档不能写回')}};const old=E.load(storage);assert.ok(old);assert.equal(old.stats.treasury,800);assert.equal(old.stats.inner,50);for(const k of ['economyVersion','ledger','travel','inventory','nanfeng','freed','clues','secondaryDone','appointments','appointmentHistory','officeMonths'])assert.ok(old[k]!==undefined,k);assert.doesNotThrow(()=>finishMonth(old));assert.equal(JSON.stringify(s),raw);});
-test('0.38 宫里添置、万寿与节用走内帑，大凶不能借任命添收益',()=>{const s=ready();s.agenda=['Q16'];const before=s.stats.treasury;E.choose(s,'Q16','a');assert.equal(s.stats.treasury,before);assert.equal(s.stats.inner,49.2);s.ap=3;E.applyEdict(s,'宫中节用',{title:'减膳节用',effects:{treasury:5}});assert.equal(s.stats.treasury,before);assert.equal(s.stats.inner,49.7);const raw=JSON.stringify(s);assert.throws(()=>E.applyEdict(s,'任命',{appoint:[{id:'C29',office:'yungui'}],fate:{tier:0}}),/受阻/);assert.equal(JSON.stringify(s),raw);});
+test('0.38 宫里添置、万寿与节用走内帑，大凶不能借任命添收益', () => {
+  const s = ready();
+  s.agenda = ['Q16'];
+  const before = s.stats.treasury;
+  E.choose(s, 'Q16', 'a');
+  assert.equal(s.stats.treasury, before);
+  assert.equal(s.stats.inner, 50 - 8 * ECONOMY.privateCostPoint);
+  s.ap = 3;
+  E.applyEdict(s, '宫中节用', { title: '减膳节用', effects: { treasury: 5 } });
+  assert.equal(s.stats.treasury, before);
+  assert.equal(s.stats.inner, 50 - 8 * ECONOMY.privateCostPoint + 5 * ECONOMY.privatePoint);
+  const raw = JSON.stringify(s);
+  assert.throws(
+    () => E.applyEdict(s, '任命', { appoint: [{ id: 'C29', office: 'yungui' }], fate: { tier: 0 } }),
+    /受阻/,
+  );
+  assert.equal(JSON.stringify(s), raw);
+});
 test('0.38 官员外任用书信，调回京后更新地点并保留外任旧事',()=>{const s=ready();s.year=3;s.flags.nian_away=true;s.flags.away_C03=true;s.ap=3;E.appointPerson(s,'C03','bingbu');assert.equal(E.titleOf(s,'C03'),'兵部尚书');assert.equal(E.placeOf(s,'C03'),'京城');assert.equal(E.away(s,'C03'),false);E.appointPerson(s,'C29','yungui');assert.equal(E.away(s,'C29'),true);assert.equal(E.beginChat(s,'C29').letter,true);assert.ok(s.appointmentHistory.C03.length>=2);});

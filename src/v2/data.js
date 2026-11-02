@@ -10,9 +10,10 @@ export const ECONOMY = {
   income: [52, 62, 75],
   publicOutgo: [45, 49, 55],
   innerIncome: 4,
-  outingCost: 0.08,
+  outingCost: 1.6,
   banquetCost: 1.5,
-  privatePoint: 0.1,
+  privatePoint: .1,
+  privateCostPoint: 1,
   deficitGoal: 600,
   reformGoal: 470,
 };
@@ -107,11 +108,17 @@ export const CRISES=[
  {id:'army',name:'西北军饷',desc:'大将军凯旋，军需册里却有重复支领。查，还是不查？',start:[2,5],scenes:['M10','G04','G05','G06'],deadline:[2,8]}
 ];
 
-export const GIFTS={
- antique:{name:'庙市寻来的古玩',category:'古玩',innerCost:0,cost:0,inventory:true},
- tea:{innerCost:0.05,name:'新贡的龙井',cost:2},handwarmer:{innerCost:0.08,name:'錾花铜手炉',cost:2},silk:{innerCost:0.2,name:'江宁织造的云锦',cost:5},
- flowers:{innerCost:0.01,name:'御园新开的花',cost:1},jewel:{innerCost:0.35,name:'内务府的点翠簪',cost:6},book:{innerCost:0.12,name:'内府藏的善本',cost:3},
- music:{innerCost:0.15,name:'一支旧玉笛',cost:4},wine:{innerCost:0.06,name:'御酒两坛',cost:3},rest:{innerCost:0,name:'准三日的假',cost:0}
+export const GIFTS = {
+  antique: { name: '庙市寻来的古玩', category: '古玩', innerCost: 0, cost: 0, inventory: true },
+  tea: { innerCost: 1, name: '新贡的龙井', cost: 2 },
+  handwarmer: { innerCost: 1.6, name: '錾花铜手炉', cost: 2 },
+  silk: { innerCost: 4, name: '江宁织造的云锦', cost: 5 },
+  flowers: { innerCost: 0.2, name: '御园新开的花', cost: 1 },
+  jewel: { innerCost: 7, name: '内务府的点翠簪', cost: 6 },
+  book: { innerCost: 2.4, name: '内府藏的善本', cost: 3 },
+  music: { innerCost: 3, name: '一支旧玉笛', cost: 4 },
+  wine: { innerCost: 1.2, name: '御酒两坛', cost: 3 },
+  rest: { innerCost: 0, name: '准三日的假', cost: 0 },
 };
 // 赏赐后的回应（无 AI 时用）。liked/plain
 export const GIFT_LINES={

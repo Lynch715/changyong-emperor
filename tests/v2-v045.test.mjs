@@ -358,3 +358,29 @@ test('C1 三组真实被动六年路线达到600至1500万两，积极理财仍�
     assert.equal(active.accountingError, 0);
   }
 });
+
+test('C2 旧档内帑不缩水，新礼价20倍；付不起礼物和泡汤都不扣时辰', async () => {
+  const {GIFTS} = await import('../src/v2/data.js');
+  const {PLACES} = await import('../src/v2/outings.js');
+  const prices = {tea: 1, handwarmer: 1.6, silk: 4, flowers: .2, jewel: 7, book: 2.4, music: 3, wine: 1.2};
+  for (const [id, cost] of Object.entries(prices)) assert.equal(GIFTS[id].innerCost, cost);
+  const s = oldSave(s => {s.agenda = []; s.stats.inner = 37.25;});
+  assert.equal(s.stats.inner, 37.25);
+  E.giveGift(s, 'C02', 'tea');
+  assert.equal(s.stats.inner, 36.25);
+  for (const place of Object.values(PLACES)) assert.ok(place.cost >= .6 && place.cost <= 6);
+  s.stats.inner = .1;
+  const before = JSON.stringify(s);
+  assert.throws(() => E.giveGift(s, 'C02', 'jewel'), /内帑/);
+  assert.throws(() => E.plannedRest(s, '泡温泉', {inner: -999}), /内帑/);
+  assert.equal(JSON.stringify(s), before);
+});
+
+test('C2 三组被动路线第三年内帑不超过80，付费赏赐路线一年内首次吃紧', async () => {
+  const {SEEDS, runBalance} = await import('../scripts/v045-balance.mjs');
+  for (const seed of SEEDS) {
+    assert.ok(runBalance(seed, {months: 36}).final.inner <= 80);
+    const gifts = runBalance(seed, {months: 36, mode: 'gifts'});
+    assert.ok(gifts.tightAt >= 1 && gifts.tightAt <= 12);
+  }
+});

@@ -19,7 +19,8 @@ export function runBalance(seed, {months = 72, mode = 'passive'} = {}) {
       const people = CORE.filter(id => E.present(s, id) && s.people[id].met && !E.gone(s, id));
       const id = mode === 'social' ? people.sort((a, b) => (contacts[a] || 0) - (contacts[b] || 0))[0] :
         people[Math.floor(E.rand(s) * people.length)];
-      const gifts = Object.entries(GIFTS).filter(([, gift]) => !gift.inventory && s.stats.inner >= gift.innerCost);
+      const gifts = Object.entries(GIFTS).filter(([, gift]) => !gift.inventory &&
+        (mode === 'gifts' ? gift.innerCost > 0 : s.stats.inner >= gift.innerCost));
       if (mode === 'social' && id) {
         const chat = E.beginChat(s, id);
         E.applyChat(s, chat, {affection: 4});
@@ -27,8 +28,13 @@ export function runBalance(seed, {months = 72, mode = 'passive'} = {}) {
         contacts[id] = (contacts[id] || 0) + 1;
       } else if (id && gifts.length && (mode === 'gifts' || E.rand(s) < .6)) {
         const gift = gifts[Math.floor(E.rand(s) * gifts.length)][0];
-        E.giveGift(s, id, gift);
-        giftActions++;
+        if (s.stats.inner < GIFTS[gift].innerCost) {
+          tightAt ??= step + 1;
+          E.rest(s);
+        } else {
+          E.giveGift(s, id, gift);
+          giftActions++;
+        }
       } else {
         if (mode === 'gifts' && !gifts.length && tightAt === null) tightAt = step + 1;
         E.rest(s);

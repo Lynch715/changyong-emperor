@@ -338,7 +338,17 @@ function edictView(){
 }
 
 function outingsView(){return `${header()}<main><div class="bar-title"><button data-act="go" data-to="home">‹ 返回</button><b>微服去哪里？</b></div><p class="muted">选好去处才用时辰。这里的花费都走内帑。</p><section class="places">${Object.entries(PLACES).map(([id,p])=>`<button data-act="travel" data-id="${id}" ${!E.canAct(s)||s.stats.inner<p.cost?'disabled':''}><img class="place-thumb" src="${placeBackground(id,s.month,'thumb')}" loading="lazy" decoding="async" alt="${p.name}"><b>${p.name}</b><span>${p.desc}</span><small>内帑 ${moneyText(p.cost)}${s.stats.inner<p.cost?' · 内帑不足':''}</small><small>${p.hint}</small></button>`).join('')}</section></main>`;}
-function nanfengView(){return `${header()}<main class="nanfeng-hall" style="--place-bg:url('${abs(placeBackground('nanfeng-interior',s.month))}')"><h3 class="sec">南风馆 · 灯下</h3><p>今夜不问姓名，只听一曲，或下一局棋。</p><section class="places">${[['N02','听雨汐弹琵琶、唱曲'],['N01','和花妍下棋、说话'],['tea','只喝茶听曲']].filter(([id])=>!s.freed[id]).map(([id,label])=>`<button data-act="company" data-id="${id}">${label}</button>`).join('')}${['N02','N01'].filter(id=>!s.freed[id]&&s.people[id].aff>=36&&!s.night).map(id=>`<button data-act="nanfeng-stay" data-id="${id}">留宿，今夜陪${nm(id)}（内帑 1 万两）</button>`).join('')}</section><p class="muted small">入馆的银子已付过。坐定后，这一回便结束。</p></main>`;}
+// 入馆和留宿的价钱分别写清，已经付过的入馆费不重复收取。
+function nanfengView() {
+  const choices = [['N02', '听雨汐弹琵琶、唱曲'], ['N01', '和花妍下棋、说话'], ['tea', '只喝茶听曲']];
+  return `${header()}<main class="nanfeng-hall" style="--place-bg:url('${abs(placeBackground('nanfeng-interior', s.month))}')">
+    <h3 class="sec">南风馆 · 灯下</h3><p>今夜不问姓名，只听一曲，或下一局棋。</p><section class="places">
+      ${choices.filter(([id]) => !s.freed[id]).map(([id, label]) =>
+        `<button data-act="company" data-id="${id}">${label}</button>`).join('')}
+      ${['N02', 'N01'].filter(id => !s.freed[id] && s.people[id].aff >= 36 && !s.night).map(id =>
+        `<button data-act="nanfeng-stay" data-id="${id}">留宿，今夜陪${nm(id)}（内帑 3 万两）</button>`).join('')}
+    </section><p class="muted small">入馆的银子已付过。坐定后，这一回便结束。</p></main>`;
+}
 
 // ---------- 白天的小结果（微服、休养） ----------
 // 免费可选事项办完直接回御案，不触发普通行动结束后的随机插曲。

@@ -52,7 +52,25 @@ test('0.39 自拟安排先守成年自愿与亲属边界，不向模型发送越
 test('0.39 夜晚自拟提示含安排和骰面，放宽篇幅；留空维持旧长度和圣躬',async()=>{await withModel({text:'她陪你看了会儿月亮。',affection:99,health:99,memory:'灯下听曲'},async calls=>{const s=ready(),v=await AI.nightScene(s,'C07','一起听曲',{tier:0});assert.match(calls.at(-1).system,/一起听曲/);assert.match(calls.at(-1).system,/200到600/);assert.match(calls.at(-1).system,/不发生亲密行为/);assert.doesNotMatch(calls.at(-1).system,/成人描写/);assert.equal(calls.at(-1).maxTokens,1800);assert.equal(v.affection,5);assert.equal(v.health,3);const blank=await AI.nightScene(s,'C07');assert.match(calls.at(-1).system,/120到220/);assert.equal(blank.health,0);});});
 test('0.39 夜晚收益被引擎收紧，凶与大凶不增加圣躬，未知人选不改存档',()=>{for(const tier of [0,1,2,4]){const s=ready();s.month=5;s.stats.health=50;s.people.C07.aff=70;const r=E.spendNight(s,'C07',{affection:999,health:999,fate:{tier},memory:'灯下看书'});assert.equal(r.stats.health||0,tier<=1?0:3);assert.equal(r.people.C07||0,tier===0?0:tier===1?1:4);assert.equal(s.people.C07.memories.at(-1).text,'灯下看书');}const s=ready(),raw=JSON.stringify(s);assert.throws(()=>E.spendNight(s,'unknown'));assert.equal(JSON.stringify(s),raw);const t=ready();t.stats.health=50;assert.equal(E.spendNight(t,'C07',{health:-999}).stats.health,-2);});
 test('0.39 普通休养不变；自拟休养大凶加4、大吉加10，普通骰面收紧在4到10',()=>{const plain=ready();plain.stats.health=50;plain.weather='晴';assert.equal(E.rest(plain).stats.health,8);for(const [tier,h,want]of [[0,999,4],[1,999,6],[2,-999,4],[2,999,10],[4,-999,10]]){const s=ready();s.stats.health=50;const r=E.plannedRest(s,'睡个好觉',{health:h,inner:999,fate:{tier}});assert.equal(r.stats.health,want);assert.equal(r.stats.inner,-3);assert.equal(s.ap,2);}const s=ready();s.stats.health=50;assert.equal(E.plannedRest(s,'',{health:999}).stats.health,8);});
-test('0.39 休养作陪增加情分并记住安排，花费不足和无效人选不花时辰',()=>{const s=ready();s.people.C07.aff=70;const r=E.plannedRest(s,'临帖喝茶',{companion:'C07',memory:'陪皇上临帖',fate:{tier:2}});assert.equal(r.people.C07,2);assert.equal(s.people.C07.memories.at(-1).text,'陪皇上临帖');assert.equal(r.stats.inner,-.05);assert.equal(restCost('泡温泉'),1.2);for(const options of [{inner:3},{companion:'unknown'},{companion:'C07'}]){const x=ready();x.stats.inner=0;const raw=JSON.stringify(x);assert.throws(()=>E.plannedRest(x,options.companion==='C07'?'强迫对方亲吻':'泡温泉',options));assert.equal(JSON.stringify(x),raw);}const x=ready();x.stats.inner=2;assert.equal(E.plannedRest(x,'泡温泉',{inner:-999}).stats.inner,undefined);});
+test('0.39 休养作陪增加情分并记住安排，花费不足和无效人选不花时辰', () => {
+  const s = ready();
+  s.people.C07.aff = 70;
+  const r = E.plannedRest(s, '临帖喝茶', { companion: 'C07', memory: '陪皇上临帖', fate: { tier: 2 } });
+  assert.equal(r.people.C07, 2);
+  assert.equal(s.people.C07.memories.at(-1).text, '陪皇上临帖');
+  assert.equal(r.stats.inner, -restCost('临帖喝茶'));
+  assert.equal(restCost('泡温泉'), 3);
+  for (const options of [{ inner: 3 }, { companion: 'unknown' }, { companion: 'C07' }]) {
+    const x = ready();
+    x.stats.inner = 0;
+    const raw = JSON.stringify(x);
+    assert.throws(() => E.plannedRest(x, options.companion === 'C07' ? '强迫对方亲吻' : '泡温泉', options));
+    assert.equal(JSON.stringify(x), raw);
+  }
+  const x = ready();
+  x.stats.inner = 2;
+  assert.throws(() => E.plannedRest(x, '泡温泉', { inner: -999 }), /内帑/);
+});
 test('0.39 休养提示含作陪、天气、骰面与有条件的温柔氛围，空结果安静回退',async()=>{await withModel({text:'你在水边坐了半日。',health:999,inner:999,memory:'在水边下棋'},async(calls,storage)=>{const s=ready(),v=await AI.restScene(s,'御花园钓鱼',{companion:'C07',fate:{tier:4}});const prompt=calls.at(-1).system;assert.match(prompt,/御花园钓鱼/);assert.match(prompt,/年世兰/);assert.match(prompt,/大吉/);assert.match(prompt,/成人描写/);assert.equal(v.health,10);assert.equal(v.inner,3);assert.equal(calls.at(-1).maxTokens,1400);setTenderness(false,storage);await AI.restScene(s,'喝茶',{companion:'C07'});assert.doesNotMatch(calls.at(-1).system,/成人描写/);});for(const value of [null,{text:''},{text:'作为AI，我无法提供这类内容'}])await withModel(value,async()=>{const s=ready(),raw=JSON.stringify(s);assert.equal(await AI.restScene(s,'钓鱼'),null);assert.equal(AI.aiError(),'');assert.equal(JSON.stringify(s),raw);});});
 test('0.39 自拟安排骰子只掷一次，一档不改随机数与掷骰次数，旧存档无新字段也能休养',()=>{for(const level of [1,2,3]){const s=ready();s.freedom=level;const before=s.count?.rolls||0,fate=E.rollFate(s,'rest','C07');E.plannedRest(s,'喝茶',{fate});assert.equal((s.count?.rolls||0)-before,level===1?0:1);}const old=ready();delete old.weather;const loaded=E.load({getItem:()=>JSON.stringify(old)});assert.doesNotThrow(()=>E.plannedRest(loaded,'钓鱼'));});
 
