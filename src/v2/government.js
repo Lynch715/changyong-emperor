@@ -23,8 +23,10 @@ const details=[
  ['学舍屋漏，学生无处课读，学官请拨银，地方称可募修。','应试生员籍贯与保结不符，学官请彻查，恐耽误无辜考生。','义学有屋无师，贫家子弟已经散去，请延聘乡间老儒。','书院田产被族人占种，山长请归公，族人称原系先人捐赠。','寒士进城赴考无盘缠，乡约请给路费，又怕冒名领银。','学田租银多年未入公账，管事称替学中置办纸笔已经用尽。','考棚梁柱朽坏，距乡试不远，请先修危房，其他缓办。'],
  ['米价连涨，商人称运输艰难，乡民却见粮栈夜夜装车外运。','佃户请求因歉收减租，田主称自身亦须缴纳钱粮。','两市商贩因摊位争执械斗，乡绅请保释本族子弟。','渡口旧船破损，船户请拨料修船，又请准许加收渡钱。','上下两村争灌溉水源，县令按旧例分水，两村皆不肯服。','粮商囤米待价，州县拟开仓平粜，商人请以低息借粮替代。','乡约强令各户摊派祭费，贫户拒缴，族老请求照乡规处置。']
 ];
+// 边务只交给现有十省中的边省，不增添新的地方区划。
+export const BORDER_PROVINCES = ['陕甘', '云贵', '四川'];
 export const MEMORIAL_POOL = topics.flatMap(([type, months, titles, special], t) => titles.map((title, i) => ({
-  id: `M${t}-${i}`, type, months, province: PROVINCE_NAMES[(t + i) % 10], title, special,
+  id: `M${t}-${i}`, type, months, province: type === '边务' ? BORDER_PROVINCES[i % BORDER_PROVINCES.length] : PROVINCE_NAMES[(t + i) % 10], title, special,
   body: MEMORIAL_BODIES[t][i],
 })));
 const MEMORIAL_DETAILS = Object.fromEntries(topics.flatMap(([type, months, titles], t) =>

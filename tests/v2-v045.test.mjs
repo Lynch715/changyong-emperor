@@ -266,3 +266,19 @@ test('D2 旧档已付的批折额度保留，折匣只留一句说明而完整�
   assert.ok(help.includes('钱粮清欠准奏后'));
   assert.ok(help.includes('一个时辰可批'));
 });
+
+test('D3 新边务七题只分配边省，旧折的省份与已经发出的朱批不被改写', async () => {
+  const G = await import('../src/v2/government.js');
+  const border = G.MEMORIAL_POOL.filter(m => m.type === '边务');
+  assert.equal(border.length, 7);
+  const s = oldSave(s => {
+    s.memorials = [{...border.find(m => m.title === '边堡待修'), province: '湖广', uid: 'old-border'}];
+  });
+  assert.equal(s.memorials[0].province, '湖广', '不改写旧案已经记录的上奏省份');
+  for (const m of border) {
+    assert.ok(G.BORDER_PROVINCES.includes(m.province), m.title);
+    const fresh = G.addMemorial(s, m);
+    assert.ok(!fresh.author.includes('湖广'));
+    assert.ok(['陕甘', '云贵', '四川'].includes(fresh.province));
+  }
+});
