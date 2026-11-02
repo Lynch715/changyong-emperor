@@ -5,28 +5,54 @@ import {PEOPLE,AGENDA,CORE,STAT_MAP,STATS,ECONOMY} from '../src/v2/data.js';
 import {REWRITE} from '../src/v2/rewrite.js';
 import {SCENES} from '../src/v2/content.js';
 
-test('月历里的每一幕都存在，选项数值都能换算', ()=>{
- for(const ids of Object.values(AGENDA))for(const id of ids){const sc=E.scene(id);assert.ok(sc,id);assert.ok(sc.options.length,id);
-  for(const o of sc.options)for(const k of Object.keys(o.effects||{}))assert.ok(STAT_MAP[k]||STATS.some(s=>s.id===k),id+' '+k);}
- for(const id of CORE){assert.ok(E.scene(PEOPLE[id].first),id);assert.ok(E.scene(PEOPLE[id].second),id);}
+test('月历里的每一幕都存在，选项数值都能换算', () => {
+  for (const ids of Object.values(AGENDA))
+    for (const id of ids) {
+      const sc = E.scene(null, id);
+      assert.ok(sc, id);
+      assert.ok(sc.options.length, id);
+      for (const o of sc.options)
+        for (const k of Object.keys(o.effects || {}))
+          assert.ok(STAT_MAP[k] || STATS.some((s) => s.id === k), id + ' ' + k);
+    }
+  for (const id of CORE) {
+    assert.ok(E.scene(null, PEOPLE[id].first), id);
+    assert.ok(E.scene(null, PEOPLE[id].second), id);
+  }
 });
 test('改写稿只覆盖已有的场景与选项', ()=>{
  for(const[id,w]of Object.entries(REWRITE)){assert.ok(SCENES[id],id);for(const k of Object.keys(w.options||{}))assert.ok(SCENES[id].options.some(o=>o.id===k),id+' '+k);}
 });
-test('两年能完整走完，有结局', ()=>{
- const s=E.newGame(7);let n=0;
- while(!s.ended&&n++<30){
-  while(s.agenda.length){const sc=E.scene(s.agenda[0]);E.choose(s,sc.id,sc.options.at(-1).id);}
-  const met=CORE.filter(id=>E.present(s,id)&&s.people[id].met);
-  if(met[0]){const c=E.beginChat(s,met[0]);E.applyChat(s,c,{affection:9});assert.ok(c.gained<=E.CHAT_CAP);}
-  if(s.ap)E.rest(s);if(s.ap)E.goOuting(s);
-  const night=E.nightChoices(s),sp=night.find(x=>x.special);
-  if(sp){const sid=E.queueSpecial(s,sp.id);E.choose(s,sid,E.scene(sid).options[0].id);}else E.spendNight(s,night[0]?.id||null);
-  E.endMonth(s);
- }
- assert.ok(s.ended);assert.equal(n,24);
- const e=E.ending(s);assert.ok(e.score>0);
- for(const[k,v]of Object.entries(s.stats))assert.ok(v>=0&&(['treasury','inner'].includes(k)||v<=100));
+test('两年能完整走完，有结局', () => {
+  const s = E.newGame(7);
+  let n = 0;
+  while (!s.ended && n++ < 30) {
+    while (s.agenda.length) {
+      const sc = E.scene(s, s.agenda[0]);
+      E.choose(s, sc.id, sc.options.at(-1).id);
+    }
+    const met = CORE.filter((id) => E.present(s, id) && s.people[id].met);
+    if (met[0]) {
+      const c = E.beginChat(s, met[0]);
+      E.applyChat(s, c, { affection: 9 });
+      assert.ok(c.gained <= E.CHAT_CAP);
+    }
+    if (s.ap) E.rest(s);
+    if (s.ap) E.goOuting(s);
+    const night = E.nightChoices(s),
+      sp = night.find((x) => x.special);
+    if (sp) {
+      const sid = E.queueSpecial(s, sp.id);
+      E.choose(s, sid, E.scene(s, sid).options[0].id);
+    } else E.spendNight(s, night[0]?.id || null);
+    E.endMonth(s);
+  }
+  assert.ok(s.ended);
+  assert.equal(n, 24);
+  const e = E.ending(s);
+  assert.ok(e.score > 0);
+  for (const [k, v] of Object.entries(s.stats))
+    assert.ok(v >= 0 && (['treasury', 'inner'].includes(k) || v <= 100));
 });
 test('心结挡住情分上涨，说开后解除', ()=>{
  const s=E.newGame(1);s.people.C07.knot={source:'K01',text:'七夕两宫'};s.people.C07.met=true;
@@ -39,48 +65,121 @@ test('旨意的数值被限幅', ()=>{
 });
 import {ROMANCE,LOVER_ENDING} from '../src/v2/romance.js';
 import {MORE_PETITIONS,SMALL_EVENTS} from '../src/v2/events.js';
-test('每人都有第三幕和相守结局；随机事件格式正确', ()=>{
- for(const id of CORE){const sc=E.scene(E.thirdOf(id));assert.ok(sc,id);assert.equal(sc.actor,id);assert.deepEqual(sc.options.map(o=>o.id),['confess','slow','restrain']);assert.ok(LOVER_ENDING[id],id);}
- for(const ev of [...MORE_PETITIONS,...SMALL_EVENTS]){assert.ok(ev.options.length>=2,ev.id);for(const o of ev.options){for(const k of Object.keys(o.effects||{}))assert.ok(STATS.some(s=>s.id===k),ev.id+k);for(const k of Object.keys(o.bond||{}))assert.ok(PEOPLE[k],ev.id+k);}}
+test('每人都有第三幕和相守结局；随机事件格式正确', () => {
+  for (const id of CORE) {
+    const sc = E.scene(null, E.thirdOf(id));
+    assert.ok(sc, id);
+    assert.equal(sc.actor, id);
+    assert.deepEqual(
+      sc.options.map((o) => o.id),
+      ['confess', 'slow', 'restrain'],
+    );
+    assert.ok(LOVER_ENDING[id], id);
+  }
+  for (const ev of [...MORE_PETITIONS, ...SMALL_EVENTS]) {
+    assert.ok(ev.options.length >= 2, ev.id);
+    for (const o of ev.options) {
+      for (const k of Object.keys(o.effects || {}))
+        assert.ok(
+          STATS.some((s) => s.id === k),
+          ev.id + k,
+        );
+      for (const k of Object.keys(o.bond || {})) assert.ok(PEOPLE[k], ev.id + k);
+    }
+  }
 });
-test('专心对一个人，两年内能走到相守', ()=>{
- const s=E.newGame(11);let n=0;
- while(!s.ended&&n++<30){
-  while(s.agenda.length){const sc=E.scene(s.agenda[0]);const o=sc.options.find(o=>['warm','confess','develop'].includes(o.id))||sc.options[0];E.choose(s,sc.id,o.id);}
-  for(let i=0;i<2&&s.ap;i++){const c=E.beginChat(s,'C02');E.applyChat(s,c,{affection:4});E.applyChat(s,c,{affection:4});}
-  if(s.ap)E.rest(s);
-  const sp=E.nightChoices(s).find(x=>x.id==='C02');
-  if(sp?.special){const sid=E.queueSpecial(s,'C02');const os=E.optionsFor(s,E.scene(sid));E.choose(s,sid,(os.find(o=>['warm','confess','stay'].includes(o.id))||os[0]).id);}else E.spendNight(s,'C02',{affection:3});
-  E.endMonth(s);
- }
- const p=s.people.C02;assert.ok(p.third&&p.lover,'苏培盛三幕走完');assert.equal(E.ending(s).people.find(x=>x.id==='C02').tier,3);
+test('专心对一个人，两年内能走到相守', () => {
+  const s = E.newGame(11);
+  let n = 0;
+  while (!s.ended && n++ < 30) {
+    while (s.agenda.length) {
+      const sc = E.scene(s, s.agenda[0]);
+      const o = sc.options.find((o) => ['warm', 'confess', 'develop'].includes(o.id)) || sc.options[0];
+      E.choose(s, sc.id, o.id);
+    }
+    for (let i = 0; i < 2 && s.ap; i++) {
+      const c = E.beginChat(s, 'C02');
+      E.applyChat(s, c, { affection: 4 });
+      E.applyChat(s, c, { affection: 4 });
+    }
+    if (s.ap) E.rest(s);
+    const sp = E.nightChoices(s).find((x) => x.id === 'C02');
+    if (sp?.special) {
+      const sid = E.queueSpecial(s, 'C02');
+      const os = E.optionsFor(s, E.scene(s, sid));
+      E.choose(s, sid, (os.find((o) => ['warm', 'confess', 'stay'].includes(o.id)) || os[0]).id);
+    } else E.spendNight(s, 'C02', { affection: 3 });
+    E.endMonth(s);
+  }
+  const p = s.people.C02;
+  assert.ok(p.third && p.lover, '苏培盛三幕走完');
+  assert.equal(E.ending(s).people.find((x) => x.id === 'C02').tier, 3);
 });
 import {SCENES2,AGENDA2,REPAIR2} from '../src/v2/vol2.js';
-test('第二卷：场景齐全，存档延续，四年走完', ()=>{
- for(const ids of Object.values(AGENDA2))for(const id of ids){const sc=E.scene(id);assert.ok(sc,id);for(const o of sc.options){for(const k of Object.keys(o.effects||{}))assert.ok(STATS.some(s=>s.id===k),id+k);if(o.slight)assert.ok(REPAIR2[id]?.[o.slight],id+' repair '+o.slight);}}
- for(const id of CORE)assert.ok(E.scene(E.fourthOf(id)),id);
- for(const pick of ['keep','hangzhou','punish']){
-  const s=E.newGame(21);let n=0;
-  const play=()=>{while(s.agenda.length){const sc=E.scene(s.agenda[0]);const os=E.optionsFor(s,sc);const o=os.find(o=>o.id===pick)||os.find(o=>['warm','confess','stay','develop'].includes(o.id))||os[0];E.choose(s,sc.id,o.id);}
-   // 开局剧情减负会改变随机路线，长程测试仍须完成真实皇嗣向导。
-   if(s.pendingBirth){
-    E.nameChild(s,'长宁'+String.fromCharCode(0x4e00+s.children.length));
-    E.completeBirth(s,s.pendingBirth.sex==='男'?'k_infant_01':'k_infant_04');
-   }
-   if(s.familyArt?.required){
-    const child=s.children.find(c=>c.id===s.familyArt.child);
-    E.changeChildArt(s,child.id,child.sex==='男'?'k_youth_01':'k_youth_05');
-   }
-   if(s.ap&&E.present(s,'C07')){const c=E.beginChat(s,'C07');E.applyChat(s,c,{affection:4});E.applyChat(s,c,{affection:4});}
-   const sp=E.nightChoices(s).find(x=>x.special);if(sp){const sid=E.queueSpecial(s,sp.id);const sc=E.scene(sid);const os=E.optionsFor(s,sc);E.choose(s,sid,(os.find(o=>['warm','confess','stay'].includes(o.id))||os[0]).id);}else E.spendNight(s,E.nightChoices(s)[0]?.id||null);
-   E.endMonth(s);n++;};
-  while(!s.ended&&n<30)play();
-  assert.equal(n,24);E.startVolume2(s);assert.equal(s.year,3);assert.ok(!s.ended);
-  while(!s.ended&&n<60)play();
-  assert.equal(n,48,pick);assert.equal(s.vol,2);
-  const e=E.ending(s);if(pick==='punish')assert.ok(e.people.find(p=>p.id==='C03')?.gone);
-  if(pick==='keep')assert.ok(s.flags.nian_safe);
- }
+test('第二卷：场景齐全，存档延续，四年走完', () => {
+  for (const ids of Object.values(AGENDA2))
+    for (const id of ids) {
+      const sc = E.scene(null, id);
+      assert.ok(sc, id);
+      for (const o of sc.options) {
+        for (const k of Object.keys(o.effects || {}))
+          assert.ok(
+            STATS.some((s) => s.id === k),
+            id + k,
+          );
+        if (o.slight) assert.ok(REPAIR2[id]?.[o.slight], id + ' repair ' + o.slight);
+      }
+    }
+  for (const id of CORE) assert.ok(E.scene(null, E.fourthOf(id)), id);
+  for (const pick of ['keep', 'hangzhou', 'punish']) {
+    const s = E.newGame(21);
+    let n = 0;
+    const play = () => {
+      while (s.agenda.length) {
+        const sc = E.scene(s, s.agenda[0]);
+        const os = E.optionsFor(s, sc);
+        const o =
+          os.find((o) => o.id === pick) ||
+          os.find((o) => ['warm', 'confess', 'stay', 'develop'].includes(o.id)) ||
+          os[0];
+        E.choose(s, sc.id, o.id);
+      }
+      // 开局剧情减负会改变随机路线，长程测试仍须完成真实皇嗣向导。
+      if (s.pendingBirth) {
+        E.nameChild(s, '长宁' + String.fromCharCode(0x4e00 + s.children.length));
+        E.completeBirth(s, s.pendingBirth.sex === '男' ? 'k_infant_01' : 'k_infant_04');
+      }
+      if (s.familyArt?.required) {
+        const child = s.children.find((c) => c.id === s.familyArt.child);
+        E.changeChildArt(s, child.id, child.sex === '男' ? 'k_youth_01' : 'k_youth_05');
+      }
+      if (s.ap && E.present(s, 'C07')) {
+        const c = E.beginChat(s, 'C07');
+        E.applyChat(s, c, { affection: 4 });
+        E.applyChat(s, c, { affection: 4 });
+      }
+      const sp = E.nightChoices(s).find((x) => x.special);
+      if (sp) {
+        const sid = E.queueSpecial(s, sp.id);
+        const sc = E.scene(s, sid);
+        const os = E.optionsFor(s, sc);
+        E.choose(s, sid, (os.find((o) => ['warm', 'confess', 'stay'].includes(o.id)) || os[0]).id);
+      } else E.spendNight(s, E.nightChoices(s)[0]?.id || null);
+      E.endMonth(s);
+      n++;
+    };
+    while (!s.ended && n < 30) play();
+    assert.equal(n, 24);
+    E.startVolume2(s);
+    assert.equal(s.year, 3);
+    assert.ok(!s.ended);
+    while (!s.ended && n < 60) play();
+    assert.equal(n, 48, pick);
+    assert.equal(s.vol, 2);
+    const e = E.ending(s);
+    if (pick === 'punish') assert.ok(e.people.find((p) => p.id === 'C03')?.gone);
+    if (pick === 'keep') assert.ok(s.flags.nian_safe);
+  }
 });
 import {VISITS} from '../src/v2/visits.js';
 import {ACHIEVEMENTS,updateGallery} from '../src/v2/gallery.js';
@@ -93,17 +192,60 @@ test('来访与成就', ()=>{
  for(const a of ACHIEVEMENTS)assert.doesNotThrow(()=>a.check(E.newGame(1)));
 });
 import {SURPRISES} from '../src/v2/social.js';
-test('吃醋、小惊喜、旨意回报', ()=>{
- const s=E.newGame(4);s.agenda=[];s.year=1;s.month=11;
- for(const id of ['C06','C07','C09','C10'])Object.assign(s.people[id],{met:true,aff:40});
- const r=E.spendNight(s,'C07');assert.ok(r.people.C06<0,'皇后吃醋');assert.ok(r.people.C09<0);
- for(const x of SURPRISES)for(const o of x.options)for(const k of Object.keys(o.effects||{}))assert.ok(STATS.some(t=>t.id===k),x.id+k);
- const s2=E.newGame(8);s2.agenda=[];s2.people.C02.met=true;let got=null;for(let i=0;i<40&&!got;i++){got=E.rollSurprise(s2);}assert.ok(got);assert.equal(s2.agenda[0],got);const sc=E.scene(got);E.choose(s2,got,sc.options[0].id);
- const s3=E.newGame(2);s3.agenda=[];E.applyEdict(s3,'在京城设粥厂',{effects:{people:4,treasury:-3},title:'设粥厂',narration:'粥厂开了'});
- for(let i=0;i<4;i++){s3.agenda=[];s3.night=false;E.spendNight(s3,null);E.endMonth(s3);if(s3.agenda.includes('FU1'))break;}
- assert.ok(s3.agenda.includes('FU1'),'旨意回报到了');const f=E.scene('FU1');assert.ok(f&&f.options.length>=2);
- while(s3.agenda.length){const x=E.scene(s3.agenda[0]);E.choose(s3,x.id,x.options[0].id);}
- E.setDyn(s3,'FU9',{title:'t',body:'b',options:[{id:'a',label:'l',effects:{people:1},reply:'r'}]});assert.equal(E.scene('FU9').title,'t');
+test('吃醋、小惊喜、旨意回报', () => {
+  const s = E.newGame(4);
+  s.agenda = [];
+  s.year = 1;
+  s.month = 11;
+  for (const id of ['C06', 'C07', 'C09', 'C10']) Object.assign(s.people[id], { met: true, aff: 40 });
+  const r = E.spendNight(s, 'C07');
+  assert.ok(r.people.C06 < 0, '皇后吃醋');
+  assert.ok(r.people.C09 < 0);
+  for (const x of SURPRISES)
+    for (const o of x.options)
+      for (const k of Object.keys(o.effects || {}))
+        assert.ok(
+          STATS.some((t) => t.id === k),
+          x.id + k,
+        );
+  const s2 = E.newGame(8);
+  s2.agenda = [];
+  s2.people.C02.met = true;
+  let got = null;
+  for (let i = 0; i < 40 && !got; i++) {
+    got = E.rollSurprise(s2);
+  }
+  assert.ok(got);
+  assert.equal(s2.agenda[0], got);
+  const sc = E.scene(s2, got);
+  E.choose(s2, got, sc.options[0].id);
+  const s3 = E.newGame(2);
+  s3.agenda = [];
+  E.applyEdict(s3, '在京城设粥厂', {
+    effects: { people: 4, treasury: -3 },
+    title: '设粥厂',
+    narration: '粥厂开了',
+  });
+  for (let i = 0; i < 4; i++) {
+    s3.agenda = [];
+    s3.night = false;
+    E.spendNight(s3, null);
+    E.endMonth(s3);
+    if (s3.agenda.includes('FU1')) break;
+  }
+  assert.ok(s3.agenda.includes('FU1'), '旨意回报到了');
+  const f = E.scene(s3, 'FU1');
+  assert.ok(f && f.options.length >= 2);
+  while (s3.agenda.length) {
+    const x = E.scene(s3, s3.agenda[0]);
+    E.choose(s3, x.id, x.options[0].id);
+  }
+  E.setDyn(s3, 'FU9', {
+    title: 't',
+    body: 'b',
+    options: [{ id: 'a', label: 'l', effects: { people: 1 }, reply: 'r' }],
+  });
+  assert.equal(E.scene(s3, 'FU9').title, 't');
 });
 
 import {GIFTS,GIFT_LINES} from '../src/v2/data.js';
@@ -144,24 +286,59 @@ test('生辰：赏赐、召见、夜里都算记得；整月不去情分掉 3',(
  const k=E.newGame(1);k.year=4;k.month=8;for(const id of ['C08','C09'])k.people[id].met=true;assert.deepEqual(E.birthdays(k),[],'两场生辰那个月不另算');
  const old=E.newGame(1);delete old.bdayDone;old.year=2;old.month=6;old.agenda=[];old.people.C07.met=true;assert.equal(E.beginChat(old,'C07').birthday,true);
 });
-test('年节：选人同过、家宴、独自，各有反馈',()=>{
- const s=E.newGame(9);s.year=2;s.month=7;for(const id of ['C02','C06','C07','C09','C10'])Object.assign(s.people[id],{met:true,aff:50});s.people.C07.aff=70;s.people.C09.lover=true;s.people.C09.aff=55;
- s.month=8;E.startMonth(s);const id=s.agenda.find(x=>x.startsWith('FE'));assert.equal(id,'FE2-zhongqiu');
- const sc=E.scene(id),os=E.optionsFor(s,sc);assert.equal(os[0].id,'all');assert.equal(os.at(-1).id,'alone');
- assert.equal(os.filter(o=>o.who).length,3);assert.equal(os.find(o=>o.who)?.who,'C09','两情相悦的排在前面');assert.ok(!os.some(o=>o.label.includes('{n}')));
- s.agenda=[id];const before={...Object.fromEntries(CORE.map(c=>[c,s.people[c].aff]))};const r=E.choose(s,id,'pC07');
- assert.equal(r.people.C07,5);assert.ok(r.people.C06<0&&r.people.C09<0&&r.people.C10<0,'不和的人吃味');assert.ok(r.text);
- const s2=E.newGame(9);s2.year=2;s2.month=12;for(const c of ['C02','C07','C06'])s2.people[c].met=true;E.startMonth(s2);const fe=s2.agenda.find(x=>x.startsWith('FE'));s2.agenda=[fe];const r2=E.choose(s2,fe,'all');assert.ok(r2.stats.palace>0);assert.ok(Object.values(r2.people).every(v=>v>0)&&Object.keys(r2.people).length===3);
- const y1=E.newGame(1);y1.month=7;for(const c of CORE)y1.people[c].met=true;y1.year=1;E.startMonth(y1);assert.ok(!y1.agenda.some(x=>x.startsWith('FE')),'元年七夕已有剧情');
- y1.year=4;y1.month=12;E.startMonth(y1);assert.ok(!y1.agenda.some(x=>x.startsWith('FE')),'四年除夕已有剧情');
- for(const f of FESTIVALS)for(const c of CORE)assert.ok(f.touch[c],f.key+c);
+test('年节：选人同过、家宴、独自，各有反馈',() => {
+  const s = E.newGame(9);
+  s.year = 2;
+  s.month = 7;
+  for (const id of ['C02', 'C06', 'C07', 'C09', 'C10']) Object.assign(s.people[id], { met: true, aff: 50 });
+  s.people.C07.aff = 70;
+  s.people.C09.lover = true;
+  s.people.C09.aff = 55;
+  s.month = 8;
+  E.startMonth(s);
+  const id = s.agenda.find((x) => x.startsWith('FE'));
+  assert.equal(id, 'FE2-zhongqiu');
+  const sc = E.scene(s, id),
+    os = E.optionsFor(s, sc);
+  assert.equal(os[0].id, 'all');
+  assert.equal(os.at(-1).id, 'alone');
+  assert.equal(os.filter((o) => o.who).length, 3);
+  assert.equal(os.find((o) => o.who)?.who, 'C09', '两情相悦的排在前面');
+  assert.ok(!os.some((o) => o.label.includes('{n}')));
+  s.agenda = [id];
+  const before = { ...Object.fromEntries(CORE.map((c) => [c, s.people[c].aff])) };
+  const r = E.choose(s, id, 'pC07');
+  assert.equal(r.people.C07, 5);
+  assert.ok(r.people.C06 < 0 && r.people.C09 < 0 && r.people.C10 < 0, '不和的人吃味');
+  assert.ok(r.text);
+  const s2 = E.newGame(9);
+  s2.year = 2;
+  s2.month = 12;
+  for (const c of ['C02', 'C07', 'C06']) s2.people[c].met = true;
+  E.startMonth(s2);
+  const fe = s2.agenda.find((x) => x.startsWith('FE'));
+  s2.agenda = [fe];
+  const r2 = E.choose(s2, fe, 'all');
+  assert.ok(r2.stats.palace > 0);
+  assert.ok(Object.values(r2.people).every((v) => v > 0) && Object.keys(r2.people).length === 3);
+  const y1 = E.newGame(1);
+  y1.month = 7;
+  for (const c of CORE) y1.people[c].met = true;
+  y1.year = 1;
+  E.startMonth(y1);
+  assert.ok(!y1.agenda.some((x) => x.startsWith('FE')), '元年七夕已有剧情');
+  y1.year = 4;
+  y1.month = 12;
+  E.startMonth(y1);
+  assert.ok(!y1.agenda.some((x) => x.startsWith('FE')), '四年除夕已有剧情');
+  for (const f of FESTIVALS) for (const c of CORE) assert.ok(f.touch[c], f.key + c);
 });
 
 import {SCENES3,AGENDA3,REPAIR3,ENDING3} from '../src/v2/vol3.js';
 test('第三卷：场景齐全，六年走完，年羹尧的去留影响西北用兵', () => {
   for (const ids of Object.values(AGENDA3))
     for (const id of ids) {
-      const sc = E.scene(id);
+      const sc = E.scene(null, id);
       assert.ok(sc, id);
       for (const o of sc.options) {
         for (const k of Object.keys(o.effects || {}))
@@ -174,7 +351,7 @@ test('第三卷：场景齐全，六年走完，年羹尧的去留影响西北�
       }
     }
   for (const id of CORE) {
-    const z = E.scene(E.fifthOf(id));
+    const z = E.scene(null, E.fifthOf(id));
     assert.ok(z, id);
     assert.equal(z.actor, id);
     assert.deepEqual(
@@ -189,7 +366,7 @@ test('第三卷：场景齐全，六年走完，年羹尧的去留影响西北�
     let n = 0;
     const play = () => {
       while (s.agenda.length) {
-        const sc = E.scene(s.agenda[0]);
+        const sc = E.scene(s, s.agenda[0]);
         const os = E.optionsFor(s, sc);
         const o =
           os.find((o) => o.id === pick) ||
@@ -215,7 +392,7 @@ test('第三卷：场景齐全，六年走完，年羹尧的去留影响西北�
       const sp = E.nightChoices(s).find((x) => x.special);
       if (sp) {
         const sid = E.queueSpecial(s, sp.id);
-        const sc = E.scene(sid);
+        const sc = E.scene(s, sid);
         const os = E.optionsFor(s, sc);
         E.choose(s, sid, (os.find((o) => ['warm', 'confess', 'stay'].includes(o.id)) || os[0]).id);
       } else E.spendNight(s, E.nightChoices(s)[0]?.id || null);
@@ -261,17 +438,46 @@ test('再活一世：三种记忆各有效果，似曾相识的人记得',()=>{
  const mem={d:{},getItem(k){return this.d[k]??null},setItem(k,v){this.d[k]=v}};assert.ok(updateGallery(third,mem).some(x=>x.id==='life3'));
 });
 
-test('专心对一个人，六年能走完五幕并相守',()=>{
- const s=E.newGame(13);let n=0;
- const play=()=>{while(s.agenda.length){const sc=E.scene(s.agenda[0]);const os=E.optionsFor(s,sc);const o=os.find(o=>o.who==='C02')||os.find(o=>['warm','confess','develop','stay','both'].includes(o.id))||os[0];E.choose(s,sc.id,o.id);}
-  for(let i=0;i<2&&s.ap;i++){const c=E.beginChat(s,'C02');if(s.people.C02.knot)E.repairKnot(s,c);E.applyChat(s,c,{affection:4});E.applyChat(s,c,{affection:4});}
-  if(s.ap)E.rest(s);
-  const sp=E.nightChoices(s).find(x=>x.id==='C02');
-  if(sp?.special){const sid=E.queueSpecial(s,'C02');const os=E.optionsFor(s,E.scene(sid));E.choose(s,sid,(os.find(o=>['confess','warm','stay'].includes(o.id))||os[0]).id);}else E.spendNight(s,'C02',{affection:3});
-  E.endMonth(s);n++;};
- while(!s.ended)play();E.startVolume2(s);while(!s.ended)play();E.startVolume3(s);while(!s.ended)play();
- const p=s.people.C02;assert.equal(n,72);assert.ok(p.fourth&&p.fifth&&p.lover,'苏培盛五幕走完');assert.equal(E.ending(s).people.find(x=>x.id==='C02').tier,3);
- assert.ok((s.count.bdays||0)>=5,'每年二月都记得苏培盛的生辰');assert.ok(s.count.festivals>=10);
+test('专心对一个人，六年能走完五幕并相守',() => {
+  const s = E.newGame(13);
+  let n = 0;
+  const play = () => {
+    while (s.agenda.length) {
+      const sc = E.scene(s, s.agenda[0]);
+      const os = E.optionsFor(s, sc);
+      const o =
+        os.find((o) => o.who === 'C02') ||
+        os.find((o) => ['warm', 'confess', 'develop', 'stay', 'both'].includes(o.id)) ||
+        os[0];
+      E.choose(s, sc.id, o.id);
+    }
+    for (let i = 0; i < 2 && s.ap; i++) {
+      const c = E.beginChat(s, 'C02');
+      if (s.people.C02.knot) E.repairKnot(s, c);
+      E.applyChat(s, c, { affection: 4 });
+      E.applyChat(s, c, { affection: 4 });
+    }
+    if (s.ap) E.rest(s);
+    const sp = E.nightChoices(s).find((x) => x.id === 'C02');
+    if (sp?.special) {
+      const sid = E.queueSpecial(s, 'C02');
+      const os = E.optionsFor(s, E.scene(s, sid));
+      E.choose(s, sid, (os.find((o) => ['confess', 'warm', 'stay'].includes(o.id)) || os[0]).id);
+    } else E.spendNight(s, 'C02', { affection: 3 });
+    E.endMonth(s);
+    n++;
+  };
+  while (!s.ended) play();
+  E.startVolume2(s);
+  while (!s.ended) play();
+  E.startVolume3(s);
+  while (!s.ended) play();
+  const p = s.people.C02;
+  assert.equal(n, 72);
+  assert.ok(p.fourth && p.fifth && p.lover, '苏培盛五幕走完');
+  assert.equal(E.ending(s).people.find((x) => x.id === 'C02').tier, 3);
+  assert.ok((s.count.bdays || 0) >= 5, '每年二月都记得苏培盛的生辰');
+  assert.ok(s.count.festivals >= 10);
 });
 test('批折打开不占时辰，固定收益移除，值房可批十道', () => {
   const s = E.newGame(1);

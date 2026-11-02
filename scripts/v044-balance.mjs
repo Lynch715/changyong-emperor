@@ -13,26 +13,60 @@ const priority=['warm','keep','council','pilot','audit','slow','alone','relief',
 const observe=(s,m)=>{if(!('minimum'in m))return;m.minimum=Math.min(m.minimum,s.stats.treasury);m.minHealth=Math.min(m.minHealth,s.stats.health);m.minPalace=Math.min(m.minPalace,s.stats.palace);};
 
 // 使用真实剧情选项及皇嗣向导，不通过清空要事或改写日期跳过流程。
-export function settleLongAgenda(s,metrics={stories:{},family:[]}){
- E.bind(s);let guard=0;
- while(s.agenda.length||s.pendingBirth||s.familyArt?.required){
-  if(++guard>100)throw Error('本月要事未收束：'+JSON.stringify({year:s.year,month:s.month,agenda:s.agenda}));
-  if(s.pendingBirth){if(!s.pendingBirth.name)E.nameChild(s,'长宁'+String.fromCharCode(0x4e00+s.children.length));E.completeBirth(s,s.pendingBirth.sex==='男'?'k_infant_01':'k_infant_04');continue;}
-  if(s.familyArt?.required){const c=F.childById(s,s.familyArt.child);E.changeChildArt(s,c.id,c.sex==='男'?'k_youth_01':'k_youth_05');continue;}
-  const id=E.pendingScene(s),sc=E.scene(id);if(!sc)throw Error('找不到剧情：'+id);
-  const meta=longStoryList().find(story=>story.id===id);if(meta?.dep&&!s.done[meta.dep])throw Error('故事先后顺序错误：'+id+'早于'+meta.dep);
-  const os=E.optionsFor(s,sc);if(!os.length)throw Error('剧情没有选项：'+id);
-  let opt=sc.familyType==='birth'?os.find(o=>o.id==='girl'):sc.familyType==='news'?os.find(o=>o.id==='quiet'):sc.familyType==='threat'?os.find(o=>o.id==='expose'):sc.kind==='festival'&&s.children.length?os.find(o=>o.id==='all'):null;
-  opt??=priority.map(p=>os.find(o=>o.id===p)).find(Boolean)||os[0];
-  try{E.choose(s,id,opt.id);}catch(error){
-   if(!/国库不足|内帑不足/.test(error.message))throw error;
-   const free=os.find(o=>o!==opt&&(o.effects?.treasury??0)>=0&&(o.effects?.inner??0)>=0&&!o.cost&&!o.redeem);
-   if(!free)throw error;E.choose(s,id,free.id);
+export function settleLongAgenda(s, metrics = { stories: {}, family: [] }) {
+  E.bind(s);
+  let guard = 0;
+  while (s.agenda.length || s.pendingBirth || s.familyArt?.required) {
+    if (++guard > 100)
+      throw Error('本月要事未收束：' + JSON.stringify({ year: s.year, month: s.month, agenda: s.agenda }));
+    if (s.pendingBirth) {
+      if (!s.pendingBirth.name) E.nameChild(s, '长宁' + String.fromCharCode(0x4e00 + s.children.length));
+      E.completeBirth(s, s.pendingBirth.sex === '男' ? 'k_infant_01' : 'k_infant_04');
+      continue;
+    }
+    if (s.familyArt?.required) {
+      const c = F.childById(s, s.familyArt.child);
+      E.changeChildArt(s, c.id, c.sex === '男' ? 'k_youth_01' : 'k_youth_05');
+      continue;
+    }
+    const id = E.pendingScene(s),
+      sc = E.scene(s, id);
+    if (!sc) throw Error('找不到剧情：' + id);
+    const meta = longStoryList().find((story) => story.id === id);
+    if (meta?.dep && !s.done[meta.dep]) throw Error('故事先后顺序错误：' + id + '早于' + meta.dep);
+    const os = E.optionsFor(s, sc);
+    if (!os.length) throw Error('剧情没有选项：' + id);
+    let opt =
+      sc.familyType === 'birth'
+        ? os.find((o) => o.id === 'girl')
+        : sc.familyType === 'news'
+          ? os.find((o) => o.id === 'quiet')
+          : sc.familyType === 'threat'
+            ? os.find((o) => o.id === 'expose')
+            : sc.kind === 'festival' && s.children.length
+              ? os.find((o) => o.id === 'all')
+              : null;
+    opt ??= priority.map((p) => os.find((o) => o.id === p)).find(Boolean) || os[0];
+    try {
+      E.choose(s, id, opt.id);
+    } catch (error) {
+      if (!/国库不足|内帑不足/.test(error.message)) throw error;
+      const free = os.find(
+        (o) =>
+          o !== opt &&
+          (o.effects?.treasury ?? 0) >= 0 &&
+          (o.effects?.inner ?? 0) >= 0 &&
+          !o.cost &&
+          !o.redeem,
+      );
+      if (!free) throw error;
+      E.choose(s, id, free.id);
+    }
+    if (longStoryList().some((story) => story.id === id))
+      metrics.stories[id] = (metrics.stories[id] || 0) + 1;
+    if (sc.familyType) metrics.family.push({ id, type: sc.familyType, year: s.year, month: s.month });
+    observe(s, metrics);
   }
-  if(longStoryList().some(story=>story.id===id))metrics.stories[id]=(metrics.stories[id]||0)+1;
-  if(sc.familyType)metrics.family.push({id,type:sc.familyType,year:s.year,month:s.month});
-  observe(s,metrics);
- }
 }
 
 export function continueLongCampaign(s){

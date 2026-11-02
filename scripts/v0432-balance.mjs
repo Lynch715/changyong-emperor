@@ -7,7 +7,26 @@ import path from 'node:path';
 
 import {screenLike} from '../tests/support/fiscal-fixture.mjs';
 export {screenLike};
-function chooseAgenda(s){E.bind(s);while(s.agenda.length){const sc=E.scene(s.agenda[0]),options=E.optionsFor(s,sc);let o=sc.disaster?options.find(o=>o.id==='relief')||options[0]:options.find(o=>['warm','keep','council','pilot','audit','slow','alone','relief','develop'].includes(o.id))||options[0];try{E.choose(s,sc.id,o.id);}catch(e){if(!/国库不足/.test(e.message))throw e;const free=options.find(o=>['local','wait','close','deny'].includes(o.id));if(!free)throw e;E.choose(s,sc.id,free.id);}}}
+function chooseAgenda(s) {
+  E.bind(s);
+  while (s.agenda.length) {
+    const sc = E.scene(s, s.agenda[0]),
+      options = E.optionsFor(s, sc);
+    let o = sc.disaster
+      ? options.find((o) => o.id === 'relief') || options[0]
+      : options.find((o) =>
+          ['warm', 'keep', 'council', 'pilot', 'audit', 'slow', 'alone', 'relief', 'develop'].includes(o.id),
+        ) || options[0];
+    try {
+      E.choose(s, sc.id, o.id);
+    } catch (e) {
+      if (!/国库不足/.test(e.message)) throw e;
+      const free = options.find((o) => ['local', 'wait', 'close', 'deny'].includes(o.id));
+      if (!free) throw e;
+      E.choose(s, sc.id, free.id);
+    }
+  }
+}
 export function runScenario(seed = 432, { fiscal = true, screen = false, months = 72 } = {}) {
   const s = screen ? screenLike(seed) : E.newGame(seed),
     initial = s.stats.treasury;

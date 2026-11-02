@@ -11,14 +11,18 @@ const storageOf=s=>({getItem:()=>JSON.stringify(s),setItem:()=>assert.fail('读�
 test('0.44.1 首幕在相关主线之后当月接上，既有事项仍先处理且不重复排入', () => {
   const s = E.newGame(441);
   assert.deepEqual(s.agenda, ['M01']);
-  E.choose(s, 'M01', E.optionsFor(s, E.scene('M01'))[0].id);
+  E.choose(s, 'M01', E.optionsFor(s, E.scene(s, 'M01'))[0].id);
   assert.equal(s.people.C02.first, false, '正月先自由行动，茶叙移到二月');
   assert.ok(E.canAct(s));
   E.spendNight(s, null);
   E.endMonth(s);
   assert.deepEqual(s.agenda, ['R02-01']);
   assert.equal(
-    T.scheduleIntroduction(s, E.scene, () => true),
+    T.scheduleIntroduction(
+      s,
+      (id) => E.scene(s, id),
+      () => true,
+    ),
     null,
   );
   E.choose(s, 'R02-01', 'warm');
@@ -28,16 +32,28 @@ test('0.44.1 首幕在相关主线之后当月接上，既有事项仍先处理�
   s.month = 11;
   s.done.M06 = 'quiet';
   s.agenda = ['urgent-fixture', 'birth-fixture'];
-  T.scheduleFlexible(s, E.scene, () => true);
+  T.scheduleFlexible(
+    s,
+    (id) => E.scene(s, id),
+    () => true,
+  );
   assert.deepEqual(s.agenda, ['urgent-fixture', 'birth-fixture', 'XR09-01']);
   assert.equal(
-    T.scheduleIntroduction(s, E.scene, () => true),
+    T.scheduleIntroduction(
+      s,
+      (id) => E.scene(s, id),
+      () => true,
+    ),
     null,
     '同月不再加入第二位',
   );
   s.agenda = ['XR09-01'];
   E.choose(s, 'XR09-01', 'develop');
-  T.scheduleFlexible(s, E.scene, () => true);
+  T.scheduleFlexible(
+    s,
+    (id) => E.scene(s, id),
+    () => true,
+  );
   assert.ok(!s.agenda.some((id) => firstIds.includes(id)), '首幕办完后重新调度，也不能同月再加一位');
 });
 test('0.44.1 主动暂缓首幕后，当月不因再次调度而拉回；次月可接在年节后', () => {
@@ -52,20 +68,30 @@ test('0.44.1 主动暂缓首幕后，当月不因再次调度而拉回；次月�
   assert.equal(s.agenda[0], 'XR09-01');
   E.deferScene(s, 'XR09-01');
   assert.equal(
-    T.scheduleIntroduction(s, E.scene, () => true, 'M06'),
+    T.scheduleIntroduction(
+      s,
+      (id) => E.scene(s, id),
+      () => true,
+      'M06',
+    ),
     null,
   );
   assert.ok(!s.agenda.includes('XR09-01'));
   s.month = 11;
   s.agenda = ['festival-fixture'];
-  T.scheduleFlexible(s, E.scene, () => true);
+  T.scheduleFlexible(
+    s,
+    (id) => E.scene(s, id),
+    () => true,
+  );
   assert.deepEqual(s.agenda, ['festival-fixture', 'XR09-01']);
   assert.equal(s.campaign.deferred['XR09-01'].count, 1);
 });
-function settleUntil(s,target){
- for(let n=0;s.agenda[0]!==target&&s.agenda.length&&n<20;n++){
-  const id=s.agenda[0];E.choose(s,id,E.optionsFor(s,E.scene(id))[0].id);
- }
+function settleUntil(s, target) {
+  for (let n = 0; s.agenda[0] !== target && s.agenda.length && n < 20; n++) {
+    const id = s.agenda[0];
+    E.choose(s, id, E.optionsFor(s, E.scene(s, id))[0].id);
+  }
 }
 
 test('0.44.1 三组逐月路线中九人首幕均在二年五月前完成，人物两难集中且主线顺序保留',()=>{
@@ -112,16 +138,37 @@ test('0.44.1 异地仍走书信，离场人物不触发前移后的后续',()=>{
  assert.equal(E.fifthReady(s,'C03',true),true);s.flags.gone_C03=true;assert.equal(E.fifthReady(s,'C03',true),false);
 });
 
-test('0.44.1 旧档原选择、当前卡、人物与延期记录不变，无时间线旧档不因前移多跳过事件',()=>{
- const s=E.newGame(445);settleLongAgenda(s);s.year=5;s.month=7;s.agenda=['K10'];s.stats.treasury=781.25;
- s.campaign.deferred.K10={count:2,until:T.at(s)+1};s.campaign.skipped.push('K11');
- const original=JSON.stringify(s),loaded=E.load(storageOf(s));
- for(const field of ['done','people','stats','agenda','campaign','log','seed'])assert.deepEqual(loaded[field],s[field],field);
- assert.equal(JSON.stringify(s),original);E.choose(loaded,'K10',E.optionsFor(loaded,E.scene('K10'))[0].id);
- assert.ok(loaded.done.K10,'旧档中已排入且过了新窗口的卡仍能办完');
- assert.ok(loaded.campaign.skipped.includes('K11'),'不补播曾跳过的卡');
- const legacy=structuredClone(s);delete legacy.campaign;legacy.year=3;legacy.month=4;legacy.agenda=[];
- const adopted=E.load(storageOf(legacy));assert.ok(!adopted.campaign.skipped.includes('K10'));
- assert.ok(T.candidates(adopted,E.scene,()=>true).some(e=>e.id==='K10'));
- for(const field of ['done','people','stats','agenda','log','seed'])assert.deepEqual(adopted[field],legacy[field],field);
+test('0.44.1 旧档原选择、当前卡、人物与延期记录不变，无时间线旧档不因前移多跳过事件',() => {
+  const s = E.newGame(445);
+  settleLongAgenda(s);
+  s.year = 5;
+  s.month = 7;
+  s.agenda = ['K10'];
+  s.stats.treasury = 781.25;
+  s.campaign.deferred.K10 = { count: 2, until: T.at(s) + 1 };
+  s.campaign.skipped.push('K11');
+  const original = JSON.stringify(s),
+    loaded = E.load(storageOf(s));
+  for (const field of ['done', 'people', 'stats', 'agenda', 'campaign', 'log', 'seed'])
+    assert.deepEqual(loaded[field], s[field], field);
+  assert.equal(JSON.stringify(s), original);
+  E.choose(loaded, 'K10', E.optionsFor(loaded, E.scene(loaded, 'K10'))[0].id);
+  assert.ok(loaded.done.K10, '旧档中已排入且过了新窗口的卡仍能办完');
+  assert.ok(loaded.campaign.skipped.includes('K11'), '不补播曾跳过的卡');
+  const legacy = structuredClone(s);
+  delete legacy.campaign;
+  legacy.year = 3;
+  legacy.month = 4;
+  legacy.agenda = [];
+  const adopted = E.load(storageOf(legacy));
+  assert.ok(!adopted.campaign.skipped.includes('K10'));
+  assert.ok(
+    T.candidates(
+      adopted,
+      (id) => E.scene(adopted, id),
+      () => true,
+    ).some((e) => e.id === 'K10'),
+  );
+  for (const field of ['done', 'people', 'stats', 'agenda', 'log', 'seed'])
+    assert.deepEqual(adopted[field], legacy[field], field);
 });

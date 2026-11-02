@@ -6,7 +6,15 @@ import {moneyText,treasuryIndex} from '../src/v2/economy.js';
 import {replay} from '../scripts/v2-economy-replay.mjs';
 const ready=()=>{const s=E.newGame(38);s.agenda=[];return s;};
 function reload(s){return E.load({getItem:()=>JSON.stringify(s)});}
-function finishMonth(s){while(s.agenda.length){const sc=E.scene(s.agenda[0]);E.choose(s,sc.id,E.optionsFor(s,sc)[0].id);}while(s.ap)E.rest(s);E.spendNight(s,null);return E.endMonth(s);}
+function finishMonth(s) {
+  while (s.agenda.length) {
+    const sc = E.scene(s, s.agenda[0]);
+    E.choose(s, sc.id, E.optionsFor(s, sc)[0].id);
+  }
+  while (s.ap) E.rest(s);
+  E.spendNight(s, null);
+  return E.endMonth(s);
+}
 test('0.38 两本银账与小额银子显示，读旧档只换算一次',()=>{const s=ready();assert.equal(s.stats.treasury,800);assert.equal(s.stats.inner,50);assert.equal(moneyText(.05),'5 百两');assert.equal(moneyText(.2),'2 千两');assert.equal(treasuryIndex({...s,stats:{treasury:6000}}),100);
  delete s.economyVersion;delete s.stats.inner;delete s.ledger;s.stats.treasury=60;const old=reload(s);assert.equal(old.stats.treasury,800);assert.equal(old.stats.inner,50);assert.equal(reload(old).stats.treasury,800);assert.doesNotThrow(()=>finishMonth(old));});
 test('0.38 剧情银子按点数换算，送礼走内帑，失败不花时辰',()=>{const s=ready();assert.equal(E.applyStats(s,{treasury:-3}).treasury,-3*ECONOMY.point);const before=s.stats.treasury,inner=s.stats.inner;E.giveGift(s,'C02','tea');assert.equal(s.stats.treasury,before);assert.equal(s.stats.inner,inner-GIFTS.tea.innerCost);s.stats.inner=0;const ap=s.ap;assert.throws(()=>E.giveGift(s,'C02','tea'),/内帑不足/);assert.throws(()=>E.goOuting(s),/内帑不足/);assert.equal(s.ap,ap);});
@@ -50,8 +58,38 @@ test('0.38 太监调动让对应宫里的人高兴，罢免能臣伤朝局并被
 test('0.38 晋封添情分与吃味，降位留下心结',()=>{const s=ready();s.year=2;s.month=1;for(const id of ['C07','C06','C09','C10'])Object.assign(s.people[id],{met:true,aff:50});const r=E.appointPerson(s,'C07','rank5');assert.equal(r.people.C07,8);assert.equal(r.people.C06,-1);assert.equal(s.stats.palace,46);E.appointPerson(s,'C07','rank4');assert.equal(s.people.C07.aff,48);assert.equal(s.people.C07.knot.source,'appointment');assert.equal(E.gain(s,'C07',3),0);});
 test('0.38 要职按能力忠诚影响月结，八爷党任用短利与长期风险分开算',()=>{const s=ready(),base=ready();s.month=base.month=2;E.appointPerson(s,'C29','yungui');const old=s.stats.people;E.endMonth(s);E.endMonth(base);assert.ok(s.provinces.云贵.livelihood>base.provinces.云贵.livelihood);assert.equal(s.stats.people,old);assert.ok(s.stats.treasury>base.stats.treasury);const party=ready();E.appointPerson(party,'C24','libu');assert.equal(party.stats.court,57);officeMonthly(party,true);officeMonthly(party,true);const r=officeMonthly(party,true);assert.ok(r.changes.court<0);assert.ok(r.notes.length);});
 test('0.38 AI 任命先检查整批，非法或超员没有任何局部变更',()=>{for(const appoint of [[{id:'X','office':'hubu'}],[{id:'C29',office:'fake'}],[{id:'C29',office:'hubu'}],[{id:'C29',office:'yungui'},{id:'C29',office:'libu'}]]){const s=ready(),before=JSON.stringify(s);assert.throws(()=>E.applyEdict(s,'任命',{appoint,effects:{people:5},inner:10}));assert.equal(JSON.stringify(s),before);}const s=ready();E.applyEdict(s,'任命鄂尔泰',{appoint:{id:'C29',office:'yungui'}});assert.equal(s.ap,2);assert.equal(E.titleOf(s,'C29'),'云贵总督');});
-test('0.38 嫔位剧情读真实定员，满位可暂缓，年羹尧的剧情去向写入历史',()=>{const s=ready();s.year=5;s.month=8;for(const id of ['C11','C12','C13']){s.ap=3;E.appointPerson(s,id,'rank3');}assert.equal(Object.values(s.appointments).filter(x=>x.office==='rank3').length,5);s.agenda=['K15'];assert.ok(!E.optionsFor(s,E.scene('K15')).some(o=>o.id==='both'));E.choose(s,'K15','huan');assert.equal(E.titleOf(s,'C09'),'嫔');s.agenda=['K15'];assert.deepEqual(E.optionsFor(s,E.scene('K15')).map(o=>o.id),['later']);assert.doesNotThrow(()=>E.choose(s,'K15','later'));
- for(const [opt,title]of [['hangzhou','杭州将军'],['punish','削爵在狱'],['keep','领侍卫内大臣']]){const n=ready();n.year=3;n.agenda=['V06'];E.choose(n,'V06',opt);assert.equal(E.titleOf(n,'C03'),title);assert.equal(n.appointmentHistory.C03.at(-1).source,'剧情');}});
+test('0.38 嫔位剧情读真实定员，满位可暂缓，年羹尧的剧情去向写入历史',() => {
+  const s = ready();
+  s.year = 5;
+  s.month = 8;
+  for (const id of ['C11', 'C12', 'C13']) {
+    s.ap = 3;
+    E.appointPerson(s, id, 'rank3');
+  }
+  assert.equal(Object.values(s.appointments).filter((x) => x.office === 'rank3').length, 5);
+  s.agenda = ['K15'];
+  assert.ok(!E.optionsFor(s, E.scene(s, 'K15')).some((o) => o.id === 'both'));
+  E.choose(s, 'K15', 'huan');
+  assert.equal(E.titleOf(s, 'C09'), '嫔');
+  s.agenda = ['K15'];
+  assert.deepEqual(
+    E.optionsFor(s, E.scene(s, 'K15')).map((o) => o.id),
+    ['later'],
+  );
+  assert.doesNotThrow(() => E.choose(s, 'K15', 'later'));
+  for (const [opt, title] of [
+    ['hangzhou', '杭州将军'],
+    ['punish', '削爵在狱'],
+    ['keep', '领侍卫内大臣'],
+  ]) {
+    const n = ready();
+    n.year = 3;
+    n.agenda = ['V06'];
+    E.choose(n, 'V06', opt);
+    assert.equal(E.titleOf(n, 'C03'), title);
+    assert.equal(n.appointmentHistory.C03.at(-1).source, '剧情');
+  }
+});
 test('0.38 完整0.37结构旧档补齐全部新字段，读档不写回源存档且走完一月',()=>{const s=E.newGame(7);const keep=['version','vol','freedom','flags','seed','crises','year','month','ap','stats','people','agenda','done','log','delta','night','ended','used','chats','weather','bdayDone','visit'];for(const k of Object.keys(s))if(!keep.includes(k))delete s[k];s.stats={treasury:60,people:55,court:55,palace:45,health:70};s.people=Object.fromEntries(CORE.map(id=>{const p=s.people[id];delete p.ability;delete p.loyalty;delete p.faction;return [id,p];}));const raw=JSON.stringify(s),storage={getItem:()=>raw,setItem:()=>{throw Error('读档不能写回')}};const old=E.load(storage);assert.ok(old);assert.equal(old.stats.treasury,800);assert.equal(old.stats.inner,50);for(const k of ['economyVersion','ledger','travel','inventory','nanfeng','freed','clues','secondaryDone','appointments','appointmentHistory','officeMonths'])assert.ok(old[k]!==undefined,k);assert.doesNotThrow(()=>finishMonth(old));assert.equal(JSON.stringify(s),raw);});
 test('0.38 宫里添置、万寿与节用走内帑，大凶不能借任命添收益', () => {
   const s = ready();

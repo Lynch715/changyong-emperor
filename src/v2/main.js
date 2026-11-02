@@ -74,21 +74,31 @@ function guide(){
 // ---------- 首页：本月 ----------
 // 首页沿用现有卡片；可选旨意始终放在行动按钮上方。
 function home() {
-  const pending = E.pendingScene(s), sc = pending && E.scene(pending);
-  const people = [...CORE.filter(id => E.present(s, id) && !E.gone(s, id)), ...Object.keys(s.inPalace || {})];
-  const later = CORE.filter(id => !E.present(s, id) || !s.people[id].met).length;
+  const pending = E.pendingScene(s),
+    sc = pending && E.scene(s, pending);
+  const people = [
+    ...CORE.filter((id) => E.present(s, id) && !E.gone(s, id)),
+    ...Object.keys(s.inPalace || {}),
+  ];
+  const later = CORE.filter((id) => !E.present(s, id) || !s.people[id].met).length;
   return `${header()}<main class="home">
     <div class="guide"><span>${guide()}</span>${apPips()}</div>
-    ${s.nanfeng?.visit && !s.nanfeng.visit.done ?
-      '<button class="night-btn" data-act="go" data-to="nanfeng">回到南风馆，把这盏茶喝完 ›</button>' : ''}
+    ${
+      s.nanfeng?.visit && !s.nanfeng.visit.done
+        ? '<button class="night-btn" data-act="go" data-to="nanfeng">回到南风馆，把这盏茶喝完 ›</button>'
+        : ''
+    }
     ${agendaCard(sc)}${festivalCards()}${openingCard()}${homeActions(sc)}
     <button class="night-btn ${!sc && (s.ap === 0 || s.night) ? 'glow' : ''}"
       data-act="night" ${sc ? 'disabled' : ''}>
-      ${s.night ? '结束这个月 ›<span>今夜已经过了</span>' :
-        `入夜 ›<span>${s.ap > 0 && !sc ? `还剩 ${s.ap} 个时辰` : '选一处去，或独寝'}</span>`}
+      ${
+        s.night
+          ? '结束这个月 ›<span>今夜已经过了</span>'
+          : `入夜 ›<span>${s.ap > 0 && !sc ? `还剩 ${s.ap} 个时辰` : '选一处去，或独寝'}</span>`
+      }
     </button>
     <h3 class="sec">身边的人</h3><section class="people">
-      ${people.map(id => personCard(id)).join('')}
+      ${people.map((id) => personCard(id)).join('')}
       ${later ? `<div class="pc ghost"><b>还有 ${later} 人</b><span>会在往后的日子里出现</span></div>` : ''}
     </section>
     ${budgetLine()}${birthdayCards()}${familyStatus()}${visitCard()}
@@ -173,12 +183,14 @@ function crisisCards() {
 // 节庆先于可选朝政卡显示，不办也不会挡住召见或入夜。
 function festivalCards() {
   if (s.night || s.ended) return '';
-  return E.optionalFestivalIds(s).map(id => {
-    const sc = E.scene(id);
-    return `<section class="opening-card festival-card"><small>本月可选 · 不占时辰</small>
+  return E.optionalFestivalIds(s)
+    .map((id) => {
+      const sc = E.scene(s, id);
+      return `<section class="opening-card festival-card"><small>本月可选 · 不占时辰</small>
       <h3>${esc(sc.title)}</h3><p>选一个人同过，或全家一起。不想去也不妨事。</p>
       <button data-act="festival-open" data-id="${id}">去过节 ›</button></section>`;
-  }).join('');
+    })
+    .join('');
 }
 
 // 正月可选的小事醒目显示，是否办理由玩家决定。
@@ -219,27 +231,40 @@ function nav(){return `<nav class="bottom"><button data-act="go" data-to="home" 
 // ---------- 场景 ----------
 // 可选节庆可以随时合上，选择后的数值和人物回话仍走原来的结果页。
 function sceneView() {
-  if (view.loading) return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><article class="paper">
+  if (view.loading)
+    return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><article class="paper">
     <h2>回报送到了</h2><p class="muted wait">张廷玉正把各地的折子一份份摞在案上……</p></article></div>`;
-  const sc = E.scene(view.id);
+  const sc = E.scene(s, view.id);
   if (!sc) return home();
-  const place = sc.location || sc.place || '', r = view.result;
-  const defer = E.canDeferScene(s, sc.id) ? `<div class="story-defer">
+  const place = sc.location || sc.place || '',
+    r = view.result;
+  const defer = E.canDeferScene(s, sc.id)
+    ? `<div class="story-defer">
     <button data-act="story-defer" data-id="${sc.id}">过些时候再谈 · 最早下月</button>
     <p class="small">不占时辰，最多暂缓三次；最早下月起另择月份再呈。建议期限后优先呈报且不能再暂缓，
-      原事与已做过的选择都会保留。</p></div>` : '';
+      原事与已做过的选择都会保留。</p></div>`
+    : '';
   return `<div class="stage" style="--bg:url('${abs(bgFor(place))}')"><div class="stage-top">
     ${E.optionalFestivalIds(s).includes(view.id) ? '<button data-act="go" data-to="home">‹ 先忙别的</button>' : ''}
     <span>${dateText(s)}</span><span>${esc(place)}</span></div>
     ${sc.actor ? avatar(sc.actor, 'portrait') : ''}<article class="paper"><h2>${esc(sc.title)}</h2>
-    ${r ? `<div class="choice">你选择：${esc(r.choice)}</div>${paras(r.text)}
-      ${r.echo ? `<blockquote class="echo"><b>${esc(nm(r.actor))}</b>${esc(r.echo)}</blockquote>` :
-        r.echoWait ? '<p class="muted wait">……</p>' : ''}
+    ${
+      r
+        ? `<div class="choice">你选择：${esc(r.choice)}</div>${paras(r.text)}
+      ${
+        r.echo
+          ? `<blockquote class="echo"><b>${esc(nm(r.actor))}</b>${esc(r.echo)}</blockquote>`
+          : r.echoWait
+            ? '<p class="muted wait">……</p>'
+            : ''
+      }
       ${chips(r.stats, r.people, r.knot ? `<span class="chip knot">${nm(r.knot)} 心里有了结</span>` : '')}
       ${r.knot ? `<p class="hint">心结未解时，${nm(r.knot)}的情分不会再涨。召见时可以“说开那件事”。</p>` : ''}
-      <button class="primary" data-act="scene-next">继续</button>` :
-      `${paras(sc.body)}<div class="options">${E.optionsFor(s, sc).map(o =>
-        `<button data-act="pick" data-opt="${o.id}">${esc(o.label)}</button>`).join('')}</div>${defer}`}
+      <button class="primary" data-act="scene-next">继续</button>`
+        : `${paras(sc.body)}<div class="options">${E.optionsFor(s, sc)
+            .map((o) => `<button data-act="pick" data-opt="${o.id}">${esc(o.label)}</button>`)
+            .join('')}</div>${defer}`
+    }
     </article></div>`;
 }
 // ---------- 召见 / 赏赐：先选人 ----------
@@ -605,21 +630,34 @@ function playHelp() {
 }
 
 const KIND_NAME={longStory:'岁月',deep5:'深情',festival:'节',main:'主线',relation:'情',extension:'情',romance:'心意',deep:'深情',dilemma:'两难',government:'政务',followup:'政务',side:'宫中'};
-function galleryView(){
- const g=loadGallery(),n=Object.keys(g.ach||{}).length;
- const seen=Object.entries(g.seen||{}).map(([id,opt])=>({id,opt,sc:E.scene(id)})).filter(x=>x.sc&&x.sc.kind&&KIND_NAME[x.sc.kind]);
- return `${header()}<main class="gallery"><h3 class="sec">成就 <small>${n}/${ACHIEVEMENTS.length}</small></h3>
-  <section class="achs">${ACHIEVEMENTS.map(a=>{const got=g.ach?.[a.id];return `<div class="ach ${got?'got':''}"><i>${got?a.icon:'?'}</i><b>${got?a.title:'？？？'}</b><span>${esc(a.desc)}</span></div>`;}).join('')}</section>
+// 珍藏回看使用当前存档，不借用其他读档留下的动态场景。
+function galleryView() {
+  const g = loadGallery(),
+    n = Object.keys(g.ach || {}).length;
+  const seen = Object.entries(g.seen || {})
+    .map(([id, opt]) => ({ id, opt, sc: E.scene(s, id) }))
+    .filter((x) => x.sc && x.sc.kind && KIND_NAME[x.sc.kind]);
+  return `${header()}<main class="gallery"><h3 class="sec">成就 <small>${n}/${ACHIEVEMENTS.length}</small></h3>
+  <section class="achs">${ACHIEVEMENTS.map((a) => {
+    const got = g.ach?.[a.id];
+    return `<div class="ach ${got ? 'got' : ''}"><i>${got ? a.icon : '?'}</i><b>${got ? a.title : '？？？'}</b><span>${esc(a.desc)}</span></div>`;
+  }).join('')}</section>
   <h3 class="sec">看过的剧情 <small>${seen.length}</small></h3>
-  <section class="replays">${seen.map(x=>`<button data-act="replay" data-id="${x.id}"><em>${KIND_NAME[x.sc.kind]}</em><b>${esc(x.sc.title)}</b><span>${esc(nm(x.sc.actor))}</span></button>`).join('')||'<p class="muted">还没有。</p>'}</section>
+  <section class="replays">${seen.map(x => `<button data-act="replay" data-id="${x.id}">
+    <em>${KIND_NAME[x.sc.kind]}</em><b>${esc(x.sc.title)}</b>
+    <span>${esc(nm(x.sc.actor))}</span></button>`).join('') || '<p class="muted">还没有。</p>'}</section>
   <p class="muted small center">珍藏跨存档保留在这台设备上，重开一局也不会丢。</p>
- </main>${s?nav():''}`;
+ </main>${s ? nav() : ''}`;
 }
-function replayView(){
- const sc=E.scene(view.id),opt=loadGallery().seen?.[view.id],o=sc.options.find(x=>x.id===opt);
- return `<div class="stage" style="--bg:url('${abs(bgFor(sc.location||sc.place||''))}')"><div class="stage-top"><button data-act="go" data-to="gallery">‹ 珍藏</button><span>回看</span></div>
-  ${PEOPLE[sc.actor]||sc.actor?`<img class="portrait" src="${portrait(sc.actor)}" alt="">`:''}
-  <article class="paper"><h2>${esc(sc.title)}</h2>${paras(sc.body)}${o?`<div class="choice">那一回，你选择：${esc(o.label.replace('{n}',nm(o.who)))}</div>${paras(o.reply||'')}`:''}
+function replayView() {
+  const sc = E.scene(s, view.id),
+    opt = loadGallery().seen?.[view.id],
+    o = sc.options.find((x) => x.id === opt);
+  return `<div class="stage" style="--bg:url('${abs(bgFor(sc.location || sc.place || ''))}')"><div class="stage-top">
+    <button data-act="go" data-to="gallery">‹ 珍藏</button><span>回看</span></div>
+  ${PEOPLE[sc.actor] || sc.actor ? `<img class="portrait" src="${portrait(sc.actor)}" alt="">` : ''}
+  <article class="paper"><h2>${esc(sc.title)}</h2>${paras(sc.body)}${o ? `<div class="choice">
+    那一回，你选择：${esc(o.label.replace('{n}', nm(o.who)))}</div>${paras(o.reply || '')}` : ''}
   <button class="primary" data-act="go" data-to="gallery">合上</button></article></div>`;
 }
 const STAGE_LINE={相识:'开始记得你了。',相知:'愿意跟你说心里话了。',倾心:'动心了。',相守:'这一世，不会再错过了。'};
@@ -758,11 +796,28 @@ const ACTS={
  },
  continue:()=>{s=E.load();go({name:s?.ended?'ending':'home'});},
  scene:()=>openScene(E.pendingScene(s)),
- pick:async el=>{
-  const id=view.id,r=E.choose(s,id,el.dataset.opt);save();view.result=r;
-  if(E.scene(id)?.kind!=='family'&&id!=='Y10'&&r.actor&&PEOPLE[r.actor]&&AI.aiMode()!=='off'){r.echoWait=true;render();const echo=await AI.sceneEcho(s,r.actor,r.title,r.choice,r.text);r.echoWait=false;if(echo){r.echo=echo;}}
+ pick:async (el) => {
+  const id = view.id,
+    r = E.choose(s, id, el.dataset.opt);
+  save();
+  view.result = r;
+  if (
+    E.scene(s, id)?.kind !== 'family' &&
+    id !== 'Y10' &&
+    r.actor &&
+    PEOPLE[r.actor] &&
+    AI.aiMode() !== 'off'
+  ) {
+    r.echoWait = true;
+    render();
+    const echo = await AI.sceneEcho(s, r.actor, r.title, r.choice, r.text);
+    r.echoWait = false;
+    if (echo) {
+      r.echo = echo;
+    }
+  }
   render();
- },
+},
  'scene-next':()=>{
   if(view.result?.optional)return go({name:'home'});
   if(s.agenda.length)return openScene(E.pendingScene(s));

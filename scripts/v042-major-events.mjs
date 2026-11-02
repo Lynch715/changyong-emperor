@@ -14,41 +14,122 @@ function majorChoice(s,sc,mode,rng){
  if(step===(e.stages===5?3:2))return mode==='careful'?'verify':'continue';
  return mode==='careful'?'praise':'investigate';
 }
-export function replay(seed,mode='careful'){
- let state=seed>>>0;const rng=()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296;};
- const s=E.newGame(seed),curve=[],metrics={starts:0,completed:0,unfinished:0,maxConcurrent:0,maxMajorScenesQueued:0,majorSpend:0,insufficientMajorFunds:0,missedStages:0,variants:new Set()};
- let low=s.stats.treasury;
- for(let month=1;month<=72;month++){
-  const monthStart=s.stats.treasury,majorTotalSpent=()=>s.majorEventReports.reduce((a,r)=>a+(r.treasurySpent||0),0)+(s.majorEvent?.treasurySpent||0),spentBefore=majorTotalSpent();
-  let guard=0;
-  while(s.agenda.length&&guard++<120){
-   const queued=s.agenda.filter(id=>id.startsWith('ME')).length;metrics.maxMajorScenesQueued=Math.max(metrics.maxMajorScenesQueued,queued);metrics.maxConcurrent=Math.max(metrics.maxConcurrent,s.majorEvent?1:0);
-   const id=s.agenda[0],sc=E.scene(id);if(!sc)throw Error(`seed=${seed} mode=${mode}: 缺少场景 ${id}`);
-   let opts=E.optionsFor(s,sc),chosen;
-   if(sc.kind==='majorEvent'){
-    if(id.endsWith('_0')){metrics.starts++;metrics.variants.add(s.majorEvent.variant);}
-    chosen=majorChoice(s,sc,mode,rng);
-   }else chosen=mode==='random'?pick(opts,rng).id:(opts.find(o=>['warm','keep','council','pilot','audit','slow','alone','relief','develop'].includes(o.id))||opts[0])?.id;
-   const attempts=[chosen,...opts.map(o=>o.id).filter(x=>x!==chosen)];let settled=false;
-   for(const option of attempts){try{E.choose(s,id,option);settled=true;break;}catch(error){if(sc.kind==='majorEvent'&&/国库不足/.test(error.message))metrics.insufficientMajorFunds++;}}
-   if(!settled)throw Error(`seed=${seed}: 所有选项均失败 ${id}`);
-   metrics.maxConcurrent=Math.max(metrics.maxConcurrent,s.majorEvent?1:0);
-   metrics.maxMajorScenesQueued=Math.max(metrics.maxMajorScenesQueued,s.agenda.filter(x=>x.startsWith('ME')).length);
-   low=Math.min(low,s.stats.treasury);
+export function replay(seed, mode = 'careful') {
+  let state = seed >>> 0;
+  const rng = () => {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+  const s = E.newGame(seed),
+    curve = [],
+    metrics = {
+      starts: 0,
+      completed: 0,
+      unfinished: 0,
+      maxConcurrent: 0,
+      maxMajorScenesQueued: 0,
+      majorSpend: 0,
+      insufficientMajorFunds: 0,
+      missedStages: 0,
+      variants: new Set(),
+    };
+  let low = s.stats.treasury;
+  for (let month = 1; month <= 72; month++) {
+    const monthStart = s.stats.treasury,
+      majorTotalSpent = () =>
+        s.majorEventReports.reduce((a, r) => a + (r.treasurySpent || 0), 0) +
+        (s.majorEvent?.treasurySpent || 0),
+      spentBefore = majorTotalSpent();
+    let guard = 0;
+    while (s.agenda.length && guard++ < 120) {
+      const queued = s.agenda.filter((id) => id.startsWith('ME')).length;
+      metrics.maxMajorScenesQueued = Math.max(metrics.maxMajorScenesQueued, queued);
+      metrics.maxConcurrent = Math.max(metrics.maxConcurrent, s.majorEvent ? 1 : 0);
+      const id = s.agenda[0],
+        sc = E.scene(s, id);
+      if (!sc) throw Error(`seed=${seed} mode=${mode}: 缺少场景 ${id}`);
+      let opts = E.optionsFor(s, sc),
+        chosen;
+      if (sc.kind === 'majorEvent') {
+        if (id.endsWith('_0')) {
+          metrics.starts++;
+          metrics.variants.add(s.majorEvent.variant);
+        }
+        chosen = majorChoice(s, sc, mode, rng);
+      } else
+        chosen =
+          mode === 'random'
+            ? pick(opts, rng).id
+            : (
+                opts.find((o) =>
+                  [
+                    'warm',
+                    'keep',
+                    'council',
+                    'pilot',
+                    'audit',
+                    'slow',
+                    'alone',
+                    'relief',
+                    'develop',
+                  ].includes(o.id),
+                ) || opts[0]
+              )?.id;
+      const attempts = [chosen, ...opts.map((o) => o.id).filter((x) => x !== chosen)];
+      let settled = false;
+      for (const option of attempts) {
+        try {
+          E.choose(s, id, option);
+          settled = true;
+          break;
+        } catch (error) {
+          if (sc.kind === 'majorEvent' && /国库不足/.test(error.message)) metrics.insufficientMajorFunds++;
+        }
+      }
+      if (!settled) throw Error(`seed=${seed}: 所有选项均失败 ${id}`);
+      metrics.maxConcurrent = Math.max(metrics.maxConcurrent, s.majorEvent ? 1 : 0);
+      metrics.maxMajorScenesQueued = Math.max(
+        metrics.maxMajorScenesQueued,
+        s.agenda.filter((x) => x.startsWith('ME')).length,
+      );
+      low = Math.min(low, s.stats.treasury);
+    }
+    if (guard >= 120) throw Error(`seed=${seed}: agenda 未收束`);
+    while (s.ap > 0) E.rest(s);
+    E.spendNight(s, null);
+    const report = E.endMonth(s);
+    const spentAfter = majorTotalSpent(),
+      monthlyMajorSpend = spentAfter - spentBefore;
+    metrics.majorSpend += monthlyMajorSpend;
+    metrics.completed = s.majorEventReports.length;
+    metrics.maxConcurrent = Math.max(metrics.maxConcurrent, s.majorEvent ? 1 : 0);
+    low = Math.min(low, s.stats.treasury);
+    curve.push({
+      month,
+      treasuryStart: monthStart,
+      treasuryEnd: s.stats.treasury,
+      treasuryIn: report.ledger.treasury.in,
+      treasuryOut: report.ledger.treasury.out,
+      majorSpend: monthlyMajorSpend,
+      activeMajor: s.majorEvent ? 1 : 0,
+      backlog: s.memorials.length,
+    });
+    if (s.ended && month < 72) {
+      if (month === 24) E.startVolume2(s);
+      else if (month === 48) E.startVolume3(s);
+    }
   }
-  if(guard>=120)throw Error(`seed=${seed}: agenda 未收束`);
-  while(s.ap>0)E.rest(s);
-  E.spendNight(s,null);const report=E.endMonth(s);
-  const spentAfter=majorTotalSpent(),monthlyMajorSpend=spentAfter-spentBefore;
-  metrics.majorSpend+=monthlyMajorSpend;
-  metrics.completed=s.majorEventReports.length;
-  metrics.maxConcurrent=Math.max(metrics.maxConcurrent,s.majorEvent?1:0);
-  low=Math.min(low,s.stats.treasury);
-  curve.push({month,treasuryStart:monthStart,treasuryEnd:s.stats.treasury,treasuryIn:report.ledger.treasury.in,treasuryOut:report.ledger.treasury.out,majorSpend:monthlyMajorSpend,activeMajor:s.majorEvent?1:0,backlog:s.memorials.length});
-  if(s.ended&&month<72){if(month===24)E.startVolume2(s);else if(month===48)E.startVolume3(s);}
- }
- metrics.unfinished=s.majorEvent?1:0;
- return {seed,mode,finalTreasury:s.stats.treasury,minTreasury:low,finalPeople:s.stats.people,finalCourt:s.stats.court,curve,metrics:{...metrics,variants:[...metrics.variants]}};
+  metrics.unfinished = s.majorEvent ? 1 : 0;
+  return {
+    seed,
+    mode,
+    finalTreasury: s.stats.treasury,
+    minTreasury: low,
+    finalPeople: s.stats.people,
+    finalCourt: s.stats.court,
+    curve,
+    metrics: { ...metrics, variants: [...metrics.variants] },
+  };
 }
 const percentile=(xs,q)=>xs.slice().sort((a,b)=>a-b)[Math.max(0,Math.ceil(xs.length*q)-1)];
 export function simulate(count=100){

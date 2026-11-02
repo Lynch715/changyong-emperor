@@ -96,7 +96,6 @@ export function newGame(seed = Date.now() % 2147483647) {
   F.initFamily(s);
   Fiscal.initFiscal(s);
   T.initCampaign(s, true);
-  bind(s);
   startMonth(s);
   return s;
 }
@@ -174,7 +173,6 @@ export function log(s,text,kind='事'){s.log.push({y:s.year,m:s.month,kind,text}
 // ---------- 月 ----------
 export function startMonth(s) {
   T.initCampaign(s);
-  bind(s);
   G.memorialMonth(s, rand);
   s.ledger = emptyLedger();
   s.expenseUses = {};
@@ -213,10 +211,10 @@ export function startMonth(s) {
     !!s.majorEvent ||
     (!(LAST_YEARS.includes(s.year) && s.month >= 7) &&
       !s.agenda.length &&
-      !T.candidates(s, scene, (sc) => flexEligible(s, sc)).length);
+      !T.candidates(s, id => scene(s, id), (sc) => flexEligible(s, sc)).length);
   const majorId = mayStartMajor ? M.scheduleMajorEvent(s, rand, s.agenda.length === 0 ? 0.27 : 0.35) : null;
   if (majorId) s.agenda.unshift(majorId);
-  T.scheduleFlexible(s, scene, (sc) => flexEligible(s, sc));
+  T.scheduleFlexible(s, id => scene(s, id), (sc) => flexEligible(s, sc));
   if (!majorId && !last && s.agenda.length === 0) {
     const left = SMALL_EVENTS.filter(
       (p) =>
@@ -271,17 +269,26 @@ export function acceptVisit(s) {
   recordContact(s, v.id);
   return { title: v.title, text: v.text, stats, people: d ? { [v.id]: d } : {}, id: v.id };
 }
-// 动态场景（旨意的回报）挂在存档上；bind 让 scene() 能找到当前存档
-let CUR=null;export function bind(s){CUR=s;return s;}
+// 一版兼容入口只返回原存档，不再设置任何模块级“当前存档”。
+export function bind(s) {
+  return s;
+}
 function followFallback(s,id){const e=(s?.edicts||[]).find(x=>'FU'+x.n===id);if(!e)return null;const ago=Math.max(1,idx(s.year,s.month)-e.at);const neg=Object.values(e.effects||{}).some(v=>v<0);
  return {id,title:`「${e.title}」的回音`,kind:'edictfollow',actor:'C28',location:'养心殿',body:`${ago}个月前，你下了一道旨意：${e.text}\n\n如今，各地的回报陆续送到了。张廷玉把它们摞在案上，${neg?'说好的有，说难的也有。':'大多是好消息。'}\n\n“皇上，”他问，“这件事，往后怎么办？”`,
   options:[{id:'a',label:'嘉奖经办的官员，接着办',effects:{court:2,treasury:-2},reply:'经办的官员得了赏，干劲更足了。这道旨意，算是真正落了地。'},{id:'b',label:'派人下去看看实情',effects:{people:2,health:-1},reply:'派去的人跑了一个月，回来说：旨意确实落了地，只是有几处被下面的人打了折扣。你让他们一一改了。'},{id:'c',label:'不必再过问',effects:{},reply:'你没有再过问。这件事，就这样过去了。'}]};}
-const baseScene=id=>CUR?.dyn?.[id]||longScene(CUR,id)||M.majorScene(CUR,id)||SCENES[id]||ROMANCE[id]||SCENES2[id]||SCENES3[id]||POOL.find(p=>p.id===id)||SURPRISES.find(p=>p.id===id)||(id?.startsWith('FU')?(CUR?.dyn?.[id]||followFallback(CUR,id)):null)||(id?.startsWith('FE')?festivalScene(id,CUR?weatherOf(CUR):''):null);
-export const scene=id=>{const sc=baseScene(id);return id==='Y10'?F.y10Scene(CUR,sc):sc;};
+// 场景查询显式接收存档；单参数旧调用暂时只兼容静态正文。
+export function scene(s, id) {
+  if (typeof s === 'string' && id === undefined) {id = s; s = null;}
+  const sc = s?.dyn?.[id] || longScene(s, id) || M.majorScene(s, id) || SCENES[id] || ROMANCE[id] ||
+    SCENES2[id] || SCENES3[id] || POOL.find(value => value.id === id) || SURPRISES.find(value => value.id === id) ||
+    (id?.startsWith('FU') ? followFallback(s, id) : null) ||
+    (id?.startsWith('FE') ? festivalScene(id, s ? weatherOf(s) : '') : null);
+  return id === 'Y10' && s ? F.y10Scene(s, sc) : sc;
+}
 function flexEligible(s,sc){if(!sc)return false;if(!sc.actor||!PEOPLE[sc.actor])return true;if(gone(s,sc.actor))return false;if(sc.kind==='longStory')return true;return present(s,sc.actor)&&(!sc.id.startsWith('K')||s.people[sc.actor]?.met);}
 export const canDeferScene=(s,id)=>T.canDefer(s,id);
-export const deferScene=(s,id)=>T.defer(s,id,scene,log);
-export const upcomingStories=s=>T.upcoming(s,scene,sc=>flexEligible(s,sc));
+export const deferScene=(s,id)=>T.defer(s,id,value=>scene(s,value),log);
+export const upcomingStories=s=>T.upcoming(s,id=>scene(s,id),sc=>flexEligible(s,sc));
 export function setDyn(s,id,sc){s.dyn=s.dyn||{};s.dyn[id]={...sc,id,kind:sc.kind||'edictfollow'};}
 // 白天做完事，有时会撞见一件小事
 export function rollSurprise(s){if(s.agenda.length||s.ended||rand(s)>=0.28)return null;s.used.surprises=s.used.surprises||[];
@@ -326,7 +333,7 @@ export function choose(s, id, optId) {
   if (optional && (s.night || s.ended || s.pendingBirth || s.familyArt?.required)) {
     throw Error('眼下不方便过节，先办好手头的事。');
   }
-  const sc = scene(id),
+  const sc = scene(s, id),
     opt = optionsFor(s, sc).find((o) => o.id === optId);
   if (!opt) throw Error('没有这个选项。');
   if (sc.kind === 'longStory') {
@@ -481,7 +488,7 @@ export function choose(s, id, optId) {
   s.done[id] = optId;
   if (optional) s.optionalFestivals = s.optionalFestivals.filter(value => value !== id);
   else s.agenda.shift();
-  if (sc.kind === 'main') T.scheduleIntroduction(s, scene, (sc) => flexEligible(s, sc), id);
+  if (sc.kind === 'main') T.scheduleIntroduction(s, id => scene(s, id), (sc) => flexEligible(s, sc), id);
   log(
     s,
     `${sc.title}：${opt.label}`,
@@ -1142,9 +1149,9 @@ export function load(storage = globalThis.localStorage) {
     s.expenseUses ??= {};
     s.contactMonths ??= Object.fromEntries(CORE.map(id => [id, T.at(s)]));
     if (s.reviewSession && s.reviewSession.charged === undefined) s.reviewSession.charged = true;
-    return bind(T.initCampaign(Fiscal.initFiscal(F.initFamily(M.initMajorEvents(
+    return T.initCampaign(Fiscal.initFiscal(F.initFamily(M.initMajorEvents(
       G.initGovernment(initAppointments(initTravel(initEconomy(s))))
-    )))));
+    ))));
   } catch {
     return null;
   }

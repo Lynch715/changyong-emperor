@@ -6,7 +6,13 @@ import {MAJOR_VARIANTS,MAJOR_BY_ID} from '../src/v2/major-event-data.js';
 function prepared(seed=4200){const s=E.newGame(seed);s.agenda=[];s.majorEvent=null;s.majorEventSerial=0;s.majorEventUsed=[];s.majorEventReports=[];s.majorEventAt=0;s.stats.treasury=1000;E.bind(s);return s;}
 function forceEvent(s,v,n=1,step=0){const type=MAJOR_BY_ID[v.type];s.majorEvent={n,variant:v.id,type:v.type,province:type.provinces[0],step,stages:v.stages,startedAt:(s.year-1)*12+s.month,nextAt:null,inspected:false,action:null,adjustment:null,delay:false,authorId:null,treasurySpent:0};s.majorEventSerial=n;s.agenda=[`ME${n}_${step}`];E.bind(s);}
 function nextMonth(s){s.agenda=[];s.month++;if(s.month>12){s.month=1;s.year++;}E.startMonth(s);}
-function chooseMajor(s,choice){const id=s.agenda[0],sc=E.scene(id);assert.ok(sc,`缺少场景 ${id}`);assert.equal(sc.kind,'majorEvent');return E.choose(s,id,choice);}
+function chooseMajor(s, choice) {
+  const id = s.agenda[0],
+    sc = E.scene(s, id);
+  assert.ok(sc, `缺少场景 ${id}`);
+  assert.equal(sc.kind, 'majorEvent');
+  return E.choose(s, id, choice);
+}
 
 test('24种大型事件变体全部走完对应的4或5阶段，并各留下一条回奏',()=>{
  for(let i=0;i<MAJOR_VARIANTS.length;i++){
@@ -22,12 +28,33 @@ test('24种大型事件变体全部走完对应的4或5阶段，并各留下一�
  }
 });
 
-test('进行中事件存档读回后保留进度，旧存档不会被补成半截事件',()=>{
- const s=prepared(),v=MAJOR_VARIANTS.find(x=>x.id==='dysentery-0');forceEvent(s,v);chooseMajor(s,'survey');
- const saved=JSON.stringify(s),loaded=E.load({getItem:()=>saved,setItem:()=>assert.fail('读取存档不能写回')});
- assert.ok(loaded);assert.equal(loaded.majorEvent.variant,v.id);assert.equal(loaded.majorEvent.step,0);assert.equal(loaded.majorEvent.nextAt,(loaded.year-1)*12+loaded.month+1);assert.equal(loaded.stats.treasury,s.stats.treasury);
- loaded.month++;E.startMonth(loaded);assert.equal(loaded.agenda[0],'ME1_1');assert.equal(E.scene(loaded.agenda[0]).kind,'majorEvent');
- const old=prepared(4201);for(const k of ['majorEvent','majorEventSerial','majorEventUsed','majorEventReports','majorEventAt'])delete old[k];const raw=JSON.stringify(old),legacy=E.load({getItem:()=>raw});assert.ok(legacy);assert.equal(legacy.majorEvent,null);assert.equal(legacy.majorEventSerial,0);assert.deepEqual(legacy.majorEventUsed,[]);assert.deepEqual(legacy.majorEventReports,[]);assert.equal(raw,JSON.stringify(old));
+test('进行中事件存档读回后保留进度，旧存档不会被补成半截事件',() => {
+  const s = prepared(),
+    v = MAJOR_VARIANTS.find((x) => x.id === 'dysentery-0');
+  forceEvent(s, v);
+  chooseMajor(s, 'survey');
+  const saved = JSON.stringify(s),
+    loaded = E.load({ getItem: () => saved, setItem: () => assert.fail('读取存档不能写回') });
+  assert.ok(loaded);
+  assert.equal(loaded.majorEvent.variant, v.id);
+  assert.equal(loaded.majorEvent.step, 0);
+  assert.equal(loaded.majorEvent.nextAt, (loaded.year - 1) * 12 + loaded.month + 1);
+  assert.equal(loaded.stats.treasury, s.stats.treasury);
+  loaded.month++;
+  E.startMonth(loaded);
+  assert.equal(loaded.agenda[0], 'ME1_1');
+  assert.equal(E.scene(loaded, loaded.agenda[0]).kind, 'majorEvent');
+  const old = prepared(4201);
+  for (const k of ['majorEvent', 'majorEventSerial', 'majorEventUsed', 'majorEventReports', 'majorEventAt'])
+    delete old[k];
+  const raw = JSON.stringify(old),
+    legacy = E.load({ getItem: () => raw });
+  assert.ok(legacy);
+  assert.equal(legacy.majorEvent, null);
+  assert.equal(legacy.majorEventSerial, 0);
+  assert.deepEqual(legacy.majorEventUsed, []);
+  assert.deepEqual(legacy.majorEventReports, []);
+  assert.equal(raw, JSON.stringify(old));
 });
 
 test('地方官空缺或已罢免时结算有限值，国库不足的结案操作不产生半次结算',()=>{

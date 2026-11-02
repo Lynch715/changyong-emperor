@@ -72,7 +72,7 @@ test('A3 旧档普通和值房批折额度分别为六道与十道', () => {
 test('A4 构建版本参数不改变旧档版本与进度，仍能继续月初剧情', () => {
   const s = oldSave();
   const id = E.pendingScene(s);
-  const sc = E.scene(id);
+  const sc = E.scene(null, id);
   E.choose(s, id, E.optionsFor(s, sc)[0].id);
   assert.ok(s.done[id]);
 });
@@ -107,10 +107,11 @@ test('B1 正月只办惊梦即可自由行动，可选赈济不耗时辰且报�
   E.choose(s, 'M01', 'call');
   assert.ok(E.canAct(s));
   assert.deepEqual(s.agenda, []);
-  const before = structuredClone(s.stats), ap = s.ap;
+  const before = structuredClone(s.stats),
+    ap = s.ap;
   const result = E.openingEdict(s);
   assert.equal(s.ap, ap);
-  assert.deepEqual(result.stats, {treasury: -10, people: 3});
+  assert.deepEqual(result.stats, { treasury: -10, people: 3 });
   assert.equal(s.stats.treasury, before.treasury - 10);
   assert.equal(s.stats.people, before.people + 3);
   assert.equal(E.openingDecree(s), null);
@@ -119,10 +120,10 @@ test('B1 正月只办惊梦即可自由行动，可选赈济不耗时辰且报�
   const report = E.endMonth(s);
   assert.ok(report.stats.people >= 3);
   assert.ok(report.ledger.treasury.out >= 10);
-  assert.ok(Object.values(report.stats).filter(v => v !== 0).length >= 2);
+  assert.ok(Object.values(report.stats).filter((v) => v !== 0).length >= 2);
   assert.ok(s.agenda.includes('R02-01'));
   assert.ok(!s.agenda.includes('M02'));
-  assert.equal(E.scene('R02-01').title, '留茶夜谈');
+  assert.equal(E.scene(s, 'R02-01').title, '留茶夜谈');
 });
 
 test('B1 不办可选朝政也能结束正月，不罚不顺延；两条路线的二月进度一致', () => {
@@ -531,4 +532,21 @@ test('C6 旧档在行动前列出骰子和加减点，预览不动种子或掷�
   assert.match(fatePreview(s, 'chat', 'C02'), /不掷骰/);
   s.freedom = 3;
   assert.match(fatePreview(s, 'edict'), /3档/);
+});
+
+test('E2 两个存档交替读取动态场景不串档，旧存档load仍保留动态正文与选择', () => {
+  const first = oldSave(s => {
+    s.dyn = {fixture: {id: 'fixture', title: '甲档', body: '甲档原文', options: []}};
+    s.done.kept = 'old-choice';
+  });
+  const second = E.newGame(4522);
+  second.dyn = {fixture: {id: 'fixture', title: '乙档', body: '乙档原文', options: []}};
+  E.bind(second);
+  assert.equal(E.scene(first, 'fixture').body, '甲档原文');
+  assert.equal(E.scene(second, 'fixture').body, '乙档原文');
+  const reloaded = E.load({getItem: () => JSON.stringify(first)});
+  assert.equal(E.scene(second, 'fixture').body, '乙档原文');
+  assert.equal(E.scene(reloaded, 'fixture').body, '甲档原文');
+  assert.equal(reloaded.done.kept, 'old-choice');
+  assert.equal(E.scene('M01').title, E.scene(first, 'M01').title, '一版静态兼容入口保留');
 });

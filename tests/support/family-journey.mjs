@@ -1,17 +1,31 @@
 import * as E from '../../src/v2/engine.js';
 import * as F from '../../src/v2/family.js';
-export function resolveAgenda(s,{stopAt=null,onScene=null}={}){
- E.bind(s);let guard=0;
- while(s.agenda.length){
-  if(++guard>100)throw Error('要事未能收束');
-  const id=E.pendingScene(s),sc=E.scene(id);
-  if(onScene)onScene(sc,s);
-  if(sc.familyType===stopAt)return sc;
-  const opts=E.optionsFor(s,sc),opt=sc.kind==='festival'&&s.children.length?opts.find(o=>o.id==='all'):sc.familyType==='news'?opts.find(o=>o.id==='quiet'):sc.familyType==='threat'?opts.find(o=>o.id==='expose'):opts.find(o=>o.id==='confess')||opts.find(o=>o.id==='warm')||opts.find(o=>!o.slight&&!(o.effects?.treasury<0)&&!(o.cost>0)&&!o.redeem)||opts.find(o=>!o.redeem)||opts[0];
-  E.choose(s,id,opt.id);
-  if(s.pendingBirth||s.familyArt?.required)return sc;
- }
- return null;
+export function resolveAgenda(s, { stopAt = null, onScene = null } = {}) {
+  E.bind(s);
+  let guard = 0;
+  while (s.agenda.length) {
+    if (++guard > 100) throw Error('要事未能收束');
+    const id = E.pendingScene(s),
+      sc = E.scene(s, id);
+    if (onScene) onScene(sc, s);
+    if (sc.familyType === stopAt) return sc;
+    const opts = E.optionsFor(s, sc),
+      opt =
+        sc.kind === 'festival' && s.children.length
+          ? opts.find((o) => o.id === 'all')
+          : sc.familyType === 'news'
+            ? opts.find((o) => o.id === 'quiet')
+            : sc.familyType === 'threat'
+              ? opts.find((o) => o.id === 'expose')
+              : opts.find((o) => o.id === 'confess') ||
+                opts.find((o) => o.id === 'warm') ||
+                opts.find((o) => !o.slight && !(o.effects?.treasury < 0) && !(o.cost > 0) && !o.redeem) ||
+                opts.find((o) => !o.redeem) ||
+                opts[0];
+    E.choose(s, id, opt.id);
+    if (s.pendingBirth || s.familyArt?.required) return sc;
+  }
+  return null;
 }
 export function advance(s){
  if(s.ended){if(s.year===2)E.startVolume2(s);else if(s.year===4)E.startVolume3(s);else E.continueFamily(s);return;}

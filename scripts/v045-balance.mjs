@@ -12,10 +12,11 @@ const round = n => Math.round(n * 100) / 100;
 function settleBalanceAgenda(s, counts) {
   const before = new Set(Object.keys(s.done));
   settleLongAgenda(s);
-  for (const id of Object.keys(s.done)) if (!before.has(id)) {
-    counts.all++;
-    if (E.scene(id)?.kind === 'festival') counts.festivals++;
-  }
+  for (const id of Object.keys(s.done))
+    if (!before.has(id)) {
+      counts.all++;
+      if (E.scene(s, id)?.kind === 'festival') counts.festivals++;
+    }
 }
 
 // 从元年逐月推进，不改余额、不跳月；三时辰赏赐或休养，夜里随机见可见人物。
