@@ -100,3 +100,15 @@ export function festivalScene(id,weather){
    ...ALL.map(c=>({id:'p'+c,who:c,label:f.verb,effects:{},reply:f.touch[c]})),
    {id:'alone',label:f.alone[0],effects:{health:3},reply:f.alone[1]}]};
 }
+
+// 春节沿用除夕守岁，只有它和中秋仍是必做节庆。
+export function requiredFestival(value) {
+  const key = typeof value === 'string' ? /^FE\d+-(\w+)$/.exec(value)?.[1] : value?.key;
+  return ['chuxi', 'zhongqiu'].includes(key);
+}
+
+// 只接受已有节庆编号，不改节庆正文或人物选项。
+export function knownFestival(id) {
+  const key = /^FE\d+-(\w+)$/.exec(id || '')?.[1];
+  return FESTIVALS.some(festival => festival.key === key);
+}

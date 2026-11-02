@@ -452,3 +452,64 @@ test('C4 旧档圣躬后宫不回填，五六年每年只自然减12圣躬和4�
     assert.deepEqual(total, {health: -12, palace: year >= 7 ? -2 : -4});
   }
 });
+
+test('C5 旧队列节庆移入独立卡，必做事和已完成记录保留，重复读档不增发', () => {
+  const original = E.newGame(455);
+  original.year = 2; original.month = 5;
+  original.agenda = ['FE2-duanwu', 'K10', 'FE2-duanwu'];
+  original.done['FE1-zhongqiu'] = 'all';
+  delete original.optionalFestivals;
+  delete original.contactBreaks;
+  const raw = JSON.stringify(original);
+  const loaded = E.load({getItem: () => raw});
+  assert.deepEqual(loaded.agenda, ['K10']);
+  assert.deepEqual(E.optionalFestivalIds(loaded), ['FE2-duanwu']);
+  for (const field of ['done', 'people', 'stats', 'ap', 'seed', 'log']) assert.deepEqual(loaded[field], original[field]);
+  const again = E.load({getItem: () => JSON.stringify(loaded)});
+  assert.deepEqual(again.optionalFestivals, ['FE2-duanwu']);
+  assert.equal(JSON.stringify(original), raw);
+  loaded.agenda = [];
+  const ap = loaded.ap;
+  const result = E.choose(loaded, 'FE2-duanwu', 'all');
+  assert.equal(result.optional, true);
+  assert.equal(loaded.ap, ap);
+  assert.equal(loaded.done['FE2-duanwu'], 'all');
+  assert.deepEqual(E.optionalFestivalIds(loaded), []);
+  assert.throws(() => E.choose(loaded, 'FE2-duanwu', 'all'));
+});
+
+test('C5 不过节仍能入夜月结，无惩罚不顺延，也不计入未联络月数', () => {
+  const s = oldSave(s => {
+    s.year = 3; s.month = 5; s.agenda = []; s.optionalFestivals = ['FE3-duanwu'];
+    for (const id of ['C02', 'C07']) Object.assign(s.people[id], {met: true, aff: 50});
+    s.contactMonths.C02 = 27; s.contactMonths.C07 = 27;
+  });
+  assert.ok(E.canAct(s));
+  E.spendNight(s, null);
+  const report = E.endMonth(s);
+  assert.equal(s.month, 6);
+  assert.ok(!report.cooled.includes('C02'));
+  assert.ok(!report.missingYou.includes('C02'));
+  assert.equal(s.people.C02.aff, 50);
+  assert.equal(s.contactBreaks.C02, 1);
+  assert.deepEqual(E.optionalFestivalIds(s), []);
+  assert.equal(s.done['FE3-duanwu'], undefined);
+});
+
+test('C5 可选节庆选人、全家与吃醋效果不变，两张卡节庆排在朝政之前', async () => {
+  const {readFile} = await import('node:fs/promises');
+  const s = E.newGame(4551);
+  s.year = 2; s.month = 5; s.agenda = [];
+  for (const id of ['C02', 'C06', 'C07']) Object.assign(s.people[id], {met: true, aff: 60});
+  s.optionalFestivals = ['FE2-duanwu'];
+  const result = E.choose(s, 'FE2-duanwu', 'pC07');
+  assert.equal(result.people.C07, 5);
+  assert.ok(result.people.C06 < 0);
+  assert.equal(s.ap, 3);
+  const source = await readFile(new URL('../src/v2/main.js', import.meta.url), 'utf8');
+  assert.ok(source.includes('${festivalCards()}${openingCard()}${homeActions(sc)}'));
+  const required = await import('../src/v2/festivals.js');
+  assert.ok(required.requiredFestival('FE2-chuxi'));
+  assert.ok(required.requiredFestival('FE2-zhongqiu'));
+  assert.equal(required.requiredFestival('FE2-yuanxiao'), false);
+});

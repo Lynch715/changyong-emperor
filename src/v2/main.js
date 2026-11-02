@@ -81,7 +81,7 @@ function home() {
     <div class="guide"><span>${guide()}</span>${apPips()}</div>
     ${s.nanfeng?.visit && !s.nanfeng.visit.done ?
       '<button class="night-btn" data-act="go" data-to="nanfeng">回到南风馆，把这盏茶喝完 ›</button>' : ''}
-    ${agendaCard(sc)}${openingCard()}${homeActions(sc)}
+    ${agendaCard(sc)}${festivalCards()}${openingCard()}${homeActions(sc)}
     <button class="night-btn ${!sc && (s.ap === 0 || s.night) ? 'glow' : ''}"
       data-act="night" ${sc ? 'disabled' : ''}>
       ${s.night ? '结束这个月 ›<span>今夜已经过了</span>' :
@@ -170,6 +170,17 @@ function crisisCards() {
   return `<h3 class="sec">要务</h3><section class="crises">${cards || '<p class="muted">眼下还没有。</p>'}</section>`;
 }
 
+// 节庆先于可选朝政卡显示，不办也不会挡住召见或入夜。
+function festivalCards() {
+  if (s.night || s.ended) return '';
+  return E.optionalFestivalIds(s).map(id => {
+    const sc = E.scene(id);
+    return `<section class="opening-card festival-card"><small>本月可选 · 不占时辰</small>
+      <h3>${esc(sc.title)}</h3><p>选一个人同过，或全家一起。不想去也不妨事。</p>
+      <button data-act="festival-open" data-id="${id}">去过节 ›</button></section>`;
+  }).join('');
+}
+
 // 正月可选的小事醒目显示，是否办理由玩家决定。
 function openingCard() {
   const decree = E.openingDecree(s);
@@ -206,25 +217,31 @@ function personCard(id, act = 'person') {
 function nav(){return `<nav class="bottom"><button data-act="go" data-to="home" class="${view.name==='home'?'on':''}">本月</button><button data-act="go" data-to="people" class="${view.name==='people'?'on':''}">人物</button><button data-act="go" data-to="gallery" class="${['gallery','replay'].includes(view.name)?'on':''}">珍藏</button><button data-act="go" data-to="log" class="${view.name==='log'?'on':''}">起居注</button><button data-act="go" data-to="settings" class="${view.name==='settings'?'on':''}">设置</button></nav>`;}
 
 // ---------- 场景 ----------
-function sceneView(){
- if(view.loading)return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><article class="paper"><h2>回报送到了</h2><p class="muted wait">张廷玉正把各地的折子一份份摞在案上……</p></article></div>`;
- const sc=E.scene(view.id);if(!sc)return home();
- const place=sc.location||sc.place||'';
- const r=view.result;
- return `<div class="stage" style="--bg:url('${abs(bgFor(place))}')">
-  <div class="stage-top"><span>${dateText(s)}</span><span>${esc(place)}</span></div>
-  ${sc.actor?`${avatar(sc.actor,'portrait')}`:''}
-  <article class="paper">
-   <h2>${esc(sc.title)}</h2>
-   ${r?`<div class="choice">你选择：${esc(r.choice)}</div>${paras(r.text)}
-     ${r.echo?`<blockquote class="echo"><b>${esc(nm(r.actor))}</b>${esc(r.echo)}</blockquote>`:r.echoWait?'<p class="muted wait">……</p>':''}
-     ${chips(r.stats,r.people,r.knot?`<span class="chip knot">${nm(r.knot)} 心里有了结</span>`:'')}
-     ${r.knot?`<p class="hint">心结未解时，${nm(r.knot)}的情分不会再涨。召见时可以“说开那件事”。</p>`:''}
-     <button class="primary" data-act="scene-next">继续</button>`
-   :`${paras(sc.body)}<div class="options">${E.optionsFor(s,sc).map(o=>`<button data-act="pick" data-opt="${o.id}">${esc(o.label)}</button>`).join('')}</div>${E.canDeferScene(s,sc.id)?`<div class="story-defer"><button data-act="story-defer" data-id="${sc.id}">过些时候再谈 · 最早下月</button><p class="small">不占时辰，最多暂缓三次；最早下月起另择月份再呈。建议期限后优先呈报且不能再暂缓，原事与已做过的选择都会保留。</p></div>`:''}`}
-  </article></div>`;
+// 可选节庆可以随时合上，选择后的数值和人物回话仍走原来的结果页。
+function sceneView() {
+  if (view.loading) return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><article class="paper">
+    <h2>回报送到了</h2><p class="muted wait">张廷玉正把各地的折子一份份摞在案上……</p></article></div>`;
+  const sc = E.scene(view.id);
+  if (!sc) return home();
+  const place = sc.location || sc.place || '', r = view.result;
+  const defer = E.canDeferScene(s, sc.id) ? `<div class="story-defer">
+    <button data-act="story-defer" data-id="${sc.id}">过些时候再谈 · 最早下月</button>
+    <p class="small">不占时辰，最多暂缓三次；最早下月起另择月份再呈。建议期限后优先呈报且不能再暂缓，
+      原事与已做过的选择都会保留。</p></div>` : '';
+  return `<div class="stage" style="--bg:url('${abs(bgFor(place))}')"><div class="stage-top">
+    ${E.optionalFestivalIds(s).includes(view.id) ? '<button data-act="go" data-to="home">‹ 先忙别的</button>' : ''}
+    <span>${dateText(s)}</span><span>${esc(place)}</span></div>
+    ${sc.actor ? avatar(sc.actor, 'portrait') : ''}<article class="paper"><h2>${esc(sc.title)}</h2>
+    ${r ? `<div class="choice">你选择：${esc(r.choice)}</div>${paras(r.text)}
+      ${r.echo ? `<blockquote class="echo"><b>${esc(nm(r.actor))}</b>${esc(r.echo)}</blockquote>` :
+        r.echoWait ? '<p class="muted wait">……</p>' : ''}
+      ${chips(r.stats, r.people, r.knot ? `<span class="chip knot">${nm(r.knot)} 心里有了结</span>` : '')}
+      ${r.knot ? `<p class="hint">心结未解时，${nm(r.knot)}的情分不会再涨。召见时可以“说开那件事”。</p>` : ''}
+      <button class="primary" data-act="scene-next">继续</button>` :
+      `${paras(sc.body)}<div class="options">${E.optionsFor(s, sc).map(o =>
+        `<button data-act="pick" data-opt="${o.id}">${esc(o.label)}</button>`).join('')}</div>${defer}`}
+    </article></div>`;
 }
-
 // ---------- 召见 / 赏赐：先选人 ----------
 function pickPerson(kind){
  const ids=CAST.filter(id=>E.present(s,id)&&(s.people[id].met||(!PEOPLE[id].secondary&&kind==='chat')));
@@ -515,7 +532,7 @@ function playHelp() {
     <p>情分到「相知」，那个人会在夜里有话想说；到「倾心」，还有一次说破心意的机会。
       若你在两难里没站在谁那边，那人会有心结，要当面说开。</p>
     <p>主线铺至三十年，之后仍可无限续玩。六年后按阶段回顾，新政、用人和宫中故事继续展开。
-      普通故事可择月呈报，急灾、军情、生辰和年节照常。阶段之间存档、情分和皇嗣出生记录全部延续，
+      普通故事可择月呈报，急灾、军情、生辰照常。除夕与中秋须过，其余节庆随意。阶段之间存档、情分和皇嗣出生记录全部延续，
       也可以带着一样记忆“再活一世”。</p>
     <p>折匣：一个时辰可批 ${E.reviewLimit({})} 道（设值房后 ${E.reviewLimit({done: {W08: 'council'}})} 道）。
       浏览不占时辰，第一次落笔才扣一个时辰。留中也算一道，合上再开不另扣；做别的行动后另起一个时辰。
@@ -630,6 +647,7 @@ function learn(id,g,liked){s.known=s.known||{};const k=s.known[id]=s.known[id]&&
 const likedList=id=>Object.entries(s.known?.[id]||{}).filter(([,v])=>v).map(([g])=>g);
 
 const ACTS={
+ 'festival-open': el => openScene(el.dataset.id),
  'opening-edict': () => familyResult(() => E.openingEdict(s)),
  'fiscal-invest':el=>familyResult(()=>E.investFiscal(s,el.dataset.id)),
  'fiscal-collect':()=>familyResult(()=>E.collectFiscal(s)),
@@ -685,6 +703,7 @@ const ACTS={
   render();
  },
  'scene-next':()=>{
+  if(view.result?.optional)return go({name:'home'});
   if(s.agenda.length)return openScene(E.pendingScene(s));
   if(s.night)return monthEnd();
   go({name:'home'});

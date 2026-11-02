@@ -23,7 +23,7 @@ import {SCENES2,AGENDA2,CRISES2,REPAIR2} from './vol2.js';
 import {SCENES3,AGENDA3,CRISES3,REPAIR3} from './vol3.js';
 import {VISITS} from './visits.js';
 import {tierOf,fateBonus,boundUp} from './fate.js';
-import {BIRTH,BIRTH_SKIP,festivalOf,festId,festivalScene} from './festivals.js';
+import {BIRTH,BIRTH_SKIP,festivalOf,festId,festivalScene,requiredFestival,knownFestival} from './festivals.js';
 import {SURPRISES,rivalsOf,friendsOf,JEALOUS,FRIEND_LINES} from './social.js';
 const POOL=[...PETITIONS,...MORE_PETITIONS,...SMALL_EVENTS];
 export const thirdOf=id=>'L'+id.slice(1);
@@ -54,6 +54,8 @@ export const weatherOf=s=>WEATHER[SEASON(s.month)].includes(s.weather)?s.weather
 
 export function newGame(seed = Date.now() % 2147483647) {
   const s = {
+    optionalFestivals: [],
+    contactBreaks: {},
     contactMonths: Object.fromEntries(CORE.map((id) => [id, 1])),
     economyVersion: 1,
     version: F.SAVE_VERSION,
@@ -100,13 +102,16 @@ export function newGame(seed = Date.now() % 2147483647) {
 }
 // 实际见面、书信、节庆和来访都会记作接触，不拿旁人的吃味或传话充数。
 export function recordContact(s, id) {
-  if (CORE.includes(id)) s.contactMonths[id] = T.at(s);
+  if (CORE.includes(id)) {
+    s.contactMonths[id] = T.at(s);
+    s.contactBreaks[id] = 0;
+  }
 }
 
 // 月末先提醒下个月再不联络就会想念你的人，让玩家还有一个月去看看。
 export function thinkingOf(s) {
   return CORE.filter(id => s.people[id].met && s.people[id].aff >= 45 && present(s, id) && !gone(s, id) &&
-    T.at(s) - s.contactMonths[id] >= 2);
+    T.at(s) - s.contactMonths[id] - (s.contactBreaks[id] || 0) >= 2);
 }
 
 // ---------- 人物 ----------
@@ -184,10 +189,13 @@ export function startMonth(s) {
   G.regionalMonth(s, { rand, applyStats, funds });
   G.secretMonth(s, { rand, applyStats, funds, gain });
   for (const id of Object.keys(s.appointments)) if (!s.tenureBaseline[id]) G.snapshotTenure(s, id);
-  // 年节：至少有两个人能陪时才过
+  // 非必做节庆只在当月摆卡片，不进入要事队列。
   const fe = festivalOf(s.year, s.month);
-  if (fe && !s.done[festId(s.year, fe)] && festivalPeople(s, true).length >= 2)
-    s.agenda.push(festId(s.year, fe));
+  s.optionalFestivals = [];
+  if (fe && !s.done[festId(s.year, fe)] && festivalPeople(s, true).length >= 2) {
+    if (requiredFestival(fe)) s.agenda.push(festId(s.year, fe));
+    else s.optionalFestivals.push(festId(s.year, fe));
+  }
   // 两三个月前的旨意，送回报来了
   for (const e of s.edicts || [])
     if (e.due === idx(s.year, s.month) && !s.done['FU' + e.n]) s.agenda.push('FU' + e.n);
@@ -294,11 +302,30 @@ export const birthdays=s=>CAST.filter(id=>birthdayOf(s,id));
 export const birthdayDone=(s,id)=>(s.bdayDone||[]).includes(id);
 // 那个月见了、赏了、陪了，就算记得；返回额外的情分
 function celebrate(s,id,extra){if(!birthdayOf(s,id)||birthdayDone(s,id))return null;s.bdayDone=[...(s.bdayDone||[]),id];const d=gain(s,id,extra);remember(s,id,'生辰那个月，你记得');log(s,`给${PEOPLE[id].name}过了生辰`,'情');count(s,'bdays');return d;}
+// 可选节庆保留自己的编号和已完成记录，月末随本月一起撤下。
+export function optionalFestivalIds(s) {
+  return s.optionalFestivals.filter(id => knownFestival(id) && !requiredFestival(id) && !s.done[id]);
+}
+
+// 只在load中挪走旧队列里的非必做节庆，其他要事与已做过的选择保持。
+function loadOptionalFestivals(s) {
+  s.optionalFestivals ??= [];
+  s.contactBreaks ??= {};
+  const moved = s.agenda.filter(id => knownFestival(id) && !requiredFestival(id));
+  s.agenda = s.agenda.filter(id => !moved.includes(id));
+  s.optionalFestivals = [...new Set([...s.optionalFestivals, ...moved])].filter(id => !s.done[id]);
+  return s;
+}
+
 export const pendingScene=s=>s.agenda[0]||null;
 
 // 处理要事中的一个选项
 export function choose(s, id, optId) {
-  if (s.agenda[0] !== id) throw Error('先处理眼前这件事。');
+  const optional = optionalFestivalIds(s).includes(id);
+  if (!optional && s.agenda[0] !== id) throw Error('先处理眼前这件事。');
+  if (optional && (s.night || s.ended || s.pendingBirth || s.familyArt?.required)) {
+    throw Error('眼下不方便过节，先办好手头的事。');
+  }
   const sc = scene(id),
     opt = optionsFor(s, sc).find((o) => o.id === optId);
   if (!opt) throw Error('没有这个选项。');
@@ -452,7 +479,8 @@ export function choose(s, id, optId) {
     for (const person of optId === 'all' ? festivalPeople(s, true) : opt.who ? [opt.who] : []) recordContact(s, person);
   } else recordContact(s, sc.actor);
   s.done[id] = optId;
-  s.agenda.shift();
+  if (optional) s.optionalFestivals = s.optionalFestivals.filter(value => value !== id);
+  else s.agenda.shift();
   if (sc.kind === 'main') T.scheduleIntroduction(s, scene, (sc) => flexEligible(s, sc), id);
   log(
     s,
@@ -466,6 +494,7 @@ export function choose(s, id, optId) {
           : '政',
   );
   return {
+    optional,
     title: sc.title,
     actor: sc.actor,
     choice: opt.label,
@@ -1028,12 +1057,16 @@ export function endMonth(s) {
     report.forgot.push(id);
   }
   // 连续三个月没有接触才少一点，提前一月的提醒单独列出。
+  if (optionalFestivalIds(s).length) {
+    for (const id of festivalPeople(s, true)) s.contactBreaks[id] = (s.contactBreaks[id] || 0) + 1;
+  }
+  s.optionalFestivals = [];
   report.missingYou = thinkingOf(s);
   report.cooled = [];
   for (const id of CORE) {
     const p = s.people[id];
     if (p.met && p.aff >= 45 && present(s, id) && !gone(s, id) && !report.forgot.includes(id) &&
-        T.at(s) - s.contactMonths[id] >= 3) {
+        T.at(s) - s.contactMonths[id] - (s.contactBreaks[id] || 0) >= 3) {
       const change = gain(s, id, -1);
       report.people[id] = (report.people[id] || 0) + change;
       report.cooled.push(id);
@@ -1105,6 +1138,7 @@ export function load(storage = globalThis.localStorage) {
   try {
     const s = JSON.parse(storage.getItem(SAVE_KEY) || 'null');
     if (![1, F.SAVE_VERSION].includes(s?.version)) return null;
+    loadOptionalFestivals(s);
     s.expenseUses ??= {};
     s.contactMonths ??= Object.fromEntries(CORE.map(id => [id, T.at(s)]));
     if (s.reviewSession && s.reviewSession.charged === undefined) s.reviewSession.charged = true;

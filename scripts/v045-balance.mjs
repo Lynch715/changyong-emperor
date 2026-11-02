@@ -8,13 +8,24 @@ import {fileURLToPath} from 'node:url';
 export const SEEDS = [45000, 45097, 45194];
 const round = n => Math.round(n * 100) / 100;
 
+// 记录本轮实际办过的全部要事，节庆占比不把被跳过的可选卡算进去。
+function settleBalanceAgenda(s, counts) {
+  const before = new Set(Object.keys(s.done));
+  settleLongAgenda(s);
+  for (const id of Object.keys(s.done)) if (!before.has(id)) {
+    counts.all++;
+    if (E.scene(id)?.kind === 'festival') counts.festivals++;
+  }
+}
+
 // 从元年逐月推进，不改余额、不跳月；三时辰赏赐或休养，夜里随机见可见人物。
 export function runBalance(seed, {months = 72, mode = 'passive'} = {}) {
   const s = E.newGame(seed), curve = [], contacts = {};
   let tightAt = null, giftActions = 0;
+  const agenda = {all: 0, festivals: 0};
   for (let step = 0; step < months; step++) {
     continueLongCampaign(s);
-    settleLongAgenda(s);
+    settleBalanceAgenda(s, agenda);
     while (E.canAct(s)) {
       const people = CORE.filter(id => E.present(s, id) && s.people[id].met && !E.gone(s, id));
       const id = mode === 'social' ? people.sort((a, b) => (contacts[a] || 0) - (contacts[b] || 0))[0] :
@@ -40,13 +51,13 @@ export function runBalance(seed, {months = 72, mode = 'passive'} = {}) {
         E.rest(s);
       }
       E.rollSurprise(s);
-      settleLongAgenda(s);
+      settleBalanceAgenda(s, agenda);
     }
     const choices = E.nightChoices(s);
     const person = choices[Math.floor(E.rand(s) * choices.length)];
     if (person?.special) {
       E.queueSpecial(s, person.id);
-      settleLongAgenda(s);
+      settleBalanceAgenda(s, agenda);
     } else E.spendNight(s, person?.id || null);
     const report = E.endMonth(s);
     curve.push({
@@ -56,7 +67,7 @@ export function runBalance(seed, {months = 72, mode = 'passive'} = {}) {
       people: Object.fromEntries(CORE.map(id => [id, s.people[id].aff])),
     });
   }
-  return {seed, mode, tightAt, giftActions, curve, final: curve.at(-1),
+  return {seed, mode, tightAt, giftActions, agenda, curve, final: curve.at(-1),
     social48: Object.values(curve[47]?.people || {}).filter(aff => aff >= 45).length};
 }
 
