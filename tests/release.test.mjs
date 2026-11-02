@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile, readdir, access } from 'node:fs/promises';
+import { readFile, readdir, access, stat } from 'node:fs/promises';
 import path from 'node:path';
+import {runtimeAssets} from '../scripts/runtime-assets.mjs';
 import { execFileSync } from 'node:child_process';
 const root = path.resolve(import.meta.dirname, '..');
 test('只提供新版入口，设置页没有旧版链接', async () => {
@@ -38,9 +39,7 @@ test('Pages产物只有新版与共用模块，不包含旧版或本机文件', 
     JSON.parse(await readFile(path.join(root, '_site/version.json'))).version,
     JSON.parse(await readFile(path.join(root, 'package.json'))).version,
   );
-  const registry = JSON.parse(await readFile(path.join(root, 'design/S11/资产登记.json')));
-  for (const a of registry.assets.filter((x) => x.release === 'v0.39.0'))
-    for (const e of a.exports) await access(path.join(root, '_site', e.path));
+
 });
 
 test('A4 Pages 样式和模块入口都带 package.json 的当前版本', async () => {
@@ -48,4 +47,24 @@ test('A4 Pages 样式和模块入口都带 package.json 的当前版本', async 
   const html = await readFile(path.join(root, '_site/index.html'), 'utf8');
   assert.ok(html.includes(`src/v2/v2.css?v=${version}`));
   assert.ok(html.includes(`src/v2/main.js?v=${version}`));
+});
+
+// 递归核算发布资源的实际字节数。
+async function assetBytes(dir) {
+  let bytes = 0;
+  for (const entry of await readdir(dir, {withFileTypes: true})) {
+    const file = path.join(dir, entry.name);
+    bytes += entry.isDirectory() ? await assetBytes(file) : (await stat(file)).size;
+  }
+  return bytes;
+}
+
+test('A5 所有静态及动态资源引用均存在，发布资源小于90MB且不含原图', async () => {
+  const assets = await runtimeAssets(root);
+  assert.ok(assets.length > 100);
+  for (const asset of assets) await access(path.join(root, '_site', asset));
+  assert.ok(await assetBytes(path.join(root, '_site/assets')) < 90 * 1024 * 1024);
+  assert.deepEqual((await readdir(path.join(root, '_site/assets'))).sort(), ['exports', 'fonts']);
+  const published = await readdir(path.join(root, '_site/assets/exports/s11-v1'));
+  assert.ok(!published.some(name => /-full\.|\.jpg$/.test(name)));
 });

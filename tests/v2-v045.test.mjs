@@ -74,3 +74,10 @@ test('A4 构建版本参数不改变旧档版本与进度，仍能继续月初�
   E.choose(s, id, E.optionsFor(s, sc)[0].id);
   assert.ok(s.done[id]);
 });
+
+test('A5 原图移出后旧档人物与孩子立绘编号继续保留', () => {
+  const s = oldSave(s => {s.children = []; s.inventory = [{name: '旧藏', authentic: true}];});
+  assert.deepEqual(s.children, []);
+  assert.equal(s.inventory[0].name, '旧藏');
+  assert.equal(s.people.C02.aff, 30);
+});

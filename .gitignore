@@ -12,3 +12,5 @@ docs/qa/
 docs/qa-v02/
 123.env
 .DS_Store
+
+art-source/

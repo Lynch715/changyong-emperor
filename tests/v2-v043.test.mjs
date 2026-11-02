@@ -37,12 +37,37 @@ test('0.43 从元年正常新档沿月历到出生及十岁，生日取真实出
 test('0.43 AI即便返回越界皇嗣文案也不展示，常规家庭回声能保留',async()=>{const s=ready();child(s);s.year=11;s.month=3;const oldFetch=globalThis.fetch;let response='皇上与和宁恋爱。';const calls=[];globalThis.fetch=async(url,opt)=>{if(url==='/api/status')return {ok:true,json:async()=>({configured:true})};calls.push(JSON.parse(opt.body));return {ok:true,json:async()=>({value:{reply:response,affection:2}})};};try{await AI.initAI({getItem:()=>null});assert.equal(await AI.giftReply(s,'C09','书',true),null);assert.match(calls[0].system,/和宁，10岁，未成年/);response='和宁正在读书，宫里十分安静。';assert.equal(await AI.giftReply(s,'C09','书',true),response);for(const text of ['让公主恋爱','让皇嗣侍寝','亲吻小皇子'])assert.equal(planAllowed(text,null,s),false);}finally{globalThis.fetch=oldFetch;await AI.initAI({getItem:()=>null});}});
 test('0.43 普通入夜和带剧情的留宿均只判定一次，已有孕期不重复覆盖',()=>{for(const special of [false,true]){const s=ready(0);s.year=2;s.people.C09.first=true;s.people.C09.second=true;s.people.C09.secondAt='1-12';if(special)E.queueSpecial(s,'C09');else E.spendNight(s,'C09');assert.ok(s.pregnancy.C09);const p=structuredClone(s.pregnancy.C09),seed=s.seed;assert.throws(()=>special?E.queueSpecial(s,'C09'):E.spendNight(s,'C09'),/已经/);assert.equal(s.seed,seed);assert.deepEqual(s.pregnancy.C09,p);}});
 
-test('0.43 正式画稿、登记与28个运行图逐字校验，所有原资源编号保持不变',async()=>{
- const registry=JSON.parse(await readFile(new URL('../design/S11/0.43-皇嗣立绘.json',import.meta.url),'utf8'));
- assert.equal(registry.assets.length,14);
- for(const asset of registry.assets){
-  const art=KID_ART[asset.id];assert.ok(art);assert.equal(art.placeholder,false);assert.equal(asset.generator,'built-in image_gen');assert.equal(asset.status,'generated-reviewed');assert.equal(asset.sex,art.sex);assert.equal(asset.stage,art.stage);
-  const source=await readFile(new URL('../'+asset.source,import.meta.url));assert.equal(createHash('sha256').update(source).digest('hex'),asset.sourceSha256);assert.equal(source[25],6,'原画有RGBA通道');assert.ok(asset.nativeDimensions.every(x=>x>=1024));assert.ok(asset.prompt);
-  for(const file of asset.exports){const bytes=await readFile(new URL('../'+file.path,import.meta.url));assert.equal(createHash('sha256').update(bytes).digest('hex'),file.sha256);assert.equal(file.path,art[file.role]);assert.equal(file.dimensions[1],file.role==='mobile'?640:200);assert.ok(bytes.length>5000,'正式图不能退回简单占位');}
- }
+test('0.43 正式画稿、登记与28个运行图逐字校验，所有原资源编号保持不变', async () => {
+  const registry = JSON.parse(
+    await readFile(new URL('../design/S11/0.43-皇嗣立绘.json', import.meta.url), 'utf8'),
+  );
+  assert.equal(registry.assets.length, 14);
+  for (const asset of registry.assets) {
+    const art = KID_ART[asset.id];
+    assert.ok(art);
+    assert.equal(art.placeholder, false);
+    assert.equal(asset.generator, 'built-in image_gen');
+    assert.equal(asset.status, 'generated-reviewed');
+    assert.equal(asset.sex, art.sex);
+    assert.equal(asset.stage, art.stage);
+    const source = await readFile(
+      new URL('../' + asset.source.replace(/^assets\/([^/]+)$/, 'art-source/$1'), import.meta.url),
+    ).catch((e) => {
+      if (e.code === 'ENOENT') return null;
+      throw e;
+    });
+    if (source) {
+      assert.equal(createHash('sha256').update(source).digest('hex'), asset.sourceSha256);
+      assert.equal(source[25], 6, '原画有RGBA通道');
+    }
+    assert.ok(asset.nativeDimensions.every((x) => x >= 1024));
+    assert.ok(asset.prompt);
+    for (const file of asset.exports) {
+      const bytes = await readFile(new URL('../' + file.path, import.meta.url));
+      assert.equal(createHash('sha256').update(bytes).digest('hex'), file.sha256);
+      assert.equal(file.path, art[file.role]);
+      assert.equal(file.dimensions[1], file.role === 'mobile' ? 640 : 200);
+      assert.ok(bytes.length > 5000, '正式图不能退回简单占位');
+    }
+  }
 });

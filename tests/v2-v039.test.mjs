@@ -21,8 +21,33 @@ import {PLACES} from '../src/v2/outings.js';
 import {PORTRAIT_IDS,portraitFile,placeBackground,NIGHT_BG} from '../src/v2/art.js';
 test('0.39 roster每个人都有可用立绘与兼容PNG，非roster伶人刻意不设',async()=>{for(const id of CAST){assert.ok(PORTRAIT_IDS.has(id),id);for(const role of ['display','mobile','thumb'])for(const format of ['png','webp'])await access(portraitFile(id,role,format));}const plan=JSON.parse(await readFile('design/S11/0.39-补图清单.json'));assert.match(plan.reuse,/刻意不设/);});
 test('0.39 每个微服地点和寝殿有背景，冬夏换图与春秋回退正确',async()=>{for(const id of Object.keys(PLACES))for(const month of [1,5,8,12])for(const role of ['display','thumb'])await access(placeBackground(id,month,role));await access(NIGHT_BG);await access(placeBackground('nanfeng-interior'));assert.match(placeBackground('shicha',12),/shicha-winter/);assert.match(placeBackground('shicha',5),/shicha-summer/);assert.match(placeBackground('shicha',2),/river/);});
-test('0.39 新增25项登记与文件一致，人物和背景导出尺寸正确',async()=>{const assets=JSON.parse(await readFile('design/S11/资产登记.json')),exports=JSON.parse(await readFile('design/S11/导出登记.json'));const added=assets.assets.filter(a=>a.release==='v0.39.0');assert.equal(added.length,25);assert.equal(new Set(added.map(a=>a.asset_id)).size,25);for(const a of added){const source=await readFile(a.source_file);assert.equal(createHash('sha256').update(source).digest('hex'),a.sha256);const row=exports.assets.find(x=>x.asset_id===a.asset_id);assert.ok(row);assert.equal(row.exports.length,6);for(const e of row.exports){const bytes=await readFile(e.path);assert.equal(createHash('sha256').update(bytes).digest('hex'),e.sha256);if(e.role==='display')assert.deepEqual(e.dimensions,a.category==='portrait'?[768,1152]:[1280,720]);if(e.role==='mobile')assert.deepEqual(e.dimensions,[384,576]);if(e.role==='thumb')assert.deepEqual(e.dimensions,a.category==='portrait'?[128,192]:[320,180]);}}});
-import {planAllowed,nightIdeas,REST_IDEAS,restCost} from '../src/v2/plans.js';
+test('0.39 新增25项登记与文件一致，人物和背景导出尺寸正确', async () => {
+  const assets = JSON.parse(await readFile('design/S11/资产登记.json')),
+    exports = JSON.parse(await readFile('design/S11/导出登记.json'));
+  const added = assets.assets.filter((a) => a.release === 'v0.39.0');
+  assert.equal(added.length, 25);
+  assert.equal(new Set(added.map((a) => a.asset_id)).size, 25);
+  for (const a of added) {
+    const source = await readFile(a.source_file.replace(/^assets\/([^/]+)$/, 'art-source/$1')).catch((e) => {
+      if (e.code === 'ENOENT') return null;
+      throw e;
+    });
+    if (source) assert.equal(createHash('sha256').update(source).digest('hex'), a.sha256);
+    const row = exports.assets.find((x) => x.asset_id === a.asset_id);
+    assert.ok(row);
+    assert.equal(row.exports.length, 6);
+    for (const e of row.exports) {
+      const bytes = await readFile(e.path);
+      assert.equal(createHash('sha256').update(bytes).digest('hex'), e.sha256);
+      if (e.role === 'display')
+        assert.deepEqual(e.dimensions, a.category === 'portrait' ? [768, 1152] : [1280, 720]);
+      if (e.role === 'mobile') assert.deepEqual(e.dimensions, [384, 576]);
+      if (e.role === 'thumb')
+        assert.deepEqual(e.dimensions, a.category === 'portrait' ? [128, 192] : [320, 180]);
+    }
+  }
+});
+import { planAllowed, nightIdeas, REST_IDEAS, restCost } from '../src/v2/plans.js';
 test('0.39 自拟安排先守成年自愿与亲属边界，不向模型发送越界安排',async()=>{assert.equal(planAllowed('强迫对方亲吻','C07'),false);assert.equal(planAllowed('和皇弟接吻','C05'),false);assert.equal(planAllowed('陪皇弟下棋','C05'),true);assert.ok(nightIdeas('C07').some(x=>x.includes('泡汤')));assert.equal(REST_IDEAS.length,5);await withModel({},async calls=>{assert.equal(await AI.nightScene(ready(),'C07','强迫对方亲吻'),null);assert.equal(await AI.restScene(ready(),'和皇弟接吻',{companion:'C05'}),null);assert.equal(calls.length,0);});});
 test('0.39 夜晚自拟提示含安排和骰面，放宽篇幅；留空维持旧长度和圣躬',async()=>{await withModel({text:'她陪你看了会儿月亮。',affection:99,health:99,memory:'灯下听曲'},async calls=>{const s=ready(),v=await AI.nightScene(s,'C07','一起听曲',{tier:0});assert.match(calls.at(-1).system,/一起听曲/);assert.match(calls.at(-1).system,/200到600/);assert.match(calls.at(-1).system,/不发生亲密行为/);assert.doesNotMatch(calls.at(-1).system,/成人描写/);assert.equal(calls.at(-1).maxTokens,1800);assert.equal(v.affection,5);assert.equal(v.health,3);const blank=await AI.nightScene(s,'C07');assert.match(calls.at(-1).system,/120到220/);assert.equal(blank.health,0);});});
 test('0.39 夜晚收益被引擎收紧，凶与大凶不增加圣躬，未知人选不改存档',()=>{for(const tier of [0,1,2,4]){const s=ready();s.month=5;s.stats.health=50;s.people.C07.aff=70;const r=E.spendNight(s,'C07',{affection:999,health:999,fate:{tier},memory:'灯下看书'});assert.equal(r.stats.health||0,tier<=1?0:3);assert.equal(r.people.C07||0,tier===0?0:tier===1?1:4);assert.equal(s.people.C07.memories.at(-1).text,'灯下看书');}const s=ready(),raw=JSON.stringify(s);assert.throws(()=>E.spendNight(s,'unknown'));assert.equal(JSON.stringify(s),raw);const t=ready();t.stats.health=50;assert.equal(E.spendNight(t,'C07',{health:-999}).stats.health,-2);});
