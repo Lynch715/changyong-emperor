@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node --env-file-if-exists=.env server.mjs",
     "build": "node scripts/build-pages.mjs",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node scripts/check-style.mjs && node --test tests/*.test.mjs"
   },
   "engines": {
     "node": ">=22.9"
