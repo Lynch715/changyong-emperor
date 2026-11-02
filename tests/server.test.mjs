@@ -16,3 +16,18 @@ test('上游失败不泄露传输异常，固定剧情仍能加载',async()=>{co
 test('密钥、服务端源码和旧版运行文件均不提供',async()=>{const s=makeServer({config});for(const url of ['/.env','/123.env','/server.mjs','/styles.css','/src/app.js','/src/engine.js','/src/../../server.mjs','/api/ai'])assert.equal((await request(s,url)).status,404,url);for(const url of ['/','/src/v2/main.js','/src/ai-provider.js'])assert.equal((await request(s,url)).status,200,url);});
 test('本地配置保持服务商默认及环境变量优先级',()=>{assert.equal(serverConfig({}).model,'deepseek-flash');assert.equal(serverConfig({AI_API_KEY:'first',DEEPSEEK_API_KEY:'second'}).key,'first');assert.equal(serverConfig({AI_BASE_URL:'https://fixture.invalid',OPENAI_API_KEY:'third'}).key,'third');});
 test('0.39 长安排可增大回复篇幅，两种协议都限制在安全预算内',async()=>{for(const protocol of ['chat-completions','responses']){let captured;const s=makeServer({config:{...config,protocol},fetcher:async(url,o)=>{captured=JSON.parse(o.body);return {ok:true,json:async()=>({choices:[{message:{content:'{"ok":true}'}}]})};}});assert.equal((await request(s,'/api/v2',{...options,body:JSON.stringify({system:'写一日休养',user:'喝茶',maxTokens:1800})})).status,200);assert.equal(captured[protocol==='responses'?'max_output_tokens':'max_tokens'],1800);for(const maxTokens of [0,2401,1800.5,'1800'])assert.equal((await request(s,'/api/v2',{...options,body:JSON.stringify({system:'写一日休养',user:'喝茶',maxTokens})})).status,400);}});
+
+test('A1 每日上限为二时，第三次请求返回429且不再访问模型', async () => {
+  let calls = 0;
+  const server = makeServer({
+    config: {...config, limit: 2},
+    fetcher: async () => {
+      calls++;
+      return {ok: true, json: async () => ({choices: [{message: {content: '{"ok":true}'}}]})};
+    },
+  });
+  assert.equal((await request(server, '/api/v2', options)).status, 200);
+  assert.equal((await request(server, '/api/v2', options)).status, 200);
+  assert.equal((await request(server, '/api/v2', options)).status, 429);
+  assert.equal(calls, 2);
+});
