@@ -425,3 +425,14 @@ dialog#modal::backdrop { background: #07111dcc; }
 .chip { animation-name: chip-appear; }
 @keyframes chip-appear { from { transform: scale(.94); } to { transform: scale(1); } }
 .summary .expense-detail { margin: -4px 0 12px; font-size: 13px; line-height: 1.7; color: var(--ink-soft); }
+
+/* 骰子提示放在按钮之前，不需要等结果出来才知道本次规则。 */
+.paper .fate-preview {
+ margin: 10px 0;
+ padding: 8px 10px;
+ background: #e3d5b5;
+ color: #3c4533;
+ border-left: 3px solid var(--jade);
+ font-size: 13px;
+ line-height: 1.7;
+}

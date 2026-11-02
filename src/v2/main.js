@@ -20,7 +20,7 @@ import {ENDING_KINGDOM3,ENDING3} from './vol3.js';
 import {ACHIEVEMENTS,loadGallery,updateGallery,takeAchievement} from './gallery.js';
 import {rivalsOf,friendsOf} from './social.js';
 import {BIRTH,BIRTH_LINES} from './festivals.js';
-import {FREEDOM,fateText} from './fate.js';
+import {FREEDOM,fateText,fatePreview} from './fate.js';
 const FATE_SHORT=['今天怎么说都不顺','对方不太买账','如常','对方愿意接你的话','说什么，对方都愿意听'];
 const fateLine=f=>f&&!f.free?`<div class="fate t${f.tier}">${esc(fateText(f))}</div>`:'';
 const bondName=id=>id==='C05'?'知己':'两情相悦';
@@ -250,21 +250,36 @@ function pickPerson(kind){
   <p class="muted center">${kind==='chat'?(E.away(s,'C03')&&ids.includes('C03')?'人在外地的，只能写信。':'每次召见最多说六句。说到心坎上，情分涨得多。'):'送对了心头好，情分 +6；寻常的 +2；同样的东西再送，只 +1；送到讨厌的，情分 −3。'}</p></main>`;
 }
 
-function chatView(){
- const c=view.chat,id=c.id,p=PEOPLE[id],st=s.people[id];
- const ai=AI.aiMode()!=='off',used=c.topics||[];
- const left=Math.max(0,6-c.turns);
- return `<div class="stage chat" style="--bg:url('${abs(bgFor(E.placeOf(s,id)))}')">
-  <div class="stage-top"><button data-act="chat-end">‹ 告退</button><span>${c.letter?'书信 · ':''}${esc(E.placeOf(s,id))}</span><span class="pill">${E.affectionStage(s,id)} ${st.aff}${c.gained?` <i class="up">+${c.gained}</i>`:''}</span></div>
-  ${avatar(id,'portrait')}
-  <article class="paper talk">
-   <h2>${p.name}<small>${E.titleOf(s,id)}${st.knot?' · <em class="knot">心结：'+esc(st.knot.text)+'</em>':''}</small></h2>
-   <div class="msgs" id="msgs">${c.msgs.map(m=>`<div class="msg ${m.who}${m.tier!=null?' fate t'+m.tier:''}">${m.who==='npc'?`<b>${p.name}</b>`:''}${esc(m.text)}${m.d!=null&&m.who==='npc'?`<span class="md ${m.d>0?'up':m.d<0?'down':''}">${m.mood?esc(m.mood)+' · ':''}${m.d>0?'情分 +'+m.d:m.d<0?'情分 '+m.d:'情分不变'}</span>`:''}</div>`).join('')}${busy?`<div class="msg npc typing"><b>${p.name}</b>……</div>`:''}</div>
-   ${left>0?`<div class="topics">${st.knot?`<button data-act="repair" class="repair" ${busy?'disabled':''}>说开「${esc(st.knot.text)}」那件事</button>`:''}${TOPICS.map(t=>`<button data-act="topic" data-t="${t.id}" ${used.includes(t.id)||busy?'disabled':''}>${t.label}</button>`).join('')}</div>
-   ${ai?`<form class="say" data-act="say"><input name="t" maxlength="120" placeholder="${c.letter?'写几句给远方的人……':'想对'+p.name+'说什么？'}" autocomplete="off" ${busy?'disabled':''}><button ${busy?'disabled':''}>说</button></form><p class="muted small">还能说 ${left} 句。真诚的话打动人，敷衍和冒犯也会被记住。</p>`:'<p class="muted small">接入 AI 后可以随意说话。现在只能从上面挑话题。</p>'}`
-   :`<p class="muted center">该说的都说了。</p>`}
-   <button class="primary" data-act="chat-end">${left>0?'告退':'告退'}</button>
-  </article></div>`;
+// 在第一次亲口说话之前说明掷骰与加减点，已经掷过则沿用本次结果。
+function chatView() {
+  const c = view.chat, id = c.id, p = PEOPLE[id], st = s.people[id];
+  const ai = AI.aiMode() !== 'off', used = c.topics || [], left = Math.max(0, 6 - c.turns);
+  return `<div class="stage chat" style="--bg:url('${abs(bgFor(E.placeOf(s, id)))}')">
+    <div class="stage-top"><button data-act="chat-end">‹ 告退</button>
+      <span>${c.letter ? '书信 · ' : ''}${esc(E.placeOf(s, id))}</span>
+      <span class="pill">${E.affectionStage(s, id)} ${st.aff}${c.gained ? ` <i class="up">+${c.gained}</i>` : ''}</span>
+    </div>${avatar(id, 'portrait')}<article class="paper talk">
+      <h2>${p.name}<small>${E.titleOf(s, id)}${st.knot ? ' · 心结：' + esc(st.knot.text) : ''}</small></h2>
+      <div class="msgs" id="msgs">${c.msgs.map(m => `<div class="msg ${m.who}${m.tier != null ? ' fate t' + m.tier : ''}">
+        ${m.who === 'npc' ? `<b>${p.name}</b>` : ''}${esc(m.text)}
+        ${m.d != null && m.who === 'npc' ? `<span class="md ${m.d > 0 ? 'up' : m.d < 0 ? 'down' : ''}">
+          ${m.mood ? esc(m.mood) + ' · ' : ''}${m.d > 0 ? '情分 +' + m.d : m.d < 0 ? '情分 ' + m.d : '情分不变'}
+        </span>` : ''}</div>`).join('')}
+        ${busy ? `<div class="msg npc typing"><b>${p.name}</b>……</div>` : ''}</div>
+      ${left > 0 ? `<div class="topics">
+        ${st.knot ? `<button data-act="repair" class="repair" ${busy ? 'disabled' : ''}>
+          说开「${esc(st.knot.text)}」那件事</button>` : ''}
+        ${TOPICS.map(t => `<button data-act="topic" data-t="${t.id}" ${used.includes(t.id) || busy ? 'disabled' : ''}>
+          ${t.label}</button>`).join('')}</div>
+        ${ai ? `${c.fate ? '<p class="fate-preview">本次沿用刚才的骰面，不再重掷。</p>' : `<p class="fate-preview">亲口说话时，${esc(fatePreview(s, 'chat', id))}</p>`}
+          <form class="say" data-act="say"><input name="t" maxlength="120"
+            placeholder="${c.letter ? '写几句给远方的人……' : '想对' + p.name + '说什么？'}"
+            autocomplete="off" ${busy ? 'disabled' : ''}><button ${busy ? 'disabled' : ''}>说</button></form>
+          <p class="muted small">还能说 ${left} 句。真诚的话打动人，敷衍和冒犯也会被记住。</p>` :
+          '<p class="muted small">接入 AI 后可以随意说话。现在只能从上面挑话题。</p>'}` :
+        '<p class="muted center">该说的都说了。</p>'}
+      <button class="primary" data-act="chat-end">告退</button>
+    </article></div>`;
 }
 
 function giftView(){
@@ -336,22 +351,37 @@ function memorialView() {
             ${esc(label)}${cost ? ' · 国库' + cost + '万两' : ''}</button>`;
         }).join('')}</div>
         ${AI.aiMode() !== 'off' && allowed ? `<form data-act="memorial-write" data-id="${m.uid}">
+          <p class="fate-preview">${esc(fatePreview(s, 'edict'))}</p>
           <label>亲笔批<textarea name="t" maxlength="200" required></textarea></label>
           <button ${busy ? 'disabled' : ''}>${busy ? '候回报……' : '朱批'}</button></form>` : ''}
       </article>`;
     }).join('')}</main>`;
 }
-function edictView(){
- const r=view.result,ai=AI.aiMode()!=='off';
- if(r)return `<div class="stage" style="--bg:url('${abs(BG.court)}')"><article class="paper"><h2>${esc(r.title||'旨意')}</h2><div class="choice">朱批：${esc(r.src)}</div>${fateLine(r.fate)}${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="done">好</button></article></div>`;
- return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><div class="stage-top"><button data-act="go" data-to="home">‹ 收起</button><span>养心殿御案</span></div><article class="paper">
-  <h2>亲笔下旨</h2>${policiesHtml()}
-  <form class="transfer" data-act="transfer"><h4>拨银</h4><p>国库 ${moneyText(s.stats.treasury)} · 内帑 ${moneyText(s.stats.inner)}</p><p class="small">与下旨一样，用一个时辰。拨进内帑，朝局 −2；充入国库，民心 +2。</p><label>从哪里拨<select name="direction"><option value="toInner">国库 → 内帑</option><option value="toTreasury">内帑 → 国库</option></select></label><label>万两<input name="amount" type="number" min="0.01" step="0.01" value="10" required></label><button class="primary">拨银</button></form>
-  ${ai?`<p class="muted">写下你想办的事，任何事都可以。它会怎样落地，有什么代价，由天下来回答。</p>
-  <form class="edict" data-act="decree"><textarea name="t" maxlength="200" rows="4" placeholder="例如：在京城设十处粥厂，入冬前施粥三月。" ${busy?'disabled':''}></textarea><button class="primary" ${busy?'disabled':''}>${busy?'旨意正在传下去……':'用印'}</button></form>
-  <p class="muted small">自由度：${FREEDOM[E.freedomOf(s)].name}${E.freedomOf(s)>1?'。用印前先掷骰，朝局越稳，骰运越好。':'。'}</p><p class="muted small">举几个例子：</p>`:`<p class="muted">没有接入 AI，只能从拟好的旨意里选一道。</p>`}
-  <div class="options">${PRESET_EDICTS.map((e,i)=>`<button data-act="${ai?'fill':'preset'}" data-i="${i}" ${busy?'disabled':''}>${esc(e.text)}</button>`).join('')}</div>
- </article></div>`;
+// 用印前列出本次骰子的朝局加减点，结果页只显示一次骰面。
+function edictView() {
+  const r = view.result, ai = AI.aiMode() !== 'off';
+  if (r) return `<div class="stage" style="--bg:url('${abs(BG.court)}')"><article class="paper">
+    <h2>${esc(r.title || '旨意')}</h2><div class="choice">朱批：${esc(r.src)}</div>${fateLine(r.fate)}
+    ${paras(r.text)}${chips(r.stats, r.people)}<button class="primary" data-act="done">好</button></article></div>`;
+  return `<div class="stage" style="--bg:url('${abs(BG.desk)}')"><div class="stage-top">
+    <button data-act="go" data-to="home">‹ 收起</button><span>养心殿御案</span></div><article class="paper">
+      <h2>亲笔下旨</h2>${policiesHtml()}
+      <form class="transfer" data-act="transfer"><h4>拨银</h4>
+        <p>国库 ${moneyText(s.stats.treasury)} · 内帑 ${moneyText(s.stats.inner)}</p>
+        <p class="small">与下旨一样，用一个时辰。拨进内帑，朝局 −2；充入国库，民心 +2。</p>
+        <label>从哪里拨<select name="direction"><option value="toInner">国库 → 内帑</option>
+          <option value="toTreasury">内帑 → 国库</option></select></label>
+        <label>万两<input name="amount" type="number" min="0.01" step="0.01" value="10" required></label>
+        <button class="primary">拨银</button></form>
+      ${ai ? `<p class="muted">写下你想办的事，任何事都可以。它会怎样落地，有什么代价，由天下来回答。</p>
+        <p class="fate-preview">${esc(fatePreview(s, 'edict'))}</p>
+        <form class="edict" data-act="decree"><textarea name="t" maxlength="200" rows="4"
+          placeholder="例如：在京城设十处粥厂，入冬前施粥三月。" ${busy ? 'disabled' : ''}></textarea>
+          <button class="primary" ${busy ? 'disabled' : ''}>${busy ? '旨意正在传下去……' : '用印'}</button></form>
+        <p class="muted small">举几个例子：</p>` : '<p class="muted">没有接入 AI，只能从拟好的旨意里选一道。</p>'}
+      <div class="options">${PRESET_EDICTS.map((e, i) => `<button data-act="${ai ? 'fill' : 'preset'}"
+        data-i="${i}" ${busy ? 'disabled' : ''}>${esc(e.text)}</button>`).join('')}</div>
+    </article></div>`;
 }
 
 function outingsView(){return `${header()}<main><div class="bar-title"><button data-act="go" data-to="home">‹ 返回</button><b>微服去哪里？</b></div><p class="muted">选好去处才用时辰。这里的花费都走内帑。</p><section class="places">${Object.entries(PLACES).map(([id,p])=>`<button data-act="travel" data-id="${id}" ${!E.canAct(s)||s.stats.inner<p.cost?'disabled':''}><img class="place-thumb" src="${placeBackground(id,s.month,'thumb')}" loading="lazy" decoding="async" alt="${p.name}"><b>${p.name}</b><span>${p.desc}</span><small>内帑 ${moneyText(p.cost)}${s.stats.inner<p.cost?' · 内帑不足':''}</small><small>${p.hint}</small></button>`).join('')}</section></main>`;}
@@ -382,15 +412,46 @@ function resultView() {
 const ideasHtml=(ideas,target)=>`<div class="plan-ideas">${ideas.map((t,i)=>`<button data-act="plan-idea" data-target="${target}" data-i="${i}">${esc(t)}</button>`).join('')}</div>`;
 function restView(){const ai=AI.aiMode()!=='off';return `${header()}<main class="plan-page"><div class="bar-title"><button data-act="go" data-to="home">‹ 返回</button><b>今天想怎么歇？</b></div>
  ${busy?'<p class="wait">窗外的风慢了下来……</p>':`${ai?`${ideasHtml(REST_IDEAS,'restPlan')}<label for="restPlan">今天想怎么歇？</label><textarea id="restPlan" maxlength="200" rows="5" placeholder="写下安排，最多200字">${esc(view.draft||'')}</textarea><label for="restCompanion">请谁作陪？</label><select id="restCompanion"><option value="">独自歇着</option>${E.restCompanions(s).map(id=>`<option value="${id}" ${view.companion===id?'selected':''}>${esc(nm(id))}</option>`).join('')}</select><p class="muted small">安排会先掷骰，一档不掷。最多花内帑3万两；若没有收到回话，就照常歇着。</p><button class="primary" data-act="rest-plan">就这样歇一日</button>`:'<p>把门关上，留一日给自己。</p>'}<button data-act="rest-default">照常歇着</button>`}</main>`;}
-function nightView(){
- const NB=E.stayOf(s)?placeBackground('nanfeng-interior',s.month):NIGHT_BG;
- if(view.result){const r=view.result;return `<div class="stage night" style="--bg:url('${abs(NB)}')">${r.id?avatar(r.id,'portrait'):''}<article class="paper"><h2>${r.id?E.placeOf(s,r.id)+' · 夜':'独寝'}</h2>${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}${notesHtml(r)}<button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;}
- if(s.night&&!busy&&!s.agenda.length)return `<div class="stage night" style="--bg:url('${abs(NB)}')"><article class="paper"><h2>今夜已经过了</h2><p>天快亮了。</p><button class="primary" data-act="month-end">结束这个月 ›</button></article></div>`;
- const list=E.nightChoices(s),ai=AI.aiMode()!=='off',id=view.id||E.stayOf(s);
- return `<div class="stage night" style="--bg:url('${abs(NB)}')"><div class="stage-top">${busy?'<span></span>':'<button data-act="go" data-to="home">‹ 再等等</button>'}<span>${dateText(s)} · 夜</span></div><article class="paper plan-page">
- <h2>${id?'今夜陪着'+nm(id):'今夜去哪里？'}</h2>${id&&F.isMother(id)?`<p class="muted small">生育意愿：${wishLabel(s.people[id].wish)}。${s.pregnancy[id]?'已有孕期记录，本夜不会重复判定。':id==='C07'&&!s.flags.stop_huanyi?'欢宜香尚未停用，不会受孕。':F.chance(s,id)>0?`本夜可能有孕（约 ${Math.round(F.chance(s,id)*100)}%），一至两个月后复诊报喜。`:'目前不会触发生育。'}</p>`:''}
- ${busy?'<p class="muted center wait">灯一盏一盏亮起来……</p>':id?`${ai?`${ideasHtml(nightIdeas(id),'nightPlan')}<label for="nightPlan">今夜想和${esc(nm(id))}做些什么？</label><textarea id="nightPlan" maxlength="300" rows="5" placeholder="可以不写，最多300字">${esc(view.draft||'')}</textarea><p class="muted small">写下安排会先掷骰，一档不掷。留空就照往常过。</p>`:'<p>灯已经点上了，过去坐坐吧。</p>'}<button class="primary" data-act="night-go" data-id="${id}">过去看看</button><button data-act="night-select" data-id="">再选一处</button>`:`<section class="people">${list.map(x=>`<button class="pc" data-act="night-select" data-id="${x.id}">${avatar(x.id)}<div><b>${PEOPLE[x.id].name}${x.special?'<em class="ready">有话想说</em>':x.knot?'<em class="knot">心结</em>':''}</b><span>${E.placeOf(s,x.id)} · ${stageOf(s.people[x.id].aff)}</span></div></button>`).join('')}<button class="pc" data-act="night-go" data-id=""><div><b>独寝</b><span>一个人睡，圣躬 +3</span></div></button></section><p class="muted small">“有话想说”的人，今夜会有一段新剧情。</p>`}
- </article></div>`;
+// 写下夜间安排前先说明骰子与情分加减点，留空时仍按原有夜间流程。
+function nightView() {
+  const background = E.stayOf(s) ? placeBackground('nanfeng-interior', s.month) : NIGHT_BG;
+  if (view.result) {
+    const r = view.result;
+    return `<div class="stage night" style="--bg:url('${abs(background)}')">${r.id ? avatar(r.id, 'portrait') : ''}
+      <article class="paper"><h2>${r.id ? E.placeOf(s, r.id) + ' · 夜' : '独寝'}</h2>
+        ${fateLine(r.fate)}${paras(r.text)}${chips(r.stats, r.people)}${notesHtml(r)}
+        <button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;
+  }
+  if (s.night && !busy && !s.agenda.length) return `<div class="stage night" style="--bg:url('${abs(background)}')">
+    <article class="paper"><h2>今夜已经过了</h2><p>天快亮了。</p>
+      <button class="primary" data-act="month-end">结束这个月 ›</button></article></div>`;
+  const list = E.nightChoices(s), ai = AI.aiMode() !== 'off', id = view.id || E.stayOf(s);
+  let family = '';
+  if (id && F.isMother(id)) {
+    const status = s.pregnancy[id] ? '已有孕期记录，本夜不会重复判定。' :
+      id === 'C07' && !s.flags.stop_huanyi ? '欢宜香尚未停用，不会受孕。' : F.chance(s, id) > 0 ?
+        `本夜可能有孕（约 ${Math.round(F.chance(s, id) * 100)}%），一至两个月后复诊报喜。` : '目前不会触发生育。';
+    family = `<p class="muted small">生育意愿：${wishLabel(s.people[id].wish)}。${status}</p>`;
+  }
+  return `<div class="stage night" style="--bg:url('${abs(background)}')"><div class="stage-top">
+    ${busy ? '<span></span>' : '<button data-act="go" data-to="home">‹ 再等等</button>'}
+    <span>${dateText(s)} · 夜</span></div><article class="paper plan-page">
+      <h2>${id ? '今夜陪着' + nm(id) : '今夜去哪里？'}</h2>${family}
+      ${busy ? '<p class="muted center wait">灯一盏一盏亮起来……</p>' : id ? `
+        ${ai ? `${ideasHtml(nightIdeas(id), 'nightPlan')}
+          <label for="nightPlan">今夜想和${esc(nm(id))}做些什么？</label>
+          <textarea id="nightPlan" maxlength="300" rows="5" placeholder="可以不写，最多300字">${esc(view.draft || '')}</textarea>
+          <p class="fate-preview">写下安排时，${esc(fatePreview(s, 'night', id))}留空就照往常过。</p>` :
+          '<p>灯已经点上了，过去坐坐吧。</p>'}
+        <button class="primary" data-act="night-go" data-id="${id}">过去看看</button>
+        <button data-act="night-select" data-id="">再选一处</button>` : `
+        <section class="people">${list.map(person => `<button class="pc" data-act="night-select" data-id="${person.id}">
+          ${avatar(person.id)}<div><b>${PEOPLE[person.id].name}
+            ${person.special ? '<em class="ready">有话想说</em>' : person.knot ? '<em class="knot">心结</em>' : ''}</b>
+            <span>${E.placeOf(s, person.id)} · ${stageOf(s.people[person.id].aff)}</span></div></button>`).join('')}
+          <button class="pc" data-act="night-go" data-id=""><div><b>独寝</b><span>一个人睡，圣躬 +3</span></div></button>
+        </section><p class="muted small">“有话想说”的人，今夜会有一段新剧情。</p>`}
+    </article></div>`;
 }
 
 // ---------- 月末 ----------

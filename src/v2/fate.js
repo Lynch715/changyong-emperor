@@ -33,3 +33,13 @@ export const fateGuide=(fate,kind,name='')=>!fate?'':kind==='edict'?GUIDE_EDICT[
 // 引擎兜底：按骰面收紧正面收益
 export function boundUp(v,tier){if(v<=0)return v;return tier===0?0:tier===1?Math.round(v/2):v;}
 export const fateText=f=>!f||f.free?'':`掷骰 ${f.d}${f.bonus.map(([w,b])=>` ${b>0?'+':'−'}${Math.abs(b)}（${w}）`).join('')} = ${f.total} · ${TIERS[f.tier]}`;
+
+// 行动前只解释这次是否掷骰及现有加减点，不提前消耗随机数。
+export function fatePreview(s, kind, id) {
+  const level = [1, 2, 3].includes(Number(s.freedom)) ? Number(s.freedom) : 2;
+  if (level === 1) return '这次不掷骰，仍要尊重人物自己的意愿。';
+  const bonus = fateBonus(s, kind, id);
+  const points = bonus.length ? bonus.map(([why, value]) => `${why}：${value > 0 ? '+' : ''}${value}`).join('；') :
+    '没有加减点（0）';
+  return `这次会掷20面骰（${level}档）。${points}。`;
+}

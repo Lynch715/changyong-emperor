@@ -513,3 +513,22 @@ test('C5 可选节庆选人、全家与吃醋效果不变，两张卡节庆排�
   assert.ok(required.requiredFestival('FE2-zhongqiu'));
   assert.equal(required.requiredFestival('FE2-yuanxiao'), false);
 });
+
+test('C6 旧档在行动前列出骰子和加减点，预览不动种子或掷骰次数', async () => {
+  const {fatePreview} = await import('../src/v2/fate.js');
+  const s = oldSave(s => {
+    delete s.freedom;
+    s.stats.court = 75;
+    s.people.C02.aff = 70;
+    s.people.C02.knot = {text: '旧心结'};
+  });
+  const before = JSON.stringify(s);
+  assert.match(fatePreview(s, 'edict'), /20面骰（2档）.*朝局 75：\+2/);
+  assert.match(fatePreview(s, 'chat', 'C02'), /情分 70：\+2；心结：-2/);
+  assert.match(fatePreview(s, 'night', 'C02'), /情分 70：\+2/);
+  assert.equal(JSON.stringify(s), before);
+  s.freedom = 1;
+  assert.match(fatePreview(s, 'chat', 'C02'), /不掷骰/);
+  s.freedom = 3;
+  assert.match(fatePreview(s, 'edict'), /3档/);
+});
