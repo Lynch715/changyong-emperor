@@ -579,19 +579,44 @@ function logView(){
  const items=s.log.slice().reverse();
  return `${header()}<main><h3 class="sec">起居注</h3><ul class="log">${items.map(l=>`<li><small>${YEAR_NAME(l.y)}年${MONTHS[l.m-1]}</small><em>${l.kind}</em>${esc(l.text)}</li>`).join('')||'<li class="muted">还没有记录。</li>'}</ul></main>${nav()}`;
 }
-function settingsView(){
- const m=AI.aiMode();
- return `${header()}<main class="settings"><h3 class="sec">设置</h3>
-  <div class="card"><b>成人描写</b><label class="audience-toggle"><input type="checkbox" data-pref="tenderness" ${audienceOf().tenderness?'checked':''}> 直白描写亲密场景</label><p>夜里、休养作陪、与恋人私下召见时，AI 可以直白描写两人的亲密。仅限后宫、恋人与南风馆两位，宗室、太后、大臣不在内；人物始终可以婉拒。需要你用的 AI 服务允许这类内容，否则会自动退回固定文字。关掉后回到含蓄写法。</p></div>
-  <div class="card"><b>AI 对话</b><p>不同服务的写法会有差别；若没有收到可用的回话，就用固定文字继续。</p><p>${m==='server'?'已连接本机的 AI 服务。':m==='byok'?'正在使用你填写的 API。':'未开启。召见只能挑话题，旨意只能选拟好的。'}</p>
-  ${AI.aiError()?`<p class="muted small">上次出错：${esc(AI.aiError())}</p>`:''}
-  <button data-act="ai-toggle">${m==='off'?'尝试开启 AI':'关闭 AI，改用固定文字'}</button></div>
-  ${m!=='server'?(()=>{const c=AI.savedConnection();return `<form class="card api" data-act="api"><b>使用自己的 API</b><p class="small">默认 DeepSeek。密钥只存在这台设备的浏览器里，不进存档。</p>
-   <label>地址<input name="url" value="${esc(c.url)}"></label><label>模型<input name="model" value="${esc(c.model)}"></label><label>密钥<input name="key" type="password" placeholder="${c.key?'已保存，留空不改':'sk-……'}" autocomplete="off"></label>
-   <label class="chk"><input type="checkbox" name="remember" checked> 记住在这台设备上</label><button ${busy?'disabled':''}>${busy?'正在测试……':'测试并启用'}</button></form>`;})():''}
-  ${s?`<div class="card freedom"><b>自由度</b><p>决定 AI 推演听不听你的。下旨、召见时亲口说的话、夜里的第一句会用到。没开 AI 时不起作用。</p>${[1,2,3].map(l=>`<button data-act="freedom" data-l="${l}" class="${E.freedomOf(s)===l?'on':''}"><b>${l} 档 · ${FREEDOM[l].name}</b><span>${FREEDOM[l].desc}</span></button>`).join('')}</div>`:''}
-  <div class="card"><b>存档</b><p>每个动作后自动保存在这台设备的浏览器里。</p>${s?'<button data-act="new-confirm">重新开始</button> ':''}<button data-act="title">回到标题</button></div>
- </main>${s?nav():''}`;
+function settingsView() {
+  const m = AI.aiMode();
+  const status = m === 'server' ? '已连接本机的 AI 服务。' :
+    m === 'byok' ? '正在使用你填写的 API。' : '未开启。召见只能挑话题，旨意只能选拟好的。';
+  return `${header()}<main class="settings"><h3 class="sec">设置</h3>
+    <div class="card"><b>成人描写</b><label class="audience-toggle">
+      <input type="checkbox" data-pref="tenderness" ${audienceOf().tenderness ? 'checked' : ''}> 直白描写亲密场景</label>
+      <p>夜里、休养作陪、与恋人私下召见时，AI 可以直白描写两人的亲密。
+        仅限后宫、恋人与南风馆两位，宗室、太后、大臣不在内；人物始终可以婉拒。
+        需要你用的 AI 服务允许这类内容，否则会自动退回固定文字。关掉后回到含蓄写法。</p></div>
+    <div class="card"><b>AI 对话</b><p>不同服务的写法会有差别；若没有收到可用的回话，就用固定文字继续。</p>
+      <p>${status}</p>${AI.aiError() ? `<p class="muted small">上次出错：${esc(AI.aiError())}</p>` : ''}
+      <button data-act="ai-toggle">${m === 'off' ? '尝试开启 AI' : '关闭 AI，改用固定文字'}</button></div>
+    ${m !== 'server' ? apiConnectionForm() : ''}
+    ${s ? freedomSettings() : ''}
+    <div class="card"><b>存档</b><p>每个动作后自动保存在这台设备的浏览器里。</p>
+      ${s ? '<button data-act="new-confirm">重新开始</button> ' : ''}
+      <button data-act="title">回到标题</button></div>
+  </main>${s ? nav() : ''}`;
+}
+
+function apiConnectionForm() {
+  const c = AI.savedConnection();
+  return `<form class="card api" data-act="api"><b>使用自己的 API</b>
+    <p class="small">默认 DeepSeek。密钥只存在这台设备的浏览器里，不进存档。</p>
+    <label>地址<input name="url" value="${esc(c.url)}"></label>
+    <label>模型<input name="model" value="${esc(c.model)}"></label>
+    <label>密钥<input name="key" type="password" placeholder="${c.key ? '已保存，留空不改' : 'sk-……'}" autocomplete="off"></label>
+    <label class="chk"><input type="checkbox" name="remember" aria-describedby="remember-key-hint" checked> 记住在这台设备上</label>
+    <p class="small muted" id="remember-key-hint">密钥会以明文保存在本浏览器。</p>
+    <button ${busy ? 'disabled' : ''}>${busy ? '正在测试……' : '测试并启用'}</button></form>`;
+}
+
+function freedomSettings() {
+  const levels = [1, 2, 3].map(l => `<button data-act="freedom" data-l="${l}" class="${E.freedomOf(s) === l ? 'on' : ''}">
+    <b>${l} 档 · ${FREEDOM[l].name}</b><span>${FREEDOM[l].desc}</span></button>`).join('');
+  return `<div class="card freedom"><b>自由度</b><p>决定 AI 推演听不听你的。
+    下旨、召见时亲口说的话、夜里的第一句会用到。没开 AI 时不起作用。</p>${levels}</div>`;
 }
 function ageView(){return `<div class="title-screen" style="--bg:url('${abs(BG.desk)}')"><div class="title-box"><h1>入卷之前</h1><p>本游戏含成熟题材，仅供年满 18 周岁者游玩。</p><button class="primary" data-act="age-confirm">我已年满 18 周岁</button><button data-act="age-leave">离开</button>${view.left?'<p class="small">已停在此处。你可以关闭这个页面。</p>':''}</div></div>`;}
 // 标题页保留开局入口，把详细的批折规则放在可展开的玩法说明里。

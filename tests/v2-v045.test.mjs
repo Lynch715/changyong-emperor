@@ -587,3 +587,17 @@ test('E4 当前说明与历史记录分开，旧档原有日志和已选剧情�
   assert.deepEqual(s.log, [{y: 1, m: 1, kind: '情', text: '旧档里的原记录'}]);
   assert.equal(s.done.M01, 'call');
 });
+
+test('E5 读取旧游戏档不触碰浏览器另存的API配置，存档内容仍不含密钥', async () => {
+  const {AI_SETTINGS_KEY, readConnectionSettings} = await import('../src/ai-connection-settings.js');
+  const s = oldSave();
+  const saved = JSON.stringify({version: 1, mode: 'byok', url: 'https://fixture.invalid/v1',
+    model: 'test', key: 'test-only-old-key', protocol: 'chat-completions', limit: 30});
+  const data = new Map([[E.SAVE_KEY, JSON.stringify(s)], [AI_SETTINGS_KEY, saved]]);
+  const storage = {getItem: key => data.get(key), setItem: () => assert.fail('读档不得改配置')};
+  const loaded = E.load(storage);
+  assert.equal(loaded.stats.treasury, 812.75);
+  assert.equal(readConnectionSettings(storage).key, 'test-only-old-key');
+  assert.equal(data.get(AI_SETTINGS_KEY), saved);
+  assert.ok(!JSON.stringify(loaded).includes('test-only-old-key'));
+});
