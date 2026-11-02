@@ -384,3 +384,55 @@ test('C2 三组被动路线第三年内帑不超过80，付费赏赐路线一年
     assert.ok(gifts.tightAt >= 1 && gifts.tightAt <= 12);
   }
 });
+
+test('C3 旧档仅在load补接触月份，提前一个月提醒，连续三个月才减一', () => {
+  const s = oldSave(s => {
+    s.year = 3; s.month = 5; s.agenda = [];
+    s.people.C02.aff = 50; s.people.C02.met = true;
+    delete s.contactMonths;
+  });
+  assert.equal(s.contactMonths.C02, 29);
+  s.contactMonths.C02 = 27;
+  let report = E.endMonth(s);
+  assert.ok(report.missingYou.includes('C02'));
+  assert.ok(!report.cooled.includes('C02'));
+  assert.equal(s.people.C02.aff, 50);
+  s.agenda = [];
+  report = E.endMonth(s);
+  assert.ok(report.cooled.includes('C02'));
+  assert.equal(report.people.C02, -1);
+  assert.equal(s.people.C02.aff, 49);
+  s.agenda = [];
+  E.beginChat(s, 'C02');
+  report = E.endMonth(s);
+  assert.ok(!report.cooled.includes('C02'));
+  assert.equal(s.people.C02.aff, 49, '只有实际联络也算接触，不要求情分上涨');
+});
+
+test('C3 节庆、来访和外地书信分别算实际接触，不拿旁人的情分变化代替', () => {
+  const s = E.newGame(453);
+  s.year = 2; s.month = 8;
+  for (const id of ['C02', 'C07']) Object.assign(s.people[id], {met: true, aff: 60});
+  E.startMonth(s);
+  s.agenda = ['FE2-zhongqiu'];
+  E.choose(s, 'FE2-zhongqiu', 'all');
+  assert.equal(s.contactMonths.C02, 20);
+  assert.equal(s.contactMonths.C07, 20);
+  s.month = 9; s.agenda = [];
+  s.visit = {id: 'C02', tier: 0, i: 0};
+  E.acceptVisit(s);
+  assert.equal(s.contactMonths.C02, 21);
+  s.ap = 3; s.people.C03.met = true; s.flags.away_C03 = true;
+  assert.equal(E.beginChat(s, 'C03').letter, true);
+  assert.equal(s.contactMonths.C03, 21);
+  const last = s.contactMonths.C07;
+  E.gain(s, 'C07', 1);
+  assert.equal(s.contactMonths.C07, last);
+});
+
+test('C3 三组均匀交往路线第四年末至少五人情分45，现有钱粮目标继续满足', async () => {
+  const {SEEDS, runBalance} = await import('../scripts/v045-balance.mjs');
+  for (const seed of SEEDS) {
+    assert.ok(runBalance(seed, {mode: 'social'}).social48 >= 5);
+  }
+});

@@ -52,10 +52,61 @@ export function rand(s){s.seed=(s.seed*1103515245+12345)%2147483648;return s.see
 export const WEATHER={春:['晴','雨','风'],夏:['晴','雨','闷热'],秋:['晴','雨','风'],冬:['晴','雪','风']};
 export const weatherOf=s=>WEATHER[SEASON(s.month)].includes(s.weather)?s.weather:WEATHER[SEASON(s.month)][0];
 
-export function newGame(seed=Date.now()%2147483647){
- const s={economyVersion:1,version:F.SAVE_VERSION,vol:1,freedom:2,flags:{},seed,crises:{},year:1,month:1,ap:AP_PER_MONTH,stats:{...START_STATS},people:{},agenda:[],done:{},log:[],delta:{stats:{},people:{}},night:false,ended:false,used:{petitions:[],outings:[]},chats:0};
- for(const id of CAST)s.people[id]={aff:PEOPLE[id].start,met:false,knot:null,first:false,second:false,third:false,lover:false,firstAt:null,secondAt:null,memories:[]};
- G.initGovernment(initAppointments(initTravel(s)));M.initMajorEvents(s);F.initFamily(s);Fiscal.initFiscal(s);T.initCampaign(s,true);bind(s);startMonth(s);return s;
+export function newGame(seed = Date.now() % 2147483647) {
+  const s = {
+    contactMonths: Object.fromEntries(CORE.map((id) => [id, 1])),
+    economyVersion: 1,
+    version: F.SAVE_VERSION,
+    vol: 1,
+    freedom: 2,
+    flags: {},
+    seed,
+    crises: {},
+    year: 1,
+    month: 1,
+    ap: AP_PER_MONTH,
+    stats: { ...START_STATS },
+    people: {},
+    agenda: [],
+    done: {},
+    log: [],
+    delta: { stats: {}, people: {} },
+    night: false,
+    ended: false,
+    used: { petitions: [], outings: [] },
+    chats: 0,
+  };
+  for (const id of CAST)
+    s.people[id] = {
+      aff: PEOPLE[id].start,
+      met: false,
+      knot: null,
+      first: false,
+      second: false,
+      third: false,
+      lover: false,
+      firstAt: null,
+      secondAt: null,
+      memories: [],
+    };
+  G.initGovernment(initAppointments(initTravel(s)));
+  M.initMajorEvents(s);
+  F.initFamily(s);
+  Fiscal.initFiscal(s);
+  T.initCampaign(s, true);
+  bind(s);
+  startMonth(s);
+  return s;
+}
+// 实际见面、书信、节庆和来访都会记作接触，不拿旁人的吃味或传话充数。
+export function recordContact(s, id) {
+  if (CORE.includes(id)) s.contactMonths[id] = T.at(s);
+}
+
+// 月末先提醒下个月再不联络就会想念你的人，让玩家还有一个月去看看。
+export function thinkingOf(s) {
+  return CORE.filter(id => s.people[id].met && s.people[id].aff >= 45 && present(s, id) && !gone(s, id) &&
+    T.at(s) - s.contactMonths[id] >= 2);
 }
 
 // ---------- 人物 ----------
@@ -198,7 +249,20 @@ export function startMonth(s) {
 }
 export function visitOf(s){if(!s.visit)return null;const v=VISITS[s.visit.id][s.visit.tier][s.visit.i];return {id:s.visit.id,...v};}
 // 来访：不占时辰，迎进来就有好处
-export function acceptVisit(s){const v=visitOf(s);if(!v)throw Error('没有人来。');s.visit=null;s.visitedAt=s.visitedAt||{};s.visitedAt[v.id]=idx(s.year,s.month);const stats=applyStats(s,v.effects||{}),d=gain(s,v.id,3);remember(s,v.id,v.memory||'');log(s,`${PEOPLE[v.id].name}来了：${v.title}`,'情');count(s,'visits');return {title:v.title,text:v.text,stats,people:d?{[v.id]:d}:{},id:v.id};}
+export function acceptVisit(s) {
+  const v = visitOf(s);
+  if (!v) throw Error('没有人来。');
+  s.visit = null;
+  s.visitedAt = s.visitedAt || {};
+  s.visitedAt[v.id] = idx(s.year, s.month);
+  const stats = applyStats(s, v.effects || {}),
+    d = gain(s, v.id, 3);
+  remember(s, v.id, v.memory || '');
+  log(s, `${PEOPLE[v.id].name}来了：${v.title}`, '情');
+  count(s, 'visits');
+  recordContact(s, v.id);
+  return { title: v.title, text: v.text, stats, people: d ? { [v.id]: d } : {}, id: v.id };
+}
 // 动态场景（旨意的回报）挂在存档上；bind 让 scene() 能找到当前存档
 let CUR=null;export function bind(s){CUR=s;return s;}
 function followFallback(s,id){const e=(s?.edicts||[]).find(x=>'FU'+x.n===id);if(!e)return null;const ago=Math.max(1,idx(s.year,s.month)-e.at);const neg=Object.values(e.effects||{}).some(v=>v<0);
@@ -247,6 +311,7 @@ export function choose(s, id, optId) {
   }
   if (sc.kind === 'family') {
     const result = F.resolve(s, sc, opt, familyAPI);
+    recordContact(s, sc.actor);
     s.done[id] = optId;
     s.agenda.shift();
     return result;
@@ -383,6 +448,9 @@ export function choose(s, id, optId) {
   }
   F.afterStory(s, id, optId);
   G.policyStory(s, id, optId);
+  if (sc.kind === 'festival') {
+    for (const person of optId === 'all' ? festivalPeople(s, true) : opt.who ? [opt.who] : []) recordContact(s, person);
+  } else recordContact(s, sc.actor);
   s.done[id] = optId;
   s.agenda.shift();
   if (sc.kind === 'main') T.scheduleIntroduction(s, scene, (sc) => flexEligible(s, sc), id);
@@ -420,7 +488,17 @@ function spend(s) {
 }
 export function canAct(s){return !s.pendingBirth&&!s.familyArt?.required&&!s.agenda.length&&s.ap>0&&!s.ended&&!(s.nanfeng?.visit&&!s.nanfeng.visit.done);}
 
-export function beginChat(s,id){if(PEOPLE[id]?.secondary&&!s.people[id]?.met)throw Error('还没见过这个人。');if(!present(s,id))throw Error('还见不到这个人。');spend(s);s.people[id].met=true;s.chats++;if(id==='C04'&&!away(s,id)&&weatherOf(s)==='雨')gain(s,id,1);const bd=celebrate(s,id,2);return {id,letter:away(s,id),gained:0,turns:0,birthday:bd!==null};}
+export function beginChat(s, id) {
+  if (PEOPLE[id]?.secondary && !s.people[id]?.met) throw Error('还没见过这个人。');
+  if (!present(s, id)) throw Error('还见不到这个人。');
+  spend(s);
+  recordContact(s, id);
+  s.people[id].met = true;
+  s.chats++;
+  if (id === 'C04' && !away(s, id) && weatherOf(s) === '雨') gain(s, id, 1);
+  const bd = celebrate(s, id, 2);
+  return { id, letter: away(s, id), gained: 0, turns: 0, birthday: bd !== null };
+}
 // 一次召见最多加 8 点，单句 -5～+4
 export const CHAT_CAP=8;
 export function applyChat(s,chat,{affection=0,memory=''}={}){
@@ -445,12 +523,43 @@ export function hintLike(s,id){
 }
 export function repairKnot(s,chat){const p=s.people[chat.id];if(!p.knot)return null;const line=ALL_REPAIR[p.knot.source]?.[chat.id]||'你们把那件事说开了。';log(s,`与${PEOPLE[chat.id].name}说开了「${p.knot.text}」`,'情');p.knot=null;cele(s,{k:'knot',id:chat.id});count(s,'knots');gain(s,chat.id,3);chat.gained+=3;return line;}
 
-export function giveGift(s,id,giftId){
- const item=giftId==='antique'?s.inventory?.[0]:null;if(giftId==='antique'&&!item)throw Error('还没有寻到古玩。');
- const g=GIFTS[giftId];if(!g)throw Error('没有这件东西。');if(s.stats.inner<g.innerCost)throw Error('内帑不足。');
- spend(s);const stats=applyStats(s,{inner:-g.innerCost});const liked=item?item.authentic&&PEOPLE[id].likes.includes('book'):PEOPLE[id].likes.includes(giftId),disliked=item?!item.authentic:PEOPLE[id].dislikes.includes(giftId);s.gifted=s.gifted||{};const k=id+':'+giftId,times=s.gifted[k]||0;s.gifted[k]=times+1;if(item)s.inventory.shift();let d=gain(s,id,disliked?-3:item?(liked?10:3):times?1:liked?6:2);s.people[id].met=true;const bd=celebrate(s,id,disliked?0:3);if(bd)d+=bd;
- const so=g.cost>=5?social(s,id,false):{people:{},notes:[]};
- log(s,`赏${PEOPLE[id].name}${g.name}`,'赏');if(MINOR_STORIES[id])queuePerformerStory(s,id);return {liked,disliked,counterfeit:item&&!item.authentic,antique:!!item,birthday:bd!==null,repeat:times>0,stats,people:{...(d?{[id]:d}:{}),...so.people},notes:so.notes,knot:!!s.people[id].knot};
+export function giveGift(s, id, giftId) {
+  const item = giftId === 'antique' ? s.inventory?.[0] : null;
+  if (giftId === 'antique' && !item) throw Error('还没有寻到古玩。');
+  const g = GIFTS[giftId];
+  if (!g) throw Error('没有这件东西。');
+  if (s.stats.inner < g.innerCost) throw Error('内帑不足。');
+  spend(s);
+  recordContact(s, id);
+  const stats = applyStats(s, { inner: -g.innerCost });
+  const liked = item
+      ? item.authentic && PEOPLE[id].likes.includes('book')
+      : PEOPLE[id].likes.includes(giftId),
+    disliked = item ? !item.authentic : PEOPLE[id].dislikes.includes(giftId);
+  s.gifted = s.gifted || {};
+  const k = id + ':' + giftId,
+    times = s.gifted[k] || 0;
+  s.gifted[k] = times + 1;
+  if (item) s.inventory.shift();
+  let d = gain(s, id, disliked ? -3 : item ? (liked ? 10 : 3) : times ? 1 : liked ? 6 : 2);
+  s.people[id].met = true;
+  const bd = celebrate(s, id, disliked ? 0 : 3);
+  if (bd) d += bd;
+  const so = g.cost >= 5 ? social(s, id, false) : { people: {}, notes: [] };
+  log(s, `赏${PEOPLE[id].name}${g.name}`, '赏');
+  if (MINOR_STORIES[id]) queuePerformerStory(s, id);
+  return {
+    liked,
+    disliked,
+    counterfeit: item && !item.authentic,
+    antique: !!item,
+    birthday: bd !== null,
+    repeat: times > 0,
+    stats,
+    people: { ...(d ? { [id]: d } : {}), ...so.people },
+    notes: so.notes,
+    knot: !!s.people[id].knot,
+  };
 }
 // 旨意的后果由 AI 判断，这里只限幅
 export function applyEdict(s,text,{effects={},affection={},narration='',title='',fate=null,inner=0,appoint=null}={}){
@@ -464,22 +573,90 @@ export function applyEdict(s,text,{effects={},affection={},narration='',title=''
  s.edicts=s.edicts||[];const n=s.edicts.length+1;s.edicts.push({n,text:text.slice(0,120),title:title||text.slice(0,8),narration:String(narration).slice(0,400),effects:bounded,at:idx(s.year,s.month),due:idx(s.year,s.month)+2+Math.floor(rand(s)*2)});return {stats,people,text:narration};
 }
 export function initTravel(s){if(!s.secondaryDone&&s.minorDone)s.secondaryDone=s.minorDone;delete s.minorDone;for(const sc of Object.values(s.dyn||{}))if(sc.kind==='minor')sc.kind='secondary';s.travel=s.travel||{used:{}};s.travel.used=s.travel.used||{};s.inventory=s.inventory||[];s.nanfeng=s.nanfeng||{seen:false,visit:null};s.freed=s.freed||{};s.clues=s.clues||[];s.secondaryDone=s.secondaryDone||{};for(const id of CAST)if(!s.people[id])s.people[id]={aff:PEOPLE[id].start,met:false,knot:null,memories:[]};return s;}
-export function goOuting(s,id='river'){
- const p=PLACES[id];if(!p)throw Error('没有这个去处。');if(s.nanfeng.visit&&!s.nanfeng.visit.done)throw Error('先把馆里的茶喝完。');if(s.stats.inner<p.cost)throw Error('内帑不足。');spend(s);
- const key=id+':'+(id==='shicha'?SEASON(s.month):id==='baiyun'&&s.month===1?'正月':'常'),lines=id==='shicha'&&s.month>=10?p.winter:id==='shicha'&&s.month>=4&&s.month<=6?p.summer:id==='baiyun'&&s.month===1?p.newyear:p.lines;
- let used=s.travel.used[key]||[];if(used.length>=lines.length)used=[];const left=lines.map((_,i)=>i).filter(i=>!used.includes(i)),i=left[Math.floor(rand(s)*left.length)];s.travel.used[key]=[...used,i];
- const stats={...funds(s,{inner:-p.cost}),...applyStats(s,{...p.effects,health:(p.effects.health||0)+(weatherOf(s)==='雪'?-2:0)})},people={};let text=lines[i],fate=null;
- if(p.actor&&present(s,p.actor)&&s.people[p.actor].met){people[p.actor]=gain(s,p.actor,2);text+='\n\n'+PEOPLE[p.actor].name+'也在这里。认出你时，先恭敬行了礼，才在一旁陪你坐下。';}
- if(id==='temple'){const authentic=rand(s)>=.3;s.inventory.push({authentic,name:'庙市古玩',at:monthKey(s)});text+='\n\n随从把它收进了匣子，真伪还要细看。';}
- if(id==='nanfeng'){
-  const first=!s.nanfeng.seen;s.nanfeng.seen=true;for(const cid of ['N01','N02'])s.people[cid].met=true;fate=rollFate(s,'outing');s.nanfeng.visit={at:monthKey(s),done:false,fate};if(first)text=NANFENG_FIRST;
-  if(fate.tier===1){Object.assign(stats,applyStats(s,{court:-2}));text+='\n\n门外有人多看了你两眼。次日，朝中已有些风声。';}
-  if(fate.tier===0){Object.assign(stats,applyStats(s,{court:-3,palace:-3}));for(const cid of CORE)if(s.people[cid].met&&s.people[cid].aff>=45&&['C06','C07','C08','C09','C10'].includes(cid))people[cid]=gain(s,cid,-2);
-   const sid='NFwind'+idx(s.year,s.month)+'-'+(s.count?.rolls||0);setDyn(s,sid,{title:'巷里的风声',actor:'C02',body:'御史的折子递到了案上。宫里也传开了消息，苏培盛捧着茶，一句话也不敢多说。你得给这件事一个交代。',options:[{id:'stop',label:'往后不再冒险，给宫里赔个不是',effects:{palace:2},reply:'你让人关了那条路上的耳目，往后不再轻易出宫。宫里的灯，那夜晚些才灭。'},{id:'quiet',label:'先查清是谁传的话',effects:{court:1,health:-1},reply:'随从去查那夜的来客。你坐在灯下，知道有些事，终究瞒不住。'}]});s.agenda.push(sid);
+export function goOuting(s, id = 'river') {
+  const p = PLACES[id];
+  if (!p) throw Error('没有这个去处。');
+  if (s.nanfeng.visit && !s.nanfeng.visit.done) throw Error('先把馆里的茶喝完。');
+  if (s.stats.inner < p.cost) throw Error('内帑不足。');
+  spend(s);
+  const key =
+      id + ':' + (id === 'shicha' ? SEASON(s.month) : id === 'baiyun' && s.month === 1 ? '正月' : '常'),
+    lines =
+      id === 'shicha' && s.month >= 10
+        ? p.winter
+        : id === 'shicha' && s.month >= 4 && s.month <= 6
+          ? p.summer
+          : id === 'baiyun' && s.month === 1
+            ? p.newyear
+            : p.lines;
+  let used = s.travel.used[key] || [];
+  if (used.length >= lines.length) used = [];
+  const left = lines.map((_, i) => i).filter((i) => !used.includes(i)),
+    i = left[Math.floor(rand(s) * left.length)];
+  s.travel.used[key] = [...used, i];
+  const stats = {
+      ...funds(s, { inner: -p.cost }),
+      ...applyStats(s, { ...p.effects, health: (p.effects.health || 0) + (weatherOf(s) === '雪' ? -2 : 0) }),
+    },
+    people = {};
+  let text = lines[i],
+    fate = null;
+  if (p.actor && present(s, p.actor) && s.people[p.actor].met) {
+    people[p.actor] = gain(s, p.actor, 2);
+    recordContact(s, p.actor);
+    text += '\n\n' + PEOPLE[p.actor].name + '也在这里。认出你时，先恭敬行了礼，才在一旁陪你坐下。';
   }
-  if(fate.tier===4){const clue='有位管河工的官员常来，花银子从不还价。';s.clues.push({at:monthKey(s),text:clue});text+='\n\n隔帘听见一句闲话：'+clue;}
- }
- log(s,`微服去了${p.name}`,'行');return {title:p.name,text,stats,people,fate,nanfeng:id==='nanfeng'};
+  if (id === 'temple') {
+    const authentic = rand(s) >= 0.3;
+    s.inventory.push({ authentic, name: '庙市古玩', at: monthKey(s) });
+    text += '\n\n随从把它收进了匣子，真伪还要细看。';
+  }
+  if (id === 'nanfeng') {
+    const first = !s.nanfeng.seen;
+    s.nanfeng.seen = true;
+    for (const cid of ['N01', 'N02']) s.people[cid].met = true;
+    fate = rollFate(s, 'outing');
+    s.nanfeng.visit = { at: monthKey(s), done: false, fate };
+    if (first) text = NANFENG_FIRST;
+    if (fate.tier === 1) {
+      Object.assign(stats, applyStats(s, { court: -2 }));
+      text += '\n\n门外有人多看了你两眼。次日，朝中已有些风声。';
+    }
+    if (fate.tier === 0) {
+      Object.assign(stats, applyStats(s, { court: -3, palace: -3 }));
+      for (const cid of CORE)
+        if (s.people[cid].met && s.people[cid].aff >= 45 && ['C06', 'C07', 'C08', 'C09', 'C10'].includes(cid))
+          people[cid] = gain(s, cid, -2);
+      const sid = 'NFwind' + idx(s.year, s.month) + '-' + (s.count?.rolls || 0);
+      setDyn(s, sid, {
+        title: '巷里的风声',
+        actor: 'C02',
+        body: '御史的折子递到了案上。宫里也传开了消息，苏培盛捧着茶，一句话也不敢多说。你得给这件事一个交代。',
+        options: [
+          {
+            id: 'stop',
+            label: '往后不再冒险，给宫里赔个不是',
+            effects: { palace: 2 },
+            reply: '你让人关了那条路上的耳目，往后不再轻易出宫。宫里的灯，那夜晚些才灭。',
+          },
+          {
+            id: 'quiet',
+            label: '先查清是谁传的话',
+            effects: { court: 1, health: -1 },
+            reply: '随从去查那夜的来客。你坐在灯下，知道有些事，终究瞒不住。',
+          },
+        ],
+      });
+      s.agenda.push(sid);
+    }
+    if (fate.tier === 4) {
+      const clue = '有位管河工的官员常来，花银子从不还价。';
+      s.clues.push({ at: monthKey(s), text: clue });
+      text += '\n\n隔帘听见一句闲话：' + clue;
+    }
+  }
+  log(s, `微服去了${p.name}`, '行');
+  return { title: p.name, text, stats, people, fate, nanfeng: id === 'nanfeng' };
 }
 export function nanfengCompany(s,choice){const v=s.nanfeng.visit;if(!v||v.done)throw Error('这回已经坐过了。');if(!['N01','N02','tea'].includes(choice))throw Error('请选一处坐。');v.done=true;let text='',people={};
  if(choice==='tea')text='你隔着帘子喝了半盏茶。照水唱了一曲，闻笙收了琴，青禾替你掀开门帘。你点头谢过，没有留下姓名。';
@@ -607,6 +784,7 @@ export function plannedRest(
   const stats = applyStats(s, { health: h, inner: -cost }),
     people = {};
   if (companion) {
+    recordContact(s, companion);
     people[companion] = gain(s, companion, tier === 0 ? 0 : tier === 1 ? 1 : 2);
     remember(s, companion, memory || '陪皇上歇了一日：' + plan);
   }
@@ -623,27 +801,133 @@ export function plannedRest(
 export const stayOf=s=>s.nanfeng?.stay?.at===monthKey(s)?s.nanfeng.stay.id:null;
 // 召入宫的人也能夜里去看；在南风馆留宿的那一夜只陪那一位
 export function nightChoices(s){const stay=stayOf(s);if(stay)return [{id:stay,special:null,knot:!!s.people[stay].knot}];return [...new Set([...CORE,...Object.keys(s.inPalace||{}),...F.mothers.filter(id=>PEOPLE[id]?.secondary&&s.people[id]?.aff>=65)])].filter(id=>present(s,id)&&!away(s,id)&&!gone(s,id)&&s.people[id].met).map(id=>({id,special:storyOf(s,id),knot:!!s.people[id].knot}));}
-export function spendNight(s,id,{affection=4,health=0,memory='',fate=null}={}){
- familyReady(s);
- if(id&&!nightChoices(s).some(p=>p.id===id))throw Error('今夜去不了这里。');
- if(s.nanfeng?.visit&&!s.nanfeng.visit.done)throw Error('先把馆里的茶喝完。');if(s.night)throw Error('今夜已经安排过了。');if(s.agenda.length)throw Error('先把本月要事办完。');s.night=true;
- if(!id){const stats=applyStats(s,{health:3});log(s,'独寝','夜');return {stats,people:{}};}
- const mayConceive=F.chance(s,id)>0&&(!fate||fate.free||fate.tier>1);if(mayConceive)F.tryConceive(s,id,familyAPI);
- let d=gain(s,id,Math.max(0,Math.min(4,fateClamp(Math.round(finite(affection,3)),fate&&{...fate,kind:'night'}))));remember(s,id,memory);const bd=celebrate(s,id,2);if(bd)d+=bd;
- const heavy=s.lastNight===id;s.lastNight=id;const so=social(s,id,heavy);if(mayConceive)so.notes.push('今夜起居已记下。是否有喜，须等一至两个月后由太医复诊，眼下不作结论。');log(s,`夜里在${placeOf(s,id)}，陪着${PEOPLE[id].name}`,'夜');const stats=applyStats(s,{health:fate&&!fate.free&&fate.tier<=1?0:Math.max(-2,Math.min(3,Math.round(finite(health,0))))});return {stats,people:{...so.people,...(d?{[id]:d}:{})},notes:so.notes,birthday:bd!==null};
+export function spendNight(s, id, { affection = 4, health = 0, memory = '', fate = null } = {}) {
+  familyReady(s);
+  if (id && !nightChoices(s).some((p) => p.id === id)) throw Error('今夜去不了这里。');
+  if (s.nanfeng?.visit && !s.nanfeng.visit.done) throw Error('先把馆里的茶喝完。');
+  if (s.night) throw Error('今夜已经安排过了。');
+  if (s.agenda.length) throw Error('先把本月要事办完。');
+  s.night = true;
+  if (!id) {
+    const stats = applyStats(s, { health: 3 });
+    log(s, '独寝', '夜');
+    return { stats, people: {} };
+  }
+  const mayConceive = F.chance(s, id) > 0 && (!fate || fate.free || fate.tier > 1);
+  if (mayConceive) F.tryConceive(s, id, familyAPI);
+  recordContact(s, id);
+  let d = gain(
+    s,
+    id,
+    Math.max(0, Math.min(4, fateClamp(Math.round(finite(affection, 3)), fate && { ...fate, kind: 'night' }))),
+  );
+  remember(s, id, memory);
+  const bd = celebrate(s, id, 2);
+  if (bd) d += bd;
+  const heavy = s.lastNight === id;
+  s.lastNight = id;
+  const so = social(s, id, heavy);
+  if (mayConceive) so.notes.push('今夜起居已记下。是否有喜，须等一至两个月后由太医复诊，眼下不作结论。');
+  log(s, `夜里在${placeOf(s, id)}，陪着${PEOPLE[id].name}`, '夜');
+  const stats = applyStats(s, {
+    health:
+      fate && !fate.free && fate.tier <= 1 ? 0 : Math.max(-2, Math.min(3, Math.round(finite(health, 0)))),
+  });
+  return {
+    stats,
+    people: { ...so.people, ...(d ? { [id]: d } : {}) },
+    notes: so.notes,
+    birthday: bd !== null,
+  };
 }
 // 夜里遇到第二幕剧情时，作为要事插入
-export function queueSpecial(s,id){if(s.night)throw Error('今夜已经安排过了。');const sid=storyOf(s,id);if(!sid)throw Error('今夜没有新的剧情。');s.night=true;celebrate(s,id,2);s.agenda.unshift(sid);if(sid==='Y10'&&!s.pregnancy.C10)s.pregnancy.C10={start:monthKey(s),due:F.key(F.now(s)+10),care:0,risk:0,known:false,fake:true};F.tryConceive(s,id,familyAPI);return sid;}
+export function queueSpecial(s, id) {
+  if (s.night) throw Error('今夜已经安排过了。');
+  const sid = storyOf(s, id);
+  if (!sid) throw Error('今夜没有新的剧情。');
+  s.night = true;
+  recordContact(s, id);
+  celebrate(s, id, 2);
+  s.agenda.unshift(sid);
+  if (sid === 'Y10' && !s.pregnancy.C10)
+    s.pregnancy.C10 = {
+      start: monthKey(s),
+      due: F.key(F.now(s) + 10),
+      care: 0,
+      risk: 0,
+      known: false,
+      fake: true,
+    };
+  F.tryConceive(s, id, familyAPI);
+  return sid;
+}
 
 // 任命先把所有人选与空位看清，再花时辰，失败不改存档。
-const rankChoice=choice=>choice==='huan'?[{id:'C09',office:'rank3'}]:choice==='mei'?[{id:'C10',office:'rank3'}]:choice==='both'?[{id:'C09',office:'rank3'},{id:'C10',office:'rank3'}]:[];
-function doAppointments(s,list){const people={},stats={},notes=[];const add=(id,n)=>{const d=gain(s,id,n);if(d)people[id]=(people[id]||0)+d;};const addStats=e=>{for(const[k,v]of Object.entries(applyStats(s,e)))stats[k]=(stats[k]||0)+v;};
- for(const {id,office}of list){const old=s.appointments[id],o=OFFICES[office],p=s.people[id];recordAppointment(s,id,office==='dismiss'?null:office,o?.title||'候旨');G.snapshotTenure(s,id);G.factionChange(s,p.faction,office==='dismiss'?-4:3);if(office!=='dismiss'&&p.ability<6)addStats({court:-2});remember(s,id,'皇上将其由'+old.title+'调为'+titleOf(s,id));
-  if(o?.kind==='妃嫔'){const prev=Number(old.office?.slice(4)),next=Number(office.slice(4));if(next>prev){add(id,8);addStats({palace:1});const so=social(s,id,false);for(const[k,v]of Object.entries(so.people))people[k]=(people[k]||0)+v;notes.push(...so.notes);}else{add(id,-10);p.knot={source:'appointment',text:'被降了位分'};addStats({palace:-1});}}
-  else if(office==='dismiss'){add(id,-6);if(p.ability>=8)addStats({court:-3});p.loyalty=clamp(p.loyalty-5);}
-  else{add(id,3);p.loyalty=clamp(p.loyalty+2);if(p.faction==='八爷党')addStats({court:2});if(o?.owner)add(o.owner,2);}
-  log(s,PEOPLE[id].name+'：'+old.title+' → '+titleOf(s,id),'任');
- }return {title:'任命',text:'旨意传了下去。接旨的人俯身谢恩，新的差事，从今日开始。',stats,people,notes};}
+const rankChoice = (choice) =>
+  choice === 'huan'
+    ? [{ id: 'C09', office: 'rank3' }]
+    : choice === 'mei'
+      ? [{ id: 'C10', office: 'rank3' }]
+      : choice === 'both'
+        ? [
+            { id: 'C09', office: 'rank3' },
+            { id: 'C10', office: 'rank3' },
+          ]
+        : [];
+function doAppointments(s, list) {
+  const people = {},
+    stats = {},
+    notes = [];
+  const add = (id, n) => {
+    const d = gain(s, id, n);
+    if (d) people[id] = (people[id] || 0) + d;
+  };
+  const addStats = (e) => {
+    for (const [k, v] of Object.entries(applyStats(s, e))) stats[k] = (stats[k] || 0) + v;
+  };
+  for (const { id, office } of list) {
+    const old = s.appointments[id],
+      o = OFFICES[office],
+      p = s.people[id];
+    recordAppointment(s, id, office === 'dismiss' ? null : office, o?.title || '候旨');
+    G.snapshotTenure(s, id);
+    G.factionChange(s, p.faction, office === 'dismiss' ? -4 : 3);
+    if (office !== 'dismiss' && p.ability < 6) addStats({ court: -2 });
+    remember(s, id, '皇上将其由' + old.title + '调为' + titleOf(s, id));
+    if (o?.kind === '妃嫔') {
+      const prev = Number(old.office?.slice(4)),
+        next = Number(office.slice(4));
+      if (next > prev) {
+        add(id, 8);
+        addStats({ palace: 1 });
+        const so = social(s, id, false);
+        for (const [k, v] of Object.entries(so.people)) people[k] = (people[k] || 0) + v;
+        notes.push(...so.notes);
+      } else {
+        add(id, -10);
+        p.knot = { source: 'appointment', text: '被降了位分' };
+        addStats({ palace: -1 });
+      }
+    } else if (office === 'dismiss') {
+      add(id, -6);
+      if (p.ability >= 8) addStats({ court: -3 });
+      p.loyalty = clamp(p.loyalty - 5);
+    } else {
+      add(id, 3);
+      p.loyalty = clamp(p.loyalty + 2);
+      if (p.faction === '八爷党') addStats({ court: 2 });
+      if (o?.owner) add(o.owner, 2);
+    }
+    log(s, PEOPLE[id].name + '：' + old.title + ' → ' + titleOf(s, id), '任');
+  }
+  return {
+    title: '任命',
+    text: '旨意传了下去。接旨的人俯身谢恩，新的差事，从今日开始。',
+    stats,
+    people,
+    notes,
+  };
+}
 export function appointPerson(s,id,office){const list=validateAppointments(s,[{id,office}]);spend(s);return doAppointments(s,list);}
 
 export const assessmentRows=G.assessmentRows;
@@ -742,19 +1026,15 @@ export function endMonth(s) {
     log(s, `${PEOPLE[id].name}的生辰，你没有去`, '情');
     report.forgot.push(id);
   }
-  // 久不相见，情分会慢慢淡
+  // 连续三个月没有接触才少一点，提前一月的提醒单独列出。
+  report.missingYou = thinkingOf(s);
   report.cooled = [];
   for (const id of CORE) {
     const p = s.people[id];
-    if (
-      p.met &&
-      !s.delta.people[id] &&
-      !report.forgot.includes(id) &&
-      p.aff > 30 &&
-      present(s, id) &&
-      !away(s, id)
-    ) {
-      p.aff = clamp(p.aff - (p.aff >= 45 ? 2 : 1));
+    if (p.met && p.aff >= 45 && present(s, id) && !gone(s, id) && !report.forgot.includes(id) &&
+        T.at(s) - s.contactMonths[id] >= 3) {
+      const change = gain(s, id, -1);
+      report.people[id] = (report.people[id] || 0) + change;
       report.cooled.push(id);
     }
   }
@@ -825,6 +1105,7 @@ export function load(storage = globalThis.localStorage) {
     const s = JSON.parse(storage.getItem(SAVE_KEY) || 'null');
     if (![1, F.SAVE_VERSION].includes(s?.version)) return null;
     s.expenseUses ??= {};
+    s.contactMonths ??= Object.fromEntries(CORE.map(id => [id, T.at(s)]));
     if (s.reviewSession && s.reviewSession.charged === undefined) s.reviewSession.charged = true;
     return bind(T.initCampaign(Fiscal.initFiscal(F.initFamily(M.initMajorEvents(
       G.initGovernment(initAppointments(initTravel(initEconomy(s))))

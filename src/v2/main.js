@@ -391,6 +391,8 @@ function summaryView() {
     ${treasuryExpenseText(r) ? `<p class="expense-detail">${esc(treasuryExpenseText(r))}</p>` : ''}
     <p class="muted small">内帑：进 ${moneyText(r.ledger.inner.in)}，出 ${moneyText(r.ledger.inner.out)}，
       余 ${moneyText(r.balances.inner)}</p>
+    ${r.missingYou?.length ? `<p class="missing-you">谁在想你：${r.missingYou.map(nm).join('、')}。
+      下个月记得去看看，或写封信；再不相见，情分会淡一点。</p>` : ''}
     ${r.cooled.length ? `<p class="muted small">${r.cooled.map(nm).join('、')}这个月没见到你，情分淡了一点。</p>` : ''}
     ${r.forgot?.length ? `<p class="muted small">${r.forgot.map(nm).join('、')}的生辰，你没有去。情分 −3。</p>` : ''}
     ${r.crises.filter(crisis => crisis.status !== 'later').map(crisis => `<div class="crisis mini ${crisis.status}">
