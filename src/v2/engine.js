@@ -76,9 +76,10 @@ const count=(s,k)=>{s.count=s.count||{};s.count[k]=(s.count[k]||0)+1;};
 export function remember(s,id,text){if(!text)return;const p=s.people[id];p.memories.push({y:s.year,m:s.month,text:String(text).slice(0,60)});if(p.memories.length>12)p.memories.shift();}
 export function secondReady(s,id,letter=false){const p=s.people[id];return p.first&&!p.second&&p.aff>=45&&!p.knot&&p.firstAt!==monthKey(s)&&present(s,id)&&(letter||!away(s,id));}
 export function thirdReady(s,id,letter=false){const p=s.people[id];return p.second&&!p.third&&p.aff>=65&&!p.knot&&p.secondAt!==monthKey(s)&&present(s,id)&&(letter||!away(s,id));}
-const relationGap=(s,value)=>!value||idx(s.year,s.month)-T.serial(value.split('-').map(Number))>=3;
-export function fourthReady(s,id,letter=false){const p=s.people[id];return relationGap(s,p.thirdAt)&&s.year>=3&&p.third&&!p.fourth&&p.aff>=75&&!p.knot&&p.thirdAt!==monthKey(s)&&present(s,id)&&!gone(s,id)&&(letter||!away(s,id));}
-export function fifthReady(s,id,letter=false){const p=s.people[id];return relationGap(s,p.fourthAt)&&s.year>=5&&p.fourth&&!p.fifth&&p.aff>=80&&!p.knot&&p.fourthAt!==monthKey(s)&&present(s,id)&&!gone(s,id)&&(letter||!away(s,id));}
+export const RELATION_PACING={fourthYear:2,fifthYear:3,gap:2};
+const relationGap=(s,value)=>!value||idx(s.year,s.month)-T.serial(value.split('-').map(Number))>=RELATION_PACING.gap;
+export function fourthReady(s,id,letter=false){const p=s.people[id];return relationGap(s,p.thirdAt)&&s.year>=RELATION_PACING.fourthYear&&p.third&&!p.fourth&&p.aff>=75&&!p.knot&&p.thirdAt!==monthKey(s)&&present(s,id)&&!gone(s,id)&&(letter||!away(s,id));}
+export function fifthReady(s,id,letter=false){const p=s.people[id];return relationGap(s,p.fourthAt)&&s.year>=RELATION_PACING.fifthYear&&p.fourth&&!p.fifth&&p.aff>=80&&!p.knot&&p.fourthAt!==monthKey(s)&&present(s,id)&&!gone(s,id)&&(letter||!away(s,id));}
 export const storyOf=(s,id)=>PEOPLE[id].secondary?null:secondReady(s,id)?PEOPLE[id].second:thirdReady(s,id)?thirdOf(id):fourthReady(s,id)?fourthOf(id):fifthReady(s,id)?fifthOf(id):null;
 export const hasStory=(s,id)=>!!storyOf(s,id);
 
@@ -194,6 +195,7 @@ export function choose(s,id,optId){
  F.afterStory(s,id,optId);
  G.policyStory(s,id,optId);
  s.done[id]=optId;s.agenda.shift();
+ if(sc.kind==='main')T.scheduleIntroduction(s,scene,sc=>flexEligible(s,sc),id);
  log(s,`${sc.title}：${opt.label}`,['relation','extension','romance','deep','deep5'].includes(sc.kind)?'情':sc.kind==='dilemma'?'难':sc.kind==='festival'?'节':'政');
  return {title:sc.title,actor:sc.actor,choice:opt.label,text,stats,people,knot:opt.slight||null};
 }

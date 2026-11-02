@@ -50,7 +50,7 @@ test('专心对一个人，两年内能走到相守', ()=>{
   for(let i=0;i<2&&s.ap;i++){const c=E.beginChat(s,'C02');E.applyChat(s,c,{affection:4});E.applyChat(s,c,{affection:4});}
   if(s.ap)E.rest(s);
   const sp=E.nightChoices(s).find(x=>x.id==='C02');
-  if(sp?.special){const sid=E.queueSpecial(s,'C02');E.choose(s,sid,sid.startsWith('L')?'confess':'warm');}else E.spendNight(s,'C02',{affection:3});
+  if(sp?.special){const sid=E.queueSpecial(s,'C02');const os=E.optionsFor(s,E.scene(sid));E.choose(s,sid,(os.find(o=>['warm','confess','stay'].includes(o.id))||os[0]).id);}else E.spendNight(s,'C02',{affection:3});
   E.endMonth(s);
  }
  const p=s.people.C02;assert.ok(p.third&&p.lover,'苏培盛三幕走完');assert.equal(E.ending(s).people.find(x=>x.id==='C02').tier,3);

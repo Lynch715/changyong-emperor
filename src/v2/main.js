@@ -135,7 +135,7 @@ function sceneView(){
      ${chips(r.stats,r.people,r.knot?`<span class="chip knot">${nm(r.knot)} 心里有了结</span>`:'')}
      ${r.knot?`<p class="hint">心结未解时，${nm(r.knot)}的情分不会再涨。召见时可以“说开那件事”。</p>`:''}
      <button class="primary" data-act="scene-next">继续</button>`
-   :`${paras(sc.body)}<div class="options">${E.optionsFor(s,sc).map(o=>`<button data-act="pick" data-opt="${o.id}">${esc(o.label)}</button>`).join('')}</div>${E.canDeferScene(s,sc.id)?`<div class="story-defer"><button data-act="story-defer" data-id="${sc.id}">过些时候再谈 · 最早下月</button><p class="small">不占时辰，最多暂缓三次；最早下月起择空月再呈。建议期限后优先呈报且不能再暂缓，原事与已做过的选择都会保留。</p></div>`:''}`}
+   :`${paras(sc.body)}<div class="options">${E.optionsFor(s,sc).map(o=>`<button data-act="pick" data-opt="${o.id}">${esc(o.label)}</button>`).join('')}</div>${E.canDeferScene(s,sc.id)?`<div class="story-defer"><button data-act="story-defer" data-id="${sc.id}">过些时候再谈 · 最早下月</button><p class="small">不占时辰，最多暂缓三次；最早下月起另择月份再呈。建议期限后优先呈报且不能再暂缓，原事与已做过的选择都会保留。</p></div>`:''}`}
   </article></div>`;
 }
 
@@ -285,7 +285,7 @@ function peopleView(){
    <div class="stages">${STAGES.map(([n,t])=>`<span class="${st.aff>=n?'on':''}">${p.secondary?({0:'生疏',25:'相识',45:'信任',65:'亲近',85:'深信'})[n]:t}</span>`).join('')}</div>
    ${st.knot?`<p class="knot-line">心结：${esc(st.knot.text)}。召见时说开它。</p>`:''}
    ${st.lover?`<p class="ready-line">${bondName(id)}</p>`:''}
-   ${E.hasStory(s,id)?`<p class="ready-line">有话想对你说。${E.away(s,id)?'会有书信来。':'今夜去看看。'}</p>`:st.first&&!st.second&&st.aff<45?'<p class="muted small">情分到「相知」后，会有新的剧情。</p>':st.second&&!st.third&&st.aff<65?'<p class="muted small">情分到「倾心」后，还有一段剧情。</p>':st.third&&!st.fourth&&s.year>=3&&st.aff<75?'<p class="muted small">情分到 75，还会有一段剧情。</p>':st.fourth&&!st.fifth&&s.year>=5&&st.aff<80?'<p class="muted small">情分到 80，还有最后一段剧情。</p>':''}
+   ${E.hasStory(s,id)?`<p class="ready-line">有话想对你说。${E.away(s,id)?'会有书信来。':'今夜去看看。'}</p>`:st.first&&!st.second&&st.aff<45?'<p class="muted small">情分到「相知」后，会有新的剧情。</p>':st.second&&!st.third&&st.aff<65?'<p class="muted small">情分到「倾心」后，还有一段剧情。</p>':st.third&&!st.fourth&&s.year>=E.RELATION_PACING.fourthYear&&st.aff<75?'<p class="muted small">情分到 75，还会有一段剧情。</p>':st.fourth&&!st.fifth&&s.year>=E.RELATION_PACING.fifthYear&&st.aff<80?'<p class="muted small">情分到 80，还有最后一段剧情。</p>':''}
    ${(()=>{const rel=[...rivalsOf(id).map(x=>`<span class="rel bad">与${PEOPLE[x].name}不和</span>`),...friendsOf(id).map(x=>`<span class="rel good">与${PEOPLE[x].name}亲近</span>`)];return rel.length?`<p class="rels">${rel.join('')}</p>`:'';})()}
    ${BIRTH[id]||p.birth?`<p class="muted small">生辰：${MONTHS[(BIRTH[id]||p.birth)-1]}</p>`:''}<p class="muted small">喜欢：${known.length?known.map(g=>GIFTS[g].name).join('、'):'还不知道'}</p></div></div>
   <div class="person-actions"><button data-act="chat-with" data-id="${id}" ${!E.canAct(s)||E.gone(s,id)?'disabled':''}>${E.away(s,id)?'写信':'召见'}</button>${E.summonRoles(s,id).length&&!s.inPalace?.[id]&&s.freed?.[id]?.destination!=='home'?`<button data-act="summon-open" ${!E.canAct(s)||E.summonReason(s,id)?'disabled':''} title="${esc(E.summonReason(s,id))}">召入宫</button>`:''}${E.appointmentOptions(s,id).length?`<button data-act="appoint-open" ${!E.canAct(s)||E.gone(s,id)?'disabled':''}>任命 / 调整位分</button>`:''}</div>

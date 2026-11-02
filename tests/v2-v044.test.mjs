@@ -14,6 +14,8 @@ const storageOf=s=>({getItem:()=>JSON.stringify(s),setItem:()=>assert.fail('读�
 const serial=value=>Array.isArray(value)?(value[0]-1)*12+value[1]:F.serial(value);
 const flexList=()=>Array.isArray(FLEX_STORIES)?FLEX_STORIES:Object.entries(FLEX_STORIES).map(([id,v])=>({id,...v}));
 const ready=()=>{const s=E.newGame(440);settleLongAgenda(s);s.memorials=[];s.followups=[];return s;};
+// 跨月案例照常批折，避免随机灾情积压把测试目标连续挤过整个窗口。
+const reviewPending=s=>{E.archiveReports(s);if(!E.canAct(s)||!E.memorialCounts(s).pending)return;E.review(s);while(s.reviewSession.left){const m=s.memorials.find(m=>!m.result&&!m.inspectionPending&&!s.reviewSession.held.includes(m.uid));if(!m)break;E.judgeMemorial(s,m.uid,s.stats.treasury>=E.memorialCost(m,'approve')?'approve':'hold');}};
 
 test('0.44 三十年分阶段回顾及四十八张后半程故事有明确排期、先后和有效分支',()=>{
  assert.deepEqual(CHECKPOINTS,[2,4,6,10,15,20,25,30]);
@@ -41,15 +43,15 @@ test('0.44 旧档不会补播已过期的未发生普通事件，已经排到本
 });
 
 test('0.44 柔性事件暂缓后重排，最多三次；固定年节和急灾不可延期',()=>{
- const s=ready();s.year=4;s.month=2;s.vol=2;s.agenda=['K10'];const id='K10';
+ const {s}=runLongJourney(44000,{months:26});s.agenda=['K10'];const id='K10';
  for(let count=0;count<3;count++){
   assert.ok(E.canDeferScene(s,id));const beforeCash=s.stats.treasury,ap=s.ap;E.deferScene(s,id);assert.equal(s.stats.treasury,beforeCash);assert.equal(s.ap,ap);assert.ok(!s.agenda.includes(id));assert.ok(E.upcomingStories(s).some(x=>x.id===id));
   let waited=0;
-  do{settleLongAgenda(s);E.spendNight(s,null);E.endMonth(s);continueLongCampaign(s);waited++;}while(!s.agenda.includes(id)&&waited<24);
+  do{settleLongAgenda(s);reviewPending(s);E.spendNight(s,null);E.endMonth(s);continueLongCampaign(s);waited++;}while(!s.agenda.includes(id)&&waited<24);
   assert.ok(s.agenda.includes(id),'暂缓的原卡会在后续可用月份重到');assert.ok(waited>=1);
  }
  assert.equal(E.canDeferScene(s,id),false);assert.throws(()=>E.deferScene(s,id));
- const due=ready();due.year=8;due.month=6;due.agenda=['K10'];assert.equal(E.canDeferScene(due,'K10'),false,'最迟安排时间已到，不能再次主动暂缓');
+ const due=ready();due.year=4;due.month=6;due.agenda=['K10'];assert.equal(E.canDeferScene(due,'K10'),false,'最迟安排时间已到，不能再次主动暂缓');
  const fixed=festId(20,festivalOf(20,1));assert.ok(E.scene(fixed));s.dyn??={};s.dyn['urgent-fixture']={id:'urgent-fixture',kind:'majorEvent',disaster:'河南',title:'急灾',options:[]};s.agenda=[fixed,'urgent-fixture'];
  for(const id of s.agenda){assert.equal(E.canDeferScene(s,id),false);assert.throws(()=>E.deferScene(s,id));}
 });
@@ -92,7 +94,7 @@ test('0.44 相同种子三十年可复现；跨年未完事项保留，三十一
    if(pending.year===31){assert.ok(E.canDeferScene(pending,'O31B'));E.deferScene(pending,'O31B');deferred++;}
    else {assert.ok(pending.year>=32);assert.equal(pending.done.O31B,undefined);assert.ok(pending.done.O31A);assert.ok(E.scene('O31B'));assert.match(E.scene('O31B').body,/前次|回报|凭据/);sawOldReport=true;E.choose(pending,'O31B',E.optionsFor(pending,E.scene('O31B'))[0].id);break;}
   }
-  settleLongAgenda(pending);E.spendNight(pending,null);E.endMonth(pending);
+  settleLongAgenda(pending);reviewPending(pending);E.spendNight(pending,null);E.endMonth(pending);
   if(pending.year===32&&!reloaded){pending=E.load(storageOf(pending));assert.ok(pending.campaign.openYears.includes(31));assert.equal(pending.done.O31B,undefined);reloaded=true;}
  }
  assert.ok(deferred>0);assert.ok(reloaded);assert.ok(sawOldReport,'三十二年仍呈上未办结的O31B');assert.ok(pending.done.O31B);
