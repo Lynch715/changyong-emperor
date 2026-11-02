@@ -185,7 +185,41 @@ function budgetCard(){const f=Fiscal.forecast(s),count=E.memorialCounts(s);retur
 function financeView(){const f=Fiscal.forecast(s),collection=Fiscal.collectionInfo(s),last=s.fiscal.lastReport,can=E.canAct(s)&&!s.night;return `${header()}<main class="finance-page"><div class="bar-title"><button data-act="go" data-to="home">‹ 返回御案</button><b>户部理财</b></div>${budgetCard()}<p>查看不占时辰。理财安排各用一个时辰；先办完月初要事，再安排人手。银子实际解到才入库，不向百姓临时加派。</p><h3 class="sec">稳定进项</h3><p class="muted small">两项经营各有三级，每月最多安排一项，下个月办妥后按月解库。</p>${Fiscal.projectOptions(s).map(o=>`<article class="fiscal-project"><h3>${esc(o.name)} · ${o.level}/3 级</h3><p>${esc(o.description)}</p><p>当前每月 ${moneyText(o.monthly)}${o.pending?`；正在办理第 ${o.pending.level} 级，下月见效`:o.level<3?`；办妥后每月 ${moneyText(o.nextMonthly)}`:'；已完成整顿'}</p><button data-act="fiscal-invest" data-id="${o.id}" ${!can||o.reason?'disabled':''}>${o.reason?esc(o.reason):`${o.level?'继续整顿':'着手办理'} · 国库 ${moneyText(o.cost)} · 1 时辰`}</button></article>`).join('')}<h3 class="sec">催解旧欠</h3><article class="fiscal-project"><p>这批账面旧欠尚有 ${moneyText(collection.pool)}。每三个月最多催解一次，实际到账后扣减欠额，不能反复领取。</p><p>${s.fiscal.collectionPending?`已经催解 ${moneyText(s.fiscal.collectionPending.amount)}，待下月到账。`:`本次可核定 ${moneyText(collection.amount)}，下月解库。`}</p><button data-act="fiscal-collect" ${!can||collection.reason?'disabled':''}>${collection.reason?esc(collection.reason):'催解一批 · 不另花银 · 1 时辰'}</button></article>${publicWorksCard(can)}<h3 class="sec">上月银账</h3>${last?`<article class="fiscal-project"><h4>${YEAR_NAME(last.year)}年${MONTHS[last.month-1]}</h4><p>常例税银 ${moneyText(last.base)} · 地方浮动 ${last.province>=0?'+':'−'}${moneyText(Math.abs(last.province))} · 户部任职浮动 ${last.office>=0?'+':'−'}${moneyText(Math.abs(last.office))} · 理财进项 ${moneyText(last.projects)}</p><p>新政实付 ${moneyText(last.policySpent)} · 军政及补欠 ${moneyText(last.publicOutgo)}</p><p>全月总入 ${moneyText(last.ledger.in)} · 总出 ${moneyText(last.ledger.out)} · 结余 ${moneyText(last.balance)}</p><p class="small">总入、总出还包括当月剧情、朱批、追缴到账和理财立项，以上常例不可重复相加。</p></article>`:'<p>尚未结算过一个月。到月末会列出实际收支。</p>'}</main>${nav()}`;}
 function publicWorksCard(can){if(s.year<7)return '';const info=Fiscal.publicWorksInfo(s);return `<h3 class="sec">地方修缮</h3><article class="fiscal-project public-works"><p>修缮一省仓渠与学舍：国库 ${moneyText(info.cost)}，用一个时辰，每三个月最多安排一次。当地民生 +4、吏治 +2。</p><p class="small">这是可选公共投入，按实际拨银入账。</p><label>修缮省份<select aria-label="修缮省份" ${!can||info.reason?'disabled':''}>${info.provinces.map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join('')}</select></label><button data-act="fiscal-works" ${!can||info.reason?'disabled':''}>${info.reason?esc(info.reason):'拨银修缮 · 1 时辰'}</button></article>`;}
 function provincesView(){return `${header()}<main class="government"><button data-act="go" data-to="home">‹ 返回御案</button><h2>地方</h2><p>十省等权汇入民心与朝局，财赋影响月度国库进账。数值是游戏抽象，江南、陕甘、云贵按督辖区合列。</p>${Object.entries(s.provinces).map(([name,p])=>`<article class="crisis"><h3>${esc(name)} · ${esc(authorOf(s,name)?nm(authorOf(s,name)):'地方衙门')}</h3><p>民生 ${p.livelihood} · 吏治 ${p.integrity} · 财赋 ${p.revenue}</p>${p.reports.map(t=>`<p class="small">${esc(t)}</p>`).join('')||'<p class="muted">尚无回报。</p>'}</article>`).join('')}</main>`;}
-function memorialView(){const r=s.reviewSession;return `${header()}<main class="government"><button data-act="go" data-to="home">‹ 合上折匣</button><h2>折匣 · ${E.memorialCounts(s).pending} 道待批</h2><p>另有 ${E.memorialCounts(s).waiting} 道正在查勘，原折保留，等勘报回来再裁。</p><p>急灾已置前。核实只查清册，工程赈务仍须拨银；急灾不能以核代赈。办结回报自动收存，不挤占时辰。一时辰通常可批六道；设值房后可批十道。钱粮清欠准奏后，查实追缴的银子另有到账回报。</p>${s.memorials.some(m=>m.result)?'<button data-act="archive-reports">收存待阅回报（不占时辰）</button>':''}<details><summary>已收回报 · ${s.govReports.length}</summary>${s.govReports.slice(-12).reverse().map(m=>`<p>${esc(m.body)}</p>`).join('')||'<p>尚无。</p>'}</details><p>${r?`本时辰还可批 ${r.left} 道；留中也算一道。合上再开用一个时辰。`:'此处可免费查阅和收存回报。要批原折，请从首页“批折”开始一个时辰。'}</p>${view.feedback?paras(view.feedback):''}${s.memorials.map(m=>`<article class="crisis"><h3>${esc(m.title)}</h3><small>${esc(m.author)} · ${esc(m.province)} · ${esc(m.type)}</small>${paras(m.body)}${m.inspectionPending?'<p class="small">正在查勘，未批执行经费。急灾仍须先行赈救。</p>':m.inspected?'<p class="small">勘报已回，执行经费待裁。</p>':''}<div class="options">${E.memorialOptions(m).map(([id,label])=>`<button data-act="memorial" data-id="${m.uid}" data-choice="${id}" ${!r?.left||r.held.includes(m.uid)?'disabled':''}>${esc(label)}${E.memorialCost(m,id)?' · 国库'+E.memorialCost(m,id)+'万两':''}</button>`).join('')}</div>${AI.aiMode()!=='off'&&r?.left&&!r.held.includes(m.uid)?`<form data-act="memorial-write" data-id="${m.uid}"><label>亲笔批<textarea name="t" maxlength="200" required></textarea></label><button ${busy?'disabled':''}>${busy?'候回报……':'朱批'}</button></form>`:''}</article>`).join('')}</main>`;}
+// 展开折匣时保留本时辰额度，尚未落笔时说明何时扣时辰。
+function memorialView() {
+  const r = s.reviewSession;
+  const counts = E.memorialCounts(s);
+  return `${header()}<main class="government">
+    <button data-act="go" data-to="home">‹ 合上折匣</button>
+    <h2>折匣 · ${counts.pending} 道待批</h2>
+    <p>另有 ${counts.waiting} 道正在查勘，原折保留，等勘报回来再裁。</p>
+    <p>急灾已置前。核实只查清册，工程赈务仍须拨银；急灾不能以核代赈。
+    办结回报自动收存，不挤占时辰。一时辰通常可批六道；设值房后可批十道。
+    钱粮清欠准奏后，查实追缴的银子另有到账回报。</p>
+    ${s.memorials.some(m => m.result) ? '<button data-act="archive-reports">收存待阅回报（不占时辰）</button>' : ''}
+    <details><summary>已收回报 · ${s.govReports.length}</summary>
+      ${s.govReports.slice(-12).reverse().map(m => `<p>${esc(m.body)}</p>`).join('') || '<p>尚无。</p>'}
+    </details>
+    <p>${r?.charged ? `本时辰还可批 ${r.left} 道；留中也算一道。合上再开不另扣时辰。` :
+      '浏览不占时辰，第一次落笔才用一个时辰。'}</p>
+    ${view.feedback ? paras(view.feedback) : ''}
+    ${s.memorials.map(m => {
+      const allowed = r?.left && !r.held.includes(m.uid) && !s.night && (r.charged || E.canAct(s));
+      return `<article class="crisis"><h3>${esc(m.title)}</h3>
+        <small>${esc(m.author)} · ${esc(m.province)} · ${esc(m.type)}</small>${paras(m.body)}
+        ${m.inspectionPending ? '<p class="small">正在查勘，未批执行经费。急灾仍须先行赈救。</p>' :
+          m.inspected ? '<p class="small">勘报已回，执行经费待裁。</p>' : ''}
+        <div class="options">${E.memorialOptions(m).map(([id, label]) => {
+          const cost = E.memorialCost(m, id);
+          return `<button data-act="memorial" data-id="${m.uid}" data-choice="${id}" ${allowed ? '' : 'disabled'}>
+            ${esc(label)}${cost ? ' · 国库' + cost + '万两' : ''}</button>`;
+        }).join('')}</div>
+        ${AI.aiMode() !== 'off' && allowed ? `<form data-act="memorial-write" data-id="${m.uid}">
+          <label>亲笔批<textarea name="t" maxlength="200" required></textarea></label>
+          <button ${busy ? 'disabled' : ''}>${busy ? '候回报……' : '朱批'}</button></form>` : ''}
+      </article>`;
+    }).join('')}</main>`;
+}
 function edictView(){
  const r=view.result,ai=AI.aiMode()!=='off';
  if(r)return `<div class="stage" style="--bg:url('${abs(BG.court)}')"><article class="paper"><h2>${esc(r.title||'旨意')}</h2><div class="choice">朱批：${esc(r.src)}</div>${fateLine(r.fate)}${fateLine(r.fate)}${paras(r.text)}${chips(r.stats,r.people)}<button class="primary" data-act="done">好</button></article></div>`;
@@ -396,7 +430,12 @@ const ACTS={
  rebirth:()=>go({name:'rebirth'}),
  freedom:el=>{E.setFreedom(s,el.dataset.l);save();toast('自由度：'+FREEDOM[s.freedom].name);render();},
  boon:el=>{s=E.newGamePlus(s,el.dataset.b);save();toast(`第${s.life}世`);go({name:'home'});},
- go:el=>{const to=el.dataset.to;if(to==='home'&&s.ended&&!view.report)return go({name:'ending'});go({name:to});},
+ go: el => {
+  const to = el.dataset.to;
+  if (to === 'home' && s.ended && !view.report) return go({name: 'ending'});
+  if (to === 'memorials') E.review(s);
+  go({name: to});
+ },
  title:()=>go({name:'title'}),
  new:()=>{s=E.newGame();save();go({name:'home'});},
  'new-confirm':()=>{if(confirm('重新开始会覆盖现在的存档。确定吗？')){s=E.newGame();save();go({name:'home'});}},

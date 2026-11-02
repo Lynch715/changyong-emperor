@@ -201,7 +201,16 @@ export function choose(s,id,optId){
 }
 
 // ---------- 白天的行动 ----------
-function spend(s){if(s.pendingBirth||s.familyArt?.required)throw Error('先完成孩子的取名与立绘选择。');if(s.ended)throw Error('这一卷已走完。');if(s.nanfeng?.visit&&!s.nanfeng.visit.done)throw Error('先把馆里的茶喝完。');if(s.agenda.length)throw Error('先把本月要事办完。');if(s.ap<=0)throw Error('今日的时辰已经用完了。');s.ap--;}
+// 使用一个时辰，并结束此前的批折时辰。
+function spend(s) {
+  if (s.pendingBirth || s.familyArt?.required) throw Error('先完成孩子的取名与立绘选择。');
+  if (s.ended) throw Error('这一卷已走完。');
+  if (s.nanfeng?.visit && !s.nanfeng.visit.done) throw Error('先把馆里的茶喝完。');
+  if (s.agenda.length) throw Error('先把本月要事办完。');
+  if (s.ap <= 0) throw Error('今日的时辰已经用完了。');
+  s.ap--;
+  s.reviewSession = null;
+}
 export function canAct(s){return !s.pendingBirth&&!s.familyArt?.required&&!s.agenda.length&&s.ap>0&&!s.ended&&!(s.nanfeng?.visit&&!s.nanfeng.visit.done);}
 
 export function beginChat(s,id){if(PEOPLE[id]?.secondary&&!s.people[id]?.met)throw Error('还没见过这个人。');if(!present(s,id))throw Error('还见不到这个人。');spend(s);s.people[id].met=true;s.chats++;if(id==='C04'&&!away(s,id)&&weatherOf(s)==='雨')gain(s,id,1);const bd=celebrate(s,id,2);return {id,letter:away(s,id),gained:0,turns:0,birthday:bd!==null};}
@@ -299,14 +308,37 @@ export function transferFunds(s,direction,amount){
 export const investFiscal=(s,id)=>Fiscal.invest(s,id,spend,log);
 export const collectFiscal=s=>Fiscal.collect(s,spend,log);
 export function publicWorks(s,province){const info=Fiscal.publicWorksInfo(s);if(info.reason)throw Error(info.reason+'。');if(!info.provinces.includes(province))throw Error('请选择已有省份。');spend(s);const stats=funds(s,{treasury:-info.cost});s.fiscal.lastWorksAt=T.at(s);G.regionChange(s,province,{livelihood:4,integrity:2},{applyStats});log(s,`${province}地方修缮：实付60万两，修补仓渠与学舍，民生加四、吏治加二。`,'政');return {title:'地方修缮',text:`${province}已领到修缮银六十万两，用于仓渠与学舍；地方民生+4、吏治+2（上限100）。用一个时辰，每三个月最多安排一省。`,stats,people:{}};}
-export function review(s){return G.beginReview(s,spend);}
+// 展开折匣，不消耗时辰。
+export function review(s) {
+  return G.beginReview(s);
+}
 export const memorialOptions=G.memorialOptions;
 export const memorialCounts=G.memorialCounts;
 export const memorialCost=G.memorialCost;
 export function archiveReports(s){return G.archiveReports(s);}
-export function judgeMemorial(s,uid,choice){return G.decideMemorial(s,uid,choice,{funds,applyStats,log});}
+// 选定朱批后才支付本次批折所用的时辰。
+export function judgeMemorial(s, uid, choice) {
+  return G.decideMemorial(s, uid, choice, {funds, applyStats, log, spend});
+}
 // 亲笔批复复用下旨限幅与骰面，只消耗折匣已付的时辰。
-export function writeMemorial(s,uid,text,result){const m=G.checkReview(s,uid);if(!String(text).trim())throw Error('请写下朱批。');const prior=s.ap;s.ap=1;let r;try{r=applyEdict(s,`就${m.province}「${m.title}」朱批：${text}`,result);}finally{s.ap=prior;}s.reviewSession.left--;s.memorials=s.memorials.filter(x=>x.uid!==uid);return {...r,title:m.title,text:result.narration};}
+// 亲笔批复与普通朱批共用同一时辰，沿用下旨限幅。
+export function writeMemorial(s, uid, text, result) {
+  const m = G.checkReview(s, uid);
+  if (!String(text).trim()) throw Error('请写下朱批。');
+  G.chargeReview(s, spend);
+  const prior = s.ap, session = s.reviewSession;
+  s.ap = 1;
+  let r;
+  try {
+    r = applyEdict(s, `就${m.province}「${m.title}」朱批：${text}`, result);
+  } finally {
+    s.ap = prior;
+    s.reviewSession = session;
+  }
+  session.left--;
+  s.memorials = s.memorials.filter(x => x.uid !== uid);
+  return {...r, title: m.title, text: result.narration};
+}
 
 export function rest(s){spend(s);const stats=applyStats(s,{health:8+(weatherOf(s)==='闷热'?2:0)});log(s,'闭门休养了一日','行');return {title:'休养',text:'你推开折子，让苏培盛把门关上。睡了一个整觉，醒来时窗外的光正好。',stats,people:{}};}
 
@@ -445,4 +477,16 @@ export function ending(s){
 }
 
 export function save(s,storage=globalThis.localStorage){try{storage.setItem(SAVE_KEY,JSON.stringify(s));return true;}catch{return false;}}
-export function load(storage=globalThis.localStorage){try{const s=JSON.parse(storage.getItem(SAVE_KEY)||'null');return [1,F.SAVE_VERSION].includes(s?.version)?bind(T.initCampaign(Fiscal.initFiscal(F.initFamily(M.initMajorEvents(G.initGovernment(initAppointments(initTravel(initEconomy(s))))))))):null;}catch{return null;}}
+// 只在读档链补齐缺失字段，旧批折时辰已经付过，不再重复扣除。
+export function load(storage = globalThis.localStorage) {
+  try {
+    const s = JSON.parse(storage.getItem(SAVE_KEY) || 'null');
+    if (![1, F.SAVE_VERSION].includes(s?.version)) return null;
+    if (s.reviewSession && s.reviewSession.charged === undefined) s.reviewSession.charged = true;
+    return bind(T.initCampaign(Fiscal.initFiscal(F.initFamily(M.initMajorEvents(
+      G.initGovernment(initAppointments(initTravel(initEconomy(s))))
+    )))));
+  } catch {
+    return null;
+  }
+}

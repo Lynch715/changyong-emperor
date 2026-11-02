@@ -38,16 +38,77 @@ export function memorialMonth(s,rng){initGovernment(s);const now=monthIndex(s);i
  s.followups=s.followups.filter(f=>!(f.at<=now&&f.id==='department'));
  const n=2+Math.floor(rng(s)*2);for(let i=0;i<n;i++){if(s.memorialUsed.length>=MEMORIAL_POOL.length)s.memorialUsed=[];const eligible=MEMORIAL_POOL.filter(p=>!s.memorialUsed.includes(p.id)&&(!p.months||p.months.includes(s.month)));if(!eligible.length){addMemorial(s,{id:`B${now}-${i}`,type:'民情',province:PROVINCE_NAMES[(now+i)%10],title:'地方月报·'+now+'-'+i,body:'臣谨奏：本月应季旧案已逐件呈览，尚有民户补报口粮与春耕借种的情形。州县正在按里甲核验，暂未发现大户冒领，但偏远村落尚未走访。臣拟先将现有查册送部存核，余户续查续报，不敢以一时平静视作全省无事，伏乞皇上垂察。',special:'覆核里甲清册',result:true});continue;}const p=eligible[Math.floor(rng(s)*eligible.length)];s.memorialUsed.push(p.id);addMemorial(s,p);}archiveReports(s);}
 export const memorialCounts=s=>({pending:s.memorials.filter(m=>!m.result&&!m.inspectionPending).length,waiting:s.memorials.filter(m=>m.inspectionPending).length});
-export function beginReview(s,spend){initGovernment(s);if(!s.memorials.length)throw Error('折匣里没有未批奏折。');spend(s);s.reviewSession={at:monthIndex(s),left:s.done?.W08==='council'?10:6,held:[]};return {title:'折匣',text:'展开奏折，逐道朱批。',stats:{},people:{}};}
-export function checkReview(s,uid){const r=s.reviewSession,m=s.memorials.find(m=>m.uid===uid);if(!m||!r||r.at!==monthIndex(s)||r.left<=0||s.night||r.held.includes(uid))throw Error('这一时辰不能再批这道折子。');return m;}
-export function memorialOptions(m){if(m.result)return [['ack','阅，知道了']];return [['approve',recoverable(m)?'核清并追缴':'准'],['reject','驳'],...(!m.department?[['department','交部议']]:[]),['hold','留中'],...(!m.inspectionPending&&!m.inspected?[['inspect',needsFunding(m)?'先核实案情（仍须另批经费）':m.special||'派员核实']]:[])];}
-export function decideMemorial(s,uid,choice,api){const m=checkReview(s,uid);if(!memorialOptions(m).some(([id])=>id===choice))throw Error('没有这道朱批。');const cost=memorialCost(m,choice);if(s.stats.treasury<cost)throw Error(`国库不足${cost}万两，宜先缓办或交部议。`);
- s.reviewSession.left--;if(choice==='hold'){s.reviewSession.held.push(uid);return {title:m.title,text:'朱批留中，原折仍留在折匣。',stats:{},people:{}};}
- const pending=choice==='inspect'&&needsFunding(m);if(pending){m.inspectionPending=true;s.reviewSession.held.push(uid);}else s.memorials=s.memorials.filter(x=>x.uid!==uid);
- if(choice==='department')s.followups.push({at:monthIndex(s)+1,id:'department',data:m});
- const stats={...api.funds(s,{treasury:-cost}),...api.applyStats(s,['approve','inspect'].includes(choice)?{health:-1}:{})};
- scheduleDecision(s,m,choice);api.log(s,`${m.province}·${m.title}：${memorialOptions({...m,inspectionPending:false,inspected:false}).find(x=>x[0]===choice)?.[1]||'阅'}`,'政');return {title:m.title,text:choice==='department'?'交有关部臣核议，下月带原折复奏。灾情不会因此停止发展。':pending?'已派员查勘，费用二万两；核实后仍须另批经费。灾情不能以核代赈。':choice==='approve'?`已批经费${cost}万两，经办衙门须据实回奏。`:'朱批已发，后续据实回奏。',stats,people:{},memorial:m,choice};}
+// 打开折匣只浏览，已付过的同一时辰继续使用。
+export function beginReview(s) {
+  initGovernment(s);
+  const r = s.reviewSession;
+  if (!r || r.at !== monthIndex(s) || r.left <= 0) {
+    s.reviewSession = {at: monthIndex(s), left: s.done?.W08 === 'council' ? 10 : 6, held: [], charged: false};
+  }
+  return {title: '折匣', text: '展开奏折，逐道朱批。', stats: {}, people: {}};
+}
+// 检查折子能否落笔；浏览不要求还有空闲时辰。
+export function checkReview(s, uid) {
+  const r = s.reviewSession, m = s.memorials.find(m => m.uid === uid);
+  if (!m || !r || r.at !== monthIndex(s) || r.left <= 0 || s.night || r.held.includes(uid)) {
+    throw Error('这一时辰不能再批这道折子。');
+  }
+  return m;
+}
 
+// 第一次有效落笔才扣时辰，失败的朱批不收费。
+export function chargeReview(s, spend) {
+  const session = s.reviewSession;
+  if (!session.charged) {
+    spend(s);
+    session.charged = true;
+    s.reviewSession = session;
+  }
+}
+export function memorialOptions(m){if(m.result)return [['ack','阅，知道了']];return [['approve',recoverable(m)?'核清并追缴':'准'],['reject','驳'],...(!m.department?[['department','交部议']]:[]),['hold','留中'],...(!m.inspectionPending&&!m.inspected?[['inspect',needsFunding(m)?'先核实案情（仍须另批经费）':m.special||'派员核实']]:[])];}
+export function decideMemorial(s, uid, choice, api) {
+  const m = checkReview(s, uid);
+  if (!memorialOptions(m).some(([id]) => id === choice)) throw Error('没有这道朱批。');
+  const cost = memorialCost(m, choice);
+  if (s.stats.treasury < cost) throw Error(`国库不足${cost}万两，宜先缓办或交部议。`);
+  chargeReview(s, api.spend);
+  s.reviewSession.left--;
+  if (choice === 'hold') {
+    s.reviewSession.held.push(uid);
+    return { title: m.title, text: '朱批留中，原折仍留在折匣。', stats: {}, people: {} };
+  }
+  const pending = choice === 'inspect' && needsFunding(m);
+  if (pending) {
+    m.inspectionPending = true;
+    s.reviewSession.held.push(uid);
+  } else s.memorials = s.memorials.filter((x) => x.uid !== uid);
+  if (choice === 'department') s.followups.push({ at: monthIndex(s) + 1, id: 'department', data: m });
+  const stats = {
+    ...api.funds(s, { treasury: -cost }),
+    ...api.applyStats(s, ['approve', 'inspect'].includes(choice) ? { health: -1 } : {}),
+  };
+  scheduleDecision(s, m, choice);
+  api.log(
+    s,
+    `${m.province}·${m.title}：${memorialOptions({ ...m, inspectionPending: false, inspected: false }).find((x) => x[0] === choice)?.[1] || '阅'}`,
+    '政',
+  );
+  return {
+    title: m.title,
+    text:
+      choice === 'department'
+        ? '交有关部臣核议，下月带原折复奏。灾情不会因此停止发展。'
+        : pending
+          ? '已派员查勘，费用二万两；核实后仍须另批经费。灾情不能以核代赈。'
+          : choice === 'approve'
+            ? `已批经费${cost}万两，经办衙门须据实回奏。`
+            : '朱批已发，后续据实回奏。',
+    stats,
+    people: {},
+    memorial: m,
+    choice,
+  };
+}
 export function backlog(s,applyStats){const n=s.memorials.filter(m=>!m.result&&!m.inspectionPending).length;if(n>6){s.govNotes.push(`折子堆了：尚有${n}道未批。`);applyStats(s,{court:-1,...(n>10?{health:-1}:{})});}}
 
 export const OFFICE_PROVINCES={zhili:['直隶'],liangjiang:['江南'],chuanshan:['四川','陕甘'],yungui:['云贵'],henan:['河南'],zhejiang:['浙江'],shandong:['山东'],huguang:['湖广'],guangdong:['广东']};

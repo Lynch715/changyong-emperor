@@ -194,11 +194,18 @@ test('专心对一个人，六年能走完五幕并相守',()=>{
  const p=s.people.C02;assert.equal(n,72);assert.ok(p.fourth&&p.fifth&&p.lover,'苏培盛五幕走完');assert.equal(E.ending(s).people.find(x=>x.id==='C02').tier,3);
  assert.ok((s.count.bdays||0)>=5,'每年二月都记得苏培盛的生辰');assert.ok(s.count.festivals>=10);
 });
-test('批折打开折匣只占一个时辰，固定收益移除，值房可批十道',()=>{
- const s=E.newGame(1);s.agenda=[];const ap=s.ap;assert.deepEqual(E.review(s).stats,{});assert.equal(s.ap,ap-1);assert.equal(s.reviewSession.left,6);
- s.done.W08='council';E.review(s);assert.equal(s.reviewSession.left,10);
+test('批折打开不占时辰，固定收益移除，值房可批十道', () => {
+  const s = E.newGame(1);
+  s.agenda = [];
+  const ap = s.ap;
+  assert.deepEqual(E.review(s).stats, {});
+  assert.equal(s.ap, ap);
+  assert.equal(s.reviewSession.left, 6);
+  s.done.W08 = 'council';
+  s.reviewSession = null;
+  E.review(s);
+  assert.equal(s.reviewSession.left, 10);
 });
-
 import {tierOf,TIERS} from '../src/v2/fate.js';
 test('自由度：一档不掷骰；三档比二档难；朝局和情分会加减点',()=>{
  const s=E.newGame(3);assert.equal(E.freedomOf(s),2);assert.equal(E.freedomOf({}),2,'旧存档默认二档');assert.throws(()=>E.setFreedom(s,4));

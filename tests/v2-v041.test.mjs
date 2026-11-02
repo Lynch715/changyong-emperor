@@ -5,8 +5,21 @@ import * as G from '../src/v2/government.js';
 const ready=()=>{const s=E.newGame(41);s.agenda=[];return s;};
 test('折匣每月2—3道，八类56题、正文长度、季节过滤及整池无重抽',()=>{assert.equal(G.MEMORIAL_POOL.length,56);assert.equal(new Set(G.MEMORIAL_POOL.map(x=>x.type)).size,8);for(const p of G.MEMORIAL_POOL)assert.ok(p.body.length>=80&&p.body.length<=150);const s=ready(),seen=new Set();for(let i=0;i<12;i++){for(const p of s.memorials.filter(m=>!m.disaster)){assert.ok(!seen.has(p.id));seen.add(p.id);assert.ok(!p.months||p.months.includes(s.month));}assert.ok(s.memorials.filter(m=>!m.disaster).length>=2&&s.memorials.filter(m=>!m.disaster).length<=3);s.memorials=[];s.month++;G.memorialMonth(s,E.rand);}});
 test('六道限额、留中防重复、交部议下月带原折回来及积压',()=>{const s=ready();s.memorials=[];for(let i=0;i<8;i++)G.addMemorial(s,{title:'待裁'+i,province:'河南',type:'民情'});E.review(s);const id=s.memorials[0].uid;E.judgeMemorial(s,id,'hold');assert.throws(()=>E.judgeMemorial(s,id,'hold'));const p=s.memorials[1];E.judgeMemorial(s,p.uid,'department');for(let i=0;i<4;i++)E.judgeMemorial(s,s.memorials.find(m=>m.uid!==id).uid,'reject');assert.equal(s.reviewSession.left,0);assert.throws(()=>E.judgeMemorial(s,s.memorials.find(m=>m.uid!==id).uid,'reject'));s.month++;G.memorialMonth(s,E.rand);assert.ok(s.memorials.some(m=>m.department&&m.body.includes('前次朱批')));s.memorials=Array.from({length:11},()=>({}));const c=s.stats.court,h=s.stats.health;G.backlog(s,E.applyStats);assert.equal(s.stats.court,c-1);assert.equal(s.stats.health,h-1);});
-test('旧档补齐政务字段，亲笔朱批沿用限幅，不再花时辰',()=>{const s=ready();for(const k of ['memorials','memorialUsed','followups','govSerial','govNotes'])delete s[k];const l=E.load({getItem:()=>JSON.stringify(s)});assert.deepEqual(l.followups,[]);G.memorialMonth(l,E.rand);l.memorialAt=null;G.memorialMonth(l,E.rand);l.agenda=[];E.review(l);const ap=l.ap;E.writeMemorial(l,l.memorials[0].uid,'试办',{effects:{court:999},fate:{free:false,tier:0}});assert.equal(l.ap,ap);assert.ok(l.stats.court<=s.stats.court);});
-
+test('旧档补齐政务字段，亲笔朱批沿用限幅，不再花时辰', () => {
+  const s = ready();
+  for (const k of ['memorials', 'memorialUsed', 'followups', 'govSerial', 'govNotes']) delete s[k];
+  const l = E.load({ getItem: () => JSON.stringify(s) });
+  assert.deepEqual(l.followups, []);
+  G.memorialMonth(l, E.rand);
+  l.memorialAt = null;
+  G.memorialMonth(l, E.rand);
+  l.agenda = [];
+  E.review(l);
+  const ap = l.ap;
+  E.writeMemorial(l, l.memorials[0].uid, '试办', { effects: { court: 999 }, fate: { free: false, tier: 0 } });
+  assert.equal(l.ap, ap - 1);
+  assert.ok(l.stats.court <= s.stats.court);
+});
 test('十省等权汇总，财赋进账与地方任命生效',()=>{const s=ready();const before=s.stats.people;for(const name of G.PROVINCE_NAMES)G.regionChange(s,name,{livelihood:2,integrity:2},{applyStats:E.applyStats});assert.equal(s.stats.people,before+2);E.appointPerson(s,'C30','henan');const v=s.provinces.河南.integrity;s.month=2;G.regionalMonthly(s,{applyStats:E.applyStats});assert.equal(s.provinces.河南.integrity,v+1);assert.ok(G.provinceIncome(s)>0);assert.ok(E.away(s,'C30'));});
 test('拨银与拒赈都按期回报，灾情未批则升级',()=>{for(const choice of ['approve','reject']){const s=ready();s.memorials=[];const m=G.addMemorial(s,{province:'河南',title:'河工',type:choice==='approve'?'河工':'赈灾'});E.review(s);E.judgeMemorial(s,m.uid,choice);const f=s.followups.find(f=>f.id==='decision');s.month=f.at;G.regionalMonth(s,{rand:()=>0,applyStats:E.applyStats});assert.ok(s.govReports.some(m=>m.result&&m.body.includes('前次朱批')));assert.equal(s.followups.some(f=>f.id==='decision'),false);}const s=ready(),m=G.addMemorial(s,{province:'河南',title:'夏汛',type:'赈灾'});s.followups.push({at:2,id:'disaster',data:{uid:m.uid}});s.month=2;G.regionalMonth(s,{rand:()=>1,applyStats:E.applyStats});assert.ok(s.agenda.some(id=>s.dyn?.[id]?.disaster==='河南'));});
 test('新政须有主持地方官，推进与阻力、完成收益、主持离任暂停、剧情与要务联动',()=>{const s=ready();assert.throws(()=>E.launchPolicy(s,'huohao','C30','河南'));E.appointPerson(s,'C30','henan');E.launchPolicy(s,'huohao','C30','河南');const p=s.policies.huohao;G.policyMonthly(s,{rand:()=>1,applyStats:E.applyStats,funds:()=>{}});assert.ok(p.progress>0);const progress=p.progress;G.policyMonthly(s,{rand:()=>0,applyStats:E.applyStats,funds:()=>{}});assert.ok(p.progress<progress);p.progress=100;s.month=3;const revenue=s.provinces.山东.revenue;G.policyMonthly(s,{rand:()=>1,applyStats:E.applyStats,funds:()=>{}});assert.equal(s.provinces.山东.revenue,revenue+1);p.progress=30;s.appointments.C30.office=null;G.policyMonthly(s,{rand:()=>1,applyStats:E.applyStats,funds:()=>{}});assert.equal(p.progress,30);G.policyStory(s,'W03','force');assert.equal(s.policies.tusi.progress,30);const c=E.ALL_CRISES.find(x=>x.id==='reform');s.stats.people=90;s.stats.treasury=900;assert.equal(c.goal(s),false);s.policies.land.progress=100;assert.equal(c.goal(s),true);});
