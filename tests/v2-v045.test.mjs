@@ -251,3 +251,18 @@ test('D1 旧折原文保留，阅读时用短正文，查核细节随原办理�
   assert.match(s.govReports.at(-1).body, /埋桩护脚/);
   assert.ok(E.memorialBody(s.memorials[0]).length <= 80);
 });
+
+test('D2 旧档已付的批折额度保留，折匣只留一句说明而完整规则移入怎么玩', async () => {
+  const {readFile} = await import('node:fs/promises');
+  const s = oldSave(s => {s.reviewSession = {at: 1, charged: true, left: 4, held: ['kept']};});
+  E.review(s);
+  assert.equal(s.reviewSession.left, 4);
+  assert.deepEqual(s.reviewSession.held, ['kept']);
+  const source = await readFile(new URL('../src/v2/main.js', import.meta.url), 'utf8');
+  const memorial = source.slice(source.indexOf('function memorialView('), source.indexOf('function edictView('));
+  assert.ok(memorial.includes('急灾排在最前。查核只查清楚，办事还要另拨银子。'));
+  assert.ok(!memorial.includes('钱粮清欠准奏后'));
+  const help = source.slice(source.indexOf('function playHelp('), source.indexOf('const KIND_NAME='));
+  assert.ok(help.includes('钱粮清欠准奏后'));
+  assert.ok(help.includes('一个时辰可批'));
+});

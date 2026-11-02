@@ -299,10 +299,7 @@ function memorialView() {
     <button data-act="go" data-to="home">‹ 合上折匣</button>
     <h2>折匣 · ${counts.pending} 道待批</h2>
     <p>另有 ${counts.waiting} 道正在查勘，原折保留，等勘报回来再裁。</p>
-    <p>急灾已置前。核实只查清册，工程赈务仍须拨银；急灾不能以核代赈。
-    办结回报自动收存，不挤占时辰。
-    一个时辰可批 ${E.reviewLimit({})} 道（设值房后 ${E.reviewLimit({done: {W08: 'council'}})} 道）。
-    钱粮清欠准奏后，查实追缴的银子另有到账回报。</p>
+    <p>急灾排在最前。查核只查清楚，办事还要另拨银子。</p>
     ${s.memorials.some(m => m.result) ? '<button data-act="archive-reports">收存待阅回报（不占时辰）</button>' : ''}
     <details><summary>已收回报 · ${s.govReports.length}</summary>
       ${s.govReports.slice(-12).reverse().map(m => `<p>${esc(m.body)}</p>`).join('') || '<p>尚无。</p>'}
@@ -457,15 +454,39 @@ function settingsView(){
  </main>${s?nav():''}`;
 }
 function ageView(){return `<div class="title-screen" style="--bg:url('${abs(BG.desk)}')"><div class="title-box"><h1>入卷之前</h1><p>本游戏含成熟题材，仅供年满 18 周岁者游玩。</p><button class="primary" data-act="age-confirm">我已年满 18 周岁</button><button data-act="age-leave">离开</button>${view.left?'<p class="small">已停在此处。你可以关闭这个页面。</p>':''}</div></div>`;}
-function titleView(){
- const has=!!E.load();
- return `<div class="title-screen" style="--bg:url('${abs('assets/exports/s11-v1/cover-display.webp')}')"><div class="title-box">
-  <h1>重生长雍<br>帝王赋</h1><p>雍正元年正月。你从死里醒来，那些后来再也挽回不了的人，此刻都还在。</p>
-  ${has?'<button class="primary" data-act="continue">继续</button>':''}
-  <button class="${has?'':'primary'}" data-act="${has?'new-confirm':'new'}">新开一局</button>
-  <p class="muted small">${(()=>{const L=has&&E.load();return (L?.life>1?`第${L.life}世 · `:'')+(L?E.campaignInfo(L).title:'三十年主线，之后无限续玩');})()} · AI ${AI.aiMode()==='off'?'未开启':'已开启'} · <a href="#" data-act="go" data-to="settings">设置</a></p>
-  <details class="how"><summary>怎么玩</summary><p>一个月是一回合。月初先处置要事；然后有三个时辰，可以召见、赏赐、下旨、批折、微服或休养；入夜选一处去，或独寝。月末结算。</p><p>情分到「相知」，那个人会在夜里有话想说；到「倾心」，还有一次说破心意的机会。若你在两难里没站在谁那边，那人会有心结，要当面说开。</p><p>主线铺至三十年，之后仍可无限续玩。六年后按阶段回顾，新政、用人和宫中故事继续展开。普通故事可择月呈报，急灾、军情、生辰和年节照常。阶段之间存档、情分和皇嗣出生记录全部延续，也可以带着一样记忆“再活一世”。</p><p>设置里有三档自由度：一档言出法随；二档、三档在下旨和亲口说话前先掷骰，大吉照你写的走，大凶对方会找理由回绝。</p></details>
- </div></div>`;
+// 标题页保留开局入口，把详细的批折规则放在可展开的玩法说明里。
+function titleView() {
+  const loaded = E.load(), has = !!loaded;
+  const campaign = (loaded?.life > 1 ? `第${loaded.life}世 · ` : '') +
+    (loaded ? E.campaignInfo(loaded).title : '三十年主线，之后无限续玩');
+  return `<div class="title-screen" style="--bg:url('${abs('assets/exports/s11-v1/cover-display.webp')}')">
+    <div class="title-box"><h1>重生长雍<br>帝王赋</h1>
+      <p>雍正元年正月。你从死里醒来，那些后来再也挽回不了的人，此刻都还在。</p>
+      ${has ? '<button class="primary" data-act="continue">继续</button>' : ''}
+      <button class="${has ? '' : 'primary'}" data-act="${has ? 'new-confirm' : 'new'}">新开一局</button>
+      <p class="muted small">${campaign} · AI ${AI.aiMode() === 'off' ? '未开启' : '已开启'} ·
+        <a href="#" data-act="go" data-to="settings">设置</a></p>
+      ${playHelp()}
+    </div></div>`;
+}
+
+// 规则按月历、人物和批折分段收进“怎么玩”，不挤占折匣正文。
+function playHelp() {
+  return `<details class="how"><summary>怎么玩</summary>
+    <p>一个月是一回合。月初先处置要事；然后有三个时辰，可以召见、赏赐、下旨、批折、微服或休养；
+      入夜选一处去，或独寝。月末结算。</p>
+    <p>情分到「相知」，那个人会在夜里有话想说；到「倾心」，还有一次说破心意的机会。
+      若你在两难里没站在谁那边，那人会有心结，要当面说开。</p>
+    <p>主线铺至三十年，之后仍可无限续玩。六年后按阶段回顾，新政、用人和宫中故事继续展开。
+      普通故事可择月呈报，急灾、军情、生辰和年节照常。阶段之间存档、情分和皇嗣出生记录全部延续，
+      也可以带着一样记忆“再活一世”。</p>
+    <p>折匣：一个时辰可批 ${E.reviewLimit({})} 道（设值房后 ${E.reviewLimit({done: {W08: 'council'}})} 道）。
+      浏览不占时辰，第一次落笔才扣一个时辰。留中也算一道，合上再开不另扣；做别的行动后另起一个时辰。
+      查核只查清案情，工程、赈灾仍要另批银子，急灾不能以核代赈。交部议下月带原折复奏。
+      办结回报自动收存，不挤占时辰；钱粮清欠准奏后，追缴的银子实际到账才计入国库。</p>
+    <p>设置里有三档自由度：一档言出法随；二档、三档在下旨和亲口说话前先掷骰，
+      大吉照你写的走，大凶对方会找理由回绝。</p>
+  </details>`;
 }
 
 const KIND_NAME={longStory:'岁月',deep5:'深情',festival:'节',main:'主线',relation:'情',extension:'情',romance:'心意',deep:'深情',dilemma:'两难',government:'政务',followup:'政务',side:'宫中'};
