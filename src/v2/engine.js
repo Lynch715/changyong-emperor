@@ -959,6 +959,14 @@ export function stopHuanyi(s){if(s.flags.stop_huanyi)throw Error('欢宜香已�
 export const childBirthdays=s=>(s.children||[]).filter(c=>birthdayOf(s,c.id));
 export function continueFamily(s){if(!canContinueCampaign(s))throw Error('请先完成本阶段的岁末回顾。');s.ended=false;s.familyContinuation=true;s.year++;s.month=1;s.vol=3;log(s,`接续${T.campaignInfo(s).title}，存档与众人的记忆一并保留。`,'卷');startMonth(s);return s;}
 
+// 五六年每月圣躬少一、每季后宫少一；七年以后的原节奏保持。
+export function agingLoss(s) {
+  if (s.year >= 7) return {health: -1, ...(s.month % 6 === 0 ? {palace: -1} : {})};
+  if (s.year >= 5) return {health: -1, ...(s.month % 3 === 0 ? {palace: -1} : {})};
+  if (s.year >= 3) return {health: -1, ...(s.month % 3 === 0 ? {court: -1} : {})};
+  return {health: -1};
+}
+
 export function endMonth(s) {
   if (s.pendingBirth || s.familyArt?.required) throw Error('先完成孩子的取名与立绘选择。');
   if (s.nanfeng?.visit && !s.nanfeng.visit.done) throw Error('先把馆里的茶喝完。');
@@ -1003,14 +1011,7 @@ export function endMonth(s) {
     applyStats(s, { court: -1 });
     s.govNotes.push(`常态军政支出不足，拖欠公项${s.publicArrears}万两，朝局减一；后续进账先补欠。`);
   }
-  const aging =
-    s.year >= 7
-      ? { health: -1, ...(s.month % 6 === 0 ? { palace: -1 } : {}) }
-      : s.year >= 5
-        ? { health: -2, palace: -1 }
-        : s.year >= 3
-          ? { health: -1, ...(s.month % 3 === 0 ? { court: -1 } : {}) }
-          : { health: -1 };
+  const aging = agingLoss(s);
   const tick = { ...receipts, ...payments, ...applyStats(s, extraStats), ...applyStats(s, aging) };
   for (const k of Object.keys(tick)) tick[k] = silver((s.delta.stats[k] || 0) - (beforeDuties[k] || 0));
   report.income = tick;

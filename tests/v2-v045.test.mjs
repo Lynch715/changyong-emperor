@@ -436,3 +436,19 @@ test('C3 三组均匀交往路线第四年末至少五人情分45，现有钱粮
     assert.ok(runBalance(seed, {mode: 'social'}).social48 >= 5);
   }
 });
+
+test('C4 旧档圣躬后宫不回填，五六年每年只自然减12圣躬和4后宫，七年后照旧', () => {
+  for (const year of [5, 6, 7]) {
+    const s = oldSave(s => {s.year = year; s.stats.health = 63; s.stats.palace = 41;});
+    assert.equal(s.stats.health, 63);
+    assert.equal(s.stats.palace, 41);
+    const total = {health: 0, palace: 0};
+    for (let month = 1; month <= 12; month++) {
+      s.month = month;
+      const loss = E.agingLoss(s);
+      total.health += loss.health;
+      total.palace += loss.palace || 0;
+    }
+    assert.deepEqual(total, {health: -12, palace: year >= 7 ? -2 : -4});
+  }
+});
