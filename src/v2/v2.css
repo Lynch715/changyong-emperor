@@ -450,3 +450,33 @@ dialog#modal::backdrop { background: #07111dcc; }
 .fiat button { width: 100%; margin: 0; min-height: 48px; }
 .fiat details { margin-top: 12px; }
 .fiat summary { cursor: pointer; color: var(--gold-soft); line-height: 1.7; }
+
+/* 存档未写成功时持续展示，避免把仍在内存中的进度误当成已经保存。 */
+.save-warning {
+ position: sticky; top: 0; z-index: 40; display: grid; gap: 8px; padding: 14px 16px;
+ background: #fff1d6; color: #722b1f; border: 2px solid #a8402d; line-height: 1.6;
+}
+.save-warning span { font-size: 14px; }
+.save-warning button { min-height: 44px; border: 1px solid #722b1f; background: #722b1f; color: #fff1d6; border-radius: 6px; }
+
+/* 只裁切列表的显示窗口，人物原图和剧情全身构图保持完整。 */
+.portrait-media.headshot {
+ display: block; position: relative; width: 46px; height: 46px; flex: none; overflow: hidden;
+ border-radius: 50%; border: 1px solid var(--gold); background: #d8c8a6;
+}
+.portrait-media.headshot img {
+ display: block; width: 100%; height: 100%; max-width: none; border: 0; border-radius: 0;
+ object-fit: cover; object-position: center top; transform: scale(3); transform-origin: center 3%; background: transparent;
+}
+.agenda .headshot,.visit .headshot { width: 56px; height: 56px; border-width: 2px; }
+
+.save-panel .save-import { display: block; margin: 12px 0; color: var(--gold-soft); }
+.save-import input { display: block; max-width: 100%; margin: 8px 0; font: inherit; }
+.save-panel button { margin: 4px 4px 4px 0; min-height: 44px; }
+.child-card > img { width: 160px; height: 210px; object-fit: contain; object-position: center; }
+@media(max-width:520px) {
+ .child-card > img { width: 100%; height: 220px; margin: 0 auto; }
+}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible {
+ outline: 2px solid var(--gold-soft); outline-offset: 3px;
+}

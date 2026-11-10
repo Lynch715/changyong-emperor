@@ -1,0 +1,202 @@
+{
+  "generator": "built-in image_gen",
+  "note": "原图保留在本机 art-source/v047；运行资源使用同名派生文件，旧人物图片未覆盖。",
+  "assets": [
+    {
+      "id": "k_toddler_01",
+      "source": "art-source/v047/kid_toddler_01.png",
+      "prompt": "Use case: historical-scene. Asset: transparent full-body portrait for a Chinese Qing court family simulation. A clearly two-to-three-year-old little boy, unmistakably a toddler with a large round head, short limbs, chubby cheeks, small hands; wearing a modest pale sage Qing Chinese prince's everyday robe and soft cap, holding a tiny wooden horse with both hands. Style: delicate realistic Chinese gongbi illustration, fine brown ink contours, muted warm silk-texture colors, painterly fabric detail, soft warm diffuse lighting, consistent with restrained court character illustrations. Full body including feet, centered, front three-quarter view, complete silhouette with generous clear margin, portrait canvas. Truly transparent background, no scene, no ground shadow, no text, no watermark, one child only. Wholesome everyday family illustration, fully clothed, no adult proportions, no jewelry suggesting marriage, no fantasy effects. Keep every part of the figure within the canvas.",
+      "cleanup": "Remove background haze, retain original full-body figure and alpha.",
+      "sha256": "4e88b4e91a6a013c310d58001fe1f3eefa80317c3700571b7c7ff0565db3cab4",
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/kid_toddler_01-mobile.webp",
+          "bytes": 54558,
+          "sha256": "84e974baddcd1dd148addc43359af3e6ec5355c0f93e1d59b050c05779a3a065"
+        },
+        {
+          "path": "assets/exports/s11-v1/kid_toddler_01-thumb.webp",
+          "bytes": 8066,
+          "sha256": "c8720a6b1a26be3098dda50a0b45aaaa4dd978665aaa54afc3dba3bc8c4b72f8"
+        }
+      ],
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "sourceSha256": "4e88b4e91a6a013c310d58001fe1f3eefa80317c3700571b7c7ff0565db3cab4",
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "cleanupPrompt": "Edit this exact existing illustration. Preserve the child's identity, age, face, clothing, toy, pose, colors and the entire full-body figure unchanged. Remove ALL background haze, beige/brown glow and diffuse halo around the silhouette. The output must be a clean cutout: genuinely transparent alpha outside the precise silhouette, opaque painted child inside, softly anti-aliased at the outline only. No drop shadow or light halo, no background texture, no new drawing, no crop. Complete full-body figure including feet."
+    },
+    {
+      "id": "k_toddler_02",
+      "source": "art-source/v047/kid_toddler_02.png",
+      "prompt": "Use case: historical-scene. Asset: transparent full-body portrait for a Chinese Qing court family simulation. A clearly two-to-three-year-old little girl, unmistakably a toddler with a large round head, short limbs, chubby cheeks, small hands; wearing a modest peach and cream Qing Chinese princess's everyday robe, simple small hair buns, holding a cloth tiger toy with both hands. Style: delicate realistic Chinese gongbi illustration, fine brown ink contours, muted warm silk-texture colors, painterly fabric detail, soft warm diffuse lighting, consistent with restrained court character illustrations. Full body including feet, centered, front three-quarter view, complete silhouette with generous clear margin, portrait canvas. Truly transparent background, no scene, no ground shadow, no text, no watermark, one child only. Wholesome everyday family illustration, fully clothed, no adult proportions, no jewelry suggesting marriage, no fantasy effects. Keep every part of the figure within the canvas.",
+      "cleanup": "Remove background haze, retain original full-body figure and alpha.",
+      "sha256": "0dcd074b6af8aa73741a72d63239899a6eb427e24ae360ec4a7ecd16f6e06d7e",
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/kid_toddler_02-mobile.webp",
+          "bytes": 65726,
+          "sha256": "ba8a25e904e63e9a1f2d37e0598cb691e3a0bc5bc9698faf02e46af259f75858"
+        },
+        {
+          "path": "assets/exports/s11-v1/kid_toddler_02-thumb.webp",
+          "bytes": 9312,
+          "sha256": "eec9b78559b5cf7705c6b0b6667f8fd8272f6cb175827effdc393ce2f9f7e34b"
+        }
+      ],
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "sourceSha256": "0dcd074b6af8aa73741a72d63239899a6eb427e24ae360ec4a7ecd16f6e06d7e",
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "cleanupPrompt": "Edit this exact existing illustration. Preserve the child's identity, age, face, clothing, toy, pose, colors and the entire full-body figure unchanged. Remove ALL background haze, beige/brown glow and diffuse halo around the silhouette. The output must be a clean cutout: genuinely transparent alpha outside the precise silhouette, opaque painted child inside, softly anti-aliased at the outline only. No drop shadow or light halo, no background texture, no new drawing, no crop. Complete full-body figure including feet."
+    },
+    {
+      "id": "k_child_01",
+      "source": "art-source/v047/kid_child_01.png",
+      "prompt": "Use case: historical-scene. Asset: transparent full-body portrait for a Chinese Qing court family simulation. A clearly six-to-seven-year-old little boy, unmistakably an elementary-age child with short child proportions, youthful round face; wearing a modest muted blue Qing Chinese prince's everyday robe, small cap and braid, holding a folded paper kite, standing quietly. Style: delicate realistic Chinese gongbi illustration, fine brown ink contours, muted warm silk-texture colors, painterly fabric detail, soft warm diffuse lighting, consistent with restrained court character illustrations. Full body including feet, centered, front three-quarter view, complete silhouette with generous clear margin, portrait canvas. Truly transparent background, no scene, no ground shadow, no text, no watermark, one child only. Wholesome everyday family illustration, fully clothed, no adult proportions, no jewelry suggesting marriage, no fantasy effects. Keep every part of the figure within the canvas.",
+      "cleanup": "Remove background haze, retain original full-body figure and alpha.",
+      "sha256": "988caaad2fc7c30f3fdcfefb5eed585c25de9b665ee73c2e786ff4edaddc673a",
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/kid_child_01-mobile.webp",
+          "bytes": 46716,
+          "sha256": "9c49a9a30f95a689478a683954abda49a80d05014eade31177f616996993a289"
+        },
+        {
+          "path": "assets/exports/s11-v1/kid_child_01-thumb.webp",
+          "bytes": 6842,
+          "sha256": "990982c7c052f63ec91f8f3632162bf722c1592872bbc955639ea1f4c4e485a6"
+        }
+      ],
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "sourceSha256": "988caaad2fc7c30f3fdcfefb5eed585c25de9b665ee73c2e786ff4edaddc673a",
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "cleanupPrompt": "Edit this exact existing illustration. Preserve the child's identity, age, face, clothing, toy, pose, colors and the entire full-body figure unchanged. Remove ALL background haze, beige/brown glow and diffuse halo around the silhouette. The output must be a clean cutout: genuinely transparent alpha outside the precise silhouette, opaque painted child inside, softly anti-aliased at the outline only. No drop shadow or light halo, no background texture, no new drawing, no crop. Complete full-body figure including feet."
+    },
+    {
+      "id": "k_child_02",
+      "source": "art-source/v047/kid_child_02.png",
+      "prompt": "Use case: historical-scene. Asset: transparent full-body portrait for a Chinese Qing court family simulation. A clearly six-to-seven-year-old little girl, unmistakably an elementary-age child with short child proportions, youthful round face; wearing a modest muted apricot and pale green Qing Chinese princess's everyday tunic and long skirt, simple small hair buns, holding a small bamboo basket of flowers, standing quietly. Style: delicate realistic Chinese gongbi illustration, fine brown ink contours, muted warm silk-texture colors, painterly fabric detail, soft warm diffuse lighting, consistent with restrained court character illustrations. Full body including feet, centered, front three-quarter view, complete silhouette with generous clear margin, portrait canvas. Truly transparent background, no scene, no ground shadow, no text, no watermark, one child only. Wholesome everyday family illustration, fully clothed, no adult proportions, no jewelry suggesting marriage, no fantasy effects. Keep every part of the figure within the canvas.",
+      "cleanup": "Remove background haze, retain original full-body figure and alpha.",
+      "sha256": "db2108752ff9cdc3e6bebcf1c17a209e58bebc8099a40056e4d22e6571163a40",
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/kid_child_02-mobile.webp",
+          "bytes": 55116,
+          "sha256": "60503ef893681430cb8d15ab7b2a6c1287ae53c101da0266bf81c0134a5559fe"
+        },
+        {
+          "path": "assets/exports/s11-v1/kid_child_02-thumb.webp",
+          "bytes": 7832,
+          "sha256": "267825d897714e6a6a2bdb3c6b62f601fa40496e83aa79b5b3dc4b84413c88e6"
+        }
+      ],
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "sourceSha256": "db2108752ff9cdc3e6bebcf1c17a209e58bebc8099a40056e4d22e6571163a40",
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "cleanupPrompt": "Edit this exact existing illustration. Preserve the child's identity, age, face, clothing, toy, pose, colors and the entire full-body figure unchanged. Remove ALL background haze, beige/brown glow and diffuse halo around the silhouette. The output must be a clean cutout: genuinely transparent alpha outside the precise silhouette, opaque painted child inside, softly anti-aliased at the outline only. No drop shadow or light halo, no background texture, no new drawing, no crop. Complete full-body figure including feet."
+    },
+    {
+      "id": "N01",
+      "source": "art-source/v047/char_N01_qing.png",
+      "prompt": "Edit target: image 1, adult male performer Hua Yan. Image 2 is STYLE REFERENCE ONLY (Qing court painted figure), do not copy its face or gender. Preserve the target's recognizable adult male face, pale skin, slender adult build, refined gentle expression, tea bowl motif. Redesign the hair and clothes as a restrained Qing-era Chinese city performer: plain small dark cap with neat braid, pale ivory Qing long robe with muted teal edging, narrower practical sleeves, dark cloth shoes. Relaxed standing pose, holding one tea bowl with both hands at waist. Remove all fantasy flying ribbons, vines, ornamental crown and flowing loose hair. Match image 2's detailed realistic gongbi brushwork, fine brown contour, soft fabric modeling and warm muted light. One fully clothed adult man, full body and feet, ample transparent margin. Clean truly transparent background; no glow, shadow, haze, scenery, text, watermark. Keep pose calm and silhouette compact.",
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_N01_qing-mobile.png",
+          "bytes": 678944,
+          "sha256": "a1a2eafe55920a654467129e8663e9aabea64ad3918b0fd522238d59a1c2e475"
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N01_qing-mobile.webp",
+          "bytes": 137164,
+          "sha256": "1548bc17c32f8114e49219414d7611cd877db7ad4efc6150817712d33c13a205"
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N01_qing-thumb.png",
+          "bytes": 21293,
+          "sha256": "91c0b82dc96e32a3934db26104032fabab09573f2106d8f42c6b38cc1c0127c0"
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N01_qing-thumb.webp",
+          "bytes": 6448,
+          "sha256": "2d22dc79a7ed98668f73cdd66ca53c6fcbc4bed790e263b09f2d09baece74a9f"
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N01_qing-display.png",
+          "bytes": 678944,
+          "sha256": "a1a2eafe55920a654467129e8663e9aabea64ad3918b0fd522238d59a1c2e475"
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N01_qing-display.webp",
+          "bytes": 137164,
+          "sha256": "1548bc17c32f8114e49219414d7611cd877db7ad4efc6150817712d33c13a205"
+        }
+      ],
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "sourceSha256": "95f7722df72512414daad73164134a1ccc2c8deb368a2b792142aae6cc2439ce",
+      "nativeDimensions": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "id": "N02",
+      "source": "art-source/v047/char_N02_qing.png",
+      "prompt": "Edit target: image 1, adult female performer Yu Xi. Image 2 is STYLE REFERENCE ONLY (Qing court painted figure), do not copy its face. Preserve the target's recognizable adult woman's face, refined gentle expression and pipa lute. Redesign clothing and hair as a restrained Qing-era Chinese city musician: soft dusty pink Qing jacket with cream cuff trim and muted floral embroidery, long modest skirt, neat small Qing hair arrangement with one simple floral hairpin. Hold the same pipa upright with both hands in a relaxed standing pose. Remove all fantasy flying ribbons, trains and loose spiraling scarves. Match image 2's detailed realistic gongbi brushwork, fine brown contour, fabric modeling and warm muted light. One fully clothed adult woman, full body and feet, ample transparent margin. Clean truly transparent background; no glow, shadow, haze, scenery, text, watermark. Silhouette compact, not imperial formal dress.",
+      "exports": [
+        {
+          "path": "assets/exports/s11-v1/char_N02_qing-mobile.png",
+          "bytes": 717739,
+          "sha256": "1f41c199f2504360be12d10850c24b2194c4a921b3349e38ced3c4832917b64a"
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N02_qing-mobile.webp",
+          "bytes": 143020,
+          "sha256": "4d0c465e786e783f6d97d966260f5a2492a55a05e57364cf57ab4cec1d089586"
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N02_qing-thumb.png",
+          "bytes": 23441,
+          "sha256": "711c63ffad934385a820e438b5aa65e6b010551fed390ab13e96e18a0492068a"
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N02_qing-thumb.webp",
+          "bytes": 6664,
+          "sha256": "7592c1d673847ddff2f21937fda99de38173223eb4e14cf7e6e588410b5c5a1a"
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N02_qing-display.png",
+          "bytes": 717739,
+          "sha256": "1f41c199f2504360be12d10850c24b2194c4a921b3349e38ced3c4832917b64a"
+        },
+        {
+          "path": "assets/exports/s11-v1/char_N02_qing-display.webp",
+          "bytes": 143020,
+          "sha256": "4d0c465e786e783f6d97d966260f5a2492a55a05e57364cf57ab4cec1d089586"
+        }
+      ],
+      "generator": "built-in image_gen",
+      "status": "generated-reviewed",
+      "sourceSha256": "939f423d1b5cb897fa76c0d504d85420dd21b561e667d4001620c319f226f5cf",
+      "nativeDimensions": [
+        1024,
+        1536
+      ]
+    }
+  ]
+}

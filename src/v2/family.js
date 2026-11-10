@@ -1,3 +1,5 @@
+import {gameDate} from './dates.js';
+import {pregnancyNews, pregnancyThreat} from './family-scenes.js';
 // 生育与皇嗣只走固定、克制的家庭剧情；月份是架空游戏历。
 import {PEOPLE,YEAR_NAME,MONTHS} from './data.js';
 import {SECONDARIES} from './roster.js';
@@ -11,7 +13,12 @@ export const serial=date=>{const [y,m]=String(date).split('-').map(Number);retur
 export const now=s=>(s.year-1)*12+s.month;
 export const key=n=>`${Math.floor((n-1)/12)+1}-${(n-1)%12+1}`;
 export const childAge=(s,c)=>Math.max(0,Math.floor((now(s)-serial(c.born))/12));
-export const childStage=(s,c)=>childAge(s,c)>=10?'youth':'infant';
+// 四段年龄只按出生月份计算；选图与保护规则不推定孩子成年。
+export function childStage(s, c) {
+ const age = childAge(s, c);
+ return age >= 10 ? 'youth' : age >= 4 ? 'child' : age >= 1 ? 'toddler' : 'infant';
+}
+export const defaultChildArt = (stage, sex) => Object.values(KID_ART).find(p => p.stage === stage && p.sex === sex)?.id;
 export const childById=(s,id)=>(s.children||[]).find(c=>c.id===id);
 export const nameIdeas=sex=>sex==='男'?['弘昀','弘昭','弘宁']:['静宁','和安','昭华'];
 export function initFamily(s){
@@ -19,7 +26,10 @@ export function initFamily(s){
  for(const p of Object.values(s.people))p.wish??='open';
  // M03 的三个选项均实际撤下旧香，不能只迁移其中一个分支。
  if(['sample','explain','quiet'].includes(s.done?.M03)||s.done?.['R07-01'])s.flags.stop_huanyi=true;
- for(const c of s.children){c.art??={};c.traits??=[];c.notes??=[];}
+ for(const c of s.children){
+  c.art??={};c.traits??=[];c.notes??=[];
+  for(const stage of ['toddler','child'])c.art[stage]??=defaultChildArt(stage,c.sex);
+ }
  return s;
 }
 export function chance(s,id){
@@ -37,30 +47,60 @@ export function tryConceive(s,id,a){
 }
 const add=(s,id,sc)=>{if(s.done[id]||s.agenda.includes(id))return;s.dyn??={};s.dyn[id]={id,kind:'family',location:PEOPLE[sc.actor]?.place||'宫中',...sc};s.agenda.push(id);};
 const option=(id,label,reply,extra={})=>({id,label,reply,effects:{},...extra});
-export function month(s,a){
+// 每月只排入到期的家庭事项，已经选择的年龄图与处理记录不重复发放。
+export function month(s, a) {
  initFamily(s);
- // 假孕是传闻与被篡改的脉案，不能覆盖已经存在的真孕。
- if(s.agenda.includes('Y10')&&!s.pregnancy.C10)s.pregnancy.C10={start:key(now(s)),due:key(now(s)+10),care:0,risk:0,known:false,fake:true};
- for(const [id,p]of Object.entries(s.pregnancy)){
-  const n=PEOPLE[id]?.name;if(!n)continue;
-  if(p.fake){if(p.resolveAt&&now(s)>=p.resolveAt)add(s,`PF-${id}-${p.start}`,{actor:id,familyType:'fake',mother:id,title:'脉案里的破绽',body:'温实初核过原方和两次脉案：所谓喜脉没有复诊依据，药方也不是本人所求。假孕传闻与真实孕期分别记账，不凭宫里的贺礼下结论。',options:[option('clear','公布复核结果，还她清白（情分 +3）','旧药停用，传闻澄清。沈眉庄俯身谢恩，今后仍能按自己的意愿生活。')]});continue;}
-  const age=now(s)-serial(p.start);
-  if(!p.known&&now(s)>=(p.announce??serial(p.start)+2)){
-   const prom=promotion(s,id);
-   add(s,`PN-${id}-${p.start}`,{actor:id,mother:id,familyType:'news',title:'太医诊出喜脉',body:`温实初将复诊的脉案呈上：“启禀皇上，${n}有喜了。”\n\n${id==='C07'?'年世兰把手放在早已冷下的香炉旁，许久才说：“停香以后，臣妾只盼能安稳过日子。今日这句话，臣妾记住了。”太医仍叮嘱按月休养，不作往后必定顺遂的许诺。':'她听过诊见，亲自问清了休养安排，才低声谢恩。'}\n\n${id==='C06'?'各宫依礼来向中宫道贺，礼单谁厚谁薄，彼此都记在心里。':'皇后宜修依礼备了贺礼，回禀：“臣妾会照应各宫，皇上放心。”各宫面上恭贺，暗里都多问了一句起居与赏例。'}\n\n这份喜讯记入本月要事。孕期约十个游戏月，不是医学承诺。`,options:[option('promote',`晋位${prom?'至'+OFFICES[prom].title:'：已至最高位或下一位已满，改赏'}（内帑 −3 万两，情分 +6）`,'礼部照例核定名分，内务府照旨备礼。', {cost:3,promotion:prom}),option('reward','厚赏（内帑 −2 万两，情分 +4）','赏赐按例送到，她恭敬谢恩，也请你不必铺张。',{cost:2}),option('quiet','低调照应（不花银，情分 +2）','你只嘱咐太医院按时问诊，不惊动各宫。她松了口气。')]});
-  }
-  if(p.known&&(p.threats||[]).includes(age)&&!(p.handled||[]).includes(age)){
-   const kinds=['香料','饮食','落水'],kind=kinds[Math.floor(a.rand(s)*3)];
-   const clue={香料:'新香盒的封签与领用册对不上',饮食:'送来的汤盅封条被揭过，膳房留底却没有这一盅',落水:'池边栏杆的榫头松了，木屑还是新的'}[kind];
-   p.handled??=[];p.handled.push(age);s.clues.push({at:key(now(s)),text:`${n}宫中的线索：${clue}。`});
-   add(s,`PT-${id}-${p.start}-${age}`,{actor:id,mother:id,familyType:'threat',title:`${kind}疑云`,body:`${n}宫里送来回话：${clue}。\n\n${kind==='落水'?'人还没有走到池边，随侍已经拦住了去路。':'东西尚未用过，掌事的人已封好留样。'}你有了核对的线索，来得及护住她。`,options:[option('expose','按线索核查（不花银，风险 −1，情分 +3，后宫 +1）','线索与原册对上，涉事物件被封存。她安然无恙，俯身谢过皇上的照应。'),option('guard','加派照护（内帑 −1 万两，照护 +1，情分 +2）','新添的轮值守好饮食与出入，这个月平稳度过。',{cost:1}),option('ignore','当作小事（不花银，风险 +2，可能失去孩子）','你没有追查，隐患留了下来。')]});
-  }
-  if(now(s)>=serial(p.due))add(s,`PB-${id}-${p.start}`,{actor:id,mother:id,familyType:'birth',title:'宫中添喜',body:`${n}到了待产的月份。太医院和稳婆都已候好，宫门外有人轻声报平安。\n\n请为新生的孩子选择性别，或交给天意。随后取名、选择婴儿立绘。`,options:[option('boy','皇子','宫里传来报喜声。'),option('girl','公主','宫里传来报喜声。'),option('random','交给天意','宫里传来报喜声。')]});
+ if (s.agenda.includes('Y10') && !s.pregnancy.C10) {
+  s.pregnancy.C10 = {start: key(now(s)), due: key(now(s) + 10), care: 0, risk: 0, known: false, fake: true};
  }
- for(const c of s.children){
-  const age=childAge(s,c);
-  if(age>=10&&!c.youthChosen)add(s,`PY-${c.id}`,{actor:c.mother,child:c.id,familyType:'youth',title:`${c.name}十岁了`,body:`${c.name}已满十岁，换上合龄的日常衣裳。请选一张少年立绘，往后还可以在人物页更换。孩子始终按未成年人保护，只写读书、亲情与日常。`,options:[option('art','挑选少年立绘','书案已经备好，等孩子慢慢长大。')]});
-  if(now(s)>serial(c.born)&&serial(c.born)%12===now(s)%12&&!(s.bdayDone||[]).includes(c.id))add(s,`PK-${c.id}-${s.year}`,{actor:c.mother,child:c.id,familyType:'birthday',title:`${c.name}的生辰`,body:`按出生记录${c.born}，这个月是${c.name}${age}岁的生辰。宫里备了一碗长寿面，等你来坐一会儿。`,options:[option('visit','陪孩子过生辰（不花银，记录家庭近况）','你陪孩子吃了长寿面，把这一日记在家常册里。')]});
+ for (const [id, p] of Object.entries(s.pregnancy)) {
+  const name = PEOPLE[id]?.name;
+  if (!name) continue;
+  if (p.fake) {
+   if (p.resolveAt && now(s) >= p.resolveAt) add(s, `PF-${id}-${p.start}`, {
+    actor: id, familyType: 'fake', mother: id, title: '脉案里的破绽',
+    body: '温实初核过原方和两次脉案，指着一处笔迹说：“这一页添得晚，原方也并非本人所求。”旁边的贺礼尚未拆开，你让人先把改过的册子封好。',
+    options: [option('clear', '公布复核结果，还她清白（情分 +3）', '旧药停用，传闻澄清。沈眉庄俯身谢恩。')],
+   });
+   continue;
+  }
+  const age = now(s) - serial(p.start);
+  if (!p.known && now(s) >= (p.announce ?? serial(p.start) + 2)) {
+   add(s, `PN-${id}-${p.start}`, pregnancyNews(id, promotion(s, id)));
+  }
+  if (p.known && (p.threats || []).includes(age) && !(p.handled || []).includes(age)) {
+   const kind = ['香料', '饮食', '落水'][Math.floor(a.rand(s) * 3)];
+   const clue = {香料: '新香盒的封签与领用册对不上', 饮食: '送来的汤盅封条被揭过，膳房留底却没有这一盅',
+    落水: '池边栏杆的榫头松了，木屑还是新的'}[kind];
+   p.handled ??= []; p.handled.push(age);
+   s.clues.push({at: key(now(s)), text: `${name}宫中的线索：${clue}。`});
+   add(s, `PT-${id}-${p.start}-${age}`, pregnancyThreat(id, kind, clue));
+  }
+  if (now(s) >= serial(p.due)) add(s, `PB-${id}-${p.start}`, {
+   actor: id, mother: id, familyType: 'birth', title: '宫中添喜',
+   body: `${name}到了待产的月份。太医院和稳婆都已候好，宫门外有人轻声报平安。你将御案上的折子推到一旁，静静听着帘外的脚步声。`,
+   options: [option('boy', '皇子', '宫里传来报喜声。'), option('girl', '公主', '宫里传来报喜声。'),
+    option('random', '交给天意', '宫里传来报喜声。')],
+  });
+ }
+ for (const c of s.children) {
+  const age = childAge(s, c), stage = childStage(s, c);
+  if ([1, 4].includes(age) && !(c.growthChosen || []).includes(stage)) add(s, `PG-${stage}-${c.id}`, {
+   actor: c.mother, child: c.id, familyType: 'growth', title: `${c.name}${age}岁了`,
+   body: `${c.name}又长高了一些，旧衣裳已经短了一截。内务府送来合身的新衣，请你看看。`,
+   options: [option('art', '看看新的日常立绘', '新衣已经备好，孩子的旧画像也会好好留着。')],
+  });
+  if (age >= 10 && !c.youthChosen) add(s, `PY-${c.id}`, {
+   actor: c.mother, child: c.id, familyType: 'youth', title: `${c.name}十岁了`,
+   body: `${c.name}已满十岁，换上合龄的日常衣裳。书案上添了几本新书，你让人把小时候的画像收好，另备一张新像。`,
+   options: [option('art', '挑选少年立绘', '书案已经备好，等孩子慢慢长大。')],
+  });
+  if (now(s) > serial(c.born) && serial(c.born) % 12 === now(s) % 12 && !(s.bdayDone || []).includes(c.id)) {
+   add(s, `PK-${c.id}-${s.year}`, {actor: c.mother, child: c.id, familyType: 'birthday', title: `${c.name}的生辰`,
+    body: `你还记得${gameDate(c.born)}报平安的那一日。如今${c.name}已经${age}岁，宫里备了一碗长寿面，等你来坐一会儿。`,
+    options: [option('visit', '陪孩子过生辰（不花银，记录家庭近况）', '你陪孩子吃了长寿面，把这一日记在家常册里。')],
+   });
+  }
  }
 }
 function promotion(s,id){const rank=Number(s.appointments?.[id]?.office?.replace('rank',''));if(!Number.isInteger(rank)||rank>=7)return null;return appointmentOptions(s,id).find(o=>o.office===`rank${rank+1}`&&!o.reason)?.office||null;}
@@ -75,13 +115,16 @@ export function resolve(s,sc,opt,a){
   else if(opt.id==='guard'){p.care++;aff(2);}
   else{p.risk+=2;if(a.rand(s)<Math.max(.05,p.risk*.18-p.care*.03)){delete s.pregnancy[id];s.family.recovery??={};s.family.recovery[id]=now(s)+3;
    add(s,`PL-${id}-${p.start}`,{actor:id,mother:id,familyType:'comfort',title:'陪她慢慢养好',body:`太医低声回禀，这一胎没能保住。${PEOPLE[id].name}需要休养，也需要有人听她说话。这件事不是她的过错，往后的生活仍由她自己选择。`,options:[option('listen','陪她坐坐，听她说（情分 +4）','你没有催她振作。茶换过一盏，她终于肯说起心里的难过。'),option('rest','让她安心休养（情分 +3）','你嘱咐照她的意愿安排日常，不让人拿这件事催问。')]});
-   opt={...opt,reply:'太医来回过几次，最终低声回禀：这一胎没能保住。她需要休养。下一张要事会安排陪伴与安抚，关系线继续。'};a.log(s,`${PEOPLE[id].name}失去这一胎，已安排休养与安抚。`,'家');}
+   opt={...opt,reply:'太医来回过几次，最终低声回禀：这一胎没能保住。你放下手里的折子，先让她好好歇着。'};
+   a.log(s,`${PEOPLE[id].name}失去这一胎，已安排休养与安抚。`,'家');}
   }
  }else if(sc.familyType==='comfort')aff(opt.id==='listen'?4:3);
  else if(sc.familyType==='fake'){if(p?.fake)delete s.pregnancy[id];aff(3);}
  else if(sc.familyType==='birth'){
   if(!p||p.fake)throw Error('没有到期的真实孕期。');s.pendingBirth={mother:id,sex:opt.id==='random'?(a.rand(s)<.5?'男':'女'):opt.id==='boy'?'男':'女',born:key(now(s)),name:''};
- }else if(sc.familyType==='youth')s.familyArt={child:sc.child,stage:'youth',required:true};
+ }else if(['youth','growth'].includes(sc.familyType)){
+  s.familyArt={child:sc.child,stage:childStage(s,childById(s,sc.child)),required:true};
+ }
  else if(sc.familyType==='birthday'){const c=childById(s,sc.child);c.notes.push(`${key(now(s))}：与家人一起过生辰`);s.bdayDone.push(c.id);}
  a.log(s,`${sc.title}：${opt.label}`,'家');return {title:sc.title,choice:opt.label,text:opt.reply,stats,people};
 }
@@ -109,12 +152,28 @@ export function finishBirth(s,art,a){
  let n=1;while(childById(s,'K'+String(n).padStart(2,'0')))n++;const c={id:'K'+String(n).padStart(2,'0'),mother:b.mother,name:b.name,sex:b.sex,born:b.born,art:{infant:art,youth:''},traits:[],notes:['出生平安，日常起居由家人照护']};s.children.push(c);delete s.pregnancy[b.mother];delete s.pendingBirth;
  const [year,m]=c.born.split('-').map(Number);a.log(s,`${YEAR_NAME(year)}年${MONTHS[m-1]}，${PEOPLE[c.mother].name}诞下${c.sex==='男'?'皇子':'公主'}${c.name}`,'家');a.cele(s,{k:'birth',child:c.id});s.cele.unshift(s.cele.pop());return c;
 }
-export function setChildArt(s,id,art){const c=childById(s,id),pic=KID_ART[art];if(!c||pic?.stage!==childStage(s,c)||pic.sex!==c.sex)throw Error('只能选当前年龄段及对应性别的立绘。');c.art[pic.stage]=art;if(pic.stage==='youth')c.youthChosen=true;delete s.familyArt;}
+// 本人当前年龄与性别均匹配才保存选图，其他年龄段的历史选择原样保留。
+export function setChildArt(s,id,art){
+ const c=childById(s,id),pic=KID_ART[art];
+ if(!c||pic?.stage!==childStage(s,c)||pic.sex!==c.sex)throw Error('只能选当前年龄段及对应性别的立绘。');
+ c.art[pic.stage]=art;
+ if(pic.stage==='youth')c.youthChosen=true;
+ c.growthChosen=[...new Set([...(c.growthChosen||[]),pic.stage])];
+ delete s.familyArt;
+}
 export function study(s,id,kind,a){const c=childById(s,id);if(!c||childAge(s,c)<10||!['read','quiz'].includes(kind))throw Error('孩子满十岁后才能读书、考校。');a.spend(s);const text=kind==='read'?'陪孩子读过一页书，遇到不懂的地方慢慢讲。':'考校几句诗文，答错也不要紧，留待下回再学。';c.notes.push(`${key(now(s))}：${text}`);if(!c.traits.includes('好学'))c.traits.push('好学');a.log(s,`${c.name}：${text}`,'家');return {title:kind==='read'?'陪孩子读书':'考校功课',text,stats:{},people:{}};}
-export function y10Scene(s,sc){
- if(!s)return sc;const real=s.pregnancy?.C10&&!s.pregnancy.C10.fake;
- if(real)return {...sc,title:'真假脉案',body:'沈眉庄已有复诊确认的孕期，宫里却传出“假孕”的话。她带来一份被换过的脉案，俯身请你查明。温实初说明：真孕须按月复诊，这份假案不能推翻本人真实的孕期。',options:sc.options.map(o=>({...o,reply:'温实初核对原案，查明有人用假脉案污蔑。真实孕期继续，孩子不会因传闻消失。'}))};
- return {...sc,options:sc.options.map(o=>({...o,reply:o.id==='stay'?'温实初复诊并核对药方，查明没有喜脉。假孕传闻已澄清，不会生成孩子。沈眉庄谢过皇上肯听她说话。':`温实初开始核对脉案。${o.id==='mid'?'一个':'两个'}月后会有复查回报；这段等待不算真实孕期，也不会出生。`}))};
+// 假脉案与真实孕期分开处理；剧情只呈现复核与人物回应。
+export function y10Scene(s, sc) {
+ if (!s) return sc;
+ const real = s.pregnancy?.C10 && !s.pregnancy.C10.fake;
+ if (real) return {...sc, title: '真假脉案',
+  body: '沈眉庄已有复诊确认的喜讯，宫里却传出“假孕”的话。她带来一份被换过的脉案，俯身请你查明。' +
+   '温实初将前次复诊的原案放在一旁：“这一页的字迹与用方都不对，臣请再核经手的人。”',
+  options: sc.options.map(o => ({...o, reply: '温实初核对原案，查明有人换过脉案。沈眉庄仍照原来的诊见休养，临走时，轻声谢你肯听她说。'}))};
+ return {...sc, options: sc.options.map(o => ({...o,
+  reply: o.id === 'stay' ? '温实初复诊并核对药方，查明没有喜脉。传闻澄清，沈眉庄俯身谢过你肯听她说话。' :
+   `温实初开始核对脉案，约${o.id === 'mid' ? '一个' : '两个'}月后复查。你先撤下道贺的礼单，不再让她为传言受扰。`,
+ }))};
 }
 export function afterStory(s,id,opt){
  if(id==='M03'||id==='L07')s.flags.stop_huanyi=true;

@@ -32,6 +32,14 @@ export function makeServer({ config = serverConfig(), fetcher = fetch } = {}) {
   let day = '',
     calls = 0;
   const active = new Set();
+  // 收完请求体后再次核对额度，避免同时到来的请求共用尚未扣除的名额。
+  const limitError = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    if (day !== today) {day = today; calls = 0;}
+    if (active.size >= 3) return '请求太多，请稍后再试。';
+    if (calls >= Math.max(1, config.limit)) return '今日调用上限已到。';
+    return '';
+  };
   return http.createServer(async (req, res) => {
     const send = (status, value) => {
       res.writeHead(status, {
@@ -61,13 +69,8 @@ export function makeServer({ config = serverConfig(), fetcher = fetch } = {}) {
         )
           return send(403, { error: '只接受当前本地游戏页面的请求。' });
         if (!config.key || !config.model) return send(503, { error: '服务端尚未配置AI模型。' });
-        if (active.size >= 3) return send(429, { error: '请求太多，请稍后再试。' });
-        const today = new Date().toISOString().slice(0, 10);
-        if (day !== today) {
-          day = today;
-          calls = 0;
-        }
-        if (calls >= Math.max(1, config.limit)) return send(429, { error: '今日调用上限已到。' });
+        const earlyLimit = limitError();
+        if (earlyLimit) return send(429, {error: earlyLimit});
         let raw = '';
         for await (const chunk of req) {
           raw += chunk;
@@ -80,7 +83,7 @@ export function makeServer({ config = serverConfig(), fetcher = fetch } = {}) {
           return send(400, { error: '请求不是有效JSON。' });
         }
         if (
-          typeof p.system !== 'string' ||
+          !p || typeof p.system !== 'string' ||
           typeof p.user !== 'string' ||
           p.system.length > 8000 ||
           p.user.length > 12000
@@ -91,6 +94,8 @@ export function makeServer({ config = serverConfig(), fetcher = fetch } = {}) {
           (!Number.isInteger(p.maxTokens) || p.maxTokens < 300 || p.maxTokens > 2400)
         )
           return send(400, { error: '篇幅设置不合适。' });
+        const finalLimit = limitError();
+        if (finalLimit) return send(429, {error: finalLimit});
         const token = Symbol();
         active.add(token);
         calls++;
@@ -106,6 +111,7 @@ export function makeServer({ config = serverConfig(), fetcher = fetch } = {}) {
       }
       if (req.method !== 'GET' && req.method !== 'HEAD') return send(405, { error: '此路径只接受读取。' });
       const pathname = decodeURIComponent(url.pathname);
+      if (pathname.split('/').some(part => part === '..' || part === '.')) return send(404, {error: '文件不存在。'});
       if (!['/', '/index.html'].includes(pathname) && !/^\/(src|assets)\/[\w/.-]+$/.test(pathname))
         return send(404, { error: '文件不存在。' });
       const target = path.resolve(ROOT, '.' + (pathname === '/' ? '/index.html' : pathname));

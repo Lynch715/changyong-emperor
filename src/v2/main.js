@@ -1,6 +1,11 @@
+import * as FamilyUI from './family-ui.js';
+import {portraitMarkup} from './portraits.js';
+import * as Saves from './save-manager.js';
+import {savePanel, recoveryEntry} from './save-ui.js';
+import {createActionRunner} from './action-lock.js';
 import * as Fiscal from './fiscal.js';
 import {askConfirmation} from './dialogs.js';
-import {budgetDisplay, affectionChange, monthIncomeText, treasuryExpenseText} from './presentation.js';
+import {budgetDisplay, affectionChange, monthIncomeText, treasuryExpenseText, nightText} from './presentation.js';
 import * as F from './family.js';
 import {KID_ART} from './art.js';
 import {authorOf,POLICIES,policyHostValid} from './government.js';
@@ -29,6 +34,7 @@ const app=document.getElementById('app');
 let s=null;            // 存档
 let view={name:'title'};
 let busy=false;
+let saveFailed = false;
 let activeAchievement = null;
 const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const paras=t=>String(t||'').split(/\n{1,}/).filter(Boolean).map(p=>`<p>${esc(p)}</p>`).join('');
@@ -38,9 +44,19 @@ const nm=id=>F.childById(s,id)?.name||NAMES[id]||PEOPLE[id]?.name||'';
 const dateText=st=>`雍正${YEAR_NAME(st.year)}年 · ${MONTHS[st.month-1]}`;
 const THUMBS=PORTRAIT_IDS;
 const face=id=>THUMBS.has(id)?thumb(id):portrait(id);
-const avatar=(id,cls='')=>THUMBS.has(id)?`<picture class="portrait-media"><source type="image/webp" srcset="${portraitFile(id,cls==='portrait'||cls==='person-face'?'mobile':'thumb')}"><img class="${cls}" data-person="${id}" src="${portraitFile(id,cls==='portrait'||cls==='person-face'?'mobile':'thumb','png')}" loading="${cls==='portrait'?'eager':'lazy'}" decoding="async" alt="${esc(nm(id))}"></picture>`:`<span class="avatar ${cls}" aria-label="${esc(nm(id))}">${esc((PEOPLE[id]?.name||nm(id)||'人')[0])}</span>`;
+const avatar = (id, cls = '') => portraitMarkup(id, cls, nm(id));
 const abs=p=>new URL(p,location.href).href;
-const save=()=>{if(!s)return;for(const a of updateGallery(s))E.cele(s,{k:'ach',a});E.save(s);};
+// 保存失败时保留内存中的进度并持续提示，成功重试后才收起提示。
+function persistGame(state = s) {
+  const ok = Saves.persistGame(state);
+  if (state === s) saveFailed = !ok;
+  return ok;
+}
+const save = () => {
+  if (!s) return true;
+  for (const a of updateGallery(s)) E.cele(s, {k: 'ach', a});
+  return persistGame();
+};
 
 // ---------- 反馈：数值与情分变化的小标签 ----------
 function chips(stats={},people={},extra=''){
@@ -65,6 +81,7 @@ function apPips(){return `<span class="pips">${Array.from({length:E.AP_PER_MONTH
 
 // 告诉玩家现在该做什么
 function guide(){
+ if(s.night&&!s.agenda.length)return '今夜已经过了。结束这个月，看看月末回报。';
  if(s.stats.treasury<200&&!s.agenda.length&&s.ap>0)return `国库只剩 ${moneyText(s.stats.treasury)}。下旨省些用度，或从内帑拨银。还有 ${s.ap} 个时辰。`;
  if(s.agenda.length)return `本月有 ${s.agenda.length} 件要事等你处置。`;
  if(s.ap>0)return `还有 ${s.ap} 个时辰。每件事用一个。`;
@@ -80,7 +97,7 @@ function home() {
     ...CORE.filter((id) => E.present(s, id) && !E.gone(s, id)),
     ...Object.keys(s.inPalace || {}),
   ];
-  const later = CORE.filter((id) => !E.present(s, id) || !s.people[id].met).length;
+  const later = CORE.filter(id => !E.present(s, id) && !E.gone(s, id)).length;
   return `${header()}<main class="home">
     <div class="guide"><span>${guide()}</span>${apPips()}</div>
     ${
@@ -113,7 +130,7 @@ function agendaCard(sc) {
   if (!sc) return '';
   const place = sc.location || sc.place;
   return `<button class="agenda" data-act="scene">
-    <img src="${face(sc.actor)}" alt="" onerror="this.style.visibility='hidden'">
+    ${avatar(sc.actor)}
     <div><small>本月要事 · ${s.agenda.length} 件</small><b>${esc(sc.title)}</b>
       <span>${esc(nm(sc.actor))}${place ? ' · ' + esc(place) : ''}</span></div><em>处置 ›</em>
   </button>`;
@@ -162,7 +179,7 @@ function birthdayCards() {
 function visitCard() {
   const visit = E.visitOf(s);
   if (!visit) return '';
-  return `<button class="visit" data-act="visit"><img src="${face(visit.id)}" alt=""><div>
+  return `<button class="visit" data-act="visit">${avatar(visit.id)}<div>
     <small>有人来了 · 不占时辰</small><b>${PEOPLE[visit.id].name}来看你</b>
     <span>${esc(visit.title)}</span></div><em>迎进来 ›</em></button>`;
 }
@@ -283,7 +300,7 @@ function sceneView() {
 }
 // ---------- 召见 / 赏赐：先选人 ----------
 function pickPerson(kind){
- const ids=CAST.filter(id=>E.present(s,id)&&(s.people[id].met||(!PEOPLE[id].secondary&&kind==='chat')));
+ const ids=CAST.filter(id=>E.present(s,id)&&!E.gone(s,id)&&(s.people[id].met||(!PEOPLE[id].secondary&&kind==='chat')));
  return `${header()}<main class="pick"><div class="bar-title"><button data-act="go" data-to="home">‹ 返回</button><b>${kind==='chat'?'召见谁？':'赏给谁？'}</b></div>
   <section class="people">${ids.map(id=>personCard(id,kind==='chat'?'chat-with':'gift-to')).join('')}</section>
   <p class="muted center">${kind==='chat'?(E.away(s,'C03')&&ids.includes('C03')?'人在外地的，只能写信。':'每次召见最多说六句。说到心坎上，情分涨得多。'):'送对了心头好，情分 +6；寻常的 +2；同样的东西再送，只 +1；送到讨厌的，情分 −3。'}</p></main>`;
@@ -346,6 +363,7 @@ function budgetLine() {
   const f = budgetDisplay(s);
   return `<button class="budget-line" data-act="go" data-to="finance">
     本月进 ${moneyText(f.income)} · 出 ${moneyText(f.outgo)} · 月底预计 ${moneyText(f.expected)}
+    ${f.shortfall ? ` · 尚缺 ${moneyText(f.shortfall)}` : ''}
   </button>`;
 }
 
@@ -372,12 +390,12 @@ function memorialView() {
   return `${header()}<main class="government">
     <button data-act="go" data-to="home">‹ 合上折匣</button>
     <h2>折匣 · ${counts.pending} 道待批</h2>
-    <p>另有 ${counts.waiting} 道正在查勘，原折保留，等勘报回来再裁。</p>
+    ${counts.waiting ? `<p>另有 ${counts.waiting} 道正在查勘，原折保留，等勘报回来再裁。</p>` : ''}
     <p>急灾排在最前。查核只查清楚，办事还要另拨银子。</p>
     ${s.memorials.some(m => m.result) ? '<button data-act="archive-reports">收存待阅回报（不占时辰）</button>' : ''}
-    <details><summary>已收回报 · ${s.govReports.length}</summary>
-      ${s.govReports.slice(-12).reverse().map(m => `<p>${esc(m.body)}</p>`).join('') || '<p>尚无。</p>'}
-    </details>
+    ${s.govReports.length ? `<details><summary>已收回报 · ${s.govReports.length}</summary>
+      ${s.govReports.slice(-12).reverse().map(m => `<p>${esc(m.body)}</p>`).join('')}
+    </details>` : ''}
     <p>${r?.charged ? `本时辰还可批 ${r.left} 道；留中也算一道。合上再开不另扣时辰。` :
       '浏览不占时辰，第一次落笔才用一个时辰。'}</p>
     ${view.feedback ? paras(view.feedback) : ''}
@@ -547,8 +565,16 @@ function endingView(){
  if(s.year>=7)return longEndingView();
  const vol=s.vol||1,v2=vol>=2,K=[ENDING_KINGDOM,ENDING_KINGDOM2,ENDING_KINGDOM3][vol-1];
  const e=E.ending(s),low=Math.min(treasuryIndex(s),...['people','court','palace','health'].map(k=>s.stats[k])),k=K.find((x,i)=>e.score>=x.min&&!(i===0&&(low<40||!e.governmentReady))&&!(i===1&&low<20))||K.at(-1);
- const text=p=>{if(p.gone)return '年羹尧在狱中。他托人带出一句话：臣不怨皇上。只是这一句话，比怨更让你睡不着。';if(vol===3)return ENDING3[p.id][p.tier];if(v2)return ENDING2[p.id][p.tier];return p.tier===3?LOVER_ENDING[p.id]:ENDING_PEOPLE[p.id][Math.min(p.tier,2)];};
- const label=p=>p.gone?'狱中':p.tier===3?(p.id==='C05'?'知己':'相守'):stageOf(p.aff);
+ const text = p => {
+  if (p.gone) return p.id === 'C03' && s.flags.nian_prison ?
+   '年羹尧在狱中。他托人带出一句话：臣不怨皇上。只是这一句话，比怨更让你睡不着。' :
+   `${PEOPLE[p.id].name}已不在身边。共同经历的往事，仍记在这一世的起居注里。`;
+  if(vol===3)return ENDING3[p.id][p.tier];
+  if(v2)return ENDING2[p.id][p.tier];
+  return p.tier===3?LOVER_ENDING[p.id]:ENDING_PEOPLE[p.id][Math.min(p.tier,2)];
+ };
+ const label = p => p.gone ? p.id === 'C03' && s.flags.nian_prison ? '狱中' : '离场' :
+  p.tier === 3 ? (p.id === 'C05' ? '知己' : '相守') : stageOf(p.aff);
  return `<div class="stage" style="--bg:url('${abs(BG.court)}')"><article class="paper ending">
   <small>雍正${['二','四','六'][vol-1]}年 · 岁末</small><h2>${k.title}</h2>${paras(k.text)}
   <div class="chips">${STATS.map(x=>`<span class="chip">${x.name} ${statValue(x.id,s.stats[x.id])}</span>`).join('')}<span class="chip">了结要务 ${e.solved}/3</span></div>
@@ -580,12 +606,10 @@ function rebirthView(){
 }
 
 // ---------- 人物 / 起居注 / 设置 ----------
-const wishLabel=w=>({open:'愿意考虑',later:'暂缓',no:'不生育'})[w]||'愿意考虑';
-function familyStatus(){const ids=Object.keys(s.pregnancy||{}).filter(id=>s.pregnancy[id].known||s.pregnancy[id].fake);return ids.length?`<section class="family-status"><h3 class="sec">宫中近况</h3>${ids.map(id=>{const p=s.pregnancy[id];return `<div class="card"><b>${esc(nm(id))} · ${p.fake?'待复核传闻':'有喜'}</b><p>${p.fake?'还没有确认真实孕期。温实初可复核，传闻不会生成孩子。':`预期 ${esc(p.due)}，照护 ${p.care}，风险 ${p.risk}。安胎每月一次，可用一个时辰或内帑一万两。`}</p>${!p.fake?careButtons(id):''}</div>`;}).join('')}</section>`:'';}
-function careButtons(id){const p=s.pregnancy[id],blocked=s.ended||s.night||s.agenda.length||s.pendingBirth||s.familyArt?.required||p.caredAt===E.monthKey(s);return `<button data-act="family-care" data-id="${id}" ${blocked||s.ap<1?'disabled':''}>安胎 · 1 时辰</button> <button data-act="family-care" data-id="${id}" data-pay="yes" ${blocked||s.stats.inner<1?'disabled':''}>安胎 · 内帑 1 万两</button>`;}
-function motherControls(id){const p=s.people[id],preg=s.pregnancy[id];return `<section class="card"><h3>商量生育</h3><p>本人意愿：${wishLabel(p.wish)}。商量花一个时辰，每月一次。她会按自己的性格与情分答复；愿意考虑也可以再改为暂缓或不生育。没有孩子，原有关系线照样完整。</p><div class="family-actions">${[['open','商量迎接孩子'],['later','商量暂缓'],['no','商量不生育']].map(([wish,label])=>`<button data-act="family-wish" data-id="${id}" data-wish="${wish}" ${!E.canAct(s)||E.away(s,id)||E.gone(s,id)?'disabled':''}>${label}</button>`).join('')}<button data-act="family-tonic" data-id="${id}" ${!E.canAct(s)?'disabled':''}>请温实初调养 · 1 时辰</button>${id==='C07'&&!s.flags.stop_huanyi?`<button data-act="family-stop" ${!E.canAct(s)?'disabled':''}>停用欢宜香 · 1 时辰</button>`:''}</div>${preg?`<p>${preg.fake?'假孕传闻待复诊，不计真实孕期。':preg.known?`孕期从 ${esc(preg.start)} 记起，预期 ${esc(preg.due)}。照护 ${preg.care}，风险 ${preg.risk}。`:'起居已记录，尚未复诊确认。'}</p>${preg.known&&!preg.fake?careButtons(id):''}`:''}</section>`;}
-function childrenSection(){return `<section class="children-section"><h3 class="sec">皇嗣 · ${(s.children||[]).length}</h3><p class="muted small">全部皇嗣按未成年人保护，只安排亲情、读书和节庆日常。</p>${s.children.length?s.children.map(c=>{const age=F.childAge(s,c),stage=F.childStage(s,c),pic=KID_ART[c.art[stage]];return `<article class="child-card">${pic?`<img src="${pic.mobile}" alt="${esc(pic.description)}">`:'<div class="kid-empty">少年立绘待选</div>'}<div><h3>${esc(c.name)} · ${c.sex==='男'?'皇子':'公主'}</h3><p>生母：${esc(nm(c.mother))} · ${age}岁 · 未成年<br>出生：${esc(c.born)}${E.childBirthdays(s).some(x=>x.id===c.id)?' · 本月生辰':''}</p><p>近况：${esc(c.notes.at(-1)||'平安成长')}</p>${c.traits.length?`<p>性情：${c.traits.map(esc).join('、')}</p>`:''}<button data-act="kid-art-open" data-id="${c.id}">更换${stage==='infant'?'婴儿':'少年'}立绘</button>${age>=10?`<button data-act="kid-study" data-id="${c.id}" data-kind="read" ${!E.canAct(s)?'disabled':''}>读书 · 1 时辰</button><button data-act="kid-study" data-id="${c.id}" data-kind="quiz" ${!E.canAct(s)?'disabled':''}>考校 · 1 时辰</button>`:''}</div></article>`;}).join(''):'<p>尚无皇嗣。生育由本人意愿决定，不必为此赶进度。</p>'}</section>`;}
-function familyWizard(){const b=s.pendingBirth,c=s.familyArt&&F.childById(s,s.familyArt.child),stage=b?'infant':F.childStage(s,c),sex=b?.sex||c.sex,chosen=view.kidArt&&KID_ART[view.kidArt],pics=Object.values(KID_ART).filter(p=>p.stage===stage&&p.sex===sex);return `<div class="family-wizard"><article class="paper"><small>${b?'宫中添喜':'皇嗣立绘'} · ${esc(dateText(s))}</small><h2>${b?b.name?`为${esc(b.name)}挑选婴儿立绘`:'给孩子取名':`${esc(c.name)} · ${F.childAge(s,c)}岁`}</h2>${b&&!b.name?`<p>${esc(nm(b.mother))}诞下${sex==='男'?'皇子':'公主'}。取名后，再挑一张婴儿立绘。</p><form data-act="kid-name"><label for="kidName">名字</label><input id="kidName" name="t" maxlength="12" autocomplete="off" placeholder="输入名字"><button class="primary">就用这个名字</button></form><div class="family-actions">${F.nameIdeas(sex).map(n=>`<button data-act="kid-name-idea" data-name="${n}">${n}</button>`).join('')}</div>`:`<p>点击缩略图可放大预览，再确认。当前图库：${stage==='infant'?'婴儿':'十岁起的少年'} · ${sex==='男'?'皇子':'公主'}。</p>${pics.some(pic=>pic.placeholder)?'<p class="muted small">当前图库含姓名牌占位，正式立绘待补。</p>':''}<div class="kid-art-grid">${pics.map(pic=>`<button data-act="kid-art-preview" data-art="${pic.id}" aria-pressed="${chosen?.id===pic.id}"><img src="${pic.thumb}" alt="${esc(pic.description)}"><span>${esc(pic.description)}</span></button>`).join('')}</div>${chosen&&pics.includes(chosen)?`<div class="kid-preview"><img src="${chosen.mobile}" alt="${esc(chosen.description)}"><p>${esc(chosen.description)}${chosen.placeholder?' · 占位图':''}</p><button class="primary" data-act="kid-art-confirm">确认这张立绘</button></div>`:'<p>请先点选一张图。</p>'}${s.familyArt&&!s.familyArt.required?'<button data-act="kid-art-cancel">返回人物页</button>':''}`}</article></div>`;}
+const familyStatus = () => FamilyUI.familyStatus(s);
+const motherControls = id => FamilyUI.motherControls(s, id);
+const childrenSection = () => FamilyUI.childrenSection(s);
+const familyWizard = () => FamilyUI.familyWizard(s, view);
 function familyResult(fn){try{const r=fn();save();go({name:'result',result:r});}catch(e){toast(e.message);}}
 function peopleView(){
  const id=view.id;
@@ -629,9 +653,7 @@ function settingsView() {
       <button data-act="ai-toggle">${m === 'off' ? '尝试开启 AI' : '关闭 AI，改用固定文字'}</button></div>
     ${m !== 'server' ? apiConnectionForm() : ''}
     ${s ? freedomSettings() : ''}
-    <div class="card"><b>存档</b><p>每个动作后自动保存在这台设备的浏览器里。</p>
-      ${s ? '<button data-act="new-confirm">重新开始</button> ' : ''}
-      <button data-act="title">回到标题</button></div>
+    ${savePanel(s)}
   </main>${s ? nav() : ''}`;
 }
 
@@ -642,8 +664,10 @@ function apiConnectionForm() {
     <p class="small">默认 DeepSeek。密钥只存在这台设备的浏览器里，不进存档。</p>
     <label>地址<input name="url" value="${esc(c.url)}"></label>
     <label>模型<input name="model" value="${esc(c.model)}"></label>
-    <label>密钥<input name="key" type="password" placeholder="${c.key ? '已保存，留空不改' : 'sk-……'}" autocomplete="off"></label>
-    <label class="chk"><input type="checkbox" name="remember" aria-describedby="remember-key-hint" checked> 记住在这台设备上</label>
+    <label>密钥<input name="key" type="password"
+      placeholder="${c.key ? c.remember === false ? '本次会话已填写，留空不改' : '已保存，留空不改' : 'sk-……'}" autocomplete="off"></label>
+    <label class="chk"><input type="checkbox" name="remember" aria-describedby="remember-key-hint"
+      ${c.remember === false ? '' : 'checked'}> 记住在这台设备上</label>
     <p class="small muted" id="remember-key-hint">密钥会以明文保存在本浏览器。</p>
     <button ${busy ? 'disabled' : ''}>${busy ? '正在测试……' : '测试并启用'}</button></form>`;
 }
@@ -665,6 +689,7 @@ function titleView() {
     <div class="title-box"><h1>重生长雍<br>帝王赋</h1>
       <p>雍正元年正月。你从死里醒来，那些后来再也挽回不了的人，此刻都还在。</p>
       ${has ? '<button class="primary" data-act="continue">继续</button>' : ''}
+      ${!has ? recoveryEntry() : ''}
       <button class="${has ? '' : 'primary'}" data-act="${has ? 'new-confirm' : 'new'}">新开一局</button>
       <p class="muted small">${campaign} · AI ${AI.aiMode() === 'off' ? '未开启' : '已开启'} ·
         <a href="#" data-act="go" data-to="settings">设置</a></p>
@@ -679,6 +704,8 @@ function playHelp() {
       入夜选一处去，或独寝。月末结算。</p>
     <p>情分到「相知」，那个人会在夜里有话想说；到「倾心」，还有一次说破心意的机会。
       若你在两难里没站在谁那边，那人会有心结，要当面说开。</p>
+    <p>家庭：孕期约十个游戏月，须由太医复诊确认。皇嗣只安排亲情、读书和日常；按出生日期换用合龄立绘。
+      生育由本人意愿决定，不影响原有关系线。照护和风险是孕期记录，安胎可降低风险。</p>
     <p>主线铺至三十年，之后仍可无限续玩。六年后按阶段回顾，新政、用人和宫中故事继续展开。
       普通故事可择月呈报，急灾、军情、生辰照常。除夕与中秋须过，其余节庆随意。阶段之间存档、情分和皇嗣出生记录全部延续，
       也可以带着一样记忆“再活一世”。</p>
@@ -729,7 +756,7 @@ function celebration() {
   let event = activeAchievement?.event || s?.cele?.[0];
   if (!event) return '';
   if (event.k === 'ach' && !activeAchievement) {
-    event = takeAchievement(s, E.save);
+    event = takeAchievement(s, persistGame);
     activeAchievement = {save: s, event};
   }
   let img = '', big = '', small = '', cls = '';
@@ -795,7 +822,10 @@ function render() {
       try {globalThis.navigator?.vibrate?.(30);} catch {}
     }
   }
-  app.innerHTML = (family ? familyWizard() : (VIEWS[view.name] || home)()) + overlay;
+  const warning = saveFailed ? `<div class="save-warning" role="alert">
+    <b>本次进度尚未保存</b><span>这次保存没有成功。请先别关闭页面，可导出进度留存，再重试保存。</span>
+    <button data-act="save-export">导出这份进度</button><button data-act="save-retry">重试保存</button></div>` : '';
+  app.innerHTML = warning + (family ? familyWizard() : (VIEWS[view.name] || home)()) + overlay;
   const messages = document.getElementById('msgs');
   if (messages) messages.scrollTop = messages.scrollHeight;
   if (view.name === 'chat' && !busy) app.querySelector('.say input')?.focus();
@@ -803,11 +833,27 @@ function render() {
 function go(v){view=v;render();window.scrollTo(0,0);}
 
 // ---------- 动作 ----------
-async function withBusy(fn){if(busy)return;busy=true;render();try{await fn();}catch(e){toast(e.message||String(e));}finally{busy=false;save();render();}}
+const withBusy = createActionRunner({
+ onBusy: value => {busy = value; render();},
+ onError: error => toast(error.message || String(error)),
+ persist: save,
+});
 function learn(id,g,liked){s.known=s.known||{};const k=s.known[id]=s.known[id]&&!Array.isArray(s.known[id])?s.known[id]:{};k[g]=liked;}
-const likedList=id=>Object.entries(s.known?.[id]||{}).filter(([,v])=>v).map(([g])=>g);
+const likedList = id => Object.entries(s.known?.[id] || {}).filter(([key, value]) => GIFTS[key] && value === true).map(([g]) => g);
 
 const ACTS={
+ 'save-export': () => {try {Saves.downloadGame(s);} catch (error) {toast(error.message);}},
+ 'save-restore': () => withBusy(async () => {
+  const info = Saves.backupInfo();
+  if (!info) throw Error('还没有可恢复的上一份备份。');
+  const accepted = await askConfirmation({title: '恢复上一份备份？',
+   text: `将回到${FamilyUI.gameDate(`${info.year}-${info.month}`)}。当前有效进度会先保留为备份，可以再恢复回来。`,
+   cancel: '保留现在的进度', accept: '恢复备份'});
+  if (!accepted) return;
+  s = Saves.restoreBackup(); saveFailed = false;
+  go({name: s.ended ? 'ending' : 'home'});
+ }, {save: false}),
+ 'save-retry': () => {if (save()) toast('进度已保存'); render();},
  'festival-open': el => openScene(el.dataset.id),
  'opening-edict': () => familyResult(() => E.openingEdict(s)),
  'fiscal-invest':el=>familyResult(()=>E.investFiscal(s,el.dataset.id)),
@@ -858,7 +904,7 @@ const ACTS={
  },
  continue:()=>{s=E.load();go({name:s?.ended?'ending':'home'});},
  scene:()=>openScene(E.pendingScene(s)),
- pick:async (el) => {
+ pick: el => withBusy(async () => {
   const id = view.id,
     r = E.choose(s, id, el.dataset.opt);
   save();
@@ -879,7 +925,7 @@ const ACTS={
     }
   }
   render();
-},
+}),
  'scene-next':()=>{
   if(view.result?.optional)return go({name:'home'});
   if(s.agenda.length)return openScene(E.pendingScene(s));
@@ -925,7 +971,7 @@ const ACTS={
  cele: () => {
   if (activeAchievement?.save === s) activeAchievement = null;
   else s.cele.shift();
-  E.save(s);
+  persistGame();
   render();
  },
  replay:el=>go({name:'replay',id:el.dataset.id}),
@@ -981,7 +1027,10 @@ const ACTS={
     const r=E.applyFiat(s,line,v.fiat,{actor:id});s.night=true;
     view.result={...r,id,fate};return;
    }
-   const lines=id?NIGHT_LINES[id]:null,bad=fate&&!fate.free&&fate.tier<=1;const text=id?(v?.text||(bad?'对方告了罪，你让人添了热茶。灯下坐了一会儿，便各自歇下。':(lines?.length?lines[(s.month+s.year)%lines.length]:`${nm(id)}行过礼，请你坐下。你们喝了茶，说过几句家常，便早些歇下。`))):'你让人都退下，一个人睡了。难得一夜无梦。';
+   const bad = fate && !fate.free && fate.tier <= 1;
+   const ordinary = nightText(s,id) || `${nm(id)}行过礼，请你坐下。你们喝了茶，说过几句家常，便早些歇下。`;
+   const text = !id ? '你让人都退下，一个人睡了。难得一夜无梦。' :
+    v?.text || (bad ? '对方告了罪，你让人添了热茶。灯下坐了一会儿，便各自歇下。' : ordinary);
    const r=E.spendNight(s,id,{affection:v?v.affection:3,health:v?.health||0,memory:v?.memory||'',fate});view.result={...r,id,fate,text:!v&&!bad&&r.birthday?BIRTH_LINES[id].night:text};});
  },
  'month-end':()=>monthEnd(),
@@ -991,9 +1040,12 @@ const ACTS={
 // 打开一件要事；旨意的回报先请 AI 写出来
 async function openScene(id){
  if(id?.startsWith('FU')&&!s.dyn?.[id]&&AI.aiMode()!=='off'){
-  view={name:'scene',id,loading:true};render();
-  const e=(s.edicts||[]).find(x=>'FU'+x.n===id);const v=e?await AI.edictFollow(s,e):null;
-  if(v){E.setDyn(s,id,v);save();}
+  return withBusy(async () => {
+   view={name:'scene',id,loading:true};render();
+   const e=(s.edicts||[]).find(x=>'FU'+x.n===id);const v=e?await AI.edictFollow(s,e):null;
+   if(v)E.setDyn(s,id,v);
+   go({name:'scene',id});
+  });
  }
  go({name:'scene',id});
 }
@@ -1044,7 +1096,28 @@ app.addEventListener('click',e=>{
  const el=e.target.closest('[data-act]');if(!el||el.tagName==='FORM'||el.disabled)return;
  const f=ACTS[el.dataset.act];if(f){e.preventDefault();f(el);}
 });
-app.addEventListener('change',e=>{if(e.target.dataset.pref==='tenderness'){try{setTenderness(e.target.checked);}catch(err){toast(err.message);render();}}});
+// 文件只在本机读取；确认以前不写存档，取消和坏文件都保留当前进度。
+async function importSave(file) {
+ if (!file) return;
+ if (file.size > Saves.MAX_SAVE_BYTES) return toast('存档文件过大，请选择导出的 JSON 文件。');
+ await withBusy(async () => {
+  const candidate = Saves.parseGame(await file.text());
+  const date = FamilyUI.gameDate(`${candidate.year}-${candidate.month}`);
+  const accepted = await askConfirmation({title: '导入这份游戏进度？',
+   text: `${date} · 第${candidate.life || 1}世 · 皇嗣${candidate.children.length}人。确认后替换当前进度，并先保留当前有效备份。`,
+   cancel: '保留现在的进度', accept: '导入并继续'});
+  if (!accepted) return;
+  s = Saves.installGame(candidate); saveFailed = false;
+  go({name: s.ended ? 'ending' : 'home'});
+ }, {save: false});
+}
+app.addEventListener('change', e => {
+ if (busy) return;
+ if (e.target.id === 'saveImport') return importSave(e.target.files?.[0]);
+ if (e.target.dataset.pref === 'tenderness') {
+  try {setTenderness(e.target.checked);} catch (error) {toast(error.message); render();}
+ }
+});
 app.addEventListener('submit',e=>{
  e.preventDefault();if(!audienceOf().confirmed||busy)return;
  const f=e.target,t=(f.t?.value||'').trim();
@@ -1059,10 +1132,4 @@ app.addEventListener('submit',e=>{
 
 (async()=>{render();if(!audienceOf().confirmed)return;await AI.initAI();s=E.load();render();})();
 
-// iOS Safari 不认 user-scalable=no：拦下双指缩放和双击放大；输入框收起后把页面放回原位
-(()=>{const d=globalThis.document;if(!d?.addEventListener)return;
- for(const ev of ['gesturestart','gesturechange','gestureend'])d.addEventListener(ev,e=>e.preventDefault(),{passive:false});
- d.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault();},{passive:false});
- let last=0;d.addEventListener('touchend',e=>{const now=Date.now();if(now-last<300&&!e.target?.closest?.('input,textarea,select,button'))e.preventDefault();last=now;},{passive:false});
- d.addEventListener('focusout',e=>{if(e.target?.matches?.('input,textarea'))setTimeout(()=>{if(!d.activeElement?.matches?.('input,textarea'))globalThis.scrollTo?.(0,globalThis.scrollY||0);},50);});
-})();
+// 使用浏览器原生缩放，长篇阅读可按需要放大。

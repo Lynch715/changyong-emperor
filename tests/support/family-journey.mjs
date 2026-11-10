@@ -23,6 +23,10 @@ export function resolveAgenda(s, { stopAt = null, onScene = null } = {}) {
                 opts.find((o) => !o.redeem) ||
                 opts[0];
     E.choose(s, id, opt.id);
+    if (sc.familyType === 'growth' && s.familyArt?.required) {
+      const child = F.childById(s, s.familyArt.child);
+      E.changeChildArt(s, child.id, F.defaultChildArt(F.childStage(s, child), child.sex));
+    }
     if (s.pendingBirth || s.familyArt?.required) return sc;
   }
   return null;

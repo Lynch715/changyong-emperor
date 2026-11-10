@@ -36,7 +36,14 @@ export const ACHIEVEMENTS=[
  {id:'life2',icon:'梦',title:'再活一世',desc:'带着记忆，从头再来',check:s=>(s.life||1)>=2},
  {id:'life3',icon:'轮',title:'三生',desc:'第三次醒在雍正元年',check:s=>(s.life||1)>=3}
 ];
-export function loadGallery(storage=globalThis.localStorage){try{return JSON.parse(storage.getItem(GALLERY_KEY)||'null')||{ach:{},seen:{}};}catch{return {ach:{},seen:{}};}}
+// JSON 能解析也未必是珍藏对象；只补损坏字段，保留仍然有效的成就和选择。
+export function loadGallery(storage = globalThis.localStorage) {
+  const record = value => value && typeof value === 'object' && !Array.isArray(value);
+  try {
+    const value = JSON.parse(storage.getItem(GALLERY_KEY) || 'null');
+    return {ach: record(value?.ach) ? value.ach : {}, seen: record(value?.seen) ? value.seen : {}};
+  } catch { return {ach: {}, seen: {}}; }
+}
 // 每次存档后调用；返回新解锁的成就
 export function updateGallery(s,storage=globalThis.localStorage){
  const g=loadGallery(storage),fresh=[];g.ach=g.ach||{};g.seen=g.seen||{};

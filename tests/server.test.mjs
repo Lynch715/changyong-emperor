@@ -31,3 +31,28 @@ test('A1 每日上限为二时，第三次请求返回429且不再访问模型',
   assert.equal((await request(server, '/api/v2', options)).status, 429);
   assert.equal(calls, 2);
 });
+
+test('全面审计：同时到达的请求仍遵守每日上限和三路并发上限', async () => {
+  for (const [limit, allowed] of [[2, 2], [20, 3]]) {
+    let calls = 0, peak = 0, active = 0;
+    const server = makeServer({config: {...config, limit}, fetcher: async () => {
+      calls++; peak = Math.max(peak, ++active);
+      await new Promise(resolve => setImmediate(resolve));
+      active--;
+      return {ok: true, json: async () => ({choices: [{message: {content: '{"ok":true}'}}]})};
+    }});
+    const results = await Promise.all(Array.from({length: 8}, () => request(server, '/api/v2', options)));
+    assert.equal(results.filter(r => r.status === 200).length, allowed);
+    assert.equal(results.filter(r => r.status === 429).length, 8 - allowed);
+    assert.equal(calls, allowed);
+    assert.ok(peak <= 3);
+  }
+});
+
+test('全面审计：编码斜线不能越过静态资源目录，空JSON返回400', async () => {
+  const server = makeServer({config});
+  for (const url of ['/src/..%2fpackage.json', '/assets/..%2fREADME.md', '/src/v2/..%2f..%2fpackage.json']) {
+    assert.equal((await request(server, url)).status, 404, url);
+  }
+  assert.equal((await request(server, '/api/v2', {...options, body: 'null'})).status, 400);
+});

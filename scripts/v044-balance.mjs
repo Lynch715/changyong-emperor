@@ -26,7 +26,7 @@ export function settleLongAgenda(s, metrics = { stories: {}, family: [] }) {
     }
     if (s.familyArt?.required) {
       const c = F.childById(s, s.familyArt.child);
-      E.changeChildArt(s, c.id, c.sex === '男' ? 'k_youth_01' : 'k_youth_05');
+      E.changeChildArt(s, c.id, F.defaultChildArt(F.childStage(s, c), c.sex));
       continue;
     }
     const id = E.pendingScene(s),

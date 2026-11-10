@@ -148,8 +148,17 @@ export function gain(s,id,n,why=''){
 export function cele(s,c){(s.cele=s.cele||[]).push(c);}
 const count=(s,k)=>{s.count=s.count||{};s.count[k]=(s.count[k]||0)+1;};
 export function remember(s,id,text){if(!text)return;const p=s.people[id];p.memories.push({y:s.year,m:s.month,text:String(text).slice(0,60)});if(p.memories.length>12)p.memories.shift();}
-export function secondReady(s,id,letter=false){const p=s.people[id];return p.first&&!p.second&&p.aff>=45&&!p.knot&&p.firstAt!==monthKey(s)&&present(s,id)&&(letter||!away(s,id));}
-export function thirdReady(s,id,letter=false){const p=s.people[id];return p.second&&!p.third&&p.aff>=65&&!p.knot&&p.secondAt!==monthKey(s)&&present(s,id)&&(letter||!away(s,id));}
+// 离场的人不再提示夜间关系剧情，原有幕次与情分仍保留。
+export function secondReady(s, id, letter = false) {
+  const p = s.people[id];
+  return p.first && !p.second && p.aff >= 45 && !p.knot && p.firstAt !== monthKey(s) &&
+    present(s, id) && !gone(s, id) && (letter || !away(s, id));
+}
+export function thirdReady(s, id, letter = false) {
+  const p = s.people[id];
+  return p.second && !p.third && p.aff >= 65 && !p.knot && p.secondAt !== monthKey(s) &&
+    present(s, id) && !gone(s, id) && (letter || !away(s, id));
+}
 export const RELATION_PACING={fourthYear:2,fifthYear:3,gap:2};
 const relationGap=(s,value)=>!value||idx(s.year,s.month)-T.serial(value.split('-').map(Number))>=RELATION_PACING.gap;
 export function fourthReady(s,id,letter=false){const p=s.people[id];return relationGap(s,p.thirdAt)&&s.year>=RELATION_PACING.fourthYear&&p.third&&!p.fourth&&p.aff>=75&&!p.knot&&p.thirdAt!==monthKey(s)&&present(s,id)&&!gone(s,id)&&(letter||!away(s,id));}
@@ -236,7 +245,7 @@ export function startMonth(s) {
       (p) =>
         !s.used.petitions.includes(p.id) &&
         (!p.months || p.months.includes(s.month)) &&
-        (!p.need || (present(s, p.need) && s.people[p.need].met && !away(s, p.need))),
+        (!p.need || (present(s, p.need) && s.people[p.need].met && !away(s, p.need) && !gone(s, p.need))),
     );
     if (left.length) {
       const p = left[Math.floor(rand(s) * left.length)];
@@ -257,6 +266,7 @@ export function startMonth(s) {
       !p.knot &&
       present(s, id) &&
       !away(s, id) &&
+      !gone(s, id) &&
       s.lastVisit?.[id] !== monthKey(s) &&
       !(s.visitedAt?.[id] >= idx(s.year, s.month) - 2)
     );
@@ -270,7 +280,13 @@ export function startMonth(s) {
   }
   restoreFiat(s, fiatAPI);
 }
-export function visitOf(s){if(!s.visit)return null;const v=VISITS[s.visit.id][s.visit.tier][s.visit.i];return {id:s.visit.id,...v};}
+// 旧档尚留着的来访也要核对人物现状，不让离场或外任人物突然登门。
+export function visitOf(s) {
+  const id = s.visit?.id;
+  if (!PEOPLE[id] || !present(s, id) || away(s, id) || gone(s, id)) return null;
+  const v = VISITS[id]?.[s.visit.tier]?.[s.visit.i];
+  return v ? {id, ...v} : null;
+}
 // 来访：不占时辰，迎进来就有好处
 export function acceptVisit(s) {
   const v = visitOf(s);
@@ -296,7 +312,7 @@ function followFallback(s,id){const e=(s?.edicts||[]).find(x=>'FU'+x.n===id);if(
 // 场景查询显式接收存档；单参数旧调用暂时只兼容静态正文。
 export function scene(s, id) {
   if (typeof s === 'string' && id === undefined) {id = s; s = null;}
-  const sc = s?.dyn?.[id] || longScene(s, id) || M.majorScene(s, id) || SCENES[id] || ROMANCE[id] ||
+  const sc = s?.dyn?.[id] || longScene(s, id, {away}) || M.majorScene(s, id) || SCENES[id] || ROMANCE[id] ||
     SCENES2[id] || SCENES3[id] || POOL.find(value => value.id === id) || SURPRISES.find(value => value.id === id) ||
     (id?.startsWith('FU') ? followFallback(s, id) : null) ||
     (id?.startsWith('FE') ? festivalScene(id, s ? weatherOf(s) : '') : null);
@@ -309,12 +325,19 @@ export const upcomingStories=s=>T.upcoming(s,id=>scene(s,id),sc=>flexEligible(s,
 export function setDyn(s,id,sc){s.dyn=s.dyn||{};s.dyn[id]={...sc,id,kind:sc.kind||'edictfollow'};}
 // 白天做完事，有时会撞见一件小事
 export function rollSurprise(s){if(s.agenda.length||s.ended||rand(s)>=0.28)return null;s.used.surprises=s.used.surprises||[];
- const ok=x=>!s.used.surprises.includes(x.id)&&[].concat(x.need||[]).every(n=>s.people[n]?.met&&present(s,n)&&!away(s,n));
+ const ok=x=>!s.used.surprises.includes(x.id)&&
+  [].concat(x.need||[]).every(n=>s.people[n]?.met&&present(s,n)&&!away(s,n)&&!gone(s,n));
  const left=SURPRISES.filter(ok);if(!left.length)return null;const x=left[Math.floor(rand(s)*left.length)];s.used.surprises.push(x.id);s.agenda.unshift(x.id);return x.id;}
 // 偏心的后果：不和的人吃醋，亲近的人跟着高兴
 function social(s,id,heavy){const out={},notes=[];if(!id)return {people:out,notes};
- for(const r of rivalsOf(id)){const p=s.people[r];if(!p?.met||!present(s,r)||p.aff<25)continue;const n=heavy?-3:-1;const d=gain(s,r,n);if(d){out[r]=d;if(JEALOUS[r]?.[id])notes.push(JEALOUS[r][id]);}}
- for(const f of friendsOf(id)){const p=s.people[f];if(!p?.met||!present(s,f)||p.knot)continue;const d=gain(s,f,1);if(d){out[f]=d;if(FRIEND_LINES[f]?.[id])notes.push(FRIEND_LINES[f][id]);}}
+ for(const r of rivalsOf(id)){
+  const p=s.people[r];if(!p?.met||!present(s,r)||gone(s,r)||p.aff<25)continue;
+  const n=heavy?-3:-1,d=gain(s,r,n);if(d){out[r]=d;if(JEALOUS[r]?.[id])notes.push(JEALOUS[r][id]);}
+ }
+ for(const f of friendsOf(id)){
+  const p=s.people[f];if(!p?.met||!present(s,f)||gone(s,f)||p.knot)continue;
+  const d=gain(s,f,1);if(d){out[f]=d;if(FRIEND_LINES[f]?.[id])notes.push(FRIEND_LINES[f][id]);}
+ }
  return {people:out,notes:notes.length?[notes[Math.floor(rand(s)*notes.length)]]:[]};}
 
 // 年节能陪的人：见过、在宫里、不在外地。只列情分最深的三位（两情相悦的优先）
@@ -533,17 +556,26 @@ export function choose(s, id, optId) {
 function spend(s) {
   if (s.pendingBirth || s.familyArt?.required) throw Error('先完成孩子的取名与立绘选择。');
   if (s.ended) throw Error('这一卷已走完。');
+  if (s.night) throw Error('今夜已经过了，请下个月再安排。');
   if (s.nanfeng?.visit && !s.nanfeng.visit.done) throw Error('先把馆里的茶喝完。');
   if (s.agenda.length) throw Error('先把本月要事办完。');
   if (s.ap <= 0) throw Error('今日的时辰已经用完了。');
   s.ap--;
   s.reviewSession = null;
 }
-export function canAct(s){return !s.pendingBirth&&!s.familyArt?.required&&!s.agenda.length&&s.ap>0&&!s.ended&&!(s.nanfeng?.visit&&!s.nanfeng.visit.done);}
+export function canAct(s) {
+  return !s.pendingBirth && !s.familyArt?.required && !s.agenda.length && s.ap > 0 && !s.ended &&
+    !s.night && !(s.nanfeng?.visit && !s.nanfeng.visit.done);
+}
+
+// 在花银与扣时辰之前核对人选，离场人物保留记录但不能继续互动。
+function checkContact(s, id) {
+  if (!PEOPLE[id] || !s.people[id] || !present(s, id) || gone(s, id)) throw Error('眼下见不到这个人。');
+  if (PEOPLE[id].secondary && !s.people[id].met) throw Error('还没见过这个人。');
+}
 
 export function beginChat(s, id) {
-  if (PEOPLE[id]?.secondary && !s.people[id]?.met) throw Error('还没见过这个人。');
-  if (!present(s, id)) throw Error('还见不到这个人。');
+  checkContact(s, id);
   spend(s);
   recordContact(s, id);
   s.people[id].met = true;
@@ -580,6 +612,7 @@ export function hintLike(s,id){
 export function repairKnot(s,chat){const p=s.people[chat.id];if(!p.knot)return null;const line=ALL_REPAIR[p.knot.source]?.[chat.id]||'你们把那件事说开了。';log(s,`与${PEOPLE[chat.id].name}说开了「${p.knot.text}」`,'情');p.knot=null;cele(s,{k:'knot',id:chat.id});count(s,'knots');gain(s,chat.id,3);chat.gained+=3;return line;}
 
 export function giveGift(s, id, giftId) {
+  checkContact(s, id);
   const item = giftId === 'antique' ? s.inventory?.[0] : null;
   if (giftId === 'antique' && !item) throw Error('还没有寻到古玩。');
   const g = GIFTS[giftId];
@@ -848,7 +881,8 @@ export function writeMemorial(s, uid, text, result) {
 export function rest(s){spend(s);const stats=applyStats(s,{health:8+(weatherOf(s)==='闷热'?2:0)});log(s,'闭门休养了一日','行');return {title:'休养',text:'你推开折子，让苏培盛把门关上。睡了一个整觉，醒来时窗外的光正好。',stats,people:{}};}
 
 // 自拟休养：先检查人选和银子，成功后才用时辰。普通休养仍走上面的原流程。
-export const restCompanions=s=>Object.keys(s.people).filter(id=>present(s,id)&&!away(s,id)&&s.people[id].met&&PEOPLE[id]?.adult===true);
+export const restCompanions = s => Object.keys(s.people).filter(id =>
+  present(s, id) && !away(s, id) && !gone(s, id) && s.people[id].met && PEOPLE[id]?.adult === true);
 const finite=(n,fallback)=>Number.isFinite(Number(n))?Number(n):fallback;
 export function plannedRest(
   s,
@@ -934,7 +968,8 @@ export function spendNight(s, id, { affection = 4, health = 0, memory = '', fate
 }
 // 夜里遇到第二幕剧情时，作为要事插入
 export function queueSpecial(s, id) {
-  if (s.night) throw Error('今夜已经安排过了。');
+  familyReady(s);
+  if (!nightChoices(s).some(p => p.id === id)) throw Error('今夜去不了这里。');
   const sid = storyOf(s, id);
   if (!sid) throw Error('今夜没有新的剧情。');
   s.night = true;
@@ -1060,6 +1095,7 @@ export function agingLoss(s) {
 }
 
 export function endMonth(s) {
+  if (s.ended) throw Error('本阶段已走完，请先完成回顾并接续下一阶段。');
   if (s.pendingBirth || s.familyArt?.required) throw Error('先完成孩子的取名与立绘选择。');
   if (s.nanfeng?.visit && !s.nanfeng.visit.done) throw Error('先把馆里的茶喝完。');
   if (s.agenda.length) throw Error('本月还有要事没办。');

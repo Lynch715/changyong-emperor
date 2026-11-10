@@ -22,7 +22,7 @@ test('D4 真实界面入口能完整启动，仍先显示年龄确认页', async
     confirmAge();
     const link = {dataset: {act: 'go', to: 'settings'}};
     listeners.click({target: {closest: () => link}, preventDefault() {}});
-    assert.match(app.innerHTML, /name="remember" aria-describedby="remember-key-hint" checked/);
+    assert.match(app.innerHTML, /name="remember" aria-describedby="remember-key-hint"\s+checked/);
     assert.match(app.innerHTML, /id="remember-key-hint">密钥会以明文保存在本浏览器。/);
   } finally {
     for (const key of keys) {

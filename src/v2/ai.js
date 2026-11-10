@@ -32,15 +32,19 @@ export async function initAI(storage=globalThis.localStorage){
  if(saved?.mode==='byok'&&saved.key){byok={base:saved.url,model:saved.model,protocol:saved.protocol,key:saved.key};mode='byok';return mode;}
  mode='off';return mode;
 }
-export const savedConnection=(storage=globalThis.localStorage)=>readConnectionSettings(storage)||{url:DEFAULT_AI.url,model:DEFAULT_AI.model,protocol:DEFAULT_AI.protocol,key:''};
+// 会话连接与已保存连接使用同一份表单来源，留空密钥时能沿用当前连接。
+export const savedConnection = (storage = globalThis.localStorage) => sessionByok ?
+ {url: sessionByok.base, model: sessionByok.model, protocol: sessionByok.protocol, key: sessionByok.key, mode: 'byok', remember: false} :
+ readConnectionSettings(storage) || {url: DEFAULT_AI.url, model: DEFAULT_AI.model, protocol: DEFAULT_AI.protocol, key: ''};
 // 设置页：保存自己的 API，并试一次
 export async function saveConnection(form,remember,storage=globalThis.localStorage){
- const cur=readConnectionSettings(storage)||{};
+ const cur=savedConnection(storage);
  const v=connectionSettings({mode:'byok',url:form.url,model:form.model,protocol:form.protocol||cur.protocol||DEFAULT_AI.protocol,key:form.key,limit:cur.limit||100},cur);
- byok={base:v.url,model:v.model,protocol:v.protocol,key:v.key};
- const test=await callModel(byok,fetch.bind(globalThis),'只输出 JSON：{"ok":true}','测试');
+ const candidate={base:v.url,model:v.model,protocol:v.protocol,key:v.key};
+ const test=await callModel(candidate,fetch.bind(globalThis),'只输出 JSON：{"ok":true}','测试');
  if(!test)throw Error('没有收到回应。');
- storeConnectionSettings(storage,v,remember);if(!remember)sessionByok=byok;
+ storeConnectionSettings(storage,v,remember);
+ byok=candidate;sessionByok=remember?null:candidate;
  setAIOff(false,storage);mode='byok';lastError='';return true;
 }
 let sessionByok=null;

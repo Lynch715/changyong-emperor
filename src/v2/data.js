@@ -71,8 +71,7 @@ for(const id of CAST)PEOPLE[id].adult=true;
 // 只在主线里出场的人
 export const NAMES={C01:'雍正',C21:'太后',C11:'敬妃',C19:'颂芝',C20:'宝鹃',C22:'卫临',C26:'允祥',C28:'张廷玉',C32:'岳钟琪',...Object.fromEntries(Object.entries(PEOPLE).map(([k,v])=>[k,v.name]))};
 
-export const portrait=id=>`assets/exports/s11-v1/char_${id}_base-mobile.webp`;
-export const thumb=id=>`assets/exports/s11-v1/char_${id}_base-thumb.png`;
+export {portrait, thumb} from './portrait-paths.js';
 export const BG={desk:'assets/exports/s11-v1/art_bg_01-display.webp',palace:'assets/exports/s11-v1/art_bg_02-display.webp',garden:'assets/exports/s11-v1/art_bg_03-display.webp',court:'assets/exports/s11-v1/art_bg_04-display.webp'};
 export const bgFor=place=>/园|亭|西山|城南/.test(place)?BG.garden:/朝|殿上|军|偏殿|太和/.test(place)?BG.court:/养心|御案|御前/.test(place)?BG.desk:BG.palace;
 
@@ -146,7 +145,7 @@ export const TOPIC_LINES={
  C06:{greet:'“六宫都好。”宜修顿了顿，“臣妾也好。”',heart:'宜修听完，很久没说话。最后只轻轻说了句：“皇上今日，倒像是变了个人。”',work:'宜修把宫账上几处名目不清的地方指给你看，条理分明。'},
  C08:{greet:'“臣妾……一切都好。”安陵容声音很轻，“劳皇上挂念。”',heart:'安陵容抬起眼看了你一下，又飞快地垂下去：“皇上若不嫌，臣妾给皇上唱一段。”',work:'安陵容说起宫里乐谱的错漏，说着说着竟忘了紧张。'},
  C09:{greet:'“臣妾近来在读一本旧诗集，”甄嬛笑道，“读到一句，正想找人争一争。”',heart:'甄嬛看了你一会儿，轻声说：“皇上肯听，臣妾便说几句心里话。”她说起家里的海棠，说得很慢。',work:'甄嬛说起宫里几处规矩不合理的地方，句句都在点子上。'},
- C10:{greet:'“臣妾一切安好。”沈眉庄端正地答，“只是存菊堂的菊花，今年开得晚。”',heart:'沈眉庄沉默了一下，起身福了一福：“臣妾斗胆直言。”她说的话不中听，却句句是实，说完又告了罪。',work:'沈眉庄把一笔份例的账算给你看，算到最后一文都对得上。'},
+ C10:{greet:'“臣妾一切安好。”沈眉庄端正地答，“只是存菊堂的花木，臣妾还想再照料得周全些。”',heart:'沈眉庄沉默了一下，起身福了一福：“臣妾斗胆直言。”她说的话不中听，却句句是实，说完又告了罪。',work:'沈眉庄把一笔份例的账算给你看，算到最后一文都对得上。'},
  C04:{greet:'“臣一切都好。”温实初先看了看你的脸色，“倒是皇上，这几夜睡得可好？”',heart:'温实初听着，手在膝上握紧了又松开：“臣……臣不知道该怎么回皇上这句话。”',work:'温实初说起太医院的脉案太乱，想立个规矩，说得眼睛都亮了。'},
  C05:{greet:'“臣弟好得很。”允礼笑道，“府里那张琴修好了，皇兄哪天来听？”',heart:'允礼收了笑，认真看了你一会儿：“皇兄这话，臣弟记下了。”',work:'允礼把宗室里几桩扯皮的事说给你听，说得又快又清楚，末了还开了句玩笑。'},
  C03:{greet:'“臣好得很！”年羹尧声如洪钟，“西北的风吹惯了，京城的天倒显得闷。”',heart:'年羹尧愣了一下，难得地没接上话。半晌才说：“皇上这话……臣在西北，能记一辈子。”',work:'年羹尧说起西北的粮道，哪里险、哪里慢，一清二楚。'}

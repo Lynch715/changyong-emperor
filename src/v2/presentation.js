@@ -1,17 +1,27 @@
 import {forecast} from './fiscal.js';
 import {silver, moneyText} from './economy.js';
+import {NIGHT_LINES} from './data.js';
+
+// 带物候的夜话只在合适月份使用，其他月份沿用四季皆宜的原段落。
+export function nightText(s, id) {
+  const months = {C02: [7, 8, 9], C09: [1, 2, 3], C10: [7, 8, 9]};
+  const lines = (NIGHT_LINES[id] || []).filter((_, index) => index !== 1 || !months[id] || months[id].includes(s.month));
+  return lines.length ? lines[(s.month + s.year) % lines.length] : '';
+}
 
 // 首页只预估已知的月底收支，查看账目不会改变现金或办理安排。
 export function budgetDisplay(s) {
   const fiscal = forecast(s);
   const projects = Object.values(s.fiscal.projects);
   const policies = Object.values(s.policies);
+  const balance = silver(s.stats.treasury + fiscal.base + fiscal.province + fiscal.projects -
+    fiscal.publicOutgo - fiscal.policy - fiscal.arrears);
   return {
     ...fiscal,
     income: s.ledger.treasury.in,
     outgo: s.ledger.treasury.out,
-    expected: silver(s.stats.treasury + fiscal.base + fiscal.province + fiscal.projects -
-      fiscal.publicOutgo - fiscal.policy - fiscal.arrears),
+    expected: Math.max(0, balance),
+    shortfall: Math.max(0, -balance),
     showProjects: s.year > 1 || fiscal.projects !== 0 || projects.some(p => p.level > 0 || p.pending),
     showPolicy: s.year > 1 || fiscal.policy !== 0 || policies.some(p => p.active || p.progress > 0),
   };

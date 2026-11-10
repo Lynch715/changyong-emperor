@@ -1,3 +1,4 @@
+import * as F from '../src/v2/family.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as E from '../src/v2/engine.js';
@@ -154,7 +155,7 @@ test('第二卷：场景齐全，存档延续，四年走完', () => {
       }
       if (s.familyArt?.required) {
         const child = s.children.find((c) => c.id === s.familyArt.child);
-        E.changeChildArt(s, child.id, child.sex === '男' ? 'k_youth_01' : 'k_youth_05');
+        E.changeChildArt(s, child.id, F.defaultChildArt(F.childStage(s, child), child.sex));
       }
       if (s.ap && E.present(s, 'C07')) {
         const c = E.beginChat(s, 'C07');
@@ -252,10 +253,24 @@ test('吃醋、小惊喜、旨意回报', () => {
 });
 
 import {GIFTS,GIFT_LINES} from '../src/v2/data.js';
-test('每人有合适的忌口，送错和重复送错都扣三点',()=>{
- for(const id of CORE){const p=PEOPLE[id];assert.ok(p.dislikes.length>=1&&p.dislikes.length<=2);assert.ok(GIFT_LINES[id].disliked);
- for(const g of p.dislikes){assert.ok(GIFTS[g]);assert.ok(!p.likes.includes(g));const s=E.newGame(1);s.agenda=[];s.people[id].aff=40;
- for(let i=0;i<2;i++){const r=E.giveGift(s,id,g);assert.equal(r.disliked,true);assert.equal(r.people[id],-3);}}}
+test('每人有合适的忌口，送错和重复送错都扣三点', () => {
+  for (const id of CORE) {
+    const p = PEOPLE[id];
+    assert.ok(p.dislikes.length >= 1 && p.dislikes.length <= 2);
+    assert.ok(GIFT_LINES[id].disliked);
+    for (const g of p.dislikes) {
+      assert.ok(GIFTS[g]);
+      assert.ok(!p.likes.includes(g));
+      const s = E.newGame(1);
+      s.agenda = [];
+      Object.assign(s.people[id], {aff: 40, available: true, met: true});
+      for (let i = 0; i < 2; i++) {
+        const r = E.giveGift(s, id, g);
+        assert.equal(r.disliked, true);
+        assert.equal(r.people[id], -3);
+      }
+    }
+  }
 });
 test('问喜好有一半机会说出讨厌的东西，并记住真假',()=>{
  const results=new Set();for(let seed=1;seed<=100;seed++){const s=E.newGame(seed);s.seed=seed;const g=E.hintLike(s,'C07');const liked=s.known.C07[g];results.add(liked);assert.ok((liked?PEOPLE.C07.likes:PEOPLE.C07.dislikes).includes(g));}
@@ -385,7 +400,7 @@ test('第三卷：场景齐全，六年走完，年羹尧的去留影响西北�
       }
       if (s.familyArt?.required) {
         const child = s.children.find((c) => c.id === s.familyArt.child);
-        E.changeChildArt(s, child.id, child.sex === '男' ? 'k_youth_01' : 'k_youth_05');
+        E.changeChildArt(s, child.id, F.defaultChildArt(F.childStage(s, child), child.sex));
       }
       if (s.ap && E.present(s, 'C07')) {
         const c = E.beginChat(s, 'C07');

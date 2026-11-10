@@ -69,7 +69,25 @@ test('0.43 十个月到期才出生，性别/随机可复现、取名、选图�
 test('0.43 孩子永久排除亲密名单和计划，年龄再大也不能绕过；普通学习可用',()=>{const s=ready(),c=child(s);const store={data:{},getItem(k){return this.data[k]||null;},setItem(k,v){this.data[k]=v;}};confirmAge(store);for(const age of [0,10,30]){s.year=age+1;for(const text of ['亲密','恋爱','亲吻','云雨','侍寝','爱抚','做爱','调情','婚配']){assert.equal(planAllowed(text,'K01',s,store),false,text);assert.equal(planAllowed(`和${c.name}${text}`,null,s,store),false,text);}assert.equal(canBeTender(s,'K01'),false);assert.equal(intimateEligible('K01'),false);assert.equal(explicitAllowed(s,'K01',store),false);assert.equal(planAllowed('一起读书','K01',s,store),true);}});
 test('0.43 发给AI的皇嗣标注年龄和未成年，所有原成人入口对孩子直接退出',async()=>{const s=ready();child(s);s.year=11;s.month=3;assert.match(AI.dateLine(s),/和宁，10岁，未成年/);assert.match(AI.personBlock(s,'K01'),/10岁，未成年/);assert.match(AI.personBlock(s,'C09'),/皇嗣/);const old=globalThis.fetch;globalThis.fetch=()=>{throw Error('不应发送');};try{assert.equal(await AI.chatReply(s,'K01',[]),null);assert.equal(await AI.giftReply(s,'K01','书',true),null);assert.equal(await AI.nightScene(s,'K01','一起读书'),null);assert.equal(await AI.sceneEcho(s,'K01','读书','陪伴',''),null);assert.equal(await AI.edictResult(s,'让和宁恋爱',[]),null);assert.equal(await AI.restScene(s,'亲吻和宁',{companion:'C09'}),null);}finally{globalThis.fetch=old;}});
 test('0.43 商量生育有性格差异和拒绝，拒绝不改意愿；暂缓/不生不扣情分',()=>{const s=ready(1);s.people.C06.wish='no';s.people.C06.aff=25;s.seed=100000;const aff=s.people.C06.aff;E.discussWish(s,'C06','open');assert.equal(s.people.C06.wish,'no');assert.equal(s.people.C06.aff,aff);assert.throws(()=>E.discussWish(s,'C06','open'),/已经/);s.month++;s.ap=3;E.discussWish(s,'C06','later');assert.equal(s.people.C06.wish,'later');assert.equal(F.chance(s,'C06'),0);});
-test('0.43 14项立绘登记男女/阶段正确，28个正式导出都存在，跨年龄/性别更换会拒绝',async()=>{assert.equal(Object.keys(KID_ART).length,14);for(const [stage,n]of [['infant',6],['youth',8]]){const pics=Object.values(KID_ART).filter(p=>p.stage===stage);assert.equal(pics.length,n);assert.equal(pics.filter(p=>p.sex==='男').length,n/2);for(const p of pics){assert.ok(p.description);assert.equal(p.placeholder,false);await access(p.mobile);await access(p.thumb);}}const s=ready(),c=child(s);assert.throws(()=>E.changeChildArt(s,c.id,'k_youth_05'),/年龄/);assert.throws(()=>E.changeChildArt(s,c.id,'k_infant_01'),/年龄/);s.year=11;s.month=3;E.changeChildArt(s,c.id,'k_youth_05');assert.ok(c.youthChosen);assert.throws(()=>E.changeChildArt(s,c.id,'k_infant_04'),/年龄/);});
+test('合龄立绘登记与运行资源完整，跨年龄或性别更换会拒绝', async () => {
+  assert.equal(Object.keys(KID_ART).length, 18);
+  for (const [stage, n] of [['infant', 6], ['toddler', 2], ['child', 2], ['youth', 8]]) {
+    const pictures = Object.values(KID_ART).filter(p => p.stage === stage);
+    assert.equal(pictures.length, n);
+    assert.equal(pictures.filter(p => p.sex === '男').length, n / 2);
+    for (const p of pictures) {
+      assert.ok(p.description); assert.equal(p.placeholder, false);
+      await access(p.mobile); await access(p.thumb);
+    }
+  }
+  const s = ready(), c = child(s);
+  assert.throws(() => E.changeChildArt(s, c.id, 'k_youth_05'), /年龄/);
+  assert.throws(() => E.changeChildArt(s, c.id, 'k_infant_01'), /年龄/);
+  s.year = 11; s.month = 3;
+  E.changeChildArt(s, c.id, 'k_youth_05');
+  assert.ok(c.youthChosen);
+  assert.throws(() => E.changeChildArt(s, c.id, 'k_infant_04'), /年龄/);
+});
 test('0.43 从元年正常新档沿月历到出生及十岁，生日取真实出生月，节庆/读书/考校有记录',()=>{const {s,snapshots}=journey();const c=s.children[0];assert.equal(snapshots.start.year,1);assert.equal(snapshots.start.month,1);assert.equal(F.childAge(s,c),10);assert.equal(c.art.youth,'k_youth_05');assert.equal(s.familyContinuation,true);assert.ok(E.childBirthdays(s).some(x=>x.id===c.id));s.month++;assert.equal(E.childBirthdays(s).length,0);assert.ok(c.notes.some(n=>/生辰/.test(n)));assert.ok(c.notes.some(n=>/中秋|端午/.test(n)));resolveAgenda(s);E.teachChild(s,c.id,'read');E.teachChild(s,c.id,'quiz');assert.ok(c.traits.includes('好学'));assert.ok(c.notes.at(-1).includes('考校'));});
 test('0.43 AI即便返回越界皇嗣文案也不展示，常规家庭回声能保留',async()=>{const s=ready();child(s);s.year=11;s.month=3;const oldFetch=globalThis.fetch;let response='皇上与和宁恋爱。';const calls=[];globalThis.fetch=async(url,opt)=>{if(url==='/api/status')return {ok:true,json:async()=>({configured:true})};calls.push(JSON.parse(opt.body));return {ok:true,json:async()=>({value:{reply:response,affection:2}})};};try{await AI.initAI({getItem:()=>null});assert.equal(await AI.giftReply(s,'C09','书',true),null);assert.match(calls[0].system,/和宁，10岁，未成年/);response='和宁正在读书，宫里十分安静。';assert.equal(await AI.giftReply(s,'C09','书',true),response);for(const text of ['让公主恋爱','让皇嗣侍寝','亲吻小皇子'])assert.equal(planAllowed(text,null,s),false);}finally{globalThis.fetch=oldFetch;await AI.initAI({getItem:()=>null});}});
 test('0.43 普通入夜和带剧情的留宿均只判定一次，已有孕期不重复覆盖',()=>{for(const special of [false,true]){const s=ready(0);s.year=2;s.people.C09.first=true;s.people.C09.second=true;s.people.C09.secondAt='1-12';if(special)E.queueSpecial(s,'C09');else E.spendNight(s,'C09');assert.ok(s.pregnancy.C09);const p=structuredClone(s.pregnancy.C09),seed=s.seed;assert.throws(()=>special?E.queueSpecial(s,'C09'):E.spendNight(s,'C09'),/已经/);assert.equal(s.seed,seed);assert.deepEqual(s.pregnancy.C09,p);}});
