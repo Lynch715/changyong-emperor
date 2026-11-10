@@ -20,6 +20,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
+      - name: Run regression tests
+        run: npm test
       - name: Build static game
         run: npm run build
       - uses: actions/configure-pages@v5

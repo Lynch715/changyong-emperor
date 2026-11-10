@@ -1,4 +1,6 @@
 import * as T from './timeline.js';
+import {isFiat, executeFiat, restoreFiat} from './fiat.js';
+export {isFiat} from './fiat.js';
 import {issueOpeningDecree} from './opening.js';
 export {openingDecree} from './opening.js';
 // 正月可选旨意不占时辰，实际收支仍记入同一本银账。
@@ -111,15 +113,31 @@ export function thinkingOf(s) {
 }
 
 // ---------- 人物 ----------
-export const present=(s,id)=>!before(s,PEOPLE[id].from);
-export const away=(s,id)=>{if(s.freed?.[id]?.destination==='home')return true;const place=officePlace(s,id);if(place)return [...G.PROVINCE_NAMES,'西北'].includes(place);if(PEOPLE[id].public&&['云贵','河南','浙江','四川','北疆','西北'].includes(PEOPLE[id].place))return true;return !!s.flags?.['away_'+id]||(PEOPLE[id].away||[]).some(([y,m])=>y===s.year&&m===s.month);};
-export function placeOf(s,id){const office=officePlace(s,id);if(office)return office;if(s.inPalace?.[id]){const r=SUMMON_ROLES[s.inPalace[id].role];return r?.places?.[id]||r?.place||'宫中';}if(s.freed?.[id])return {home:'故乡',city:'京城宅院',palace:'宫中值房'}[s.freed[id].destination];if(id==='C03'&&s.year>=3)return s.flags?.nian_prison?'刑部大牢':s.flags?.nian_away?'杭州':'年府';return PEOPLE[id].place;}
+export const present=(s,id)=>typeof s.people[id]?.available==='boolean'?s.people[id].available:!before(s,PEOPLE[id].from);
+export const away=(s,id)=>{
+ if(s.people[id]?.place)return [...G.PROVINCE_NAMES,'西北','故乡'].includes(s.people[id].place);
+ if(s.freed?.[id]?.destination==='home')return true;
+ const place=officePlace(s,id);
+ if(place)return [...G.PROVINCE_NAMES,'西北'].includes(place);
+ if(PEOPLE[id].public&&['云贵','河南','浙江','四川','北疆','西北'].includes(PEOPLE[id].place))return true;
+ return !!s.flags?.['away_'+id]||(PEOPLE[id].away||[]).some(([y,m])=>y===s.year&&m===s.month);
+};
+export function placeOf(s,id){
+ if(s.people[id]?.place)return s.people[id].place;
+ const office=officePlace(s,id);if(office)return office;
+ if(s.inPalace?.[id]){const r=SUMMON_ROLES[s.inPalace[id].role];return r?.places?.[id]||r?.place||'宫中';}
+ if(s.freed?.[id])return {home:'故乡',city:'京城宅院',palace:'宫中值房'}[s.freed[id].destination];
+ if(id==='C03'&&s.year>=3)return s.flags?.nian_prison?'刑部大牢':s.flags?.nian_away?'杭州':'年府';
+ return PEOPLE[id].place;
+}
 export const titleOf=(s,id)=>currentTitle(s,id);
 export const gone=(s,id)=>!!s.flags?.['gone_'+id];
 export const affectionStage=(s,id)=>{const n=s.people[id].aff;return PEOPLE[id].secondary?(n>=85?'深信':n>=65?'亲近':n>=45?'信任':n>=25?'相识':'生疏'):stageOf(n);};
 export const stage=(s,id)=>affectionStage(s,id);
 export function gain(s,id,n,why=''){
  const p=s.people[id];if(!p)return 0;
+ const locked=isFiat(s)&&s.fiat?.locks?.['people.'+id+'.aff'];
+ if(locked)n=locked.value-p.aff;
  if(n>0&&p.knot)n=0;
  const before=p.aff;p.aff=clamp(p.aff+n);const d=p.aff-before;
  if(d)s.delta.people[id]=(s.delta.people[id]||0)+d;
@@ -156,7 +174,8 @@ export function applyStats(s, effects = {}, scale = 1, purpose = '其他用度')
       continue;
     }
     const before = s.stats[k];
-    s.stats[k] = clamp(before + v);
+    const locked = isFiat(s) && s.fiat?.locks?.['stats.' + k];
+    s.stats[k] = locked ? locked.value : clamp(before + v);
     const d = s.stats[k] - before;
     if (d) {
       applied[k] = d;
@@ -249,6 +268,7 @@ export function startMonth(s) {
     const list = VISITS[id][tier];
     s.visit = { id, tier, i: Math.floor(rand(s) * list.length) };
   }
+  restoreFiat(s, fiatAPI);
 }
 export function visitOf(s){if(!s.visit)return null;const v=VISITS[s.visit.id][s.visit.tier][s.visit.i];return {id:s.visit.id,...v};}
 // 来访：不占时辰，迎进来就有好处
@@ -540,7 +560,10 @@ export function applyChat(s,chat,{affection=0,memory=''}={}){
 }
 // ---------- 自由度与掷骰 ----------
 export const freedomOf=s=>[1,2,3].includes(s.freedom)?s.freedom:2;
-export function setFreedom(s,l){if(![1,2,3].includes(+l))throw Error('没有这一档。');s.freedom=+l;return s.freedom;}
+export function setFreedom(s,l){
+ if(![1,2,3].includes(+l))throw Error('没有这一档。');
+ s.freedom=+l;restoreFiat(s,fiatAPI);return s.freedom;
+}
 // kind：edict / chat / night。一档不掷，当作大吉
 export function rollFate(s,kind,id){
  const level=freedomOf(s);if(level===1)return {tier:4,free:true,level};
@@ -595,8 +618,12 @@ export function giveGift(s, id, giftId) {
   };
 }
 // 旨意的后果由 AI 判断，这里只限幅
-export function applyEdict(s,text,{effects={},affection={},narration='',title='',fate=null,inner=0,appoint=null}={}){
+export function applyEdict(s,text,{
+ effects={},affection={},narration='',title='',fate=null,inner=0,appoint=null,changes,facts,
+}={}){
  if(title==='减膳节用'){inner+=(Number(effects.treasury)||0)*ECONOMY.privatePoint;effects={...effects};delete effects.treasury;}
+ if(isFiat(s))return applyFiat(s,text,changes?{changes,facts,title,narration}:
+  legacyFiat(effects,affection,narration,title,inner,appoint));
  const appointments=validateAppointments(s,appoint);if(appointments.length&&fate&&!fate.free&&fate.tier===0)throw Error('旨意受阻，这次任命没有传下去。');spend(s);const bounded={};for(const st of STATS.filter(x=>x.id!=='inner')){const v=Number(effects[st.id]);if(Number.isFinite(v))bounded[st.id]=boundUp(Math.max(-8,Math.min(8,Math.round(v))),fate&&!fate.free?fate.tier:4);}
  const total=Object.values(bounded).reduce((a,b)=>a+Math.max(0,b),0);if(total>12)for(const k in bounded)if(bounded[k]>0)bounded[k]=Math.round(bounded[k]*12/total);
  const stats=applyStats(s,{...bounded,inner:boundUp(Math.max(-20,Math.min(20,Number(inner)||0)),fate&&!fate.free?fate.tier:4)}),people={};
@@ -604,6 +631,32 @@ export function applyEdict(s,text,{effects={},affection={},narration='',title=''
  if(appointments.length){const r=doAppointments(s,appointments);for(const[k,v]of Object.entries(r.stats))stats[k]=(stats[k]||0)+v;for(const[k,v]of Object.entries(r.people))people[k]=(people[k]||0)+v;}
  log(s,`下旨：${title||text.slice(0,24)}`,'旨');count(s,'edicts');
  s.edicts=s.edicts||[];const n=s.edicts.length+1;s.edicts.push({n,text:text.slice(0,120),title:title||text.slice(0,8),narration:String(narration).slice(0,400),effects:bounded,at:idx(s.year,s.month),due:idx(s.year,s.month)+2+Math.floor(rand(s)*2)});return {stats,people,text:narration};
+}
+const fiatAPI = {funds, applyStats, remember, recordAppointment, log, regionChange: G.regionChange};
+export function applyFiat(s, text, result, {actor = null} = {}) {
+  if (!String(text || '').trim()) throw Error('请写下想改写的事。');
+  if (!planAllowed(text, actor, s)) throw Error(PLAN_NOTICE);
+  const draft = structuredClone(s);
+  const response = executeFiat(draft, String(text).trim(), result, fiatAPI, {allowConversation: !!actor});
+  Object.assign(s, draft);
+  return response;
+}
+export function applyFiatChat(s, chat, text, result) {
+  const response = applyFiat(s, text, result, {actor: chat.id});
+  chat.turns++;
+  count(s, 'lines');
+  if (MINOR_STORIES[chat.id]) queuePerformerStory(s, chat.id);
+  return response;
+}
+function legacyFiat(effects, affection, narration, title, inner, appoint) {
+  const changes = Object.entries(effects).filter(([id, value]) => STATS.some(x => x.id === id) && Number.isFinite(value))
+    .map(([id, value]) => ({path: 'stats.' + id, op: 'add', value: value * (id === 'treasury' ? ECONOMY.point : 1)}));
+  if (inner) changes.push({path: 'stats.inner', op: 'add', value: inner});
+  for (const [id, value] of Object.entries(affection)) {
+    if (PEOPLE[id] && Number.isFinite(value)) changes.push({path: 'people.' + id + '.aff', op: 'add', value});
+  }
+  for (const a of appoint || []) changes.push({path: 'appointments.' + a.id, value: {office: a.office === 'dismiss' ? null : a.office}});
+  return {title, narration, changes, facts: changes.length ? [] : [{key: title || '旨意', text: narration || title}]};
 }
 export function initTravel(s){if(!s.secondaryDone&&s.minorDone)s.secondaryDone=s.minorDone;delete s.minorDone;for(const sc of Object.values(s.dyn||{}))if(sc.kind==='minor')sc.kind='secondary';s.travel=s.travel||{used:{}};s.travel.used=s.travel.used||{};s.inventory=s.inventory||[];s.nanfeng=s.nanfeng||{seen:false,visit:null};s.freed=s.freed||{};s.clues=s.clues||[];s.secondaryDone=s.secondaryDone||{};for(const id of CAST)if(!s.people[id])s.people[id]={aff:PEOPLE[id].start,met:false,knot:null,memories:[]};return s;}
 export function goOuting(s, id = 'river') {
@@ -771,6 +824,12 @@ export function judgeMemorial(s, uid, choice) {
 export function writeMemorial(s, uid, text, result) {
   const m = G.checkReview(s, uid);
   if (!String(text).trim()) throw Error('请写下朱批。');
+  if (isFiat(s)) {
+    const r = applyFiat(s, text, result);
+    s.reviewSession.left--;
+    s.memorials = s.memorials.filter(x => x.uid !== uid);
+    return {...r, title: m.title};
+  }
   G.chargeReview(s, spend);
   const prior = s.ap, session = s.reviewSession;
   s.ap = 1;
@@ -1006,9 +1065,9 @@ export function endMonth(s) {
   if (s.agenda.length) throw Error('本月还有要事没办。');
   const report = { y: s.year, m: s.month, stats: { ...s.delta.stats }, people: { ...s.delta.people } };
   G.backlog(s, applyStats);
-  const policyBefore = s.stats.treasury;
+  const policyBefore = s.ledger.treasury.out;
   G.policyMonthly(s, { rand, applyStats, funds });
-  const policySpent = silver(policyBefore - s.stats.treasury);
+  const policySpent = silver(s.ledger.treasury.out - policyBefore);
   const provincialIncome = G.regionalMonthly(s, { applyStats, funds });
   applyStats(s, { people: G.sentimentAdjustment(s) });
   const beforeDuties = { ...s.delta.stats };
@@ -1053,7 +1112,7 @@ export function endMonth(s) {
   report.forgot = [];
   for (const id of birthdays(s)) {
     const p = s.people[id];
-    if (birthdayDone(s, id) || p.aff < 25) continue;
+    if (birthdayDone(s, id) || p.aff < 25 || isFiat(s) && s.fiat?.locks?.['people.' + id + '.aff']) continue;
     p.aff = clamp(p.aff - 3);
     report.people[id] = (report.people[id] || 0) - 3;
     remember(s, id, '生辰那个月，你没有来');
@@ -1076,6 +1135,7 @@ export function endMonth(s) {
       report.cooled.push(id);
     }
   }
+  restoreFiat(s, fiatAPI);
   report.govNotes = [...s.govNotes];
   report.stats = { ...s.delta.stats };
   report.expenses = { ...s.expenseUses };
@@ -1136,7 +1196,9 @@ export function ending(s){
  return {score,solved,people,governmentReady:G.governanceReady(s)};
 }
 
-export function save(s,storage=globalThis.localStorage){try{storage.setItem(SAVE_KEY,JSON.stringify(s));return true;}catch{return false;}}
+export function save(s,storage=globalThis.localStorage){
+ try{restoreFiat(s,fiatAPI);storage.setItem(SAVE_KEY,JSON.stringify(s));return true;}catch{return false;}
+}
 // 只在读档链补齐缺失字段，旧批折时辰已经付过，不再重复扣除。
 export function load(storage = globalThis.localStorage) {
   try {
@@ -1146,6 +1208,7 @@ export function load(storage = globalThis.localStorage) {
     s.expenseUses ??= {};
     s.contactMonths ??= Object.fromEntries(CORE.map(id => [id, T.at(s)]));
     if (s.reviewSession && s.reviewSession.charged === undefined) s.reviewSession.charged = true;
+    restoreFiat(s, fiatAPI);
     return T.initCampaign(Fiscal.initFiscal(F.initFamily(M.initMajorEvents(
       G.initGovernment(initAppointments(initTravel(initEconomy(s))))
     ))));

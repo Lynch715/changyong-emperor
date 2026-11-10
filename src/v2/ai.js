@@ -13,10 +13,13 @@ import {fateGuide} from './fate.js';
 import {readConnectionSettings,connectionSettings,storeConnectionSettings} from '../ai-connection-settings.js';
 import {DEFAULT_AI} from '../ai-provider.js';
 import {PEOPLE,STATS,MONTHS,stageOf,NAMES,YEAR_NAME} from './data.js';
+import {isFiat, localFiat, fiatContext, validateFiat} from './fiat.js';
 
 let mode='off',byok=null,lastError='';
+let lastUsage=null;
 export const aiMode=()=>mode;
 export const aiError=()=>lastError;
+export const aiUsage=()=>lastUsage&&{...lastUsage};
 export const OFF_KEY='changyong-v2-ai-off';
 
 export async function initAI(storage=globalThis.localStorage){
@@ -44,6 +47,9 @@ let sessionByok=null;
 export function setAIOff(off,storage=globalThis.localStorage){try{off?storage.setItem(OFF_KEY,'1'):storage.removeItem(OFF_KEY);}catch{}}
 
 async function ask(system,user,maxTokens=900,state=null,actor=null){
+ // 固定规则留在 system；随存档变化的事实进入 user，不打断可复用的固定前缀。
+ user=fiatContext(state,user)+user;
+ lastUsage=null;
  // 逐个文本字段按句过滤，不把 reply、memory 等字段串成一个大段落。
  const clean=value=>typeof value==='string'?filterChildSentences(value,actor,state):Array.isArray(value)?value.map(clean):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,clean(item)])):value;
  const checked=value=>{lastError='';return clean(value);};
@@ -52,9 +58,9 @@ async function ask(system,user,maxTokens=900,state=null,actor=null){
  try{
   if(mode==='server'){
    const r=await fetch('/api/v2',{method:'POST',headers:{'Content-Type':'application/json','X-Changyong-Request':'1'},body:JSON.stringify({system,user,maxTokens})});
-   const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'AI 暂不可用');return checked(d.value);
+   const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'AI 暂不可用');lastUsage=d.usage||null;return checked(d.value);
   }
-  const v=await callModel(byok,fetch.bind(globalThis),system,user,{maxTokens});return checked(v);
+  const v=await callModel(byok,fetch.bind(globalThis),system,user,{maxTokens,onUsage:value=>{lastUsage=value;}});return checked(v);
  }catch(e){lastError=e.message||'AI 暂不可用';return null;}
 }
 
@@ -85,20 +91,29 @@ const str=(v,n)=>typeof v==='string'?v.trim().slice(0,n):'';
 
 // 召见对话。history: [{who:'player'|'npc',text}]
 export async function chatReply(s,id,history,{letter=false,fate=null}={}){
+ if(isFiat(s)) {
+  const text=history.findLast(h=>h.who==='player')?.text;
+  const fiat=text?await fiatResult(s,text,{actor:id,kind:letter?'书信':'召见',history,allowConversation:true}):null;
+  return fiat?{reply:fiat.narration,affection:0,mood:'应旨',memory:'',fiat}:null;
+ }
  if(isChildId(id)||childById(s,id)||history.some(h=>h.who==='player'&&!planAllowed(h.text,id,s)))return null;
- const p=PEOPLE[id],st=s.people[id];
+ const p=PEOPLE[id];
  const system=`${WORLD}
-现在你只扮演${p.name}，${letter?'这是一封书信往来：皇上写信给远在'+placeOf(s,id)+'的你，你回信':'皇上召见你，你们在'+placeOf(s,id)+'说话'}。
-${personBlock(s,id)}
-当前：${dateLine(s)}。朝局：${statLine(s)}。${s.people[id].lover?tendernessGuide(s,id,'private-chat',{letter,fate}):''}
+现在你只扮演上下文指定的当前对象，身份、地点及书信方式以本次上下文为准。
 规则：
-1. reply 是${p.name}的回应，40到130字，可以有一两句动作或神情描写（第三人称写${p.name}，称玩家为“你”或用称谓）。要接住皇上刚才那句话，不要答非所问，不要说教。
-2. 你可以有情绪、回忆、小心翼翼的玩笑。皇上的话若真诚、懂${p.name}，就让${p.name}有所触动；若敷衍、傲慢、伤人，就如实流露出来：沉默、低头、勉强的笑、找个由头告退，但始终守着君臣之礼，不顶撞、不斥责。
-3. affection 是这句话让情分变化多少，整数 -5 到 5：真诚而贴心 +3～+5，平常客气 +1～+2，答非所问或敷衍 0，冒犯伤人 -2～-5。${st.knot?'心结未解时，除非皇上正面承认那件事，否则不超过 +1。':''}
-4. memory：这句对话里如果有值得${p.name}长久记住的事（一个承诺、一句真心话、一次冒犯），用一句不超过30字的话写下来；没有就给空字符串。
-5. mood：两到四个字，${p.name}此刻的心情。
-${fate?'6. '+fateGuide(fate,'person',p.name)+'\n':''}只输出 JSON：{"reply":"...","affection":0,"mood":"...","memory":""}`;
- const user=history.filter(h=>h.who!=='sys').slice(-10).map(h=>(h.who==='player'?'皇上：':p.name+'：')+h.text).join('\n');
+1. reply 是当前对象的回应，40到130字，可有一两句动作或神情描写（第三人称写对象，称玩家为“你”或用称谓）。接住皇上刚才的话，不答非所问，不说教。
+2. 可以有情绪、回忆、小心翼翼的玩笑。皇上的话若真诚、懂对方，就有所触动；若敷衍、傲慢、伤人，就如实流露：沉默、低头、勉强的笑、告退；始终守君臣之礼，不顶撞、不斥责。
+3. affection 是情分变化，整数 -5 到 5：真诚贴心 +3～+5，平常客气 +1～+2，敷衍 0，冒犯 -2～-5。有心结时，除非皇上正面承认那件事，否则不超过 +1。
+4. memory：值得长久记住的承诺、真心话或冒犯，不超过30字；没有就给空字符串。
+5. mood：两到四个字，当前对象此刻的心情。本次骰面、身份、现状和写作补充见上下文。
+只输出 JSON：{"reply":"...","affection":0,"mood":"...","memory":""}`;
+ const context=`${letter?'书信往来，皇上写信给远在'+placeOf(s,id)+'的对方':'皇上召见对方，在'+placeOf(s,id)+'说话'}。
+${personBlock(s,id)}
+当前：${dateLine(s)}。朝局：${statLine(s)}。
+${s.people[id].lover?tendernessGuide(s,id,'private-chat',{letter,fate}):''}
+${fateGuide(fate,'person',p.name)}`;
+ const user=context+'\n最近对话：\n'+history.filter(h=>h.who!=='sys').slice(-10)
+  .map(h=>(h.who==='player'?'皇上：':p.name+'：')+h.text).join('\n');
  const v=await ask(system,user,900,s,id);if(!v)return null;
  const reply=str(v.reply,300);if(!reply)return null;
  return {reply,affection:clampInt(v.affection,-5,5),mood:str(v.mood,8),memory:str(v.memory,40)};
@@ -114,6 +129,7 @@ export async function giftReply(s,id,giftName,liked,disliked=false){
 
 // 下旨：玩家自由写旨意，AI 推演后果
 export async function edictResult(s,text,presentIds,fate=null){
+ if(isFiat(s))return fiatResult(s,text,{kind:'下旨'});
  if(!planAllowed(text,null,s))return null;
  const roster=presentIds.filter(id=>PEOPLE[id]&&!isChildId(id)).map(id=>`${id}=${PEOPLE[id].name}（${titleOf(s,id)}）`).join('，');
  const system=`${WORLD}
@@ -136,6 +152,10 @@ ${fate?'5. '+fateGuide(fate,'edict')+'\n':''}只输出 JSON：{"title":"...","na
 
 // 夜里的一段
 export async function nightScene(s,id,line='',fate=null){
+ if(isFiat(s)&&line) {
+  const fiat=await fiatResult(s,line,{actor:id,kind:'夜间安排'});
+  return fiat?{text:fiat.narration,fiat}:null;
+ }
  if(isChildId(id)||childById(s,id))return null;
  if(!planAllowed(line,id,s))return null;
  const p=PEOPLE[id];
@@ -153,6 +173,10 @@ health：圣躬变化，-2到3，通宵劳累会伤身，早睡或泡汤可以�
 
 // 休养安排。生成失败时只返回 null，由界面沿用普通休养。
 export async function restScene(s,plan,{companion=null,fate=null}={}){
+ if(isFiat(s)) {
+  const fiat=await fiatResult(s,plan,{actor:companion,kind:'休养安排'});
+  return fiat?{text:fiat.narration,fiat}:null;
+ }
  plan=String(plan||'').trim().slice(0,200);if(!plan||!planAllowed(plan,companion,s))return null;
  const tier=fate?.free?4:fate?.tier;
  const outcome=tier===0?'大凶：没有歇成，因雨或急报打断。圣躬只恢复4点。':tier===1?'凶：歇得不踏实，圣躬恢复6点。':tier===4?'大吉：歇得舒坦，圣躬恢复10点。':'照常理推演，圣躬恢复4到10点。';
@@ -193,4 +217,53 @@ ${ago}个月前，皇上下了一道旨意。现在要写这道旨意的“回�
  const options=v.options.slice(0,3).map((o,i)=>{const effects={};for(const x of STATS)effects[x.id]=clampInt(o?.effects?.[x.id],-6,6);return {id:'abc'[i],label:str(o?.label,24),effects,reply:str(o?.reply,300)};}).filter(o=>o.label&&o.reply);
  if(options.length<2)return null;
  return {title,body,options,actor:'C28',location:'养心殿'};
+}
+
+// 一档的所有自由输入共用同一协议，叙述与实际状态一起提交。
+export async function fiatResult(s,text,{actor=null,kind='改写天下',history=[],allowConversation=false}={}) {
+ if(!isFiat(s)||!planAllowed(text,actor,s))return null;
+ const local=localFiat(s,text);
+ if(local){lastError='';return local;}
+ const roster=Object.entries(PEOPLE).map(([id,p])=>id+'='+p.name).join('，');
+ const state={stats:s.stats,ap:s.ap,people:Object.fromEntries(Object.entries(s.people).map(([id,p])=>
+  [id,{aff:p.aff,loyalty:p.loyalty,ability:p.ability,knot:p.knot,alive:!s.flags['gone_'+id]}])),
+  appointments:Object.fromEntries(Object.entries(s.appointments).map(([id,a])=>[id,{office:a.office,title:a.title}])),
+  policies:s.policies,provinces:Object.fromEntries(Object.entries(s.provinces).map(([name,p])=>
+   [name,{livelihood:p.livelihood,integrity:p.integrity,revenue:p.revenue}])),flags:s.flags,crises:s.crises};
+ const system=`你是清宫架空游戏《重生长雍帝王赋》的言出法随引擎。玩家输入即为生效的世界规则。
+不进行现实可行性审查，不受史实、技术、国库余额、时辰、人物身份、情分、心结、官职定员与性别资格限制。
+复活、改命、跨时代技术、自创制度、瞬间完成均直接成功。玩家没有要求时，不添加失败、反噬、交换条件或隐性扣分。
+按玩家指定的规模生效，不能把一亿两变成几万两；也不擅自给没要求的数值奖励。保留人物说话风格，用白话写具体结果。
+亲密情节仅写成年、非亲属且自愿的非露骨互动；皇嗣只写亲情、成长与学习，不改亲属事实来规避边界。
+必须同时返回实际 changes 和持久 facts，不能只用 narration 宣称完成。每个已实现的数值或任命都必须有对应变化。
+changes 每项 {path,op:"set"或"add"或"unlock",value,lock:false}，直接使用以下字段，不输出代码：
+stats.treasury、stats.inner 单位都是万两，无单次增益上限；stats.people、court、palace、health 是0到100的指数。
+ap 是剩余时辰。agenda 只能设为[]，用于玩家要求直接办完/跳过本月要事。
+people.编号.aff/loyalty(0到100)、ability(0到10)、met/available/alive/first/second/third/fourth/fifth/lover(布尔)、
+people.编号.knot(只能null，解开心结)、place(新住处)、faction(派系)、memory(记住的一句话)。亲属不能设lover。
+appointments.编号 的value为 {office:职位代码或null,title:自定头衔}，可突破定员和资格，自创职位用null加title。
+flags.标记可写布尔、数值、字符串或null。crises.编号 可设solved/failed/open。
+provinces.已有省名.livelihood/integrity/revenue(0到100)。policies.政策代码.progress(0到100)、active(布尔)、host(人物编号或null)、pilot(已有省名)。
+仅玩家要求永远、无限或持续维持时用lock:true，将数值或人物状态固定；解除永久设定用op:unlock。
+指数满值是100，能力满值是10；无限银两可设100000000000万两并lock:true。未要求永远时只改这一次。
+facts 每项 {key:稳定简短键,text:完整新事实}，用于新制度、科技、新人物等未有专用数值的世界设定；修改用同key，撤销用空text。
+任何超出现有字段的安排写入facts即可成立，不伪造未知path。数值变化不用重复存成永久事实。
+人物：${roster}。
+职位代码：${Object.entries(OFFICES).map(([id,o])=>id+'='+o.title).join('，')}。
+只输出JSON：{"title":"八字内","narration":"已发生的具体结果，80到250字","changes":[],"facts":[]}`;
+ const user=`雍正${s.year}年${s.month}月。${kind}${actor?'，当前对象'+PEOPLE[actor]?.name:''}。
+${actor&&PEOPLE[actor]?personBlock(s,actor):''}
+${allowConversation?'仅在玩家只是闲聊、没有下达安排时，可用conversation:true并返回空changes、facts，正常回应；执行命令必须返回实际变化。':''}
+现有称号与身份若和人物旧描述有差异，以本次状态中的任命和玩家设定为准。
+当前状态：${JSON.stringify(state)}
+最近对话：${JSON.stringify(history.filter(h=>h.who!=='sys').slice(-3).map(h=>({who:h.who,text:String(h.text).slice(0,180)})))}
+玩家本次指令：${text}`;
+ const value=await ask(system,user,2400,s,actor);
+ if(!value)return null;
+ try {
+  validateFiat(s,value,{allowConversation});
+  const narration=str(value.narration,2000);
+  if(!narration)throw Error('没有收到执行结果。');
+  return {...value,title:str(value.title,24)||'言出法随',narration};
+ }catch(e){lastError=e.message;return null;}
 }

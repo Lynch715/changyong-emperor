@@ -29,17 +29,24 @@ export function funds(s, changes, purpose = '其他用度') {
   for (const k of ['treasury', 'inner']) {
     if (!Number.isFinite(changes[k])) continue;
     const before = s.stats[k];
-    s.stats[k] = Math.max(0, silver(before + changes[k]));
-    const d = silver(s.stats[k] - before);
-    if (!d) continue;
-    applied[k] = d;
-    s.delta.stats[k] = silver((s.delta.stats[k] || 0) + d);
-    const row = s.ledger[k];
-    if (d > 0) row.in = silver(row.in + d);
-    else {
-      row.out = silver(row.out - d);
-      if (k === 'treasury') s.expenseUses[purpose] = silver((s.expenseUses[purpose] || 0) - d);
-    }
+    const locked = Number(s.freedom) === 1 && s.fiat?.locks?.['stats.' + k];
+    const book = (next, use) => {
+      const d = silver(next - s.stats[k]);
+      s.stats[k] = next;
+      if (!d) return;
+      s.delta.stats[k] = silver((s.delta.stats[k] || 0) + d);
+      const row = s.ledger[k];
+      if (d > 0) row.in = silver(row.in + d);
+      else {
+        row.out = silver(row.out - d);
+        if (k === 'treasury') s.expenseUses[use] = silver((s.expenseUses[use] || 0) - d);
+      }
+    };
+    book(Math.max(0, silver(before + changes[k])), purpose);
+    // 永久余额仍记真实收支，再把补足或收回的银两记作改写，避免军政已付却没有账目。
+    if (locked) book(locked.value, '言出法随');
+    const net = silver(s.stats[k] - before);
+    if (net) applied[k] = net;
   }
   return applied;
 }

@@ -46,7 +46,9 @@ export function filterChildSentences(text,id,s=null){
  return /^[\s。！？；“”‘’「」『』"'（）()[\]]*$/.test(filtered)?'':filtered;
 }
 export function planAllowed(text,id,s=null,storage){
- if(NEVER.test(text)||!childPlanAllowed(text,id,s))return false;
+ const fiat=Number(s?.freedom)===1;
+ const coerciveIntimacy=NEVER.test(text)&&/(?:亲密|亲吻|接吻|拥吻|调情|恋爱|侍寝|欢好|行房|性爱|性交|裸|情欲)/.test(text);
+ if((fiat?coerciveIntimacy:NEVER.test(text))||!childPlanAllowed(text,id,s))return false;
  if(KIN.has(id)&&(SEXUAL.test(text)||/(?:亲吻|接吻|拥吻|恋爱)/.test(text)))return false;
  return !SEXUAL.test(text)||explicitAllowed(s,id,storage);
 }

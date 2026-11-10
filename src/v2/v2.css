@@ -436,3 +436,17 @@ dialog#modal::backdrop { background: #07111dcc; }
  font-size: 13px;
  line-height: 1.7;
 }
+
+/* 自由改写在要事前独立成卡，手机上输入框与按钮各占一行。 */
+.home .fiat { margin-top: 12px; padding: 14px; border: 1px solid var(--gold); border-radius: 12px; background: var(--desk-soft); }
+.fiat h3 { margin: 0 0 8px; color: var(--gold-soft); font-family: var(--brush); font-size: 24px; font-weight: 400; }
+.fiat p { margin: 8px 0; color: #b8c5cb; font-size: 14px; line-height: 1.7; }
+.fiat form { display: grid; gap: 10px; }
+.fiat label { font-size: 14px; color: var(--gold-soft); }
+.fiat textarea {
+ display: block; width: 100%; min-height: 120px; padding: 12px; resize: vertical;
+ border: 1px solid var(--line); border-radius: 8px; background: #fffaf0; color: var(--ink); font: inherit; line-height: 1.7;
+}
+.fiat button { width: 100%; margin: 0; min-height: 48px; }
+.fiat details { margin-top: 12px; }
+.fiat summary { cursor: pointer; color: var(--gold-soft); line-height: 1.7; }

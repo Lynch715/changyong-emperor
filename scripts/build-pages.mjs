@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, writeFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import {runtimeAssets} from './runtime-assets.mjs';
 import {preparePages} from './prepare-pages.mjs';
@@ -20,6 +20,20 @@ for (const asset of await runtimeAssets(root)) {
   await cp(path.join(root, asset), path.join(output, asset));
 }
 const { version } = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
+// 同一版本的所有模块使用相同版本参数，避免新入口命中旧子模块的浏览器缓存。
+async function versionModules(dir) {
+  for (const entry of await readdir(dir, {withFileTypes: true})) {
+    const file = path.join(dir, entry.name);
+    if (entry.isDirectory()) await versionModules(file);
+    else if (entry.name.endsWith('.js')) {
+      const source = await readFile(file, 'utf8');
+      const changed = source.replace(/(\b(?:from\s*|import\s*(?:\(\s*)?))(['"])(\.[^'"\s]+\.js)(?:\?[^'"]*)?\2/g,
+        (_, prefix, quote, specifier) => `${prefix}${quote}${specifier}?v=${version}${quote}`);
+      await writeFile(file, changed);
+    }
+  }
+}
+await versionModules(path.join(output, 'src'));
 let html = await readFile(path.join(root, 'index.html'), 'utf8');
 html = html.replace(/\?v=[^"'\s>]+/g, `?v=${version}`);
 html = html.replace(/(src="\.\/src\/v2\/main\.js)(?:\?v=[^"]+)?"/, `$1?v=${version}"`);

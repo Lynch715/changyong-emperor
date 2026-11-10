@@ -88,7 +88,7 @@ function home() {
         ? '<button class="night-btn" data-act="go" data-to="nanfeng">回到南风馆，把这盏茶喝完 ›</button>'
         : ''
     }
-    ${agendaCard(sc)}${festivalCards()}${openingCard()}${homeActions(sc)}
+    ${fiatCard()}${agendaCard(sc)}${festivalCards()}${openingCard()}${homeActions(sc)}
     <button class="night-btn ${!sc && (s.ap === 0 || s.night) ? 'glow' : ''}"
       data-act="night" ${sc ? 'disabled' : ''}>
       ${
@@ -117,6 +117,20 @@ function agendaCard(sc) {
     <div><small>本月要事 · ${s.agenda.length} 件</small><b>${esc(sc.title)}</b>
       <span>${esc(nm(sc.actor))}${place ? ' · ' + esc(place) : ''}</span></div><em>处置 ›</em>
   </button>`;
+}
+
+function fiatCard() {
+  if (!E.isFiat(s)) return '';
+  const facts = Object.entries(s.fiat?.facts || {});
+  return `<section class="card fiat"><h3>言出法随</h3>
+    <p>你的话就是新规则。随时下令，不花时辰。</p>
+    <form data-act="fiat"><label for="fiat-command">这一世，你说了算</label>
+      <textarea id="fiat-command" name="t" rows="3" maxlength="4000" required
+        placeholder="例如：国库增加一亿两；让年世兰担任大学士；建立蒸汽铁路。"
+        ${busy ? 'disabled' : ''}>${esc(view.fiatDraft || '')}</textarea>
+      <button class="primary" ${busy ? 'disabled' : ''}>${busy ? '正在改写……' : '就照朕说的办'}</button>
+    </form>${facts.length ? `<details><summary>已改写的天下 · ${facts.length} 条</summary>
+      ${facts.map(([, text]) => `<p>${esc(text)}</p>`).join('')}</details>` : ''}</section>`;
 }
 
 // 六个行动统一判断是否能办，浏览本身不扣除资源。
@@ -278,13 +292,14 @@ function pickPerson(kind){
 // 在第一次亲口说话之前说明掷骰与加减点，已经掷过则沿用本次结果。
 function chatView() {
   const c = view.chat, id = c.id, p = PEOPLE[id], st = s.people[id];
-  const ai = AI.aiMode() !== 'off', used = c.topics || [], left = Math.max(0, 6 - c.turns);
+  const ai = AI.aiMode() !== 'off' || E.isFiat(s), used = c.topics || [];
+  const left = E.isFiat(s) ? Infinity : Math.max(0, 6 - c.turns);
   return `<div class="stage chat" style="--bg:url('${abs(bgFor(E.placeOf(s, id)))}')">
     <div class="stage-top"><button data-act="chat-end">‹ 告退</button>
       <span>${c.letter ? '书信 · ' : ''}${esc(E.placeOf(s, id))}</span>
       <span class="pill">${E.affectionStage(s, id)} ${st.aff}${c.gained ? ` <i class="up">+${c.gained}</i>` : ''}</span>
     </div>${avatar(id, 'portrait')}<article class="paper talk">
-      <h2>${p.name}<small>${E.titleOf(s, id)}${st.knot ? ' · 心结：' + esc(st.knot.text) : ''}</small></h2>
+      <h2>${p.name}<small>${esc(E.titleOf(s, id))}${st.knot ? ' · 心结：' + esc(st.knot.text) : ''}</small></h2>
       <div class="msgs" id="msgs">${c.msgs.map(m => `<div class="msg ${m.who}${m.tier != null ? ' fate t' + m.tier : ''}">
         ${m.who === 'npc' ? `<b>${p.name}</b>` : ''}${esc(m.text)}
         ${m.d != null && m.who === 'npc' ? `<span class="md ${m.d > 0 ? 'up' : m.d < 0 ? 'down' : ''}">
@@ -296,11 +311,13 @@ function chatView() {
           说开「${esc(st.knot.text)}」那件事</button>` : ''}
         ${TOPICS.map(t => `<button data-act="topic" data-t="${t.id}" ${used.includes(t.id) || busy ? 'disabled' : ''}>
           ${t.label}</button>`).join('')}</div>
-        ${ai ? `${c.fate ? '<p class="fate-preview">本次沿用刚才的骰面，不再重掷。</p>' : `<p class="fate-preview">亲口说话时，${esc(fatePreview(s, 'chat', id))}</p>`}
-          <form class="say" data-act="say"><input name="t" maxlength="120"
+        ${ai ? `${c.fate && !E.isFiat(s) ? '<p class="fate-preview">本次沿用刚才的骰面，不再重掷。</p>' :
+          `<p class="fate-preview">亲口说话时，${esc(fatePreview(s, 'chat', id))}</p>`}
+          <form class="say" data-act="say"><input name="t" maxlength="${E.isFiat(s)?4000:120}"
             placeholder="${c.letter ? '写几句给远方的人……' : '想对' + p.name + '说什么？'}"
             autocomplete="off" ${busy ? 'disabled' : ''}><button ${busy ? 'disabled' : ''}>说</button></form>
-          <p class="muted small">还能说 ${left} 句。真诚的话打动人，敷衍和冒犯也会被记住。</p>` :
+          <p class="muted small">${E.isFiat(s)?'言出法随：不限句数，安排直接落地并保存。':
+            `还能说 ${left} 句。真诚的话打动人，敷衍和冒犯也会被记住。`}</p>` :
           '<p class="muted small">接入 AI 后可以随意说话。现在只能从上面挑话题。</p>'}` :
         '<p class="muted center">该说的都说了。</p>'}
       <button class="primary" data-act="chat-end">告退</button>
@@ -384,7 +401,7 @@ function memorialView() {
 }
 // 用印前列出本次骰子的朝局加减点，结果页只显示一次骰面。
 function edictView() {
-  const r = view.result, ai = AI.aiMode() !== 'off';
+  const r = view.result, ai = AI.aiMode() !== 'off' || E.isFiat(s);
   if (r) return `<div class="stage" style="--bg:url('${abs(BG.court)}')"><article class="paper">
     <h2>${esc(r.title || '旨意')}</h2><div class="choice">朱批：${esc(r.src)}</div>${fateLine(r.fate)}
     ${paras(r.text)}${chips(r.stats, r.people)}<button class="primary" data-act="done">好</button></article></div>`;
@@ -398,10 +415,11 @@ function edictView() {
           <option value="toTreasury">内帑 → 国库</option></select></label>
         <label>万两<input name="amount" type="number" min="0.01" step="0.01" value="10" required></label>
         <button class="primary">拨银</button></form>
-      ${ai ? `<p class="muted">写下你想办的事，任何事都可以。它会怎样落地，有什么代价，由天下来回答。</p>
+      ${ai ? `<p class="muted">${E.isFiat(s)?'你写下的就是新规则。改资源、改命运、定制度，都按你的意思落地。':
+        '写下你想办的事，任何事都可以。它会怎样落地，有什么代价，由天下来回答。'}</p>
         <p class="fate-preview">${esc(fatePreview(s, 'edict'))}</p>
-        <form class="edict" data-act="decree"><textarea name="t" maxlength="200" rows="4"
-          placeholder="例如：在京城设十处粥厂，入冬前施粥三月。" ${busy ? 'disabled' : ''}></textarea>
+        <form class="edict" data-act="decree"><textarea name="t" maxlength="${E.isFiat(s)?4000:200}" rows="4"
+          placeholder="例如：在京城设十处粥厂，入冬前施粥三月。" ${busy ? 'disabled' : ''}>${esc(view.decreeDraft || '')}</textarea>
           <button class="primary" ${busy ? 'disabled' : ''}>${busy ? '旨意正在传下去……' : '用印'}</button></form>
         <p class="muted small">举几个例子：</p>` : '<p class="muted">没有接入 AI，只能从拟好的旨意里选一道。</p>'}
       <div class="options">${PRESET_EDICTS.map((e, i) => `<button data-act="${ai ? 'fill' : 'preset'}"
@@ -435,22 +453,35 @@ function resultView() {
 
 // ---------- 夜 ----------
 const ideasHtml=(ideas,target)=>`<div class="plan-ideas">${ideas.map((t,i)=>`<button data-act="plan-idea" data-target="${target}" data-i="${i}">${esc(t)}</button>`).join('')}</div>`;
-function restView(){const ai=AI.aiMode()!=='off';return `${header()}<main class="plan-page"><div class="bar-title"><button data-act="go" data-to="home">‹ 返回</button><b>今天想怎么歇？</b></div>
- ${busy?'<p class="wait">窗外的风慢了下来……</p>':`${ai?`${ideasHtml(REST_IDEAS,'restPlan')}<label for="restPlan">今天想怎么歇？</label><textarea id="restPlan" maxlength="200" rows="5" placeholder="写下安排，最多200字">${esc(view.draft||'')}</textarea><label for="restCompanion">请谁作陪？</label><select id="restCompanion"><option value="">独自歇着</option>${E.restCompanions(s).map(id=>`<option value="${id}" ${view.companion===id?'selected':''}>${esc(nm(id))}</option>`).join('')}</select><p class="muted small">安排会先掷骰，一档不掷。最多花内帑3万两；若没有收到回话，就照常歇着。</p><button class="primary" data-act="rest-plan">就这样歇一日</button>`:'<p>把门关上，留一日给自己。</p>'}<button data-act="rest-default">照常歇着</button>`}</main>`;}
+function restView() {
+ const ai=AI.aiMode()!=='off'||E.isFiat(s), limit=E.isFiat(s)?4000:200;
+ const rule=E.isFiat(s)?'安排直接生效，不花时辰；银两和圣躬按你写的改。':
+  '安排会先掷骰。最多花内帑3万两；若没有收到回话，就照常歇着。';
+ return `${header()}<main class="plan-page"><div class="bar-title">
+  <button data-act="go" data-to="home">‹ 返回</button><b>今天想怎么歇？</b></div>
+  ${busy?'<p class="wait">窗外的风慢了下来……</p>':`${ai?`${ideasHtml(REST_IDEAS,'restPlan')}
+   <label for="restPlan">今天想怎么歇？</label>
+   <textarea id="restPlan" maxlength="${limit}" rows="5" placeholder="写下今天的安排">${esc(view.draft||'')}</textarea>
+   <label for="restCompanion">请谁作陪？</label><select id="restCompanion"><option value="">独自歇着</option>
+    ${E.restCompanions(s).map(id=>`<option value="${id}" ${view.companion===id?'selected':''}>${esc(nm(id))}</option>`).join('')}
+   </select><p class="muted small">${rule}</p>
+   <button class="primary" data-act="rest-plan">就这样歇一日</button>`:'<p>把门关上，留一日给自己。</p>'}
+   <button data-act="rest-default">照常歇着</button>`}</main>`;
+}
 // 写下夜间安排前先说明骰子与情分加减点，留空时仍按原有夜间流程。
 function nightView() {
   const background = E.stayOf(s) ? placeBackground('nanfeng-interior', s.month) : NIGHT_BG;
   if (view.result) {
     const r = view.result;
     return `<div class="stage night" style="--bg:url('${abs(background)}')">${r.id ? avatar(r.id, 'portrait') : ''}
-      <article class="paper"><h2>${r.id ? E.placeOf(s, r.id) + ' · 夜' : '独寝'}</h2>
+      <article class="paper"><h2>${r.id ? esc(E.placeOf(s, r.id)) + ' · 夜' : '独寝'}</h2>
         ${fateLine(r.fate)}${paras(r.text)}${chips(r.stats, r.people)}${notesHtml(r)}
         <button class="primary" data-act="month-end">天亮了 ›</button></article></div>`;
   }
   if (s.night && !busy && !s.agenda.length) return `<div class="stage night" style="--bg:url('${abs(background)}')">
     <article class="paper"><h2>今夜已经过了</h2><p>天快亮了。</p>
       <button class="primary" data-act="month-end">结束这个月 ›</button></article></div>`;
-  const list = E.nightChoices(s), ai = AI.aiMode() !== 'off', id = view.id || E.stayOf(s);
+  const list = E.nightChoices(s), ai = AI.aiMode() !== 'off' || E.isFiat(s), id = view.id || E.stayOf(s);
   let family = '';
   if (id && F.isMother(id)) {
     const status = s.pregnancy[id] ? '已有孕期记录，本夜不会重复判定。' :
@@ -465,7 +496,7 @@ function nightView() {
       ${busy ? '<p class="muted center wait">灯一盏一盏亮起来……</p>' : id ? `
         ${ai ? `${ideasHtml(nightIdeas(id), 'nightPlan')}
           <label for="nightPlan">今夜想和${esc(nm(id))}做些什么？</label>
-          <textarea id="nightPlan" maxlength="300" rows="5" placeholder="可以不写，最多300字">${esc(view.draft || '')}</textarea>
+          <textarea id="nightPlan" maxlength="${E.isFiat(s)?4000:300}" rows="5" placeholder="可以留空，照往常过">${esc(view.draft || '')}</textarea>
           <p class="fate-preview">写下安排时，${esc(fatePreview(s, 'night', id))}留空就照往常过。</p>` :
           '<p>灯已经点上了，过去坐坐吧。</p>'}
         <button class="primary" data-act="night-go" data-id="${id}">过去看看</button>
@@ -473,7 +504,7 @@ function nightView() {
         <section class="people">${list.map(person => `<button class="pc" data-act="night-select" data-id="${person.id}">
           ${avatar(person.id)}<div><b>${PEOPLE[person.id].name}
             ${person.special ? '<em class="ready">有话想说</em>' : person.knot ? '<em class="knot">心结</em>' : ''}</b>
-            <span>${E.placeOf(s, person.id)} · ${stageOf(s.people[person.id].aff)}</span></div></button>`).join('')}
+            <span>${esc(E.placeOf(s, person.id))} · ${stageOf(s.people[person.id].aff)}</span></div></button>`).join('')}
           <button class="pc" data-act="night-go" data-id=""><div><b>独寝</b><span>一个人睡，圣躬 +3</span></div></button>
         </section><p class="muted small">“有话想说”的人，今夜会有一段新剧情。</p>`}
     </article></div>`;
@@ -559,7 +590,10 @@ function familyResult(fn){try{const r=fn();save();go({name:'result',result:r});}
 function peopleView(){
  const id=view.id;
  if(id){const p=PEOPLE[id],st=s.people[id],known=likedList(id);return `${header()}<main class="person"><div class="bar-title"><button data-act="go" data-to="people">‹ 人物</button><b>${p.name}</b></div>
-  <div class="person-hero">${avatar(id,'person-face')}<div><h2>${p.name}</h2><p>${E.titleOf(s,id)} · ${E.placeOf(s,id)}</p><p class="small">${p.category||'故人'} · 能力 ${st.ability}/10 · 忠诚 ${st.loyalty}/100 · ${esc(st.faction)}</p>${p.desc?`<p class="small">${esc(p.desc)}</p>`:''}<p class="big">${E.affectionStage(s,id)} <b>${st.aff}</b></p>
+  <div class="person-hero">${avatar(id,'person-face')}<div><h2>${p.name}</h2>
+   <p>${esc(E.titleOf(s,id))} · ${esc(E.placeOf(s,id))}</p>
+   <p class="small">${p.category||'故人'} · 能力 ${st.ability}/10 · 忠诚 ${st.loyalty}/100 · ${esc(st.faction)}</p>
+   ${p.desc?`<p class="small">${esc(p.desc)}</p>`:''}<p class="big">${E.affectionStage(s,id)} <b>${st.aff}</b></p>
    <div class="stages">${STAGES.map(([n,t])=>`<span class="${st.aff>=n?'on':''}">${p.secondary?({0:'生疏',25:'相识',45:'信任',65:'亲近',85:'深信'})[n]:t}</span>`).join('')}</div>
    ${st.knot?`<p class="knot-line">心结：${esc(st.knot.text)}。召见时说开它。</p>`:''}
    ${st.lover?`<p class="ready-line">${bondName(id)}</p>`:''}
@@ -582,7 +616,8 @@ function logView(){
 function settingsView() {
   const m = AI.aiMode();
   const status = m === 'server' ? '已连接本机的 AI 服务。' :
-    m === 'byok' ? '正在使用你填写的 API。' : '未开启。召见只能挑话题，旨意只能选拟好的。';
+    m === 'byok' ? '正在使用你填写的 API。' : E.isFiat(s)?
+      '未开启。言出法随可直接改写数值；复杂安排请连接 AI。':'未开启。召见只能挑话题，旨意只能选拟好的。';
   return `${header()}<main class="settings"><h3 class="sec">设置</h3>
     <div class="card"><b>成人描写</b><label class="audience-toggle">
       <input type="checkbox" data-pref="tenderness" ${audienceOf().tenderness ? 'checked' : ''}> 直白描写亲密场景</label>
@@ -618,7 +653,7 @@ function freedomSettings() {
   const levels = [1, 2, 3].map(l => `<button data-act="freedom" data-l="${l}" class="${E.freedomOf(s) === l ? 'on' : ''}">
     <b>${l} 档 · ${FREEDOM[l].name}</b><span>${FREEDOM[l].desc}</span></button>`).join('');
   return `<div class="card freedom"><b>自由度</b><p>决定 AI 推演听不听你的。
-    下旨、召见时亲口说的话、夜里的第一句会用到。没开 AI 时不起作用。</p>${levels}</div>`;
+    一档可在首页随时改写，也用于下旨、召见、休养和夜间安排。明确的数值命令离线可用，复杂安排需要 AI。</p>${levels}</div>`;
 }
 function ageView(){return `<div class="title-screen" style="--bg:url('${abs(BG.desk)}')"><div class="title-box"><h1>入卷之前</h1><p>本游戏含成熟题材，仅供年满 18 周岁者游玩。</p><button class="primary" data-act="age-confirm">我已年满 18 周岁</button><button data-act="age-leave">离开</button>${view.left?'<p class="small">已停在此处。你可以关闭这个页面。</p>':''}</div></div>`;}
 // 标题页保留开局入口，把详细的批折规则放在可展开的玩法说明里。
@@ -865,7 +900,13 @@ const ACTS={
  topic:el=>withBusy(async()=>{const c=view.chat,t=TOPICS.find(x=>x.id===el.dataset.t);c.topics.push(t.id);c.msgs.push({who:'player',text:t.label});
   let reply=null;if(AI.aiMode()!=='off'&&t.id!=='likes')reply=await AI.chatReply(s,c.id,c.msgs,{letter:c.letter});
   let liked=null;if(t.id==='likes'){liked=E.hintLike(s,c.id);if(liked)toast(`记下了：${PEOPLE[c.id].name}${s.known[c.id][liked]?'喜欢':'不喜欢'}${GIFTS[liked].name}`);}
-  const text=reply?.reply||(t.id==='likes'?(liked?`${PEOPLE[c.id].name}想了想，说：“${GIFTS[liked].name}，我${s.known[c.id][liked]?'很喜欢':'不喜欢'}。”`:`${PEOPLE[c.id].name}笑了：“皇上送的，都喜欢。”`):(TOPIC_LINES[c.id]?.[t.id]||`${PEOPLE[c.id].name}恭敬地听完，低声谢过你的关心。`));let d=E.applyChat(s,c,{affection:reply?Math.max(reply.affection,1):t.gain,memory:reply?.memory||''});
+  const fallback=t.id==='likes'?(liked?
+   `${PEOPLE[c.id].name}想了想，说：“${GIFTS[liked].name}，我${s.known[c.id][liked]?'很喜欢':'不喜欢'}。”`:
+   `${PEOPLE[c.id].name}笑了：“皇上送的，都喜欢。”`):
+   (TOPIC_LINES[c.id]?.[t.id]||`${PEOPLE[c.id].name}恭敬地听完，低声谢过你的关心。`);
+  const text=reply?.reply||fallback;let d;
+  if(reply?.fiat){const r=E.applyFiatChat(s,c,t.label,reply.fiat);d=r.people[c.id]||0;}
+  else d=E.applyChat(s,c,{affection:reply?Math.max(reply.affection,1):t.gain,memory:reply?.memory||''});
   if(t.stat&&!c.statDone){E.applyStats(s,t.stat);c.statDone=true;}
   c.msgs.push({who:'npc',text,d,mood:reply?.mood});}),
  repair:()=>withBusy(async()=>{const c=view.chat,knot=s.people[c.id].knot;c.msgs.push({who:'player',text:`说起「${knot.text}」那件事`});const line=E.repairKnot(s,c);c.msgs.push({who:'npc',text:line,d:3});toast('心结解开了');}),
@@ -891,11 +932,22 @@ const ACTS={
  rest:()=>go({name:'rest'}),
  'rest-default':()=>{const r=E.rest(s);save();go({name:'result',result:{...r,bg:BG.desk}});},
  'plan-idea':el=>{const ta=document.getElementById(el.dataset.target);if(ta){ta.value=(el.dataset.target==='restPlan'?REST_IDEAS:nightIdeas(view.id))[+el.dataset.i];ta.focus();}},
- 'rest-plan':()=>{const plan=(document.getElementById('restPlan')?.value||'').trim(),companion=document.getElementById('restCompanion')?.value||null;if(!plan)return toast('写个安排，或选“照常歇着”。');if(!planAllowed(plan,companion))return toast(PLAN_NOTICE);view.draft=plan;view.companion=companion;
-  withBusy(async()=>{const fate=E.rollFate(s,'rest',companion),v=await AI.restScene(s,plan,{companion,fate});const r=v?E.plannedRest(s,plan,{...v,companion,fate}):E.rest(s);view={name:'result',result:{...r,bg:BG.garden}};});},
+ 'rest-plan':()=>{
+  const plan=(document.getElementById('restPlan')?.value||'').trim();
+  const companion=document.getElementById('restCompanion')?.value||null;
+  if(!plan)return toast('写个安排，或选“照常歇着”。');
+  if(!planAllowed(plan,companion,s))return toast(PLAN_NOTICE);
+  view.draft=plan;view.companion=companion;
+  withBusy(async()=>{
+   const fate=E.rollFate(s,'rest',companion),v=await AI.restScene(s,plan,{companion,fate});
+   if(E.isFiat(s)&&!v)throw Error(AI.aiError()||'这项安排需要开启 AI，请保留原文后在设置连接。');
+   const r=v?.fiat?E.applyFiat(s,plan,v.fiat,{actor:companion}):v?E.plannedRest(s,plan,{...v,companion,fate}):E.rest(s);
+   view={name:'result',result:{...r,bg:BG.garden}};
+  });
+ },
  review:()=>{try{E.review(s);save();go({name:'memorials'});}catch(e){toast(e.message);}},
  memorial:el=>{try{const r=E.judgeMemorial(s,el.dataset.id,el.dataset.choice);view.feedback=r.text;save();render();}catch(e){toast(e.message);}},
- done:()=>{if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});afterAction();},
+ done:()=>{if(view.result?.fiat)return go({name:'home'});if(s.nanfeng?.visit&&!s.nanfeng.visit.done)return go({name:'nanfeng'});afterAction();},
  night: async () => {
   if (s.nanfeng?.visit && !s.nanfeng.visit.done) return go({name: 'nanfeng'});
   if (s.agenda.length) return toast('先把要事办完。');
@@ -913,10 +965,22 @@ const ACTS={
   go({name: 'night'});
  },
  'night-select':el=>go({name:'night',id:el.dataset.id||null}),
- 'night-go':el=>{if(s.night&&!s.agenda.length)return monthEnd();const id=el.dataset.id||null,line=AI.aiMode()==='off'?'':(document.getElementById('nightPlan')?.value||'').trim();
+ 'night-go':el=>{
+  if(s.night&&!s.agenda.length)return monthEnd();
+  const id=el.dataset.id||null;
+  const line=AI.aiMode()==='off'&&!E.isFiat(s)?'':(document.getElementById('nightPlan')?.value||'').trim();
   if(!planAllowed(line,id,s))return toast(PLAN_NOTICE);view.draft=line;
   if(id&&!line&&E.hasStory(s,id)){const sid=E.queueSpecial(s,id);save();return go({name:'scene',id:sid});}
-  withBusy(async()=>{let v=null,fate=null;if(id&&AI.aiMode()!=='off'){if(line)fate=E.rollFate(s,'night',id);v=await AI.nightScene(s,id,line,fate);}
+  withBusy(async()=>{let v=null,fate=null;
+   if(id&&(AI.aiMode()!=='off'||E.isFiat(s))){
+    if(line)fate=E.rollFate(s,'night',id);
+    v=await AI.nightScene(s,id,line,fate);
+   }
+   if(E.isFiat(s)&&line){
+    if(!v?.fiat)throw Error(AI.aiError()||'这项安排需要开启 AI，请保留原文后在设置连接。');
+    const r=E.applyFiat(s,line,v.fiat,{actor:id});s.night=true;
+    view.result={...r,id,fate};return;
+   }
    const lines=id?NIGHT_LINES[id]:null,bad=fate&&!fate.free&&fate.tier<=1;const text=id?(v?.text||(bad?'对方告了罪，你让人添了热茶。灯下坐了一会儿，便各自歇下。':(lines?.length?lines[(s.month+s.year)%lines.length]:`${nm(id)}行过礼，请你坐下。你们喝了茶，说过几句家常，便早些歇下。`))):'你让人都退下，一个人睡了。难得一夜无梦。';
    const r=E.spendNight(s,id,{affection:v?v.affection:3,health:v?.health||0,memory:v?.memory||'',fate});view.result={...r,id,fate,text:!v&&!bad&&r.birthday?BIRTH_LINES[id].night:text};});
  },
@@ -946,24 +1010,49 @@ function opener(id,letter){
 }
 
 async function sayHandler(text){
- const c=view.chat;if(!text||c.turns>=6)return;if(!planAllowed(text,c.id,s))return toast(PLAN_NOTICE);
+ const c=view.chat;if(!text||!E.isFiat(s)&&c.turns>=6)return;if(!planAllowed(text,c.id,s))return toast(PLAN_NOTICE);
  await withBusy(async()=>{c.msgs.push({who:'player',text});if(!c.fate){c.fate=E.rollFate(s,'chat',c.id);if(!c.fate.free)c.msgs.push({who:'sys',tier:c.fate.tier,text:fateText(c.fate)+'：'+FATE_SHORT[c.fate.tier]});}const r=await AI.chatReply(s,c.id,c.msgs,{letter:c.letter,fate:c.fate});
   if(!r){c.msgs.push({who:'npc',text:'（AI 没有回应：'+(AI.aiError()||'连接失败')+'。可以先用上面的话题。）'});c.msgs.at(-2).failed=true;return;}
-  const d=E.applyChat(s,c,{affection:r.affection,memory:r.memory});c.msgs.push({who:'npc',text:r.reply,d,mood:r.mood});
+  let d;
+  if(r.fiat){const applied=E.applyFiatChat(s,c,text,r.fiat);d=applied.people[c.id]||0;}
+  else d=E.applyChat(s,c,{affection:r.affection,memory:r.memory});
+  c.msgs.push({who:'npc',text:r.reply,d,mood:r.mood});
   if(r.memory)toast(`${PEOPLE[c.id].name}记下了：${r.memory}`);});
 }
 async function decreeHandler(text){
  if(!text)return toast('旨意还是空的。');
  if(!planAllowed(text,null,s))return toast(PLAN_NOTICE);
+ view.decreeDraft=text;
  await withBusy(async()=>{const fate=E.rollFate(s,'edict');const v=await AI.edictResult(s,text,CAST.filter(id=>E.present(s,id)&&s.people[id].met),fate);
   if(!v)throw Error('旨意没能传下去：'+(AI.aiError()||'AI 未回应')+'。时辰没有用掉。');
   const r=E.applyEdict(s,text,{...v,fate});view.result={...r,title:v.title,src:text,text:v.narration,fate};});
 }
+async function fiatHandler(text) {
+ if(!text.trim())return toast('写下想改写的事。');
+ view.fiatDraft=text;
+ await withBusy(async()=>{
+  const result=await AI.fiatResult(s,text);
+  if(!result)throw Error(AI.aiError()||'复杂安排需要开启 AI；国库、内帑与局势数值可直接改写。');
+  const r=E.applyFiat(s,text,result);
+  view={name:'result',result:{...r,bg:BG.court}};
+ });
+}
 
 app.addEventListener('error',e=>{const img=e.target;if(img.tagName!=='IMG'||!img.dataset.person)return;const id=img.dataset.person,span=document.createElement('span');span.className='avatar '+img.className;span.textContent=(PEOPLE[id]?.name||'人')[0];span.setAttribute('aria-label',nm(id));(img.closest('picture')||img).replaceWith(span);},true);
-app.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el||el.tagName==='FORM')return;if(el.disabled)return;const f=ACTS[el.dataset.act];if(f){e.preventDefault();f(el);}});
+app.addEventListener('click',e=>{
+ if(busy)return;
+ const el=e.target.closest('[data-act]');if(!el||el.tagName==='FORM'||el.disabled)return;
+ const f=ACTS[el.dataset.act];if(f){e.preventDefault();f(el);}
+});
 app.addEventListener('change',e=>{if(e.target.dataset.pref==='tenderness'){try{setTenderness(e.target.checked);}catch(err){toast(err.message);render();}}});
-app.addEventListener('submit',e=>{e.preventDefault();if(!audienceOf().confirmed)return;const f=e.target,t=(f.t?.value||'').trim();if(f.dataset.act==='kid-name'){try{E.nameChild(s,t);view.kidArt=null;save();render();}catch(e){toast(e.message);}}else if(f.dataset.act==='transfer'){try{const r=E.transferFunds(s,f.direction.value,f.amount.value);save();go({name:'result',result:r});}catch(e){toast(e.message);}}else if(f.dataset.act==='say')sayHandler(t);else if(f.dataset.act==='decree')decreeHandler(t);
+app.addEventListener('submit',e=>{
+ e.preventDefault();if(!audienceOf().confirmed||busy)return;
+ const f=e.target,t=(f.t?.value||'').trim();
+ if(f.dataset.act==='fiat')fiatHandler(t);
+ else if(f.dataset.act==='kid-name'){try{E.nameChild(s,t);view.kidArt=null;save();render();}catch(e){toast(e.message);}}
+ else if(f.dataset.act==='transfer'){
+  try{const r=E.transferFunds(s,f.direction.value,f.amount.value);save();go({name:'result',result:r});}catch(e){toast(e.message);}
+ }else if(f.dataset.act==='say')sayHandler(t);else if(f.dataset.act==='decree')decreeHandler(t);
  else if(f.dataset.act==='memorial-write')withBusy(async()=>{const fate=E.rollFate(s,'edict'),v=await AI.edictResult(s,t,CAST.filter(id=>E.present(s,id)),fate);if(!v)throw Error('朱批未发出，可重试。');const r=E.writeMemorial(s,f.dataset.id,t,{...v,fate});view.feedback=r.text;});
  else if(f.dataset.act==='policy'){try{const [host,pilot]=f.host.value.split('|');E.launchPolicy(s,f.dataset.id,host,pilot);save();render();}catch(e){toast(e.message);}}
  else if(f.dataset.act==='api'){const d={url:f.url.value.trim(),model:f.model.value.trim(),key:f.key.value.trim()},rem=f.remember.checked;withBusy(async()=>{await AI.saveConnection(d,rem);toast('AI 已开启');});}});

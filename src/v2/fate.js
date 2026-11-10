@@ -1,6 +1,6 @@
 // 自由度与掷骰。一档言出法随；二、三档在 AI 推演前掷 20 面骰，三档更难。
 export const FREEDOM={
- 1:{name:'言出法随',desc:'不掷骰。合理的安排照着走；人物的意愿与亲属边界仍要尊重。'},
+ 1:{name:'言出法随',desc:'你的话就是新规则。不掷骰，不受时辰、银两、资格与史实限制；可直接改写人物、朝局与世界设定。'},
  2:{name:'事在人为',desc:'下旨、召见时亲口说的话、夜里的第一句，先掷一次骰。多半能成，偶尔碰壁。'},
  3:{name:'天意难违',desc:'同样掷骰，但难得多。想事事顺遂，得先把朝局和情分经营好。'}
 };
@@ -29,7 +29,9 @@ const GUIDE_PERSON=[
  n=>`这次掷骰为吉：${n}愿意接住皇上的话，只带一点自己的小脾气或小条件。`,
  n=>`这次掷骰大吉：尽量接住皇上的合理安排，${n}仍按自己的意愿回应，保持身份与亲属边界。affection 不低于 2。`
 ];
-export const fateGuide=(fate,kind,name='')=>!fate?'':kind==='edict'?GUIDE_EDICT[fate.tier]:GUIDE_PERSON[fate.tier](name);
+export const fateGuide=(fate,kind,name='')=>!fate?'':fate.free?
+ '言出法随：玩家的安排直接成为事实，不按现实难度、资源、身份资格或旧剧情否决，不擅加代价、失败或反噬。':
+ kind==='edict'?GUIDE_EDICT[fate.tier]:GUIDE_PERSON[fate.tier](name);
 // 引擎兜底：按骰面收紧正面收益
 export function boundUp(v,tier){if(v<=0)return v;return tier===0?0:tier===1?Math.round(v/2):v;}
 export const fateText=f=>!f||f.free?'':`掷骰 ${f.d}${f.bonus.map(([w,b])=>` ${b>0?'+':'−'}${Math.abs(b)}（${w}）`).join('')} = ${f.total} · ${TIERS[f.tier]}`;
@@ -37,7 +39,7 @@ export const fateText=f=>!f||f.free?'':`掷骰 ${f.d}${f.bonus.map(([w,b])=>` ${
 // 行动前只解释这次是否掷骰及现有加减点，不提前消耗随机数。
 export function fatePreview(s, kind, id) {
   const level = [1, 2, 3].includes(Number(s.freedom)) ? Number(s.freedom) : 2;
-  if (level === 1) return '这次不掷骰，仍要尊重人物自己的意愿。';
+  if (level === 1) return '这次不掷骰，直接改写并保存，不消耗时辰。';
   const bonus = fateBonus(s, kind, id);
   const points = bonus.length ? bonus.map(([why, value]) => `${why}：${value > 0 ? '+' : ''}${value}`).join('；') :
     '没有加减点（0）';

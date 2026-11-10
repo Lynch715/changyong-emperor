@@ -95,8 +95,9 @@ export function makeServer({ config = serverConfig(), fetcher = fetch } = {}) {
         active.add(token);
         calls++;
         try {
-          const value = await callModel(config, fetcher, p.system, p.user, { maxTokens: p.maxTokens });
-          return send(200, { value });
+          let usage;
+          const value = await callModel(config, fetcher, p.system, p.user, { maxTokens: p.maxTokens, onUsage: v => {usage = v;} });
+          return send(200, { value, usage });
         } catch (e) {
           return send(502, { error: e.message || '模型连接失败。' });
         } finally {

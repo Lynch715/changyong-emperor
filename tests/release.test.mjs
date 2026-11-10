@@ -49,6 +49,24 @@ test('A4 Pages 样式和模块入口都带 package.json 的当前版本', async 
   assert.ok(html.includes(`src/v2/main.js?v=${version}`));
 });
 
+test('发布模块链都带相同版本，依赖文件仍存在，避免新入口混用旧缓存', async () => {
+  const {version} = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
+  async function check(dir) {
+    for (const entry of await readdir(dir, {withFileTypes: true})) {
+      const file = path.join(dir, entry.name);
+      if (entry.isDirectory()) await check(file);
+      else if (entry.name.endsWith('.js')) {
+        const source = await readFile(file, 'utf8');
+        for (const match of source.matchAll(/(?:from\s*|import\s*\(?\s*)['"](\.[^'"]+\.js(?:\?[^'"]*)?)['"]/g)) {
+          assert.equal(match[1].split('?')[1], 'v=' + version, file + ': ' + match[1]);
+          await access(path.resolve(path.dirname(file), match[1].split('?')[0]));
+        }
+      }
+    }
+  }
+  await check(path.join(root, '_site/src'));
+});
+
 // 递归核算发布资源的实际字节数。
 async function assetBytes(dir) {
   let bytes = 0;
